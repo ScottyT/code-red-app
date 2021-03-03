@@ -1,0 +1,26 @@
+{
+  "eslint.format.enable": false,
+  "beautify.config": "",
+  "prettier.jsxBracketSameLine": true,
+  "prettier.proseWrap": "never",
+  "prettier.printWidth": 800,
+  "html.format.wrapAttributes": "aligned-multiple",
+  "editor.wrappingIndent": "same",
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": false
+  },
+  "vetur.format.defaultFormatterOptions": {
+  
+    "js-beautify-html": {
+      "wrap_attributes": "none"
+    },
+    "prettyhtml": {
+      "printWidth": 800,
+      "singleQuote": false,
+      "wrapAttributes": false,
+      "sortAttributes": false
+    }
+  }
+}

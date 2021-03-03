@@ -1,0 +1,21 @@
+{
+  "steps": [
+    {
+      "name":"gcr.io/cloud-builders/docker",
+      "entrypoint": "bash",
+      "args":["-c", "docker pull gcr.io/wesi-form/auth:latest || exit 0"]
+    },
+    {
+      "name": "gcr.io/cloud-builders/docker",
+      "args": [
+        "build",
+        "-t",
+        "gcr.io/wesi-form/auth:latest",
+        "--cache-from",
+        "gcr.io/wesi-form/auth:latest",
+        "."
+      ]
+    }
+  ],
+  "images": ["gcr.io/wesi-form/auth:latest"]
+}

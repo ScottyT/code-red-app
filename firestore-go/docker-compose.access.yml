@@ -1,0 +1,11 @@
+# Usage:
+#   export GCP_KEY_PATH=~/keys/project-key.json 
+#   docker-compose -f docker-compose.yml -f docker-compose.access.yml
+##
+version: '3'
+services:
+  web:
+    environment: 
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/keys/keyfile.json
+    volumes:
+      - ${GCP_KEY_PATH}:/tmp/keys/keyfile.json:ro

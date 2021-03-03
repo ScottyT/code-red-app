@@ -1,0 +1,48 @@
+<template> 
+  <div>
+    <login-form v-if="!isLoggedIn" />
+    <reports-dash v-else :reports="reports" :employees="empList" :shadowArr="reportsdata" />
+  </div>
+</template>
+<script>
+import {mapGetters} from 'vuex'
+export default {
+  name: "Reports",
+  layout: "dashboard-layout",
+  head() {
+    return {
+      title: "Reports Dashboard"
+    }
+  },
+  computed: {
+    ...mapGetters(['isLoggedIn'])
+  },
+  async middleware({store, redirect}) {
+    if (store.state.user.role !== "admin") {
+      return redirect("/")
+    }
+  },
+  async asyncData({ $axios }) {
+    try {
+      const data = await $axios.$get("/api/reports")
+      let employees = await $axios.$get("/api/employees")
+      //let data = dispatchData.concat(rapidResponseData)
+      return {
+        reports: data,
+        empList: employees
+      }
+    } catch (e) {
+      console.error("SOMETHING WENT WRONG: " + e)
+    }
+  },
+  data() {
+    return {
+      loading:true,
+      empList:[],
+      reportsdata:[],
+      reportsList:[],
+      reports: []
+    }
+  }
+}
+</script>

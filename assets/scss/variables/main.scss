@@ -1,0 +1,59 @@
+$color-white: #fff;
+$dark-primary-1: #2a73ae;
+$color-black: #181818;
+
+@mixin respond($breakpoint) {
+  @if $breakpoint==mobileSmall {
+    @media only screen and (min-width: 375px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==mobileSmallPort {
+    @media only screen and (min-width:500px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==mobileSmallLand {
+    @media only screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==mobileLarge {
+    @media only screen and (min-width: 768px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==mobileLargeMax {
+    @media only screen and (max-width: 768px - 1px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==tabletLarge {
+    @media only screen and (min-width: 991px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==tabletLargeMax {
+    @media only screen and (max-width: 991px - 1px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==tabletMid {
+    @media only screen and (min-width: 1025px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==desktopSmall {
+    @media only screen and (min-width: 1200px) {
+      @content;
+    }
+  }
+}
