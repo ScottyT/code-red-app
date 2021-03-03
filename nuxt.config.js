@@ -96,7 +96,9 @@ export default {
       authDomain: "code-red-app.firebaseapp.com",
       databaseURL: "https://code-red-app.firebaseio.com",
       projectId: "code-red-app",
-      storageBucket: "code-red-app.appspot.com"
+      storageBucket: "code-red-app.appspot.com",
+      messagingSenderId: process.env.MESSAGING_SENDER_ID,
+      appId: process.env.APP_ID
     },
     onFirebaseHosting: false,
     services: {

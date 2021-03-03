@@ -59,6 +59,12 @@ export default {
           to: '/rapid-response-form',
         },
         {
+          icon: 'mdi-form-select',
+          title: 'Daily Containment Case File Report',
+          to: '/daily-containment-report',
+          access: 'user'
+        },
+        {
           icon: 'mdi-clipboard',
           title: 'Reports',
           to: '/reports'

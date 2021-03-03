@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
+const DailyContainment = require("../models/dailyContainmentSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -23,7 +24,8 @@ router.post("/employee/new", (req, res) => {
 router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
-    const results = dispatch.concat(rapidresponse)
+    const dailyContainment = await DailyContainment.find({});
+    const results = dispatch.concat(rapidresponse, dailyContainment)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -156,6 +158,26 @@ router.post("/rapid-response/new", (req, res) => {
     }, (err, report) => {
         if (err) {
             console.log(`CREATE error: ${err}`)
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(report)
+        }
+    })
+})
+router.post("/daily-containment-report/new", (req, res) => {
+    DailyContainment.create({
+        JobId: req.body.JobId,
+        date: req.body.date,
+        location: req.body.location,
+        selectedTmpRepairs: req.body.selectedTMPRepairs,
+        selectedContent: req.body.selectedContent,
+        selectedStructualCleaning: req.body.selectedStructualCleaning,
+        selectedStructualDrying: req.body.selectedStructualDrying,
+        selectedCleaningSection: req.body.selectedStructualCleaning,
+        evaluationLogs: req.body.evaluationLogs,
+        verifySign: req.body.verifySig
+    }, (err, report) => {
+        if (err) {
             res.status(500).send('Error')
         } else {
             res.status(200).json(report)
