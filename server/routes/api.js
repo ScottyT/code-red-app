@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
-const DailyContainment = require("../models/dailyContainmentSchema");
+const CaseFile = require("../models/dailyContainmentSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -24,8 +24,8 @@ router.post("/employee/new", (req, res) => {
 router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
-    const dailyContainment = await DailyContainment.find({});
-    const results = dispatch.concat(rapidresponse, dailyContainment)
+    const caseFile = await CaseFile.find({});
+    const results = dispatch.concat(rapidresponse, caseFile)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -38,6 +38,14 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
         case "rapid-response":
             res.json(repRapid)
             break;
+        case "case-file":
+            await CaseFile.findOne({JobId: req.params.JobId}, (err, report) => {
+                if (err) {
+                    res.status(500).send('Error')
+                } else {
+                    res.status(200).json(report)
+                }
+            })
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
@@ -62,8 +70,7 @@ router.post("/report/:ReportType/:JobId/update", async (req, res) => {
                     } else {
                         res.status(200).json(updated)
                     }
-                })
-                    
+                })                    
             break;
         default:
             console.log("Nothing to update")
@@ -164,16 +171,19 @@ router.post("/rapid-response/new", (req, res) => {
         }
     })
 })
-router.post("/daily-containment-report/new", (req, res) => {
-    DailyContainment.create({
+router.post("/case-file-report/new", (req, res) => {
+    CaseFile.create({
         JobId: req.body.JobId,
         date: req.body.date,
         location: req.body.location,
+        ReportType: req.body.ReportType,
         selectedTmpRepairs: req.body.selectedTMPRepairs,
         selectedContent: req.body.selectedContent,
         selectedStructualCleaning: req.body.selectedStructualCleaning,
         selectedStructualDrying: req.body.selectedStructualDrying,
         selectedCleaningSection: req.body.selectedStructualCleaning,
+        contentCleaningInspection: req.body.contentCleaningInspection,
+        waterRestorationInspection: req.body.waterRestorationInspection,
         evaluationLogs: req.body.evaluationLogs,
         verifySign: req.body.verifySig
     }, (err, report) => {

@@ -24,7 +24,7 @@
     </div>
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="span">
-        <div class="reports-list__report flip-list-item" v-for="report in sortedReports" :key="report.JobId">
+        <div class="reports-list__report flip-list-item" v-for="report in sortedReports" :key="`${report.ReportType}-${report.JobId}`">
           <nuxt-link class="reports-list__report-link" :to="`/reports/${report.ReportType}/${report.JobId}`" v-if="page == 'reportsPage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>

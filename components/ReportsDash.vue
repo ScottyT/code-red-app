@@ -40,7 +40,7 @@ import Autocomplete from './Autocomplete.vue'
       reportTypeFilters: [
         { id:1, value: "Dispatch", name: "dispatch" },
         { id:2, value: "Rapid Response", name: "rapid-response" },
-        { id: 3, value: "Daily Containment", name: "daily-containment" }
+        { id: 3, value: "Case File", name: "case-file" }
       ],
       checkedReportFilters: [],
       checkedNameFilters: [],

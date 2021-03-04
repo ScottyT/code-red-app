@@ -191,7 +191,6 @@
       },
       message: '',
       errorMessage: '',
-      submitted: false,
       tmpRepairSection: [{
         subheading: "Temporary Repairs",
         sublist: [{
@@ -384,7 +383,6 @@
       },
       formatTime(timeReturned) {
         if (!timeReturned) return null
-        //console.log(this.date + 'T' + timeReturned)
         
         const pieces = timeReturned.split(':')
         let hours
@@ -418,6 +416,10 @@
       async submitForm() {
         this.message = ''
         const user = this.getUser;
+        const userNameObj = {
+          first: user.name.split(" ")[0],
+          last: user.name.split(" ")[1]
+        }
         const reports = this.getReports.map((v) => { return v.JobId })
         const evaluationLogs= [
           {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
@@ -425,7 +427,7 @@
           {label: 'End Time', value: this.evalEnd},
           {label: 'Total Time', value: this.duration}
         ]
-        if (!reports.includes(this.jobId)) {
+        if (reports.includes(this.jobId)) {
           const post = {
             JobId: this.jobId,
             date: this.dateFormatted,
@@ -436,7 +438,9 @@
             selectedStructualDrying: this.selectedStructualDrying,
             selectedStructualCleaning: this.selectedStructualCleaning,
             evaluationLogs: evaluationLogs,
-            verifySig: this.verifySig.data
+            verifySig: this.verifySig.data,
+            ReportType: 'Containment',
+            teamMember: userNameObj
           };
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {
@@ -448,7 +452,7 @@
               }, 2000)
             })
           } else {
-            this.$axios.$post("/api/daily-containment-report/new", post).then(() => {
+            this.$axios.$post("/api/case-file-report/new", post).then(() => {
               this.message = "Report submitted"
               this.submitted = true
               setTimeout(() => {
@@ -462,7 +466,7 @@
         } else {
           this.submitted = false
           this.submitting = false
-          this.errorMessage = "Duplicate Job ID can't exist"
+          this.errorMessage = "Job ID exsits"
         }
       }
     },
