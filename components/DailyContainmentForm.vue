@@ -430,6 +430,7 @@
         if (reports.includes(this.jobId)) {
           const post = {
             JobId: this.jobId,
+            id: user.id,
             date: this.dateFormatted,
             location: this.location,
             selectedTMPRepairs: this.selectedTMPRepairs,
@@ -439,8 +440,10 @@
             selectedStructualCleaning: this.selectedStructualCleaning,
             evaluationLogs: evaluationLogs,
             verifySig: this.verifySig.data,
-            ReportType: 'Containment',
-            teamMember: userNameObj
+            ReportType: 'case-file',
+            CaseFileType: 'containment',
+            teamMember: userNameObj,
+            afterHoursWork: 'No'
           };
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {

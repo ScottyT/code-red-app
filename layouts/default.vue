@@ -77,6 +77,12 @@ export default {
           access: 'user'
         },
         {
+          icon: 'mdi-form-select',
+          title: 'Certificate of Completion',
+          to: '/certificate-of-completion',
+          access: 'user'
+        },
+        {
           icon: 'mdi-clipboard',
           title: 'Reports',
           to: '/reports',

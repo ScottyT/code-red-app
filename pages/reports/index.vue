@@ -24,7 +24,7 @@ export default {
   },
   async asyncData({ $axios }) {
     try {
-      const data = await $axios.$get("/api/reports")
+      let data = await $axios.$get("/api/reports")
       let employees = await $axios.$get("/api/employees")
       //let data = dispatchData.concat(rapidResponseData)
       return {

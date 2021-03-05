@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
-const CaseFile = require("../models/dailyContainmentSchema");
+const CaseFile = require("../models/caseFileSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -31,6 +31,8 @@ router.get('/reports', async (req, res) => {
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
+    const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
+    const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
     switch (req.params.ReportType) {
         case "dispatch":
             res.json(repDispatch)
@@ -38,14 +40,11 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
         case "rapid-response":
             res.json(repRapid)
             break;
-        case "case-file":
-            await CaseFile.findOne({JobId: req.params.JobId}, (err, report) => {
-                if (err) {
-                    res.status(500).send('Error')
-                } else {
-                    res.status(200).json(report)
-                }
-            })
+        case "case-file-containment":
+            res.json(containment)
+            break;
+        case "case-file-technician":
+            res.json(technician);
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
@@ -175,6 +174,7 @@ router.post("/case-file-report/new", (req, res) => {
     CaseFile.create({
         JobId: req.body.JobId,
         date: req.body.date,
+        id: req.body.id,
         location: req.body.location,
         ReportType: req.body.ReportType,
         selectedTmpRepairs: req.body.selectedTMPRepairs,
@@ -184,8 +184,17 @@ router.post("/case-file-report/new", (req, res) => {
         selectedCleaningSection: req.body.selectedStructualCleaning,
         contentCleaningInspection: req.body.contentCleaningInspection,
         waterRestorationInspection: req.body.waterRestorationInspection,
+        waterRemediationAssesment: req.body.waterRemediationAssesment,
+        overviewScopeOfWork: req.body.overviewScopeOfWork,
+        specializedExpert: req.body.specializedExpert,
+        scopeOfWork: req.body.scopeOfWork,
+        projectWorkPlans: req.body.projectWorkPlans,
+        notes: req.body.notes,
+        afterHoursWork: req.body.afterHoursWork,
         evaluationLogs: req.body.evaluationLogs,
-        verifySign: req.body.verifySig
+        verifySign: req.body.verifySig,
+        teamMember: req.body.teamMember,
+        CaseFileType: req.body.CaseFileType
     }, (err, report) => {
         if (err) {
             res.status(500).send('Error')

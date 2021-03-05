@@ -5,7 +5,7 @@
     <response-report-details :report="report"
       v-if="reportType == 'rapid-response'"
     />
-    <lazy-case-file-details :report="report" v-else-if="reportType == 'case-file'" />
+    <lazy-case-file-details :report="report" v-else-if="reportType.includes('case-file-')" />
     <report-details :report="report" v-else />
   </div>
 </template>

@@ -243,6 +243,10 @@ button {
       max-width: 100%;
     }
 
+    &--short {
+      max-width:300px;
+    }
+
     &--error {
       color: red;
     }
@@ -286,6 +290,10 @@ button {
 
     &--block {
       display: block;
+    }
+
+    &--column {
+      flex-direction:column;
     }
 
     &--full-width {
@@ -402,6 +410,15 @@ button {
     border-bottom: 1px solid $dark-primary-1;
     padding: 20px 0;
     column-gap: 2vw;
+
+    &--case-file {
+      display:flex;
+      flex-wrap:wrap;
+      flex-direction:row;
+      & > div {
+        flex: 1 1 380px;
+      }
+    }
 
     &--contact-group {
       display: grid;

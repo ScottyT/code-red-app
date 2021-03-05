@@ -46,6 +46,12 @@ export const actions = {
     }
     const employees = await $axios.$get("/api/employees")
     const reports = await $axios.$get("/api/reports")
+    let newArr = reports.reduce((unique, o) => {
+      if (!unique.some(obj => obj.JobId === o.JobId && obj.ReportType === o.ReportType)) {
+        unique.push(o)
+      }
+      return unique
+    }, [])
     commit('setEmployees', employees)
     commit('setReports', reports)
     commit('setUser', {

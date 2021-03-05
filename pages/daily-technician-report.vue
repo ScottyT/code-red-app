@@ -192,9 +192,13 @@
                     </v-time-picker>
                   </v-dialog>
                 </div>
-                <div class="form_input--input-group">
+                <div class="form__input--input-group">
                   <label for="totalTime" class="form__label">Total Time</label>
                   <input type="text" readonly v-model="duration" />
+                </div>
+                <div class="form__input--input-group">
+                    <input id="verifyCheckbox" :value="workCompletedAfterHours" v-model="workCompletedAfterHours" type="checkbox" />
+                    <label for="verifyCheckbox" class="form__label">Work Completed After Hours</label>
                 </div>
               </div>
               <div class="form__form-group">
@@ -547,6 +551,7 @@
             data: '',
             isEmpty: true
         },
+        workCompletedAfterHours: false
     }),
     mounted() {
         this.createGeocoder();
@@ -607,19 +612,37 @@
       async submitForm() {
           this.message = ''
           const userNameObj = {
-            first: user.name.split(" ")[0],
-            last: user.name.split(" ")[1]
+            first: this.getUser.name.split(" ")[0],
+            last: this.getUser.name.split(" ")[1]
         }
           const reports = this.getReports.map((v) => { return v.JobId })
-          if (!reports.includes(this.jobId)) {
+          const evaluationLogs= [
+            {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
+            {label: 'Start Time', value: this.evalStart},
+            {label: 'End Time', value: this.evalEnd},
+            {label: 'Total Time', value: this.duration}
+        ]
+          if (reports.includes(this.jobId)) {
               const post = {
                 JobId: this.jobId,
                 date: this.dateFormatted,
                 location: this.location,
                 contentCleaningInspection: this.selectedContentCleaning,
                 waterRestorationInspection: this.selectedWaterRestoration,
-                ReportType: 'Technician',
-                teamMember: userNameObj
+                waterRemediationAssesment: this.selectedWaterRemediation,
+                overviewScopeOfWork: this.selectedOverviewScope,
+                specializedExpert: this.selectedExpert,
+                scopeOfWork: this.selectedScope,
+                projectWorkPlans: this.selectedWorkPlans,
+                notes: this.notes,
+                evaluationLogs: evaluationLogs,
+                id: this.getUser.id,
+                ReportType: 'case-file',
+                CaseFileType: 'technician',
+                teamMember: userNameObj,
+                verifySig: this.verifySig.data,
+                afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
+                notes: this.notes
               }
               this.$axios.$post("/api/case-file-report/new", post).then(() => {
                   this.message = "Report submitted"
@@ -628,7 +651,13 @@
                         this.message = ""
                         this.$router.push("/")
                     }, 2000)
+              }).catch((err) => {
+                  this.errorMessage = err
               })
+          } else {
+            this.submitted = false
+            this.submitting = false
+            this.errorMessage = "Job ID exsits"
           }
       }
     },
@@ -659,5 +688,8 @@
         this.location.city = city
       })
     },
+    beforeDestroy() {
+      this.$nuxt.$off('location-updated')
+    }
   }
 </script>
