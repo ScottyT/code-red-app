@@ -179,6 +179,16 @@ button {
       color: $color-white;
     }
 
+    &--currency {
+      border-bottom: 1px solid $dark-primary-1;
+      display:inline-flex;
+      input {
+        border:0;
+        width:auto;
+        margin:0;
+      }
+    }
+
     &--password-input {
       display: grid;
       grid-template-columns: 90% auto;
@@ -190,7 +200,7 @@ button {
 
     &--input-group {
       padding: 5px 25px 5px 0;
-      //display: grid;
+      display:block;
       grid-template-columns: auto 1fr;
       grid-template-rows: 1fr 1fr;
 
@@ -220,6 +230,7 @@ button {
     }
 
     &--radio {
+      padding-right:20px;
       & + label {
         padding-left: 6px;
         padding-right: 20px;
@@ -245,6 +256,7 @@ button {
 
     &--short {
       max-width:300px;
+      width:auto;
     }
 
     &--error {
@@ -265,7 +277,7 @@ button {
   &__form-group {
     display: flex;
     flex-wrap: wrap;
-    font-size: 1.1em;
+    //font-size: 1.1em;
     &--info-box {
         justify-content: space-between;
         border: 1px solid $color-black;
@@ -342,8 +354,10 @@ button {
     }
 
     &--inline {
+      display:inline-flex;
       & > span {
         display: inline-flex;
+        padding:5px 0;
       }
     }
 
