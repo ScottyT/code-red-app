@@ -558,7 +558,7 @@
               this.submitted = true
               setTimeout(() => {
                 this.message = ""
-                this$router.push("/")
+                this.$router.push("/")
               }, 2000)
               this.message = "Report was saved successfully for submission later!"
               this.jobId = ""

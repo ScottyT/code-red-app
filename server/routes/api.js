@@ -3,6 +3,7 @@ const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
 const CaseFile = require("../models/caseFileSchema");
+const COC = require("../models/cocSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -203,5 +204,41 @@ router.post("/case-file-report/new", (req, res) => {
         }
     })
 })
-
+router.post("/coc/new", (req, res) => {
+    COC.create({
+        JobId: req.body.JobId,
+        ReportType: "coc",
+        address: req.body.address,
+        deductible: req.body.deductible,
+        insuredMinEndDate: req.body.insuredEndDate,
+        insuredPayment1: req.body.insuredPayment1,
+        insuredPayment2: req.body.insuredPayment2,
+        nonInsuredMinEndDate: req.body.nonInsuredEndDate,
+        nonInsuredPayment1: req.body.nonInsuredPayment1,
+        nonInsuredPayment2: req.body.nonInsuredPayment2,
+        rating: req.body.rating,
+        representative: req.body.repPrint,
+        repSignTime: req.body.repSignTime,
+        representativeSign: req.body.repSign,
+        repSignDate: req.body.repSignDate,
+        teamSign: req.body.teamSign,
+        teamSignDate: req.body.teamSignDate,
+        testimonial: req.body.testimonial,
+        cardholder: req.body.cardholderInfo,
+        billingAddress: req.body.billingAddress,
+        creditCardProvider: req.body.creditCard,
+        cardNumber: req.body.cardNumber,
+        cardholderName: req.body.cardholderName,
+        expirationDate: req.body.expDate,
+        cvcNumber: req.body.cvcNum,
+        cardZipCode: req.body.cardholderZip,
+        customerSignature: req.body.cusSign
+    }, (err, coc) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(coc)
+        }
+    })
+})
 module.exports = router;

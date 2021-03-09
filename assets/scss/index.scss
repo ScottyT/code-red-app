@@ -132,6 +132,9 @@ button {
 }
 
 .form {
+  fieldset {
+    border:0;
+  }
   &__button-wrapper {
     display: flex;
     justify-content: center;
@@ -143,6 +146,22 @@ button {
       font-size: 1.1em;
       text-transform: uppercase;
     }
+  }
+
+  &__select {
+    border:1px solid $dark-primary-1;
+    padding:5px;
+    
+    /* &.open {
+      height: 217px;
+      transition: height .3s ease-in;
+
+      .info-bar__sort--options {
+        opacity: 1;
+        visibility: visible;
+        cursor: pointer;
+      }
+    } */
   }
 
   &__checkbox-wrapper {
@@ -382,6 +401,14 @@ button {
         padding-right:10px;
       }
     }
+  }
+}
+
+.info-bar {
+  &__sort-box {
+    
+
+    
   }
 }
 

@@ -8,7 +8,27 @@
                 <h2>{{message}}</h2>
                 <h2 class="alert alert--error">{{errorMessage}}</h2>
                 <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
-                    <div v-if="currentStep === 1">
+                    <fieldset v-if="currentStep === 1">
+                        <div class="form__form-group">
+                            <span>
+                                <label for="selectJobId" class="form__label">Job ID</label>
+                                <select class="form__select" v-model="selectedJobId">
+                                    <option disabled value="">Please select a Job Id</option>
+                                    <option v-for="(item, i) in jobIds" :key="`jobid-${i}`">{{item}}</option>
+                                </select>
+                                <!-- <div class="form__select" @click="selectActive = !selectActive" :class="{ open: selectActive }">
+                                    <div class="info-bar__sort--trigger">
+                                        <span>{{ selectedJobId.text }}</span>
+                                        <v-icon size="30px" light>{{ selectActive ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'}}</v-icon>
+                                    </div>
+                                    <div class="info-bar__sort--options">
+                                        <span class="info-bar__sort--option" v-for="(option, i) in jobIds" :key="`jobids-${i}`" @click="selectedJob(option)">
+                                            {{option}}
+                                        </span>
+                                    </div>
+                                </div> -->
+                            </span>
+                        </div>
                         <p>This Assignment of Claim Agreement (hereinafter referred to as “Assignment” and/or “Agreement”) and Mitigation
 
                             Contract (hereinafter referred to as “Contract”) is entered into by and between:
@@ -181,10 +201,11 @@
                         <p>I am satisfied with the completion of all mitigation services and all other related services performed on the Subject Property by Water Emergency Services Incorporated.</p>
                         <div class="form__form-group--inline form__form-group--info-box form__form-group--column">
                             <span>
-                                <div class="form__input--input-group">
+                                <ValidationProvider rules="required" name="Representative" v-slot="{errors}" class="form__input--input-group">
                                     <label for="repPrint" class="form__label">Representative (Print):</label>
                                     <input id="repPrint" type="text" class="form__input form__input--long" v-model="repPrint" />
-                                </div>
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
                                 <div class="form__input--input-group">
                                     <label for="timeRepPrint" class="form__label">Time</label>
                                     <v-dialog ref="timeRepDialog" v-model="repTimeModal" :return-value.sync="repPrintTime" persistent width="400px">
@@ -202,7 +223,7 @@
                             <span>
                                 <div class="form__input--input-group">
                                     <label for="repSign" class="form__label">Representative (Sign)</label>
-                                    <lazy-signature-pad-modal :sigData="repSign" sigRef="repSigPad" />
+                                    <lazy-signature-pad-modal :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
                                 </div>
                                 <div class="form__input--input-group">
                                     <label for="dateRepSign" class="form__label">Date</label>
@@ -222,7 +243,7 @@
                             <span>
                                 <div class="form__input--input-group">
                                     <label for="teamSign" class="form__label">Team Member (Sign)</label>
-                                    <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamMemberSigPad" />
+                                    <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamMemberSigPad" name="Team Member Signature" />
                                 </div>
                                 <div class="form__input--input-group">
                                     <label for="dateTeamSign" class="form__label">Date</label>
@@ -244,7 +265,7 @@
                                 <textarea v-model="testimonial" class="form__input--textbox form__input"></textarea>
                             </div>
                         </div>
-                    </div>
+                    </fieldset>
                     <div v-if="currentStep >= 2">
                         <p class="text-decoration-underline text-center"><strong>THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</strong></p>
                         <p class="text-center">Water Emergency Services Incorporated (WESI) is an independent janitorial contractor. We are not affiliated, associated, endorsed by or in any way officially connected with any other company, agency or franchise.</p>
@@ -269,9 +290,9 @@
                                 </ValidationProvider>
                             </span>
                         </fieldset>
-                        <fieldset v-if="currentStep === 3" class="form__form-group form__form-group form__form-group--info-box form__form-group--column">
-                            <h3 class="form__label">Billing Address*</h3>
+                        <fieldset v-if="currentStep === 3" class="form__form-group form__form-group form__form-group--info-box">                            
                             <div class="form__form-group--left-side">
+                                <h3 class="form__label">Billing Address*</h3>
                             <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input--input-group">
                                     <label for="addressLine1" class="form__label">Address Line 1:</label>
                                     <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
@@ -291,16 +312,76 @@
                                     <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
                                     <span class="form__input--error">{{ errors[0] }}</span>
                                 </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Zip" class="form__input--input-group">
+                                <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input--input-group">
                                     <label for="zip" class="form__label">Zip:</label>
                                     <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
                                     <span class="form__input--error">{{ errors[0] }}</span>
                                 </ValidationProvider>
                             </div>
+                            <div class="form__form-group--right-side">
+                                <h3 class="form__label">Credit Card*</h3>
+                                <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
+                                    <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
+                                        <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
+                                        <label :for="card" class="form__label">{{card}}</label>
+                                        <input v-if="card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
+                                    </div>
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
+                                    <label for="cardNumber" class="form__label">Card Number:</label>
+                                    <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group">
+                                    <label for="cardholderName" class="form__label">Cardholder Name</label>
+                                    <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group">
+                                    <label for="expDate" class="form__label">Expiration Date (mm/yy):</label>
+                                    <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required|length:3" v-slot="{errors}" name="CVC number" class="form__input--input-group">
+                                    <label for="cvc" class="form__label">CVC Number:</label>
+                                    <input type="text" id="cvc" v-model="cvcNum" class="form__input" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group">
+                                    <label for="cvc" class="form__label">Cardholder zip code:</label>
+                                    <input type="text" id="cvc" v-model="billingAddress.zip" readonly class="form__input" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                            </div>
                         </fieldset>
-                        <fieldset v-if="currentStep === 4" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
-                            <h3 class="form__label">Credit Card*</h3>
-
+                        <fieldset v-if="currentStep === 4" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">                          
+                            <p>I, {{repPrint}}, authorize Water Emergency Services Incorporated 
+                            (WESI) to charge my credit card above for the agreed upon purchases and/or services within the above 
+                            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement. I understand that 
+                            my information will be saved to file for future transactions on my account and I hereby authorize WESI to charge 
+                            my credit card above for the agreed upon future transactions, purchases and/or services if any within the above 
+                            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement.</p>
+                            <span>
+                                <div class="form__input--input-group">
+                                    <label for="cusSig" class="form__label">Customer Signature:</label>
+                                    <lazy-signature-pad-modal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
+                                </div>
+                                <div class="form__input--input-group">
+                                    <label for="dateCusSign" class="form__label">Date</label>
+                                    <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                                v-on="on" @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
+                                        </template>
+                                        <v-date-picker v-model="cusSigDate" scrollable>
+                                            <v-spacer></v-spacer>
+                                            <v-btn text color="#fff" @click="cusSigModal = false">Cancel</v-btn>
+                                            <v-btn text color="#fff" @click="$refs.dialogCusSign.save(cusSigDate)">OK</v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                </div>
+                            </span>
                         </fieldset>
                     </div>
                     <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn>
@@ -311,7 +392,7 @@
     </div>
 </template>
 <script>
-import {mapGetters} from 'vuex';
+import {mapGetters, mapActions} from 'vuex';
 export default {
     data: (vm) => ({
         currentStep:1,
@@ -379,10 +460,34 @@ export default {
             city: "",
             state: "",
             zip: ""
-        }
+        },
+        creditCards: [
+            "Mastercard", "VISA", "Discover", "Amex", "Other"
+        ],
+        selectedCard: {
+            card: "",
+            otherCard: ""
+        },
+        cardNumber: null,
+        expirationDate: "",
+        cvcNum: "",
+        cusSig: {
+            data: '',
+            isEmpty: true
+        },
+        cusSigModal: false,
+        cusSigDate: new Date().toISOString().substr(0, 10),
+        cusSigDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+        selectedJobId: "",
+        selectActive: false
     }),
     computed: {
-        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["isLoggedIn", "getReports"]),
+        jobIds() {
+            return this.getReports.map((v) => {
+                return v.JobId
+            })
+        },
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -398,11 +503,15 @@ export default {
         nonInsuredDay5() {
             return this.nonInsuredPayment.day5Date;
         },
+        cardName() {
+            let fullname = this.cardholderName.first + ' '+ [this.cardholderName.middle ? this.cardholderName.middle +' ' : null] + this.cardholderName.last
+            return fullname;
+        },
         insuredPay1: {
             get() {
                 let pay = this.deductible * .50
                 if (pay) { return pay }
-                else { return "500.00" }
+                else { return 500.00 }
             },
             set(value) {
                 this.insuredPayment.firstStep = value
@@ -439,9 +548,22 @@ export default {
         },
         teamSignDate(val) {
             this.teamSignDateFormatted = this.formatDate(val)
+        },
+        cusSigDate(val) {
+            this.cusSigDateFormatted = this.formatDate(val)
         }
     },
+    mounted() {
+        this.checkStorage()
+    },
     methods: {
+        ...mapActions({
+            addReport: 'indexDb/addReport',
+            checkStorage: 'indexDb/checkStorage'
+        }),
+        selectedJob(option) {
+            this.selectedJobId = option;
+        },
         formatDate(dateReturned) {
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
@@ -480,6 +602,11 @@ export default {
                 $event.preventDefault();
             }
         },
+        maskDate() {
+            var x = this.expirationDate.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})/)
+            console.log(x)
+            this.expirationDate = !x[2] ? x[1] : x[1] + '/' + x[2]
+        },
         goToStep(step) {
             if (step < 1) {
                 return;
@@ -490,7 +617,69 @@ export default {
             }
             this.currentStep = step
         },
-        submitForm() {
+        async submitForm() {
+            if (this.currentStep === 4) {
+                this.message = ''
+                let insuredPayment1Arr = {
+                    insuredPay: this.insuredPay1,
+                    day1Date: this.insuredPayment.day1DateFormatted
+                };
+                let insuredPayment2Arr = {
+                    insuredPay: this.insuredPay2,
+                    day1Date: this.insuredPayment.day5DateFormatted
+                };
+                const post = {
+                    JobId: this.selectedJobId,
+                    ReportType: "coc",
+                    address: this.address,
+                    deductible: this.deductible,
+                    insuredEndDate: this.insuredEndDateFormatted,
+                    insuredPayment1: insuredPayment1Arr,
+                    insuredPayment2: insuredPayment2Arr,
+                    nonInsuredEndDate: this.nonInsuredPayment.endDateFormatted,
+                    nonInsuredPayment1: this.nonInsuredPayment.day1DateFormatted,
+                    nonInsuredPayment2: this.nonInsuredPayment.day5DateFormatted,
+                    rating: this.selectedRating,
+                    repPrint: this.repPrint,
+                    repSignTime: this.repPrintTimeFormatted,
+                    repSign: this.repSign.data,
+                    repSignDate: this.repSignDateFormatted,
+                    teamSign: this.teamMemberSig.data,
+                    teamSignDate: this.teamSignDateFormatted,
+                    testimonial: this.testimonial,
+                    cardholderInfo: this.cardholderName,
+                    billingAddress: this.billingAddress,
+                    creditCard: this.selectedCard.card == 'Other' ? this.selectedCard.otherCard : this.selectedCard.card,
+                    cardNumber: this.cardNumber,
+                    cardholderName: this.cardName,
+                    expDate: this.expirationDate,
+                    cvcNum: this.cvcNum,
+                    cardholderZip: this.billingAddress.zip,
+                    cusSign: this.cusSig.data
+                };
+                if (this.$nuxt.isOffline) {
+                    this.addReport(post).then(() => {
+                        this.message = "COC was saved successfully for submission later!"
+                        this.submitted = true
+                        setTimeout(() => {
+                            this.message = ""
+                        }, 2000)
+                    }).catch((err) => {
+                        this.errorMessage = err
+                    })
+                } else {
+                    this.$axios.$post("/api/coc/new", post).then(() => {
+                        this.message = "Certificate of Completion submitted"
+                        this.submitted = true
+                        setTimeout(() => {
+                            this.message = ""
+                            this.$router.push("/")
+                        }, 2000)
+                    }).catch((err) => {
+                        this.errorMessage = err
+                    })
+                }
+            }
             this.currentStep++;
         }
     }

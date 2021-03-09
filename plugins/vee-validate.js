@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { extend, ValidationObserver, ValidationProvider } from 'vee-validate'
-import { required, email, numeric, regex, image, ext, mimes } from 'vee-validate/dist/rules'
+import { required, email, numeric, regex, image, ext, mimes, digits, alpha, length } from 'vee-validate/dist/rules'
 
 extend('required', {
   ...required,
@@ -14,7 +14,10 @@ extend('numeric', {
   ...numeric,
   message: '{_field_} must only contain numbers',
 })
-extend('regex', regex)
+extend('regex', {
+  ...regex,
+  message: '{_field_} must be in the given format' 
+})
 extend('image', {
   ...image,
   message: '{_field_} must be an image',
@@ -26,6 +29,14 @@ extend('mimes', {
 extend('ext', {
   ...ext,
   message: '{_field_} must have a valid file type'
+})
+extend('alpha', {
+  ...alpha,
+  message: '{_field_} must only contain letters'
+})
+extend('length', {
+  ...length,
+  message: '{_field_} has to be exactly {length} characters'
 })
 Vue.component("ValidationObserver", ValidationObserver)
 Vue.component("ValidationProvider", ValidationProvider)

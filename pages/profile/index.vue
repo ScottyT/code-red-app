@@ -4,7 +4,12 @@
     <h1 v-show="message">{{message}}</h1>
     <ul v-if="$store.state.indexDb.reports.length > 0">
       <li v-for="(report, i) in savedReports" :key="i">
-        {{report.JobId}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+      </li>
+    </ul>
+    <ul v-if="$store.state.indexDb.reports.length < 0">
+      <li v-for="(report, i) in savedReports" :key="i">
+        {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
       </li>
     </ul>
   </div>
@@ -26,6 +31,7 @@
     },
     mounted() {
       this.checkStorage()
+      this.savedReports = this.$store.state.indexDb.reports
     },
     async asyncData({
       $axios
