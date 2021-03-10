@@ -242,7 +242,7 @@
             <div class="form__input--input-group">
               <label class="form__label">Team Member Signature</label>
               <div class="form__input-wrapper">
-                <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamSignaturePad" />
+                <lazy-signature-pad-modal :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
               </div>
             </div>          
           </div>

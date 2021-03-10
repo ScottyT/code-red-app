@@ -40,7 +40,7 @@
                             of the property more commonly known as and identified by the following address:
                         </p>
                         <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Address">
-                            <input type="text" class="form__input" v-model="address" /><br />
+                            <input type="text" class="form__input" v-model="subjectProperty" /><br />
                             <p>(hereinafter referred to as “Subject Property”)</p>
                             <span class="form__input--error">{{ errors[0] }}</span>
                         </ValidationProvider>
@@ -189,7 +189,7 @@
                                 <label for="NonInsuredDay5Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 3) = Succeeding Day of the Term for Remaining Balance</label>                           
                             </span>
                         </div>
-                        <div class="form__form-group">
+                        <ValidationProvider rules="required" name="Rating" v-slot="{errors}" class="form__form-group">
                             <p><strong>Please Circle: RATE YOUR EXPIERENCE WITH OUR SERVICES:</strong></p>
                             <ul class="form__form-group--inline">
                                 <li v-for="(item, i) in ratings" :key="`ratings-${i}`" class="form__input--radio">
@@ -197,7 +197,8 @@
                                     <input :id="item" type="radio" v-model="selectedRating" :value="item" />
                                 </li>
                             </ul>
-                        </div>
+                            <span class="form__input--error">{{ errors[0] }}</span>
+                        </ValidationProvider>
                         <p>I am satisfied with the completion of all mitigation services and all other related services performed on the Subject Property by Water Emergency Services Incorporated.</p>
                         <div class="form__form-group--inline form__form-group--info-box form__form-group--column">
                             <span>
@@ -286,6 +287,16 @@
                                 <ValidationProvider rules="required" v-slot="{errors}" name="Last name" class="form__input--input-group">
                                     <label for="lastname" class="form__label">Last name</label>
                                     <input id="lastname" type="text" class="form__input" v-model="cardholderName.last" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input--input-group">
+                                    <label for="cardholderemail" class="form__label">Cardholder Email</label>
+                                    <input id="cardholderemail" type="text" class="form__input" v-model="cardholderName.email" />
+                                    <span class="form__input--error">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
+                                    <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
+                                    <input id="cardholderphone" type="text" class="form__input" v-model="cardholderName.phoneNumber" />
                                     <span class="form__input--error">{{ errors[0] }}</span>
                                 </ValidationProvider>
                             </span>
@@ -399,7 +410,7 @@ export default {
         message: '',
         errorMessage: '',
         submitted: false,
-        address: '',
+        subjectProperty: '',
         deductible: null,
         insuredEndDateModal: false,
         insuredEndDate: null,
@@ -602,6 +613,12 @@ export default {
                 $event.preventDefault();
             }
         },
+        acceptNumber() {
+            var x = this.cardholder.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
+            this.cardholder.phoneNumber = !x[2] ?
+            x[1] :
+            '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
+        },
         maskDate() {
             var x = this.expirationDate.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})/)
             console.log(x)
@@ -626,7 +643,7 @@ export default {
                 };
                 let insuredPayment2Arr = {
                     insuredPay: this.insuredPay2,
-                    day1Date: this.insuredPayment.day5DateFormatted
+                    day5Date: this.insuredPayment.day5DateFormatted
                 };
                 const post = {
                     JobId: this.selectedJobId,
@@ -655,7 +672,8 @@ export default {
                     expDate: this.expirationDate,
                     cvcNum: this.cvcNum,
                     cardholderZip: this.billingAddress.zip,
-                    cusSign: this.cusSig.data
+                    cusSign: this.cusSig.data,
+                    customerSigDate: this.cusSigDateFormatted
                 };
                 if (this.$nuxt.isOffline) {
                     this.addReport(post).then(() => {

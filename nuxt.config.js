@@ -66,7 +66,8 @@ export default {
       mode: 'client',
     },
     '~/plugins/vee-validate.js',
-    '~/plugins/signature.js'
+    '~/plugins/signature.js',
+    { src: '@/plugins/vue-html2pdf.js', mode: 'client' }
   ],
   /*
    ** Auto import components

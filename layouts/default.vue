@@ -31,6 +31,9 @@
         <li class="menu-items__item">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
+        <li class="menu-items__item">
+          <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+        </li>
       </ul>
       
     </v-app-bar>

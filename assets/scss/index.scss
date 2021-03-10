@@ -445,6 +445,10 @@ button {
 }
 
 .report-details {
+  max-width:1200px;
+  width:100%;
+  margin:auto;
+  color:$color-black;
   &__section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -480,11 +484,6 @@ button {
     }
   }
 
-  &__data {
-    display: flex;
-    flex-direction: column;
-  }
-
   &__file-listing {
     height: 300px;
   }
@@ -494,6 +493,11 @@ button {
     grid-column: 2;
     align-items: center;
     display: flex;
+    padding-right:20px;
+  }
+
+  &__data-label {
+    font-size:1.2em;
   }
 
   &__checklist {
@@ -504,15 +508,52 @@ button {
   }
 
   &__data {
+    display: flex;
+    flex-direction: column;
+
+    &--row {
+      flex-direction:row;
+      justify-content:space-between;
+      padding:5px 10px;
+    }
     &--cusSig {
       width: 100%;
       height: 135px;
       background-size: contain;
     }
 
+    &--sig {
+      width:400px;
+      height:100%;
+      background-size:contain;
+    }
+
     h2 {
       font-weight: 900;
     }
+  }
+  &__data-sig {
+    height:150px;
+  }
+  &__company-logo {
+    max-width:100px;
+    margin:auto;
+  }
+  &__content {
+    background:$color-white;
+    padding:20px;
+
+    label {
+      padding-right:7px;
+      font-weight:700;
+    }
+  }
+  &__bordered {
+    border:1px solid $color-black;
+    padding:5px;
+    align-items:flex-start;
+    flex-direction:column;
+    display:flex;
   }
 }
 

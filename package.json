@@ -33,6 +33,7 @@
     "mongoose": "^5.11.17",
     "nuxt": "^2.14.12",
     "vee-validate": "^3.4.5",
+    "vue-html2pdf": "^1.8.0",
     "vue-mapbox": "^0.4.1",
     "vue-mapbox-geocoder": "^0.2.0",
     "vue-signature-pad": "^2.0.2"

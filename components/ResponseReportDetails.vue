@@ -1,4 +1,5 @@
 <template>
+<section class="pdf-content">
   <div class="report-details report-details__response-report">
     <h1 v-if="message">{{message}}</h1>
     <v-btn @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
@@ -125,6 +126,7 @@
       </div>
     </div>
   </div>
+  </section>
 </template>
 <script>
   export default {

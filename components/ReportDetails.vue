@@ -3,36 +3,37 @@
     <h1 v-if="message">{{message}}</h1>
     <v-btn @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
     <v-btn v-show="isEditing" @click="updateReport" dark>Update</v-btn>
+    <section class="pdf-content">
     <div class="report-details__section">
       <div class="report-details__data">
-        <h2>Team Lead ID #:</h2>
+        <h3>Team Lead ID #:</h3>
         <span>{{report.id}}</span>
       </div>
       <div class="report-details__data">
-        <h2>Job ID:</h2>
+        <h3>Job ID:</h3>
         <span>{{report.JobId}}</span>
       </div>
       <div class="report-details__data">
-        <h2>Date of Call:</h2>
+        <h3>Date of Call:</h3>
         <span>{{report.dateFormatted}}</span>
       </div>
       <div class="report-details__data">
-        <h2>Time of call:</h2>
+        <h3>Time of call:</h3>
         <span>{{report.timeFormatted}}</span>
       </div>
     </div>
     <div class="report-details__section--contact-group report-details__section">
-      <h2 class="report-details__data-label">Caller Name:</h2>
+      <h3 class="report-details__data-label">Caller Name:</h3>
       <span class="report-details__data-field">{{report.callerName}}</span>
-      <h2 class="report-details__data-label">Arrival Contact Name:</h2>
+      <h3 class="report-details__data-label">Arrival Contact Name:</h3>
       <span class="report-details__data-field">{{report.ArrivalContactName}}</span>
 
-      <h2 class="report-details__data-label">Address:</h2>
+      <h3 class="report-details__data-label">Address:</h3>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.location.address" />
       <span v-if="!isEditing"
         class="report-details__data-field">{{report && report.location ? report.location.address : null}}</span>
 
-      <h2 class="report-details__data-label">City, State, Zip:</h2>
+      <h3 class="report-details__data-label">City, State, Zip:</h3>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.location.cityStateZip" />
       <span v-if="!isEditing"
         class="report-details__data-field">{{report && report.location ? report.location.cityStateZip : null}}</span>
@@ -53,16 +54,16 @@
     </div>
     <div class="report-details__section">
       <div class="report-details__data">
-        <h2>Appointment time set for:</h2>
+        <h3>Appointment time set for:</h3>
         <span>{{report.appointmentTime}}</span>
 
       </div>
       <div class="report-details__data">
-        <h2>Date of Appointment:</h2>
+        <h3>Date of Appointment:</h3>
         <span>{{report.appointmentDate}}</span>
       </div>
       <div class="report-details__data">
-        <h2>15-Minute Update Call Time:</h2>
+        <h3>15-Minute Update Call Time:</h3>
         <span v-if="!isEditing">{{report.fifteenUpdate}}</span>
         <span v-if="isEditing">
           <v-dialog ref="fifteenminupdate" v-model="fifteenModal" :return-value.sync="fifteenCallUpdate" persistent
@@ -81,7 +82,7 @@
         </span>
       </div>
       <div class="report-details__data">
-        <h2>90-Minute Service Call Time:</h2>
+        <h3>90-Minute Service Call Time:</h3>
         <span v-if="!isEditing">{{report.ninetyUpdate}}</span>
         <span v-if="isEditing">
           <v-dialog ref="ninetyminupdate" v-model="ninetyModal" :return-value.sync="ninetyCallUpdate" persistent
@@ -101,7 +102,7 @@
       </div>
     </div>
     <div class="report-details__section">
-      <h2>Summary of Call:</h2>
+      <h3>Summary of Call:</h3>
       <textarea class="form__input form__input--textarea" v-if="isEditing" v-model="updatedReport.summary"></textarea>
       <span v-if="!isEditing">{{report.summary}}</span>
     </div>
@@ -115,9 +116,11 @@
         <div>{{new Date(report.updatedAt)}}</div>
       </div>
     </div>
+    </section>
   </div>
 </template>
 <script>
+
   export default {
     name: 'ReportDetails',
     props: ['report'],
@@ -158,6 +161,13 @@
         const timestamp = new Date(this.report.createdAt)
         return timestamp
       }
+    },
+    mounted() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.$emit("domRendered");
+        }, 1000)
+      })
     },
     methods: {
       startEditing() {

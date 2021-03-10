@@ -98,6 +98,19 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
+router.get('/certificates', (req, res) => {
+    COC.find({}, (err, coc) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(coc)
+        }
+    })
+})
+/* router.get('/certificate/:JobId', async (res, res) => {
+    const certificate = await COC.findOne({JobId: req.params.JobId});
+    res.json(certificate);
+}) */
 router.post("/dispatch/new", (req, res) => {
     Dispatch.create({
         ArrivalContactName: req.body.ArrivalContactName,
@@ -232,7 +245,8 @@ router.post("/coc/new", (req, res) => {
         expirationDate: req.body.expDate,
         cvcNumber: req.body.cvcNum,
         cardZipCode: req.body.cardholderZip,
-        customerSignature: req.body.cusSign
+        customerSignature: req.body.cusSign,
+        customerSigDate: req.body.customerSigDate
     }, (err, coc) => {
         if (err) {
             res.status(500).send('Error')
