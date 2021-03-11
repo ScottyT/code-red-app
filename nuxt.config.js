@@ -114,8 +114,8 @@ export default {
     },
   },
   axios: {
-    //baseURL: 'https://code-red-lm5dxmp3ka-uc.a.run.app'
-    baseURL: 'http://localhost:8080'
+    baseURL: 'https://code-red-lm5dxmp3ka-uc.a.run.app'
+    //baseURL: 'http://localhost:8080'
   },
   /*
    ** vuetify module configuration
