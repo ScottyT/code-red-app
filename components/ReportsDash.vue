@@ -39,15 +39,12 @@ import Autocomplete from './Autocomplete.vue'
       selectActive: false,
       reportTypeFilters: [
         { id:1, value: "Dispatch", name: "dispatch" },
-        { id:2, value: "Rapid Response", name: "rapid-response" }
+        { id:2, value: "Rapid Response", name: "rapid-response" },
+        { id: 3, value: "Case File", name: "case-file" }
       ],
       checkedReportFilters: [],
       checkedNameFilters: [],
       empList:[],
-      testItems: [
-        { email: "headquarters@goldcollarglobal.com", id: "12345", name: "Jake Blanton" },
-        { email: "test@test.com", id: "1992", name: "Danielle Rath" }
-      ],
       filteredArr: [],
       report:{},
       repList: [],

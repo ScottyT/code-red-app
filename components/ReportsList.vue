@@ -24,10 +24,11 @@
     </div>
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="span">
-        <div class="reports-list__report flip-list-item" v-for="report in sortedReports" :key="report.JobId">
-          <nuxt-link class="reports-list__report-link" :to="`/reports/${report.ReportType}/${report.JobId}`" v-if="page == 'reportsPage'">
+        <div class="reports-list__report flip-list-item" v-for="report in sortedReports" :key="`${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}-${report.JobId}`">
+          <nuxt-link class="reports-list__report-link" :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`" v-if="page == 'reportsPage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
+            <span>{{report.CaseFileType}}</span>
             <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p>
           </nuxt-link>
           <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
@@ -74,7 +75,17 @@ export default {
         this.sortDirection = this.sortDirection === 'info-bar__sort--asc' ? 'info-bar__sort--desc' : 'info-bar__sort--asc';
       }
       this.sortBy = s.value
+    },
+    addingCaseFileType() {
+      this.sortedReports.forEach((v) => {
+        if (v.ReportType === 'case-file') {
+          v.ReportType = 'case-file-' + v.CaseFileType
+        }
+      })
     }
+  },
+  created() {
+    //this.addingCaseFileType()
   }
 }
 </script>
@@ -155,6 +166,10 @@ export default {
     display: block;
     box-shadow: -1px 2px 12px -2px rgba($color-black, .8);
     border: 1px solid #a09999;
+
+    p {
+      margin-bottom:5px;
+    }
   }
 
   &__skeleton-loading {

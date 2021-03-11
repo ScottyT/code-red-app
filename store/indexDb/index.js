@@ -24,7 +24,7 @@ export const mutations = {
 };
 export const actions = {
     addReport({ commit, dispatch }, newReport) {
-        commit('addRep', newReport)
+        
         dispatch('saveReports', newReport)
     },
     deleteReport({ commit }, reportInfo, reportIndex) {
@@ -40,7 +40,7 @@ export const actions = {
         })
     },
     async saveReports({ state, commit }, newReport) {
-        await set(newReport.JobId, newReport).then(() => commit("setReport", newReport))
+        await set(newReport.JobId, newReport).then(() => commit('addRep', newReport))
             .catch((err) => commit("setError", err))
     }
 }

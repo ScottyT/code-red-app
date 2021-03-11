@@ -2,6 +2,8 @@ const express = require("express");
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
+const CaseFile = require("../models/caseFileSchema");
+const COC = require("../models/cocSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -23,12 +25,15 @@ router.post("/employee/new", (req, res) => {
 router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
-    const results = dispatch.concat(rapidresponse)
+    const caseFile = await CaseFile.find({});
+    const results = dispatch.concat(rapidresponse, caseFile)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
+    const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
+    const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
     switch (req.params.ReportType) {
         case "dispatch":
             res.json(repDispatch)
@@ -36,6 +41,11 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
         case "rapid-response":
             res.json(repRapid)
             break;
+        case "case-file-containment":
+            res.json(containment)
+            break;
+        case "case-file-technician":
+            res.json(technician);
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
@@ -60,8 +70,7 @@ router.post("/report/:ReportType/:JobId/update", async (req, res) => {
                     } else {
                         res.status(200).json(updated)
                     }
-                })
-                    
+                })                    
             break;
         default:
             console.log("Nothing to update")
@@ -89,6 +98,19 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
+router.get('/certificates', (req, res) => {
+    COC.find({}, (err, coc) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(coc)
+        }
+    })
+})
+/* router.get('/certificate/:JobId', async (res, res) => {
+    const certificate = await COC.findOne({JobId: req.params.JobId});
+    res.json(certificate);
+}) */
 router.post("/dispatch/new", (req, res) => {
     Dispatch.create({
         ArrivalContactName: req.body.ArrivalContactName,
@@ -162,5 +184,75 @@ router.post("/rapid-response/new", (req, res) => {
         }
     })
 })
-
+router.post("/case-file-report/new", (req, res) => {
+    CaseFile.create({
+        JobId: req.body.JobId,
+        date: req.body.date,
+        id: req.body.id,
+        location: req.body.location,
+        ReportType: req.body.ReportType,
+        selectedTmpRepairs: req.body.selectedTMPRepairs,
+        selectedContent: req.body.selectedContent,
+        selectedStructualCleaning: req.body.selectedStructualCleaning,
+        selectedStructualDrying: req.body.selectedStructualDrying,
+        selectedCleaningSection: req.body.selectedStructualCleaning,
+        contentCleaningInspection: req.body.contentCleaningInspection,
+        waterRestorationInspection: req.body.waterRestorationInspection,
+        waterRemediationAssesment: req.body.waterRemediationAssesment,
+        overviewScopeOfWork: req.body.overviewScopeOfWork,
+        specializedExpert: req.body.specializedExpert,
+        scopeOfWork: req.body.scopeOfWork,
+        projectWorkPlans: req.body.projectWorkPlans,
+        notes: req.body.notes,
+        afterHoursWork: req.body.afterHoursWork,
+        evaluationLogs: req.body.evaluationLogs,
+        verifySign: req.body.verifySig,
+        teamMember: req.body.teamMember,
+        CaseFileType: req.body.CaseFileType
+    }, (err, report) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(report)
+        }
+    })
+})
+router.post("/coc/new", (req, res) => {
+    COC.create({
+        JobId: req.body.JobId,
+        ReportType: "coc",
+        address: req.body.address,
+        deductible: req.body.deductible,
+        insuredMinEndDate: req.body.insuredEndDate,
+        insuredPayment1: req.body.insuredPayment1,
+        insuredPayment2: req.body.insuredPayment2,
+        nonInsuredMinEndDate: req.body.nonInsuredEndDate,
+        nonInsuredPayment1: req.body.nonInsuredPayment1,
+        nonInsuredPayment2: req.body.nonInsuredPayment2,
+        rating: req.body.rating,
+        representative: req.body.repPrint,
+        repSignTime: req.body.repSignTime,
+        representativeSign: req.body.repSign,
+        repSignDate: req.body.repSignDate,
+        teamSign: req.body.teamSign,
+        teamSignDate: req.body.teamSignDate,
+        testimonial: req.body.testimonial,
+        cardholder: req.body.cardholderInfo,
+        billingAddress: req.body.billingAddress,
+        creditCardProvider: req.body.creditCard,
+        cardNumber: req.body.cardNumber,
+        cardholderName: req.body.cardholderName,
+        expirationDate: req.body.expDate,
+        cvcNumber: req.body.cvcNum,
+        cardZipCode: req.body.cardholderZip,
+        customerSignature: req.body.cusSign,
+        customerSigDate: req.body.customerSigDate
+    }, (err, coc) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(coc)
+        }
+    })
+})
 module.exports = router;

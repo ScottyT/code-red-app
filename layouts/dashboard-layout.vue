@@ -1,6 +1,6 @@
 <template>
   <v-app :dark="appTheme">
-    <v-navigation-drawer dark v-model="drawer" :mini-variant="miniVariant" clipped open app>
+    <v-navigation-drawer dark v-model="drawer" :mini-variant="miniVariant" clipped open app width="300">
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
           <v-list-item-action>
@@ -57,6 +57,18 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Rapid Response Report',
           to: '/rapid-response-form',
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Daily Containment Case File Report',
+          to: '/daily-containment-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Daily Technician Case File Report',
+          to: '/daily-technician-report',
+          access: 'user'
         },
         {
           icon: 'mdi-clipboard',

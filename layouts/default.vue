@@ -1,6 +1,6 @@
 <template>
   <v-app :dark="appTheme">
-    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" clipped open app>
+    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" clipped open app width="300">
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
           <v-list-item-action>
@@ -30,6 +30,9 @@
         <span>{{getUser ? getUser.name : null}}</span>
         <li class="menu-items__item">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
+        </li>
+        <li class="menu-items__item">
+          <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
       </ul>
       
@@ -68,6 +71,18 @@ export default {
           icon: 'mdi-form-select',
           title: 'Daily Containment Case File Report',
           to: '/daily-containment-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Daily Technician Case File Report',
+          to: '/daily-technician-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Certificate of Completion',
+          to: '/certificate-of-completion',
           access: 'user'
         },
         {

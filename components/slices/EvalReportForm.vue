@@ -242,7 +242,7 @@
             <div class="form__input--input-group">
               <label class="form__label">Team Member Signature</label>
               <div class="form__input-wrapper">
-                <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamSignaturePad" />
+                <lazy-signature-pad-modal :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
               </div>
             </div>          
           </div>
@@ -492,7 +492,7 @@
       },
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const accessToken = 'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA'
+        const accessToken = process.env.MAPBOX_API_KEY
         const geocoder = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
@@ -558,7 +558,7 @@
               this.submitted = true
               setTimeout(() => {
                 this.message = ""
-                this$router.push("/")
+                this.$router.push("/")
               }, 2000)
               this.message = "Report was saved successfully for submission later!"
               this.jobId = ""

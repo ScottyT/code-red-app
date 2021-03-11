@@ -1,5 +1,5 @@
 <template>
-  <ValidationProvider v-slot="{ errors }" name="Signature" class="form__input--input-group" :class="{modalOpen: sigDialog}" rules="required">
+  <ValidationProvider v-slot="{ errors }" :name="name" class="form__input--input-group" :class="{modalOpen: sigDialog}" rules="required">
     <input type="hidden" v-model="sigData.data" />
     <v-dialog v-model="sigDialog" width="700">
       <template v-slot:activator="{ on, attrs }">
@@ -17,7 +17,7 @@
 <script>
 export default {
   name: 'SignaturePadModal',
-  props: ['sigData', 'sigRef'],
+  props: ['sigData', 'sigRef', 'name'],
   data() {
     return {
       sigDialog: false

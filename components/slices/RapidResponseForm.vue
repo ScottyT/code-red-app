@@ -401,13 +401,13 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>            
-              <lazy-signature-pad-modal :sigData="cusSignature" sigRef="cusSignaturePad" />          
+              <lazy-signature-pad-modal :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />          
             </div>
           </div>
           <div class="form__form-group">
             <div class="form__input-wrapper">
               <label class="form__label">Team Member (Signature)</label>
-              <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamSignaturePad " />
+              <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
             </div>
           </div>
         </div>
@@ -867,7 +867,7 @@
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocoder = new MapboxGeocoder({
-          accessToken: 'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA',
+          accessToken: process.env.MAPBOX_API_KEY,
           types: 'region,place,postcode,address',
           placeholder: 'Search for address...',
         })
