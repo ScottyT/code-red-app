@@ -23,7 +23,7 @@
             <label for="dateOfLoss" class="form__label">Date of Loss</label>
             <v-dialog ref="dolDialog" v-model="dolModal" :return-value.sync="dateOfLoss" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfLoss" v-model="dolFormatted" v-bind="attrs" class="form__input" v-on="on"
+                <input id="dateOfLoss" v-model="dolFormatted" v-bind="attrs" class="form__input" v-on="on" readonly
                   @blur="dateOfLoss = parseDate(dolFormatted)" />
               </template>
               <v-date-picker v-model="dateOfLoss" scrollable>
@@ -37,7 +37,7 @@
             <label for="dateOfEval" class="form__label">Date of Evaluation</label>
             <v-dialog ref="doeDialog" v-model="doeModal" :return-value.sync="dateOfEval" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfEval" v-model="doeFormatted" v-bind="attrs" class="form__input" v-on="on"
+                <input id="dateOfEval" v-model="doeFormatted" v-bind="attrs" class="form__input" v-on="on" readonly
                   @blur="dateOfEval = parseDate(doeFormatted)" />
               </template>
               <v-date-picker v-model="dateOfEval" scrollable>
@@ -177,7 +177,7 @@
                 <label for="dateOfIntrusion" class="form__label">Date of Intrusion</label>
                 <v-dialog ref="dateIntrusionDialog" v-model="intrusionLogsDialog.dateIntrusion" persistent :return-value.sync="dateIntrusion" transition="scale-transition" max-width="320px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="dateOfIntrusion" v-model="dateIntrusionFormatted" class="form__input" v-bind="attrs" v-on="on" />
+                    <input type="text" id="dateOfIntrusion" v-model="dateIntrusionFormatted" class="form__input" v-bind="attrs" readonly v-on="on" />
                     <span class="button" @click="dateIntrusion = ''">clear</span>
                   </template>
                   <v-date-picker v-if="intrusionLogsDialog.dateIntrusion" v-model="dateIntrusion" scrollable>
@@ -192,7 +192,7 @@
                 <v-dialog ref="timeIntrusion" v-model="intrusionLogsDialog.timeIntrusion" persistent
                   :return-value.sync="timeIntrusion" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" v-bind="attrs"
+                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs"
                       v-on="on" />
                     <span class="button" @click="timeIntrusion = ''">clear</span>
                   </template>
@@ -287,7 +287,7 @@
                 <v-dialog ref="dialogArrival" v-model="evalLogsDialog.arrivalAtProperty" persistent
                   :return-value.sync="arrivalAtProperty" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="arrivalProperty" v-model="arrivalFormatted" class="form__input"
+                    <input type="text" id="arrivalProperty" v-model="arrivalFormatted" class="form__input" readonly
                       v-bind="attrs" v-on="on" />
                     <span class="button" @click="arrivalAtProperty = ''">clear</span>
                   </template>
@@ -304,7 +304,7 @@
                 <v-dialog ref="dialogEvalStart" v-model="evalLogsDialog.evalStart" persistent
                   :return-value.sync="evalStart" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="evalStart" v-model="evalStartFormatted" class="form__input" v-bind="attrs"
+                    <input type="text" id="evalStart" v-model="evalStartFormatted" class="form__input" v-bind="attrs" readonly
                       v-on="on" />
                     <span class="button" @click="evalStart = ''">clear</span>
                   </template>

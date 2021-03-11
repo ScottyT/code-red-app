@@ -645,8 +645,6 @@
     },
     beforeDestroy() {
       this.$nuxt.$off('location-updated')
-    },
-    created() {
     }
   }
 </script>

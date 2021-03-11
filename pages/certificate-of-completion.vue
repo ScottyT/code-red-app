@@ -39,7 +39,7 @@
                             The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
                             of the property more commonly known as and identified by the following address:
                         </p>
-                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Address">
+                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
                             <input type="text" class="form__input" v-model="subjectProperty" /><br />
                             <p>(hereinafter referred to as “Subject Property”)</p>
                             <span class="form__input--error">{{ errors[0] }}</span>
@@ -69,7 +69,7 @@
                                 <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)
                                         " />
                                     </template>
@@ -91,7 +91,7 @@
                                     <label for="insuredDay1" class="form__label">Day (1) Date:</label>
                                     <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal" :return-value.sync="insuredPayment.day1Date" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)
                                             " />
                                         </template>
@@ -114,7 +114,7 @@
                                     <label for="insuredDay5" class="form__label">Day (5) Date:</label>(upon pickup)
                                     <v-dialog ref="insuredPayDay5" v-model="insuredPayment.day5Modal" :return-value.sync="insuredPayment.day5Date" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="insuredDay5" v-model="insuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="insuredDay5" v-model="insuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="insuredPayment.day5Date = parseDate(insuredPayment.day5DateFormatted)
                                             " />
                                         </template>
@@ -142,7 +142,7 @@
                                 <v-dialog ref="dialognoninsuredEndDate" v-model="nonInsuredPayment.endDateModal" :return-value.sync="nonInsuredPayment.endDate"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.endDate = parseDate(nonInsuredPayment.endDateFormatted)
                                         " />
                                     </template>
@@ -158,7 +158,7 @@
                                 <v-dialog ref="nonInsuredDay1" v-model="nonInsuredPayment.day1Modal" :return-value.sync="nonInsuredPayment.day1Date"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.day1Date = parseDate(nonInsuredPayment.day1DateFormatted)
                                         " />
                                     </template>
@@ -174,7 +174,7 @@
                                 <v-dialog ref="nonInsuredDay5" v-model="nonInsuredPayment.day5Modal" :return-value.sync="nonInsuredPayment.day5Date"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.day5Date = parseDate(nonInsuredPayment.day5DateFormatted)
                                         " />
                                     </template>
@@ -211,7 +211,7 @@
                                     <label for="timeRepPrint" class="form__label">Time</label>
                                     <v-dialog ref="timeRepDialog" v-model="repTimeModal" :return-value.sync="repPrintTime" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="NonInsuredDay5Date" v-model="repPrintTimeFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" />
+                                            <input id="NonInsuredDay5Date" v-model="repPrintTimeFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" readonly />
                                         </template>
                                         <v-time-picker v-model="repPrintTime" scrollable>
                                         <v-spacer></v-spacer>
@@ -230,7 +230,7 @@
                                     <label for="dateRepSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogRepSign" v-model="repSignModal" :return-value.sync="repSignDate" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateRepSign" v-model="repSignDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="dateRepSign" v-model="repSignDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="repSignDate = parseDate(repSignDateFormatted)" />
                                         </template>
                                         <v-date-picker v-model="repSignDate" scrollable>
@@ -250,7 +250,7 @@
                                     <label for="dateTeamSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogTeamSign" v-model="teamSignModal" :return-value.sync="teamSignDate" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateTeamSign" v-model="teamSignDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="dateTeamSign" v-model="teamSignDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="teamSignDate = parseDate(teamSignDateFormatted)" />
                                         </template>
                                         <v-date-picker v-model="teamSignDate" scrollable>
@@ -382,7 +382,7 @@
                                     <label for="dateCusSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
                                         </template>
                                         <v-date-picker v-model="cusSigDate" scrollable>

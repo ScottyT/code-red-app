@@ -387,6 +387,9 @@ button {
     }
     &--listing {
       & > li {
+        padding-bottom:15px;
+      }
+      ol > li {
         list-style-type:lower-alpha;
         padding-bottom:15px;
       }
