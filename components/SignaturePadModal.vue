@@ -5,7 +5,7 @@
       <template v-slot:activator="{ on, attrs }">
         <div class="button--normal button" v-bind="attrs" v-on="on">Click to sign</div>
       </template>
-      <VueSignaturePad class="form__input" width="700" height="300px" id="sigPad" :ref="sigRef" :options="{ onBegin }" />
+      <VueSignaturePad class="form__input" width="700" height="250px" id="sigPad" :ref="sigRef" :options="{ onBegin }" />
       <div class="modal__footer">
         <button type="button" class="button button--normal" @click="clear">Clear</button>
         <button type="button" :disabled="sigData.isEmpty" @click="save" :class="`button ${sigData.isEmpty ? 'button--disabled' : ''}`">{{ sigData.data !== '' ? 'Signed' : 'Sign' }}</button>

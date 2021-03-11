@@ -52,6 +52,9 @@ export default {
   serverMiddleware: [
     { path: "/api", handler: "~/server/index.js" }
   ],
+  env: {
+    mapboxKey: process.env.MAPBOX_API_KEY
+  },
   /*
    ** Global CSS
    */
@@ -114,7 +117,8 @@ export default {
     },
   },
   axios: {
-    baseURL: 'https://code-red-lm5dxmp3ka-uc.a.run.app'
+    baseURL: process.env.NODE_ENV !== 'production' ? 'http://localhost:8080' : process.env.SERVER_URL
+    //baseURL: 'https://code-red-lm5dxmp3ka-uc.a.run.app'
     //baseURL: 'http://localhost:8080'
   },
   /*

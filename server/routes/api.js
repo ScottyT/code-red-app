@@ -221,7 +221,7 @@ router.post("/coc/new", (req, res) => {
     COC.create({
         JobId: req.body.JobId,
         ReportType: "coc",
-        address: req.body.address,
+        subjectProperty: req.body.subjectProperty,
         deductible: req.body.deductible,
         insuredMinEndDate: req.body.insuredEndDate,
         insuredPayment1: req.body.insuredPayment1,

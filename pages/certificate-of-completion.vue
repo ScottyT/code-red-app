@@ -296,7 +296,7 @@
                                 </ValidationProvider>
                                 <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
                                     <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
-                                    <input id="cardholderphone" type="text" class="form__input" v-model="cardholderName.phoneNumber" />
+                                    <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderName.phoneNumber" />
                                     <span class="form__input--error">{{ errors[0] }}</span>
                                 </ValidationProvider>
                             </span>
@@ -648,7 +648,7 @@ export default {
                 const post = {
                     JobId: this.selectedJobId,
                     ReportType: "coc",
-                    address: this.address,
+                    subjectProperty: this.subjectProperty,
                     deductible: this.deductible,
                     insuredEndDate: this.insuredEndDateFormatted,
                     insuredPayment1: insuredPayment1Arr,

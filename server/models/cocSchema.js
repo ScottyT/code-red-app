@@ -4,7 +4,7 @@ const timestamps = require('mongoose-timestamp2');
 const certificateOfCompletion = mongoose.Schema({
     JobId: String,
     ReportType: String,
-    address: String,
+    subjectProperty: String,
     deductible: String,
     insuredMinEndDate: String,
     insuredPayment1: Map,

@@ -28,10 +28,10 @@
           <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item">
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item">
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
       </ul>

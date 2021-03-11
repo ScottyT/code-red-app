@@ -400,7 +400,7 @@
       },
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const accessToken = process.env.MAPBOX_API_KEY
+        const accessToken = process.env.mapboxKey
         const geocoder = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
@@ -477,8 +477,7 @@
       this.$nuxt.$on('location-updated', (event) => {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
-        const accessToken =
-          'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA'
+        const accessToken = process.env.mapboxKey
         const g = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
