@@ -867,7 +867,7 @@
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocoder = new MapboxGeocoder({
-          accessToken: 'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA',
+          accessToken: process.env.MAPBOX_API_KEY,
           types: 'region,place,postcode,address',
           placeholder: 'Search for address...',
         })
