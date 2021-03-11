@@ -142,7 +142,7 @@ export default {
     },
     workbox: {
       importScripts: ['/firebase-auth-sw.js'],
-      dev: true,
+      //dev: true,
       //enabled:false,
       //cachingExtensions: '@/plugins/workbox-sync.js',
       runtimeCaching: [
