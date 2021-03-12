@@ -28,6 +28,12 @@
           <a @click="signOut">{{$fire.auth.currentUser ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/profile">View saved forms</nuxt-link>
+        </li>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+        </li>
       </ul>
       
     </v-app-bar>
@@ -68,6 +74,18 @@ export default {
           icon: 'mdi-form-select',
           title: 'Daily Technician Case File Report',
           to: '/daily-technician-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Certificate of Completion',
+          to: '/certificate-of-completion',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'AOB & Mitigation Contract',
+          to: '/aob-contract',
           access: 'user'
         },
         {

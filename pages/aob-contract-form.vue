@@ -1,7 +1,7 @@
 <template>
     <div>
         <span v-if="!isLoggedIn"><LazyLoginForm /></span>
-        <LazyAOBContractForm company="Water Emergency Services Incorporated" abbreviation="WESI" />
+        <LazyAOBContractForm v-else company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </div>
 </template>
 <script>

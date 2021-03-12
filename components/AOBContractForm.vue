@@ -7,6 +7,15 @@
       <h2>{{message}}</h2>
       <h2 class="alert alert--error">{{errorMessage}}</h2>
       <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+          <div class="form__form-group">
+            <span>
+              <label for="selectJobId" class="form__label">Job ID</label>
+              <select class="form__select" v-model="selectedJobId">
+                <option disabled value="">Please select a Job Id</option>
+                <option v-for="(item, i) in jobIds" :key="`jobid-${i}`">{{item}}</option>
+              </select>
+            </span>
+          </div>
         <div class="text-center">
           <p>
             This is not a contract to Repair/Rebuild/Restore any Property
@@ -21,8 +30,7 @@
           </p>
           <p>
             {{company}} (hereinafter referred to as “{{abbreviation}}” and/or “Insured”)
-            and
-            The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
+            and The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
             of the property more commonly known as and identified by the following address:
           </p>
           <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
@@ -31,9 +39,9 @@
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </div>
-        <ol class="form__form-group--listing">
+        <ol class="form__form-group--listing-num">
           <li>
-            <span class="font-weight-bold">Assignment of Claim to Water Emergency Services Incorporated:</span>
+            <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
             <div class="form__form-group form__form-group--inline">
               <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
                 <label for="initial1">Initial:</label>
@@ -85,8 +93,28 @@
               </li>
             </ol>
           </li>
+          <div class="form__form-group form__form-group--row">
+              <div class="form__input--input-group">
+                  <label class="form__label">Signature</label>
+                  <lazy-signature-pad-modal :sigData="cusSign.data" sigRef="customerSig" name="Signature" />
+              </div>
+              <div class="form__input--input-group">
+                  <label for="cusSignDate" class="form__label">Date:</label>
+                  <v-dialog ref="dialogCusSign" v-model="cusSignDateModal" :return-value.sync="cusSignDate" persistent width="400px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <input id="cusSignDate" v-model="cusSignDateFormatted" v-bind="attrs"
+                               class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(cusSignDateFormatted)" />
+                      </template>
+                      <v-date-picker v-model="cusSignDate" scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="#fff" @click="cusSignDateModal = false">Cancel</v-btn>
+                        <v-btn text color="#fff" @click="$refs.dialogCusSign.save(cusSignDate)">OK</v-btn>
+                      </v-date-picker>
+                    </v-dialog>
+              </div>
+          </div>
           <li>
-            <span class="font-weight-bold">Direction of Payment to Water Emergency Services Incorporated:</span>
+            <span class="font-weight-bold">Direction of Payment to {{company}}:</span>
             <ol>
               <li>
                 I hereby authorize and unequivocally instruct direct payment of any benefits or proceeds
@@ -327,8 +355,8 @@
               </li>
               <li>
                 CERTIFICATE OF COMPLETION:
-                Property Representative agrees to sign the WESI Certificate of Completion upon the
-                conclusion of the WESI quality control evaluation.
+                Property Representative agrees to sign the {{abbreviation}} Certificate of Completion upon the
+                conclusion of the {{abbreviation}} quality control evaluation.
               </li>
               <li>
                 DIRECTION:
@@ -341,7 +369,7 @@
                 <p>GOOD FAITH:
                   It is the responsibility of the Property Representative to act in “good faith”. To the extent
                   that any of the Property Representative’s actions or behaviors are deemed inappropriate
-                  WESI reserves its right to the Available Proceeds as defined herein in addition to the
+                  {{abbreviation}} reserves its right to the Available Proceeds as defined herein in addition to the
                   assignment of the Property Representative’s insurance claim; said assignment already
                   being provided for herein in this Assignment. Property Representative agrees that Code
                   Red Analytics Incorporated retains the right to document, scope and independently account
@@ -354,33 +382,33 @@
                   American Standard IICRC (best practices) while applying the most recent geographical
                   Xactimate 28 (fair market value) price available including: the deductible minus (-)
                   interest and depreciation equal (=) the Available Proceeds. This amount can vary greatly
-                  depending on the skills and thoroughness of the adjustor, analyst and WESI. The goal is
-                  to make WESI whole.</p>
+                  depending on the skills and thoroughness of the adjustor, analyst and {{abbreviation}}. The goal is
+                  to make {{abbreviation}} whole.</p>
               </li>
               <li>
                 FRAUD:
                 In most statesthe Property Representative is legally required to pay its deductible. Property
                 Representative understands that Available Proceeds as defined and calculated herein in this
                 Agreement include the Representative’s deductible. Property Representative understands
-                and acknowledges that it may be able to find another contractor less expensive than WESI;
-                however, for purposes of this Agreement any settlements must reflect WESI’s cost. Any
-                use by the Property Representative of WESI’s accounting, estimates, monetary
+                and acknowledges that it may be able to find another contractor less expensive than {{abbreviation}};
+                however, for purposes of this Agreement any settlements must reflect {{abbreviation}}’s cost. Any
+                use by the Property Representative of {{abbreviation}}’s accounting, estimates, monetary
                 calculations, or the like for its own personal gain or for any and all types of secondary gain
                 is a misrepresentation of the Property Representative’s true cost to the insurance company
                 and may constitute fraud. The Property Representative understands that it is illegal to
                 misrepresent information to an insurance company and that any misrepresentation may
-                constitute fraudulent activity or other illegal activity. WESI reserves the right to notify all
+                constitute fraudulent activity or other illegal activity. {{abbreviation}} reserves the right to notify all
                 legal authorities of any misrepresentations, fraudulent activity and/or any other illegal
-                activity and WESI reserves the right to pursue any and all legal action if necessary.
+                activity and {{abbreviation}} reserves the right to pursue any and all legal action if necessary.
               </li>
               <li>
                 NO GUARANTEE OF COVERAGE:
-                WESI is not able to guarantee, warrant, assure, state or represent as to the sufficiency of
+                {{abbreviation}} is not able to guarantee, warrant, assure, state or represent as to the sufficiency of
                 the amount of the Property Representative’s insurance coverage and whether such
-                insurance coverage is or will be sufficient to cover the amount due to WESI for all
+                insurance coverage is or will be sufficient to cover the amount due to {{abbreviation}} for all
                 mitigation, services, repair, restoration and renovation work needed and/or performed. The
                 amounts and types of coverage are determined under the contract that exists between the
-                insurance company and the Property Representative. WESI has no control over this
+                insurance company and the Property Representative. {{abbreviation}} has no control over this
                 contract and therefore cannot guarantee that any loss or damage is covered by insurance or
                 that the amount of coverage available will permit needed services. Property Representative
                 understands and agrees that Property Representative is and will be responsible for payment
@@ -390,22 +418,22 @@
               <li>
                 LIABILITY:
                 The Property Representative understands this Agreement is not to repair, renovate or
-                rebuild any property. The Property Representative understands WESI is not responsible for
+                rebuild any property. The Property Representative understands {{abbreviation}} is not responsible for
                 and/or liable for prior conditions or damages resulting therefrom including but not limited
                 to mold, asbestos, lead, pollutants, hazardous materials and structural damage before,
                 during or after authorization of this Agreement and/or any conditions or damages caused
-                either indirectly or directly by WESI and/or anyone else performing services for and/or on
-                behalf of WESI.
+                either indirectly or directly by {{abbreviation}} and/or anyone else performing services for and/or on
+                behalf of {{abbreviation}}.
               </li>
               <li>
                 <p>
                   AGREED MONETARY MINIMUM AND AGREED MONETARY MAXIMUM:
-                  Property Representative understands and agrees that WESI is solely and exclusively
+                  Property Representative understands and agrees that {{abbreviation}} is solely and exclusively
                   entitled to a minimum of $7.00 per square foot or $7,000.00 whichever is greater for the
                   services performed at the Subject Property.
                 </p>
                 <p>
-                  “Square Foot” is defined as the total affected square footage determined by WESI
+                  “Square Foot” is defined as the total affected square footage determined by {{abbreviation}}
                   applying the IICRC “BEST PRACTICES” of protocols pertaining to damages,
                   contamination, aerosolizing and believe of dry material on the Subject Property.
                 </p>
@@ -413,16 +441,16 @@
               <li>
                 AGREED LIQUIDATED AND ASCERTAINED DAMAGES:
                 If this Agreement is cancelled or breached by the Property Representative more than
-                twenty-four (24) hours after the execution of this Agreement, then WESI is entitled to
-                payment for the entire scope of its services. WESI’s services include company expertise,
+                twenty-four (24) hours after the execution of this Agreement, then {{abbreviation}} is entitled to
+                payment for the entire scope of its services. {{abbreviation}}’s services include company expertise,
                 research, inventory, investigation, calculations, software, and other services necessary to
                 obtain accurate estimates and provide all said services. The value of these services is not
                 separately invoiced and is beyond simple estimation. The parties agree that the provision
-                of these services entitles WESI to compensation of an amount not yet known but for
+                of these services entitles {{abbreviation}} to compensation of an amount not yet known but for
                 simplicity and to resolve uncertainty the parties further agree to liquidated damages in the
                 amount of $30.00 per square foot as defined above. Furthermore, the parties understand
                 and agree that the amount paid pursuant to this paragraph of the Agreement are liquidated
-                damages and that such payments do not constitute a penalty whatsoever. WESI agrees to
+                damages and that such payments do not constitute a penalty whatsoever. {{abbreviation}} agrees to
                 accept such payments as a reasonable and just compensation for said cancellation or breach
                 of the Agreement.
               </li>
@@ -435,7 +463,7 @@
               <li>
                 <p>
                   INTEREST:
-                  If WESI is not paid by the Property Representative within three (3) days of receipt of the
+                  If {{abbreviation}} is not paid by the Property Representative within three (3) days of receipt of the
                   Available Proceeds Property Representative agrees that all unpaid amounts will bear
                   interest. Entitlement to the interest will commence three (3) days following Property
                   Representative’s receipt of the Available Proceeds from the insurance company. Interest
@@ -443,8 +471,8 @@
                 </p>
                 <p>
                   ATTORNEY FEES
-                  WESI shall be entitled to reimbursement for costs of collection (including reasonable
-                  attorney’s fees and costs) of unpaid amounts by owner/Agent. WESI shall also be entitled
+                  {{abbreviation}} shall be entitled to reimbursement for costs of collection (including reasonable
+                  attorney’s fees and costs) of unpaid amounts by owner/Agent. {{abbreviation}} shall also be entitled
                   to reimbursement and for reasonable attorney’s fees and costs for the breach or
                   enforcement of any terms of this entire Agreement.
                 </p>
@@ -454,14 +482,14 @@
                 The Property Representative is responsible for payment of all services, fees, rentals,
                 treatments, betterments, and service minimums provided regardless of insurance company
                 coverage or non-coverage and regardless of whether the Available Proceeds are made
-                payable to the Property Representative, to WESI and the Property Representative or to
-                WESI and the bank holding a mortgage on the Subject Property. Property Representative
+                payable to the Property Representative, to {{abbreviation}} and the Property Representative or to
+                {{abbreviation}} and the bank holding a mortgage on the Subject Property. Property Representative
                 agrees that to the extent possible the insurance company shall deliver the Available
-                Proceeds to WESI. If the Available Proceeds are not delivered to WESI, Property
-                Representative agrees to pay the payment to WESI within three (3) days of Property
+                Proceeds to {{abbreviation}}. If the Available Proceeds are not delivered to {{abbreviation}}, Property
+                Representative agrees to pay the payment to {{abbreviation}} within three (3) days of Property
                 Representative’s receipt of the Available Proceeds. Property Representative will within
-                three (3) days of receipt of the Available Proceeds endorse the Available Proceeds to WESI
-                for payment and WESI will return any excess payments of the Available Proceeds, if
+                three (3) days of receipt of the Available Proceeds endorse the Available Proceeds to {{abbreviation}}
+                for payment and {{abbreviation}} will return any excess payments of the Available Proceeds, if
                 applicable, to the Property Representative.
               </li>
             </ol>
@@ -476,17 +504,17 @@
           <li>
             <span class="font-weight-bold">Entire Agreement and Jurisdiction:</span>
             <p>Except as set forth in this Agreement entered into by the parties, this Agreement is the entire
-              agreement between WESI and the Property Representative with respect to the subject matter
+              agreement between {{abbreviation}} and the Property Representative with respect to the subject matter
               hereof and replaces any prior agreements between them whether verbal or written. Should any
               provision of this Agreement be deemed invalid or unenforceable the parties request any court
               making such a determination to revise the provision at issue so that it will be valid and
               enforceable to the broadest extent possible and so that all the remaining provisions will remain
               valid and in full force and effect. This Agreement can only be amended or changed in writing
-              signed by an officer of WESI. No waiver hereunder will be binding unless in writing signed by
+              signed by an officer of {{abbreviation}}. No waiver hereunder will be binding unless in writing signed by
               the waiving party. Any representation, statements or other communications not written in this
               Agreement are agreed to be immaterial and are not to be relied on by either party and are deemed
               to not have survived the execution of this Agreement. This Agreement may not be assigned
-              except with the written permission of WESI.</p>
+              except with the written permission of {{abbreviation}}.</p>
             <div class="form__form-group form__form-group--inline">
               <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
                 <label for="initial7">Initial:</label>
@@ -504,7 +532,7 @@
             50% of the “Available Proceeds” deductible whichever is greater upon the authorization of this
             Agreement. The Property Representative agrees to pay the remaining sum of the “Available
             Proceeds” deductible in its entirety within five (5) days of the authorization of this Agreement
-            and/or when the last piece of equipment is picked up by WESI from the Subject Property
+            and/or when the last piece of equipment is picked up by {{abbreviation}} from the Subject Property
             whichever comes first. This payment is to retain, and reserve said services and equipment herein
             per this Agreement. This payment will be applied to the balance of the Available Proceeds as
             defined above.
@@ -515,7 +543,7 @@
             the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
             timely. The Property Representative agrees to pay the sum of the Available Proceeds’ deductible
             in its entirety within five (5) days of the authorization of this Agreement and/or when the last
-            piece of equipment is picked up by WESI from the Subject Property whichever comes first. Once
+            piece of equipment is picked up by {{abbreviation}} from the Subject Property whichever comes first. Once
             insurance coverage is confirmed or denied the project will then proceed following the above
             Insured Property provision as it relates to the amount of the retainer for a project for which there
             is insurance coverage. If insurance coverage is not obtained or if it is denied the project will then
@@ -530,13 +558,13 @@
             agrees to pay a minimum of $750.00 upon the authorization of this Agreement. The Property
             Representative agrees to pay a second sum of $750.00 for a total payment of $1,500.00 within
             five (5) days of the authorization of this Agreement and/or when the last piece of equipment is
-            picked up by WESI from the Subject Property whichever comes first. This payment is to retain,
+            picked up by {{abbreviation}} from the Subject Property whichever comes first. This payment is to retain,
             and reserve said services and equipment herein per this Agreement. This payment will be applied
             to the balance of the Available Proceeds as defined above.
           </li>
         </ol>
-        <div class="form__form-group form__form-group--inline form__form-group--info-box">
-            <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3><br/>
+        <div class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
+            <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
           <span>
             <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” End Date:</label>
             <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="400px">
@@ -648,7 +676,7 @@
             </v-dialog>
           </span>
         </div>
-        <div class="form__form-group form__form-group--inline form__form-group--info-box">
+        <div class="form__form-group form__form-group--info-box">
             <div class="form__form-group--left-side">
                 <ValidationProvider class="form__input--input-group">
                     <label for="address" class="form__label">Address</label>
@@ -690,22 +718,22 @@
             </div>
         </div>
         <div class="form__form-group form__form-group--inline">
-            <ValidationProvider rules="required|number" name="Square foot" v-slot="{errors}">
-                <label>Minimum believed Square Foot as defined above:</label>
+            <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
+                <label class="form__label">Minimum believed Square Foot as defined above:</label>
                 <input type="text" v-model="sqft" class="form__input" />
                 <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
         </div>
-        <p>WESI is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
-        <p class="text-center">Property Representative understands Water Emergency Services Incorporated is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
+        <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
+        <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
         <div class="form__form-group form__form-group--inline form__form-group--column">
             <span>
                 <label class="form__label">Driver's License #:</label>
-                <input type="text" readonly v-model="driversLicense" class="form__input" />
+                <input type="text" readonly v-model="driversLicense" class="form__input form__input--input-group" />
             </span>
             <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}">
                 <label for="repPrint" class="form__label">Property Representative Print:</label>
-                <input type="text" id="repPrint" class="form__input" v-model="repPrint" />
+                <input type="text" id="repPrint" class="form__input form__input--input-group" v-model="repPrint" />
                 <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
             <span>
@@ -732,17 +760,55 @@
                     </v-dialog>
                 </div>
             </span>
+            <span>
+            <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input--input-group">
+                <label for="witness" class="form__label">Witness</label>
+                <input type="text" id="witness" class="form__input" v-model="witness" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input--input-group">
+                <label for="witnesslabel" class="form__label">Witness date:</label>
+                <input type="hidden" v-model="witnessDate" />
+                <v-dialog ref="dialogWitnessDate" v-model="witnessDateModal" :return-value.sync="witnessDate" persistent width="400px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <input id="witnesslabel" v-model="witnessDateFormatted" v-bind="attrs"
+                           class="form__input form__input--short" readonly v-on="on" @blur="witnessDate = parseDate(witnessDateFormatted)" />
+                  </template>
+                  <v-date-picker v-model="witnessDate" scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="#fff" @click="witnessDateModal = false">Cancel</v-btn>
+                    <v-btn text color="#fff" @click="$refs.dialogWitnessDate.save(witnessDate)">OK</v-btn>
+                  </v-date-picker>
+                </v-dialog>
+                <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            </span>
         </div>
+        <div class="form__form-group form__form-group--inline form__form-group--column">
+            <ValidationProvider class="form__input--input-group" rules="numeric" v-slot="{errors}">
+                <label for="numberOfRooms" class="form__label">Number of Rooms:</label>
+                <input id="numberOfRooms" type="text" class="form__input" v-model="numberOfRooms" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider class="form__input--input-group" rules="numeric" v-slot="{errors}">
+                <label for="numberOfFloors" class="form__label">Number of Floors:</label>
+                <input type="text" id="numberOfFloors" class="form__input" v-model="numberOfFloors" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+        </div>
+        <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
       </form>
     </ValidationObserver>
   </div>
 </template>
 <script>
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+import {mapGetters, mapActions} from 'vuex'
   export default {
     name: "AOBContractForm",
     props: ['company', 'abbreviation'],
     computed: {
+        ...mapGetters(['getReports']),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -758,12 +824,25 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
         nonInsuredDay5() {
             return this.nonInsuredPayment.day5Date;
         },
+        jobIds() {
+            return this.getReports.map((v) => {
+                return v.JobId
+            })
+        }
     },
     data: (vm) => ({
       message: '',
       errorMessage: '',
       submitted: false,
+      submitting: false,
       subjectProperty: '',
+      cusSign: {
+          data: '',
+          isEmpty: true
+      },
+      cusSignDate: new Date().toISOString().substr(0, 10),
+      cusSignDateModal: false,
+      cusSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       initial1: '',
       initial2:'',
       initial3:'',
@@ -772,26 +851,26 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
       initial6:'',
       initial7:'',
       insuredEndDateModal: false,
-        insuredEndDate: null,
+        insuredEndDate: new Date().toISOString().substr(0, 10),
         insuredEndDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         insuredPayment: {
             day1Modal: false,
             day5Modal: false,
             firstStep: null,
-            day1Date: null,
+            day1Date: new Date().toISOString().substr(0, 10),
             day1DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day5Date: null,
+            day5Date: new Date().toISOString().substr(0, 10),
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10))
         },
         nonInsuredPayment: {
             endDateModal: false,
             day1Modal: false,
             day5Modal: false,
-            endDate: null,
+            endDate: new Date().toISOString().substr(0, 10),
             endDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day1Date: null,
+            day1Date: new Date().toISOString().substr(0, 10),
             day1DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day5Date: null,
+            day5Date: new Date().toISOString().substr(0, 10),
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         },
         insuredPay1: '',
@@ -799,7 +878,8 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
         location: {
             address: null,
             city: null,
-            state: null
+            state: null,
+            zip: null
         },
         firstName:'',
         lastName:'',
@@ -813,8 +893,16 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
         representativeOf: '',
         repPrint: '',
         repDateModal: false,
-        repDate: null,
+        repDate: new Date().toISOString().substr(0, 10),
         repDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+        witness: '',
+        witnessDate: new Date().toISOString().substr(0, 10),
+        witnessDateModal:false,
+        witnessDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+        selectedJobId: "",
+        selectActive: false,
+        numberOfRooms: '',
+        numberOfFloors: ''
     }),
     watch: {
         insuredEndDate(val) {
@@ -837,9 +925,19 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
         },
         repDate(val) {
             this.repDateFormatted = this.formatDate(val)
+        },
+        witnessDate(val) {
+            this.witnessDateFormatted = this.formatDate(val)
+        },
+        cusSignDate(val) {
+            this.cusSignDateFormatted = this.formatDate(val)
         }
     },
     methods: {
+        ...mapActions({
+            addReport: 'indexDb/addReport',
+            checkStorage: 'indexDb/checkStorage'
+        }),
         formatDate(dateReturned) {
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
@@ -867,6 +965,69 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
             const [month, day, year] = date.split('/')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
+        async submitForm() {
+            this.message = ''
+            const post = {
+                JobId: this.selectedJobId,
+                ReportType: 'aob',
+                subjectProperty: this.subjectProperty,
+                cusSign: this.cusSign.data,
+                cusSignDate: this.cusSignDateFormatted,
+                initial1: this.initial1,
+                initial2: this.initial2,
+                initial3: this.initial3,
+                initial4: this.initial4,
+                initial5: this.initial5,
+                initial6: this.initial6,
+                initial7: this.initial7,
+                insuredTermEndDate: this.insuredEndDateFormatted,
+                insuredPay1: this.insuredPay1,
+                insuredPayDay1: this.insuredPayment.day1DateFormatted,
+                insuredPay2: this.insuredPay2,
+                insuredPayDay5: this.insuredPayment.day5DateFormatted,
+                nonInsuredTermEndDate: this.nonInsuredPayment.endDateFormatted,
+                nonInsuredDay1: this.nonInsuredPayment.day1Date,
+                nonInsuredDay5: this.nonInsuredPayment.day5Date,
+                location: this.location,
+                firstName: this.firstName,
+                lastName: this.lastName,
+                driversLicense: this.driversLicense,
+                relation: this.relation,
+                minimumSqft: this.sqft,
+                representativePrint: this.repPrint,
+                repSignature: this.repSign.data,
+                propertyRepOf: this.representativeOf,
+                repDateSign: this.repDateFormatted,
+                witness: this.witness,
+                witnessDate: this.witnessDateFormatted,
+                numberOfRooms: this.numberOfRooms,
+                numberOfFloors: this.numberOfFloors
+            };
+            if (this.$nuxt.isOffline) {
+                this.addReport(post).then(() => {
+                    this.message = "AOB & Mitigation Contract was saved successfully to be submitted later."
+                    this.submitted = true
+                    setTimeout(() => {
+                        this.message = ""
+                    }, 2000)
+                }).catch((err) => {
+                    this.errorMessage = err
+                })
+            } else {
+                this.$axios.$post("/api/aob/new", post).then(() => {
+                    this.message = "AOB & Mitigation Contract submitted!"
+                    this.submitted = true
+                    setTimeout(() => {
+                        this.message = ""
+                    }, 2000)
+                }).catch((err) => {
+                    this.errorMessage = err
+                })
+            }
+        }
     },
+    mounted() {
+        this.checkStorage()
+    }
   }
 </script>

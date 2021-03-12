@@ -1,21 +1,25 @@
 <template>
   <!-- This will be used for storing forms saved in offline mode -->
-  <div class="profile">
-    <h1 v-show="message">{{message}}</h1>
-    <ul v-if="$store.state.indexDb.reports.length > 0">
-      <li v-for="(report, i) in savedReports" :key="i">
-        {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
-      </li>
-    </ul>
-    <ul v-if="$store.state.indexDb.reports.length < 0">
-      <li v-for="(report, i) in savedReports" :key="i">
-        {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
-      </li>
-    </ul>
+  <div>
+    <span v-if="!isLoggedIn"><login-form /></span>
+    <div class="profile" v-else>
+      <h1 v-show="message">{{message}}</h1>
+      <ul v-if="$store.state.indexDb.reports.length > 0">
+        <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
+          {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul v-if="$store.state.indexDb.reports.length < 0">
+        <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
+          {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 <script>
   import {
+    mapGetters,
     mapActions,
     mapMutations
   } from 'vuex';
@@ -28,6 +32,9 @@
         employees: [],
         filesUploading: [],
       }
+    },
+    computed: {
+      ...mapGetters(['isLoggedIn'])
     },
     mounted() {
       this.checkStorage()

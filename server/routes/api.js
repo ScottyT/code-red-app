@@ -4,6 +4,7 @@ const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
 const CaseFile = require("../models/caseFileSchema");
 const COC = require("../models/cocSchema");
+const AOB = require("../models/aobSchema");
 const router = express.Router();
 router.use(express.json())
 router.post("/employee/new", (req, res) => {
@@ -111,6 +112,15 @@ router.get('/certificates', (req, res) => {
     const certificate = await COC.findOne({JobId: req.params.JobId});
     res.json(certificate);
 }) */
+router.get('/aob-mitigation-contracts', (req, res) => {
+    AOB.find({}, (err, aob) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(aob)
+        }
+    })
+})
 router.post("/dispatch/new", (req, res) => {
     Dispatch.create({
         ArrivalContactName: req.body.ArrivalContactName,
@@ -252,6 +262,50 @@ router.post("/coc/new", (req, res) => {
             res.status(500).send('Error')
         } else {
             res.status(200).json(coc)
+        }
+    })
+})
+router.post("/aob/new", (req, res) => {
+    AOB.create({
+        JobId: req.body.JobId,
+        ReportType: req.body.ReportType,
+        subjectProperty: req.body.subjectProperty,
+        cusSign: req.body.cusSign,
+        cusSignDate: req.body.cusSignDate,
+        initial1: req.body.initial1,
+        initial2: req.body.initial2,
+        initial3: req.body.initial3,
+        initial4: req.body.initial4,
+        initial5: req.body.initial5,
+        initial6: req.body.initial6,
+        initial7: req.body.initial7,
+        insuredTermEndDate: req.body.insuredTermEndDate,
+        insuredPay1: req.body.insuredPay1,
+        insuredPayDay1: req.body.insuredPayDay1,
+        insuredPay2: req.body.insuredPay2,
+        insuredPayDay5: req.body.insuredPayDay5,
+        nonInsuredTermEndDate: req.body.nonInsuredTermEndDate,
+        nonInsuredDay1: req.body.nonInsuredDay1,
+        nonInsuredDay5: req.body.nonInsuredDay5,
+        location: req.body.location,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        driversLicense: req.body.driversLicense,
+        relation: req.body.relation,
+        minimumSqft: req.body.minimumSqft,
+        representativePrint: req.body.representativePrint,
+        repSignature: req.body.repSignature,
+        propertyRepOf: req.body.propertyRepOf,
+        repDateSign: req.body.repDateSign,
+        witness: req.body.witness,
+        witnessDate: req.body.witnessDate,
+        numberOfRooms: req.body.numberOfRooms,
+        numberOfFloors: req.body.numberOfFloors
+    }, (err, aob) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(aob)
         }
     })
 })

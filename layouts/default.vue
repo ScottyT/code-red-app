@@ -34,6 +34,9 @@
         <li class="menu-items__item" v-if="$fire.auth.currentUser">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+        </li>
       </ul>
       
     </v-app-bar>
@@ -88,7 +91,7 @@ export default {
         {
           icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
-          to: '/aob-contract',
+          to: '/aob-contract-form',
           access: 'user'
         },
         {
