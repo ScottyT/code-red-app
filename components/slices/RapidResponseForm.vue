@@ -72,7 +72,7 @@
               
               <p aria-label="Upload message goes here" name="Photo ID" id="photoId" ref="photoid"></p>
             </ValidationProvider>
-            <div class="form__input--upload-group">
+            <!-- <div class="form__input--upload-group">
               <label class="form__label">Debit/Credit Card</label>
               <keep-alive><ValidationProvider ref="front" v-if="currentUploadStep === 1" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload--front">
                 <p>Front side:</p>
@@ -96,7 +96,7 @@
                 <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="cardImages.length === 2 && currentUploadStep === 2 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
               </div>
               <p aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
-            </div>
+            </div> -->
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
               <label for="cardZip" class="form__label">Zip code on card</label>
               <input id="cardZip" class="form__input" v-model="cardZip" name="cardZip" type="text" />

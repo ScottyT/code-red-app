@@ -96,7 +96,7 @@
           <div class="form__form-group form__form-group--row">
               <div class="form__input--input-group">
                   <label class="form__label">Signature</label>
-                  <lazy-signature-pad-modal :sigData="cusSign.data" sigRef="customerSig" name="Signature" />
+                  <lazy-signature-pad-modal :sigData="cusSign" sigRef="customerSig" name="Signature" />
               </div>
               <div class="form__input--input-group">
                   <label for="cusSignDate" class="form__label">Date:</label>
@@ -426,6 +426,16 @@
                 behalf of {{abbreviation}}.
               </li>
               <li>
+                INDEMNIFICATION:
+                The Property Representative will hold harmless and indemnify {{abbreviation}} and/or anyone else 
+                performing services for and/or on behalf of {{abbreviation}} against any and all claims and actions 
+                arising out of the performance of any services pursuant to this Agreement including, 
+                without limitation, expenses, judgments, fines, settlements and other amounts actually and 
+                reasonably incurred in connection with any liability, suit, action, loss, or damage arising
+                out of or resulting therefrom. Under this Agreement indemnification will be unlimited as 
+                to the amount. 
+              </li>
+              <li>
                 <p>
                   AGREED MONETARY MINIMUM AND AGREED MONETARY MAXIMUM:
                   Property Representative understands and agrees that {{abbreviation}} is solely and exclusively
@@ -562,6 +572,13 @@
             and reserve said services and equipment herein per this Agreement. This payment will be applied
             to the balance of the Available Proceeds as defined above.
           </li>
+          <div class="form__form-group form__form-group--inline">
+              <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <label for="initial8">Initial:</label>
+                <input id="initial8" type="text" v-model="initial8" class="form__input" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
         </ol>
         <div class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
             <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
@@ -590,8 +607,8 @@
               <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal"
                         :return-value.sync="insuredPayment.day1Date" persistent width="400px">
                 <template v-slot:activator="{ on, attrs }">
-                  <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" readonly class="form__input form__input--short" v-on="on" @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)
-                                            " />
+                  <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" readonly class="form__input form__input--short" v-on="on" 
+                      @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)" />
                 </template>
                 <v-date-picker v-model="insuredPayment.day1Date" scrollable>
                   <v-spacer></v-spacer>
@@ -796,6 +813,9 @@
                 <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
         </div>
+        <div class="form__form-group form__form-group--inline form__form-group--column">
+          <VueSignaturePad class="form__input" width="100%" height="100%" id="sketch" ref="sketchPad" :options="{onBegin}" />
+        </div>
         <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
       </form>
     </ValidationObserver>
@@ -850,6 +870,7 @@ import {mapGetters, mapActions} from 'vuex'
       initial5:'',
       initial6:'',
       initial7:'',
+      initial8: '',
       insuredEndDateModal: false,
         insuredEndDate: new Date().toISOString().substr(0, 10),
         insuredEndDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -902,7 +923,11 @@ import {mapGetters, mapActions} from 'vuex'
         selectedJobId: "",
         selectActive: false,
         numberOfRooms: '',
-        numberOfFloors: ''
+        numberOfFloors: '',
+        sketchData: {
+          data: '',
+          isEmpty: true
+        }
     }),
     watch: {
         insuredEndDate(val) {
@@ -938,6 +963,12 @@ import {mapGetters, mapActions} from 'vuex'
             addReport: 'indexDb/addReport',
             checkStorage: 'indexDb/checkStorage'
         }),
+        onBegin() {
+          const {
+            isEmpty
+          } = this.$refs.sketchPad.saveSignature();
+          this.sketchData.isEmpty = isEmpty
+        },
         formatDate(dateReturned) {
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
@@ -980,14 +1011,15 @@ import {mapGetters, mapActions} from 'vuex'
                 initial5: this.initial5,
                 initial6: this.initial6,
                 initial7: this.initial7,
+                initial8: this.initial8,
                 insuredTermEndDate: this.insuredEndDateFormatted,
                 insuredPay1: this.insuredPay1,
                 insuredPayDay1: this.insuredPayment.day1DateFormatted,
                 insuredPay2: this.insuredPay2,
                 insuredPayDay5: this.insuredPayment.day5DateFormatted,
                 nonInsuredTermEndDate: this.nonInsuredPayment.endDateFormatted,
-                nonInsuredDay1: this.nonInsuredPayment.day1Date,
-                nonInsuredDay5: this.nonInsuredPayment.day5Date,
+                nonInsuredDay1: this.nonInsuredPayment.day1DateFormatted,
+                nonInsuredDay5: this.nonInsuredPayment.day5DateFormatted,
                 location: this.location,
                 firstName: this.firstName,
                 lastName: this.lastName,
@@ -1031,3 +1063,9 @@ import {mapGetters, mapActions} from 'vuex'
     }
   }
 </script>
+<style lang="scss">
+#sketchPad {
+  max-width:800px;
+  height:600px;
+}
+</style>

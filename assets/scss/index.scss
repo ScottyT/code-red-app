@@ -493,10 +493,13 @@ button {
   &__listing {
     list-style-type:decimal;
 
-    > li ol {
-      list-style-type:lower-alpha;
-      > li {
-        padding-bottom:10px;
+    > li {
+      padding-bottom:10px;
+      ol {
+        list-style-type:lower-alpha;
+        > li {
+          padding-bottom:10px;
+        }
       }
     }
   }
@@ -549,9 +552,7 @@ button {
       font-weight: 900;
     }
   }
-  &__data-sig {
-    height:150px;
-  }
+  
   &__company-logo {
     max-width:100px;
     margin:auto;
@@ -571,6 +572,15 @@ button {
     align-items:flex-start;
     flex-direction:column;
     display:flex;
+    > div {
+      align-items:flex-start;
+    }
+  }
+  &__data-sig {
+    //height:150px;
+    > div {
+      height:245px;
+    }
   }
 }
 

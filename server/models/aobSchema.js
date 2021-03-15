@@ -13,6 +13,7 @@ const aobMitigationContract = mongoose.Schema({
     initial5: String,
     initial6: String,
     initial7: String,
+    initial8: String,
     insuredTermEndDate: String,
     insuredPay1: String,
     insuredPayDay1: String,

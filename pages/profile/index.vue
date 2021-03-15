@@ -6,12 +6,7 @@
       <h1 v-show="message">{{message}}</h1>
       <ul v-if="$store.state.indexDb.reports.length > 0">
         <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
-          {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
-        </li>
-      </ul>
-      <ul v-if="$store.state.indexDb.reports.length < 0">
-        <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
-          {{report ? report.JobId : null}} / {{report ? report.ReportType : null}} <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
     </div>

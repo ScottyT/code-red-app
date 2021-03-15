@@ -24,7 +24,7 @@
                             and The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
                             of the property more commonly known as and identified by the following address:
                         </p>
-                        <span class="text-decoration-underline pdf-detail">{{contracts[0].subjectProperty}}</span><br />
+                        <span class="text-decoration-underline pdf-detail">{{contracts.subjectProperty}}</span><br />
                         <label>(hereinafter referred to as “Subject Property”)</label>
                     </div>
                     <div class="report-details__section pdf-detail">
@@ -33,7 +33,7 @@
                                 <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial1}}</span>
+                                    <span>{{contracts.initial1}}</span>
                                 </div>
                                 <ol>
                                     <li>
@@ -78,23 +78,24 @@
                                         services rendered or to be rendered for the Subject Property identified above.
                                     </li>
                                 </ol>
-                                <!-- <div class="report-details__data report-details__data--row report-details__data-sig">
+                                <div class="report-details__data report-details__data--row report-details__data-sig">
                                     <div class="report-details__data-field">
                                         <label>Signature:</label>
                                         <div class="report-details__data--sig"
-                                            :style="'background-image:url('+contracts[0].cusSign+')'"></div>
+                                            :style="'background-image:url('+contracts.cusSign+')'"></div>
                                     </div>
                                     <div class="report-details__data-field">
                                         <label>Date: </label>
-                                        <div>{{contracts[0].cusSignDate}}</div>
+                                        <div>{{contracts.cusSignDate}}</div>
                                     </div>
-                                </div> -->
+                                </div>
                             </li>
+                            <!-- <div class="html2pdf__page-break"/> -->
                             <li>
                                 <span class="font-weight-bold">Direction of Payment to {{company}}:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial2}}</span>
+                                    <span>{{contracts.initial2}}</span>
                                 </div>
                                     <ol>
                                         <li>
@@ -111,12 +112,12 @@
                                         </li>
                                     </ol>
                             </li>
-                            <div class="html2pdf__page-break"/>
-                            <li>
+                            
+                            <li style="margin-top:30px;">
                                 <span class="font-weight-bold">Property Representative Cooperation Required:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial3}}</span>
+                                    <span>{{contracts.initial3}}</span>
                                 </div>
                                 <ol>
                                     <li>
@@ -136,7 +137,7 @@
                                 from start to finish.</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial4}}</span>
+                                    <span>{{contracts.initial4}}</span>
                                 </div>
                                 <ol class="form__form-group--listing">
                                     <li>
@@ -186,12 +187,13 @@
                                     </li>
                                 </ol>
                             </li>
+                            <div class="html2pdf__page-break"/>
                             <li>
                                 <span class="font-weight-bold">{{abbreviation}} is contracted for its services including equipment rental
                                 services as set forth herein:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial5}}</span>
+                                    <span>{{contracts.initial5}}</span>
                                 </div>
                                 <ol class="form__form-group--listing">
                                     <li>
@@ -213,7 +215,8 @@
                                         the date of execution of this Equipment Rental Agreement and will be paid at the time of execution
                                         of this Equipment Rental Agreement. This payment is herein referred to as the “Deposit”.
                                     </li>
-                                    <li>
+                                    
+                                    <li style="margin-top:30px;">
                                         The Property Representative agrees to pay {{abbreviation}} rent (herein referred to as “Rent”) for the
                                         use of
                                         the equipment. The rent inclusive of sales tax will be equal to the most recent geographical
@@ -249,6 +252,7 @@
                                         To the extent permitted by law, the Property Representative will be responsible for the risk of loss,
                                         theft, damage, or destruction to the equipment from any and every cause.
                                     </li>
+                                   <!--  <div class="html2pdf__page-break"/> -->
                                     <li>
                                         If the equipment is lost or damaged the Property Representative will continue paying Rent, will
                                         provide {{abbreviation}} with prompt written notice of such loss or damage and will, if the equipment is
@@ -307,11 +311,12 @@
                                     </li>
                                 </ol>
                             </li>
-                            <li>
+                            
+                            <li style="margin-top:30px;">
                                 <span class="font-weight-bold">Terms and Conditions:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial6}}</span>
+                                    <span>{{contracts.initial6}}</span>
                                 </div>
                                 <ol class="form__form-group--listing">
                                 <li>
@@ -371,6 +376,7 @@
                                     legal authorities of any misrepresentations, fraudulent activity and/or any other illegal
                                     activity and {{abbreviation}} reserves the right to pursue any and all legal action if necessary.
                                 </li>
+                                <div class="html2pdf__page-break"/>
                                 <li>
                                     NO GUARANTEE OF COVERAGE:
                                     {{abbreviation}} is not able to guarantee, warrant, assure, state or represent as to the sufficiency of
@@ -385,6 +391,7 @@
                                     of all services performed pursuant to this Agreement and which are not covered either
                                     partially or in full by the insurance coverage.
                                 </li>
+                                <!-- <div class="html2pdf__page-break"/> -->
                                 <li>
                                     LIABILITY:
                                     The Property Representative understands this Agreement is not to repair, renovate or
@@ -394,6 +401,16 @@
                                     during or after authorization of this Agreement and/or any conditions or damages caused
                                     either indirectly or directly by {{abbreviation}} and/or anyone else performing services for and/or on
                                     behalf of {{abbreviation}}.
+                                </li>
+                                <li>
+                                    INDEMNIFICATION:
+                                    The Property Representative will hold harmless and indemnify {{abbreviation}} and/or anyone else 
+                                    performing services for and/or on behalf of {{abbreviation}} against any and all claims and actions 
+                                    arising out of the performance of any services pursuant to this Agreement including, 
+                                    without limitation, expenses, judgments, fines, settlements and other amounts actually and 
+                                    reasonably incurred in connection with any liability, suit, action, loss, or damage arising
+                                    out of or resulting therefrom. Under this Agreement indemnification will be unlimited as 
+                                    to the amount. 
                                 </li>
                                 <li>
                                     <p>
@@ -447,6 +464,7 @@
                                     enforcement of any terms of this entire Agreement.
                                     </p>
                                 </li>
+                                <div class="html2pdf__page-break"/>
                                 <li>
                                     PAYMENT:
                                     The Property Representative is responsible for payment of all services, fees, rentals,
@@ -462,14 +480,14 @@
                                     for payment and {{abbreviation}} will return any excess payments of the Available Proceeds, if
                                     applicable, to the Property Representative.
                                 </li>
-                                </ol>
-                                
+                                </ol>                                
                             </li>
+                            <!-- <div class="html2pdf__page-break"/> -->
                             <li>
                                 <span class="font-weight-bold">Entire Agreement and Jurisdiction:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts[0].initial7}}</span>
+                                    <span>{{contracts.initial7}}</span>
                                 </div>
                                 <p>Except as set forth in this Agreement entered into by the parties, this Agreement is the entire
                                 agreement between {{abbreviation}} and the Property Representative with respect to the subject matter
@@ -486,6 +504,169 @@
                                 
                             </li>
                         </ol>
+                    </div>
+                   
+                    <div class="report-details__section pdf-detail">
+                        <ol class="report-details__listing">
+                            <h3 class="font-weight-bold">RETAINER AND RESERVE PAYMENT RELATED TO THE ABOVE AGREEMENT</h3>
+                            <div class="report-details__data-field">
+                                <label>Initial:</label>
+                                <span>{{contracts.initial7}}</span>
+                            </div>
+                            <li>
+                                Insured Property<br />
+                                The Subject Property is insured properly. The Property Representative agrees to pay $500.00 or
+                                50% of the “Available Proceeds” deductible whichever is greater upon the authorization of this
+                                Agreement. The Property Representative agrees to pay the remaining sum of the “Available
+                                Proceeds” deductible in its entirety within five (5) days of the authorization of this Agreement
+                                and/or when the last piece of equipment is picked up by {{abbreviation}} from the Subject Property
+                                whichever comes first. This payment is to retain, and reserve said services and equipment herein
+                                per this Agreement. This payment will be applied to the balance of the Available Proceeds as
+                                defined above.
+                            </li>
+                            <li>
+                                Pending Insurance<br />
+                                If insurance coverage is in question on the Subject Property by the Property Representative, then
+                                the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
+                                timely. The Property Representative agrees to pay the sum of the Available Proceeds’ deductible
+                                in its entirety within five (5) days of the authorization of this Agreement and/or when the last
+                                piece of equipment is picked up by {{abbreviation}} from the Subject Property whichever comes first. Once
+                                insurance coverage is confirmed or denied the project will then proceed following the above
+                                Insured Property provision as it relates to the amount of the retainer for a project for which there
+                                is insurance coverage. If insurance coverage is not obtained or if it is denied the project will then
+                                proceed following the below Non-Insured Property provision as it relates to the amount of the
+                                retainer for a project for which there is not insurance coverage. This payment is to retain, and
+                                reserve said services and equipment herein per this Agreement. This payment will be applied to
+                                the balance of the Available Proceeds as defined above.
+                            </li>
+                            <li>
+                                Non-Insured<br />
+                                If there is not any insurance coverage on the Subject Property, then Property Representative
+                                agrees to pay a minimum of $750.00 upon the authorization of this Agreement. The Property
+                                Representative agrees to pay a second sum of $750.00 for a total payment of $1,500.00 within
+                                five (5) days of the authorization of this Agreement and/or when the last piece of equipment is
+                                picked up by {{abbreviation}} from the Subject Property whichever comes first. This payment is to retain,
+                                and reserve said services and equipment herein per this Agreement. This payment will be applied
+                                to the balance of the Available Proceeds as defined above.
+                            </li>
+                        </ol>
+                    </div>
+                     <div class="html2pdf__page-break"/>
+                    <div class="report-details__bordered pdf-detail">
+                        <div class="report-details__data report-details__data--row">
+                            <div class="report-details__data-field">
+                                <label>Insured: Agreed "Term" End Date:</label>
+                                <span>{{contracts.insuredTermEndDate}}</span>
+                            </div>
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <div class="report-details__data-field">
+                                <label>Insured Payment 1) = ($500.00 or 50% of Deductible)</label>
+                                <span>${{contracts.insuredPay1}}</span>
+                            </div>
+                            <div class="report-details__data-field">
+                                <label>Day (1) Date: </label>
+                                <span>{{contracts.insuredPayDay1}}</span>
+                            </div>
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <div class="report-details__data-field">
+                                <label>Insured Payment 2) = (Remaining 50% of Deductible)</label>
+                                <span>${{contracts.insuredPay2}}</span>
+                            </div>
+                            <div class="report-details__data-field">
+                                <label>Day (5) Date: </label>
+                                <span>{{contracts.insuredPayDay5}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-details__bordered">
+                        <div class="report-details__data report-details__data--row">
+                            <div class="report-details__data-field">
+                                <label>Non-Insured or Still Pending Coverage: Agreed “Term” End Date:</label>
+                                <div>{{contracts.nonInsuredTermEndDate}}</div>
+                            </div>
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <label>Non-Insured or Still Pending Coverage: Payment 1) = $750.00 Day (1) Date: </label>
+                            <div>{{contracts.nonInsuredDay1}}</div>
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <label>Non-Insured or Still Pending Coverage: Payment 1) = $750.00 Day (1) Date: </label>
+                            <div>{{contracts.nonInsuredDay5}}</div>
+                        </div>
+                    </div>
+                    <div class="report-details__section">
+                        <div class="report-details__data">
+                            <label>Address:</label>
+                            <div>{{contracts.location.address}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>City:</label>
+                            <div>{{contracts.location.city}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>State:</label>
+                            <div>{{contracts.location.state}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>Zip:</label>
+                            <div>{{contracts.location.zip}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>First Name:</label>
+                            <div>{{contracts.firstName}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>Last Name:</label>
+                            <div>{{contracts.lastName}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>Drivers License #:</label>
+                            <div>{{contracts.driversLicense}}</div>
+                        </div>
+                        <div class="report-details__data">
+                            <label>Relation:</label>
+                            <div>{{contracts.relation}}</div>
+                        </div>
+                    </div>
+                    <div class="report-details__data--row">
+                        <label>Minimum believed Square Foot as defined above: </label>
+                        <div>{{contracts.minimumSqft}}</div>
+                    </div>
+                    <p class="text-center">Property Representative understands Water Emergency Services Incorporated is not affiliated, associated, endorsed 
+by, or in any way officially connected with any other company, agency or franchise.</p>
+                    <div class="report-details__bordered">
+                        <div class="report-details__data report-details__data--row">
+                            <label>Driver's License Number:</label>
+                            <div>{{contracts.driversLicense}}</div>
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <label>Property Representative Print:</label>
+                            <div>{{contracts.representativePrint}}</div>
+                        </div>
+                        <div class="report-details__data report-details__data--row report-details__data-sig" style="align-items:none;">
+                            <div class="report-details__data-field">
+                                <label>Property Representative Signature:</label>
+                                <div class="report-details__data--sig pdf-sig"
+                                    :style="'background-image:url('+contracts.repSignature+')'"></div>  
+                                   <!--  <img class="pdf-sig report-details__data--cusSig" :src="contracts.repSignature" />   -->
+                            </div>                       
+                        </div>
+                        <div class="report-details__data report-details__data--row">
+                            <div class="report-details__data-field">
+                                <label>Property Representative of:</label>
+                                <div>{{contracts.propertyRepOf}}</div>
+                            </div>
+                            <div class="report-details__data-field">
+                                <label>Date:</label>
+                                <div>{{contracts.repDateSign}}</div>
+                            </div>
+                        </div>
+                        <label>Witness:</label>
+                        <div>{{contracts.witness}}</div>
+                        <label>Witness date:</label>
+                        <div>{{contracts.witnessDate}}</div>
                     </div>
             </section>
         </div>

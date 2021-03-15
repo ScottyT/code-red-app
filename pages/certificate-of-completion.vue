@@ -614,8 +614,8 @@ export default {
             }
         },
         acceptNumber() {
-            var x = this.cardholder.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
-            this.cardholder.phoneNumber = !x[2] ?
+            var x = this.cardholderName.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
+            this.cardholderName.phoneNumber = !x[2] ?
             x[1] :
             '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
         },

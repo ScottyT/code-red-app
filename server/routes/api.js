@@ -279,6 +279,7 @@ router.post("/aob/new", (req, res) => {
         initial5: req.body.initial5,
         initial6: req.body.initial6,
         initial7: req.body.initial7,
+        initial8: req.body.initial8,
         insuredTermEndDate: req.body.insuredTermEndDate,
         insuredPay1: req.body.insuredPay1,
         insuredPayDay1: req.body.insuredPayDay1,

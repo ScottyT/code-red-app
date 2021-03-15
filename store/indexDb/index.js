@@ -23,8 +23,8 @@ export const mutations = {
     }
 };
 export const actions = {
-    addReport({ commit, dispatch }, newReport) {
-        
+    addReport({ commit, dispatch }, newReport) {     
+         
         dispatch('saveReports', newReport)
     },
     deleteReport({ commit }, reportInfo, reportIndex) {
@@ -33,6 +33,14 @@ export const actions = {
     },
     async checkStorage({ state, commit }) {
         await values().then((values) => {
+            values.forEach((v, i) => {
+                if (v.ReportType === 'aob') {
+                    v.ReportType = 'AOB & Mitigation Contract'
+                }
+                if (v.ReportType === 'coc') {
+                    v.ReportType = 'Certificate of Completion'
+                }
+            })
             commit('setReport', values)
         }).catch((err) => {
             commit('setReport', [])
