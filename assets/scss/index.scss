@@ -98,9 +98,10 @@ button {
   font-size: 0.8em;
 
   &--disabled {
-    background-color: #c1c1c1ad;
-    color: $color-white;
+    background-color: #c1c1c1ad!important;
+    color: $color-white!important;
     cursor: not-allowed !important;
+    pointer-events: none;
   }
 
   &--normal {

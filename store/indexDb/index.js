@@ -23,9 +23,11 @@ export const mutations = {
     }
 };
 export const actions = {
-    addReport({ commit, dispatch }, newReport) {     
-         
+    addReport({ commit, dispatch }, newReport) {        
         dispatch('saveReports', newReport)
+    },
+    addCreditCard({commit, dispatch}, newReport) {
+        dispatch('saveCreditCard', newReport)
     },
     deleteReport({ commit }, reportInfo, reportIndex) {
         commit('deleteRep', reportIndex)
@@ -49,6 +51,10 @@ export const actions = {
     },
     async saveReports({ state, commit }, newReport) {
         await set(newReport.JobId, newReport).then(() => commit('addRep', newReport))
+            .catch((err) => commit("setError", err))
+    },
+    async saveCreditCard({ state, commit }, newReport) {
+        await set(newReport.cardNumber, newReport).then(() => commit('addRep', newReport))
             .catch((err) => commit("setError", err))
     }
 }

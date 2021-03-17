@@ -758,10 +758,11 @@
                 <lazy-signature-pad-modal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
             </span>
             <span>
-                <div class="form__input--input-group">
+                <ValidationProvider class="form__input--input-group" rules="required" v-slot="{errors}">
                     <label for="repOf" class="form__label">Property Representative of:</label>
                     <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
-                </div>
+                    <span class="form__input--error">{{ errors[0] }}</span>
+                </ValidationProvider>
                 <div class="form__input--input-group">
                     <label for="repOfDate" class="form__label">Date:</label>
                     <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="400px">
@@ -813,9 +814,9 @@
                 <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
         </div>
-        <div class="form__form-group form__form-group--inline form__form-group--column">
+        <!-- <div class="form__form-group ">
           <VueSignaturePad class="form__input" width="100%" height="100%" id="sketch" ref="sketchPad" :options="{onBegin}" />
-        </div>
+        </div> -->
         <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
       </form>
     </ValidationObserver>
