@@ -10,12 +10,14 @@
                 <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
                     <fieldset v-if="currentStep === 1">
                         <div class="form__form-group">
-                            <span>
+                            <ValidationProvider name="Job Id" rules="required" v-slot="{errors}">
+                                <input type="hidden" v-model="selectedJobId" />
                                 <label for="selectJobId" class="form__label">Job ID</label>
                                 <select class="form__select" v-model="selectedJobId">
                                     <option disabled value="">Please select a Job Id</option>
                                     <option v-for="(item, i) in jobIds" :key="`jobid-${i}`">{{item}}</option>
                                 </select>
+                                <span class="form__input--error">{{ errors[0] }}</span>
                                 <!-- <div class="form__select" @click="selectActive = !selectActive" :class="{ open: selectActive }">
                                     <div class="info-bar__sort--trigger">
                                         <span>{{ selectedJobId.text }}</span>
@@ -27,7 +29,7 @@
                                         </span>
                                     </div>
                                 </div> -->
-                            </span>
+                            </ValidationProvider>
                         </div>
                         <p>This Assignment of Claim Agreement (hereinafter referred to as “Assignment” and/or “Agreement”) and Mitigation
 
@@ -265,15 +267,16 @@
                                 <label for="testimonial" class="form__label">Would you care to give a Short Testimonial Note:</label>
                                 <textarea v-model="testimonial" class="form__input--textbox form__input"></textarea>
                             </div>
-                            <div class="form__input--input-group">
+                            <ValidationProvider name="Payment option" rules="required" v-slot="{errors}" class="form__input--input-group">
                                 <p class="form__label">Which payment method will you use?</p>
                                 <ul class="form__form-group--inline">
                                     <li v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
                                         <label :for="item">{{item}}</label>
                                         <input :id="item" type="radio" v-model="paymentOption" :value="item" />
                                     </li>
-                                </ul>
-                            </div>
+                                </ul><br/>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
                         </div>
                     </fieldset>
                     <div v-if="currentStep >= 2 && paymentOption == 'Credit Card'">
@@ -282,7 +285,7 @@
                     </div>
                     <!-- <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn> -->
                     <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Credit Card'">Next</v-btn>
-                    <v-btn type="submit" :class="cardSubmitted ? 'button' : 'button--disabled'">Submit</v-btn>
+                    <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Credit Card' ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>
             </ValidationObserver>
         </div>

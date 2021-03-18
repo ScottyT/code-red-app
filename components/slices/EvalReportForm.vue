@@ -17,7 +17,7 @@
             <input v-model="timeOfCall" class="form__input" type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>-->
-          <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="jobId" class="form__input--input-group">
+          <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input--input-group">
             <label class="form__label">Job ID Number</label>
             <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>

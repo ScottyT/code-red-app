@@ -30,19 +30,17 @@ export const actions = {
         dispatch('saveCreditCard', newReport)
     },
     deleteReport({ commit }, reportInfo, reportIndex) {
+        console.log(reportIndex)
         commit('deleteRep', reportIndex)
+        if (reportInfo.ReportType === 'credit-card') {
+            del(reportInfo.cardNumber)
+            return;
+        }
         del(reportInfo.JobId)
     },
     async checkStorage({ state, commit }) {
         await values().then((values) => {
-            values.forEach((v, i) => {
-                if (v.ReportType === 'aob') {
-                    v.ReportType = 'AOB & Mitigation Contract'
-                }
-                if (v.ReportType === 'coc') {
-                    v.ReportType = 'Certificate of Completion'
-                }
-            })
+            
             commit('setReport', values)
         }).catch((err) => {
             commit('setReport', [])

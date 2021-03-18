@@ -4,7 +4,7 @@
   "description": "Backend server to connect to MongoDb",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "author": "Scott Tucker",
   "license": "Apache-2.0",
@@ -12,6 +12,7 @@
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
+    "express-validator": "^6.10.0",
     "mongoose": "^5.11.15",
     "mongoose-timestamp2": "^0.1.10"
   }

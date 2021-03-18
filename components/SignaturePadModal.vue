@@ -3,7 +3,7 @@
     <input type="hidden" v-model="sigData.data" />
     <v-dialog v-model="sigDialog" width="700">
       <template v-slot:activator="{ on, attrs }">
-        <div class="button--normal button" v-bind="attrs" v-on="on">Click to sign</div>
+        <div class="button--normal button" v-bind="attrs" v-on="on">{{sigData.data == '' ? 'Click to sign' : 'Signed'}}</div>
       </template>
       <VueSignaturePad class="form__input" width="700" height="250px" id="sigPad" :ref="sigRef" :options="{ onBegin }" />
       <div class="modal__footer">
@@ -36,6 +36,7 @@ export default {
       } = this.$refs[this.sigRef].saveSignature();
       this.sigData.data = data;
       this.sigData.isEmpty = isEmpty
+      this.sigDialog = false
     },
     onBegin() {
       const {

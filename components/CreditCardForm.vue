@@ -15,27 +15,27 @@
         <span>
           <ValidationProvider rules="required" v-slot="{errors}" name="First name" class="form__input--input-group">
             <label for="firstname" class="form__label">First name</label>
-            <input id="firstname" type="text" class="form__input" v-model="cardholderName.first" />
+            <input id="firstname" type="text" class="form__input" v-model="cardholderInfo.first" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="alpha" v-slot="{errors}" name="Middle initial" class="form__input--input-group">
             <label for="middle" class="form__label">Middle initial</label>
-            <input id="middle" type="text" class="form__input" v-model="cardholderName.middle" />
+            <input id="middle" type="text" class="form__input" v-model="cardholderInfo.middle" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{errors}" name="Last name" class="form__input--input-group">
             <label for="lastname" class="form__label">Last name</label>
-            <input id="lastname" type="text" class="form__input" v-model="cardholderName.last" />
+            <input id="lastname" type="text" class="form__input" v-model="cardholderInfo.last" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input--input-group">
             <label for="cardholderemail" class="form__label">Cardholder Email</label>
-            <input id="cardholderemail" type="text" class="form__input" v-model="cardholderName.email" />
+            <input id="cardholderemail" type="text" class="form__input" v-model="cardholderInfo.email" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
             <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
-            <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderName.phoneNumber" />
+            <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderInfo.phoneNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </span>
@@ -78,7 +78,7 @@
             </div>
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
+          <ValidationProvider vid="cardNumber" v-slot="{errors}" name="Card number" class="form__input--input-group">
             <label for="cardNumber" class="form__label">Card Number:</label>
             <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
@@ -104,9 +104,8 @@
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </div>
-      </fieldset>
-      <fieldset v-if="currentStep === 3" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
-        <p>I, {{repPrint}}, authorize Water Emergency Services Incorporated
+        <div class="form__form-group form__form-group--inline">
+          <p>I, {{repPrint}}, authorize Water Emergency Services Incorporated
           (WESI) to charge my credit card above for the agreed upon purchases and/or services within the above
           Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement. I understand that
           my information will be saved to file for future transactions on my account and I hereby authorize WESI to
@@ -114,29 +113,31 @@
           my credit card above for the agreed upon future transactions, purchases and/or services if any within the
           above
           Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement.</p>
-        <span>
-          <div class="form__input--input-group">
-            <label for="cusSig" class="form__label">Customer Signature:</label>
-            <lazy-signature-pad-modal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
-          </div>
-          <div class="form__input--input-group">
-            <label for="dateCusSign" class="form__label">Date</label>
-            <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
-              <template v-slot:activator="{ on, attrs }">
-                <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs"
-                       class="form__input form__input--short" readonly v-on="on"
-                       @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
-              </template>
-              <v-date-picker v-model="cusSigDate" scrollable>
-                <v-spacer></v-spacer>
-                <v-btn text color="#fff" @click="cusSigModal = false">Cancel</v-btn>
-                <v-btn text color="#fff" @click="$refs.dialogCusSign.save(cusSigDate)">OK</v-btn>
-              </v-date-picker>
-            </v-dialog>
-          </div>
-        </span>
+          <span>
+            <div class="form__input--input-group">
+              <label for="cusSig" class="form__label">Customer Signature:</label>
+              <lazy-signature-pad-modal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
+            </div>
+            <div class="form__input--input-group">
+              <label for="dateCusSign" class="form__label">Date</label>
+              <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
+                <template v-slot:activator="{ on, attrs }">
+                  <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs"
+                        class="form__input form__input--short" readonly v-on="on"
+                        @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
+                </template>
+                <v-date-picker v-model="cusSigDate" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="#fff" @click="cusSigModal = false">Cancel</v-btn>
+                  <v-btn text color="#fff" @click="$refs.dialogCusSign.save(cusSigDate)">OK</v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </div>
+          </span>
+        </div>
       </fieldset>
-      <v-btn type="submit" @click="submit">{{ currentStep === 3 ? 'Submit Credit Card' : 'Next' }}</v-btn>
+      <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
+      <v-btn type="submit" @click="submit">{{ currentStep === 2 ? 'Submit Credit Card' : 'Next' }}</v-btn>
       </form>
     </ValidationObserver>
   </div>
@@ -148,8 +149,8 @@ import {mapActions, mapGetters} from 'vuex';
     data: (vm) => ({
         currentStep:1,
         message: '',
-        errorMessage: '',
-        cardholderName: {
+        errorMessage: null,
+        cardholderInfo: {
             first: "",
             middle: "",
             last: "",
@@ -199,9 +200,10 @@ import {mapActions, mapGetters} from 'vuex';
     },
     computed: {
         cardName() {
-            let fullname = this.cardholderName.first + ' '+ [this.cardholderName.middle ? this.cardholderName.middle +' ' : null] + this.cardholderName.last
+            let fullname = this.cardholderInfo.first + ' '+ [this.cardholderInfo.middle ? this.cardholderInfo.middle +' ' : null] + this.cardholderInfo.last
             return fullname;
         },
+        ...mapGetters(['getCards'])
     },
     watch: {
         cusSigDate(val) {
@@ -216,32 +218,36 @@ import {mapActions, mapGetters} from 'vuex';
             addCreditCard: 'indexDb/addCreditCard',
             checkStorage: 'indexDb/checkStorage'
         }),
-        
+        goToStep(step) {
+          if (step < 1) {
+            return;
+          }
+          this.currentStep = step;
+        },
         formatDate(dateReturned) {
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
         },
         acceptNumber() {
-            var x = this.cardholderName.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
-            this.cardholderName.phoneNumber = !x[2] ?
+            var x = this.cardholderInfo.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
+            this.cardholderInfo.phoneNumber = !x[2] ?
             x[1] :
             '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
         },
-        submitCard() {
-            this.$refs.cardForm.validate().then(success => {
+        async submitCard() {
+            const cards = this.getCards.map((v) => { return v.cardNumber})
+            await this.$refs.cardForm.validate().then(success => {
               if (!success) {
-                console.log("errors happened")
                 this.isSubmitted = false
                 return;
               }
-              console.log("submitted form")
-              if (this.currentStep === 3) {
+              if (this.currentStep === 2) {
                 this.isSubmitted = true
                 const post = {
                   JobId: this.jobId,
-                  formType: 'credit-card',
-                  cardholderInfo: this.cardholderName,
+                  ReportType: 'credit-card',
+                  cardholderInfo: this.cardholderInfo,
                   billingAddress: this.billingAddress,
                   creditCard: this.selectedCard.card == 'Other' ? this.selectedCard.otherCard : this.selectedCard.card,
                   cardNumber: this.cardNumber,
@@ -252,13 +258,40 @@ import {mapActions, mapGetters} from 'vuex';
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted
                 };
-                if (this.$nuxt.isOffline) {
-                  this.addCreditCard(post).then(() => {
-                    this.message = "Credit card info saved"
-                  }).catch((err) => {
-                    this.errorMessage = err
-                  })
+                if (!cards.includes(this.cardNumber)) {
+                  if (this.$nuxt.isOffline) {
+                    this.addCreditCard(post).then(() => {
+                      this.message = "Credit card info saved"
+                      setTimeout(() => {
+                        this.message = ""
+                      }, 2000);
+                    }).catch((err) => {
+                      this.errorMessage = err
+                    })
+                  } else {
+                    this.$axios.$post("/api/credit-card/new", post).then((res) => {
+                      
+                      if (res.errors) {
+                        this.$refs.cardForm.setErrors({
+                          cardNumber: errors[0].msg
+                        });
+                        return;
+                      }
+                      this.message = "Credit card info submitted"
+                      this.submitted = true
+                      
+                      setTimeout(() => {
+                        this.message = ""
+                        this.errorMessage = ""
+                      }, 2000);
+                    }).catch((err) => {
+                      this.errorMessage = err
+                    })
+                  }
+                } else {
+                  this.errorMessage = "Can't have duplicate credit card numbers"
                 }
+                
                 return;
               }
               this.currentStep++

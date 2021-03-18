@@ -31,4 +31,5 @@ const certificateOfCompletion = mongoose.Schema({
     customerSignature: String,
     customerSigDate: String
 })
+certificateOfCompletion.plugin(timestamps)
 module.exports = mongoose.model('COC', certificateOfCompletion, 'certificate-of-completion');

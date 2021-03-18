@@ -3,10 +3,12 @@
   <div>
     <span v-if="!isLoggedIn"><login-form /></span>
     <div class="profile" v-else>
-      <h1 v-show="message">{{message}}</h1>
+      <h1 class="text-center">Saved Forms</h1>
+      <h2 v-show="message">{{message}}</h2>
       <ul v-if="$store.state.indexDb.reports.length > 0">
         <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
-          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit" @click="submitForm(report, i)" class="button button--normal">Submit</button>
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
     </div>
@@ -79,6 +81,7 @@
             setTimeout(() => {
               this.message = ""
             }, 2000)
+            console.log(index)
             this.deleteReport(post, index)
           })
             

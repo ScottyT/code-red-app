@@ -6,6 +6,7 @@ export const state = () => ({
   isAdmin: null,
   employees: [],
   reports: [],
+  creditCards:[]
 })
 
 export const mutations = {
@@ -23,6 +24,9 @@ export const mutations = {
   },
   setReports: (state, payload) => {
     state.reports = payload
+  },
+  setCreditCards: (state, payload) => {
+    state.creditCards = payload
   },
   SET_USER: (state, authUser) => {
    // console.log("authUser:", authUser)
@@ -46,6 +50,7 @@ export const actions = {
     }
     const employees = await $axios.$get("/api/employees")
     const reports = await $axios.$get("/api/reports")
+    const creditcards = await $axios.$get("/api/credit-cards")
     let newArr = reports.reduce((unique, o) => {
       if (!unique.some(obj => obj.JobId === o.JobId && obj.ReportType === o.ReportType)) {
         unique.push(o)
@@ -54,6 +59,7 @@ export const actions = {
     }, [])
     commit('setEmployees', employees)
     commit('setReports', reports)
+    commit('setCreditCards', creditcards)
     commit('setUser', {
       email: null,
       id: null,
@@ -122,6 +128,9 @@ export const getters = {
   },
   getReports: (state) => {
     return state.reports
+  },
+  getCards: (state) => {
+    return state.creditCards
   },
   getFolders: (state) => {
     return state.folders

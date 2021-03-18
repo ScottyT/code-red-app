@@ -26,4 +26,5 @@ const caseFileReport = mongoose.Schema({
     evaluationLogs: Array,
     verifySign: String
 })
+caseFileReport.plugin(timestamps)
 module.exports = mongoose.model('CaseFileReports', caseFileReport, 'case-file-report')

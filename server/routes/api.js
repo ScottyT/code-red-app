@@ -5,8 +5,13 @@ const RapidResponse = require("../models/rapidReportSchema");
 const CaseFile = require("../models/caseFileSchema");
 const COC = require("../models/cocSchema");
 const AOB = require("../models/aobSchema");
+const CreditCard = require("../models/creditCardSchema");
 const router = express.Router();
+
+const { body, check, validationResult } = require('express-validator');
+const { values } = require("idb-keyval");
 router.use(express.json())
+router.use(express.urlencoded({extended: true}));
 router.post("/employee/new", (req, res) => {
     console.log(req.body)
     User.create({
@@ -35,6 +40,7 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
     const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
     const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
+    const creditCard = await CreditCard.findOne({JobId: req.params.JobId})
     switch (req.params.ReportType) {
         case "dispatch":
             res.json(repDispatch)
@@ -47,6 +53,9 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
             break;
         case "case-file-technician":
             res.json(technician);
+            break;
+        case "credit-card":
+            res.json(creditCard);
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
@@ -88,7 +97,6 @@ router.get('/employees', (req, res) => {
     })
 })
 router.get('/employee/:email', (req, res) => {
-    console.log("request", req.params)
     User.findOne({email: req.params.email}, (err, employee) => {
         if (err) {
             res.status(500).send('Error')
@@ -118,6 +126,26 @@ router.get('/aob-mitigation-contracts', (req, res) => {
             res.status(500).send('Error')
         } else {
             res.status(200).json(aob)
+        }
+    })
+})
+router.get('/credit-cards', (req, res) => {
+    CreditCard.find({}, (err, creditcard) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(creditcard)
+        }
+    })
+})
+router.get('/credit-card/:cardNumber', (req, res) => {
+    CreditCard.findOne({cardNumber: req.body.cardNumber}, (err, creditcard) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (creditcard) {
+            res.status(200).json(creditcard)
+        } else {
+            res.status(400).send('Credit card not found')
         }
     })
 })
@@ -307,6 +335,31 @@ router.post("/aob/new", (req, res) => {
             res.status(500).send('Error')
         } else {
             res.status(200).json(aob)
+        }
+    })
+})
+router.post("/credit-card/new", [
+    check('JobId').not().isEmpty().withMessage('Job id is required'),
+    check('cardNumber', 'Card number is required')
+], (req, res) => {
+    CreditCard.create({
+        JobId: req.body.JobId,
+        ReportType: req.body.ReportType,
+        cardholderInfo: req.body.cardholderInfo,
+        billingAddress: req.body.billingAddress,
+        creditCard: req.body.creditCard,
+        cardNumber: req.body.cardNumber,
+        cardholderName: req.body.cardholderName,
+        expirationDate: req.body.expDate,
+        cvcNum: req.body.cvcNum,
+        cardholderZip: req.body.cardholderZip,
+        customerSig: req.body.cusSign,
+        customerSignDate: req.body.customerSigDate
+    }, (err, creditcard) => {
+        if (err) {
+            res.status(500).json(err)
+        } else {
+            res.status(200).json(creditcard)
         }
     })
 })
