@@ -2,8 +2,14 @@ const mongoose = require('mongoose')
 const timestamps = require('mongoose-timestamp2');
 
 const caseFileReport = mongoose.Schema({
-    JobId: String,
-    id: String,
+    JobId: {
+        type: String,
+        required: true
+    },
+    id: {
+        type: String,
+        required: true
+    },
     date: String,
     location: Map,
     ReportType: String,

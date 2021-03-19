@@ -6,7 +6,8 @@ export const state = () => ({
   isAdmin: null,
   employees: [],
   reports: [],
-  creditCards:[]
+  creditCards:[],
+  jobids:[]
 })
 
 export const mutations = {
@@ -37,6 +38,9 @@ export const mutations = {
       role: authUser.role
     }
   },
+  setJobIds: (state, payload) => {
+    state.jobids = payload
+  }
 }
 
 export const actions = {
@@ -98,25 +102,9 @@ export const actions = {
       })
     })
   },
-  async fetchUser({ commit }, context) {
-    const userData = []
-    if (context == null) return
-    // Might use this way when i get cloud run deploy fixed
-    /* await this.$axios.$get(`/getuser/${context}`).then((res) => {
-      userData.push(res)
-      commit("setUser", userData)
-    }).catch((error) => {
-      commit('setError', error)
-    }) */
-    
-    /* await this.$fire.auth.currentUser
-      .getIdTokenResult()
-      .then((idTokenResult) => {
-        commit('setAdmin', idTokenResult.claims.admin)
-      })
-      .catch((error) => {
-        console.log(error)
-      }) */
+  mappingJobIds({commit, state}) {
+    const jobids = state.reports.map((v) => { return v.JobId })
+    commit('setJobIds', jobids)
   }
 }
 export const getters = {

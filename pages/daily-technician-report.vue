@@ -11,10 +11,13 @@
           <h2 class="alert alert--error">{{errorMessage}}</h2>
           <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
             <div class="form__form-group">
-              <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="JobId"
-                                  class="form__input--input-group">
+              <ValidationProvider rules="required" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
+                <input type="hidden" v-model="selectedJobId" />
                 <label class="form__label">Job ID Number</label>
-                <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
+                <select class="form__select" v-model="selectedJobId">
+                  <option disabled value="">Please select a Job ID</option>
+                  <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+                </select>
                 <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
               </ValidationProvider>
               <div class="form__input--input-group">
@@ -218,7 +221,7 @@
 <script>
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
   import {
-    mapGetters
+    mapGetters, mapActions
   } from 'vuex';
   import moment from 'moment';
   export default {
@@ -551,10 +554,13 @@
             data: '',
             isEmpty: true
         },
-        workCompletedAfterHours: false
+        workCompletedAfterHours: false,
+        selectedJobId: ""
     }),
     mounted() {
         this.createGeocoder();
+        this.checkStorage();
+        this.mappingJobIds();
     },
     watch: {
         dispatchToProperty(val) {
@@ -568,7 +574,7 @@
         }
     },
     computed: {
-      ...mapGetters(["isLoggedIn", "getUser", "getReports"]),
+      ...mapGetters(["isLoggedIn", "getUser"]),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -577,6 +583,11 @@
       }
     },
     methods: {
+      ...mapActions({
+        addReport: 'indexDb/addReport',
+        checkStorage: 'indexDb/checkStorage',
+        mappingJobIds: 'mappingJobIds'
+      }),
       formatDate(dateReturned) {
         if (!dateReturned) return null
         const [year, month, day] = dateReturned.split('-')
@@ -615,7 +626,7 @@
             first: this.getUser.name.split(" ")[0],
             last: this.getUser.name.split(" ")[1]
         }
-          const reports = this.getReports.map((v) => { return v.JobId })
+          const reports = this.$store.state.jobids
           const evaluationLogs= [
             {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
             {label: 'Start Time', value: this.evalStart},

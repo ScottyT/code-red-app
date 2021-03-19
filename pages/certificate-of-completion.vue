@@ -15,7 +15,7 @@
                                 <label for="selectJobId" class="form__label">Job ID</label>
                                 <select class="form__select" v-model="selectedJobId">
                                     <option disabled value="">Please select a Job Id</option>
-                                    <option v-for="(item, i) in jobIds" :key="`jobid-${i}`">{{item}}</option>
+                                    <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
                                 </select>
                                 <span class="form__input--error">{{ errors[0] }}</span>
                                 <!-- <div class="form__select" @click="selectActive = !selectActive" :class="{ open: selectActive }">
@@ -380,18 +380,12 @@ export default {
         cusSigDate: new Date().toISOString().substr(0, 10),
         cusSigDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         selectedJobId: "",
-        selectActive: false,
         paymentOptions: ["Cash", "Credit Card", "Thrive"],
         paymentOption: "",
         cardSubmitted: false
     }),
     computed: {
-        ...mapGetters(["isLoggedIn", "getReports"]),
-        jobIds() {
-            return this.getReports.map((v) => {
-                return v.JobId
-            })
-        },
+        ...mapGetters(["isLoggedIn"]),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -459,11 +453,13 @@ export default {
     },
     mounted() {
         this.checkStorage()
+        this.mappingJobIds()
     },
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',
-            checkStorage: 'indexDb/checkStorage'
+            checkStorage: 'indexDb/checkStorage',
+            mappingJobIds: 'mappingJobIds'
         }),
         selectedJob(option) {
             this.selectedJobId = option;

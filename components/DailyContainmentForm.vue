@@ -2,15 +2,22 @@
   <div class="form-wrapper form-wrapper__case-file">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
-    <ValidationObserver v-slot="{ handleSubmit }">
+    <ValidationObserver ref="form" v-slot="{errors}">
       <h2>{{message}}</h2>
-      <h2 class="alert alert--error">{{errorMessage}}</h2>
-      <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+      <ul>
+        <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error[0]}}</li>
+      </ul>
+      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error[0]}}</h3>
+      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <div class="form__form-group">
-          <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="JobId"
+          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id"
                               class="form__input--input-group">
+            <input type="hidden" v-model="selectedJobId" />
             <label class="form__label">Job ID Number</label>
-            <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
+            <select class="form__select" v-model="selectedJobId">
+              <option disabled value="">Please select a Job ID</option>
+              <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+            </select>
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
@@ -176,6 +183,7 @@
     mapGetters, mapActions
   } from 'vuex'
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+  import goTo from 'vuetify/es5/services/goto'
   import moment from 'moment';
   export default {
     name: "DailyContainmentForm",
@@ -183,7 +191,6 @@
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       dateDialog: false,
-      jobId: null,
       location: {
         address: null,
         city: null,
@@ -342,7 +349,8 @@
         isEmpty: true
       },
       submitting: false,
-      submitted: false
+      submitted: false,
+      selectedJobId: ""
     }),
     watch: {
       date(val) {
@@ -359,7 +367,7 @@
       }
     },
     computed: {
-      ...mapGetters(['getUser', 'getReports']),
+      ...mapGetters(['getUser']),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -370,11 +378,13 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
+      this.mappingJobIds()
     },
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage'
+        checkStorage: 'indexDb/checkStorage',
+        mappingJobIds: 'mappingJobIds'
       }),
       formatDate(dateReturned) {
         if (!dateReturned) return null
@@ -415,21 +425,27 @@
       },
       async submitForm() {
         this.message = ''
+        this.submitting = true
         const user = this.getUser;
         const userNameObj = {
           first: user.name.split(" ")[0],
           last: user.name.split(" ")[1]
         }
-        const reports = this.getReports.map((v) => { return v.JobId })
         const evaluationLogs= [
           {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
           {label: 'Start Time', value: this.evalStart},
           {label: 'End Time', value: this.evalEnd},
           {label: 'Total Time', value: this.duration}
         ]
-        if (reports.includes(this.jobId)) {
+        let scrollTo = 0
+        this.$refs.form.validate().then(success => {
+          if (!success) {
+            this.submitting = false
+            this.submitted = false
+            return goTo(scrollTo)
+          }
           const post = {
-            JobId: this.jobId,
+            JobId: this.selectedJobId,
             id: user.id,
             date: this.dateFormatted,
             location: this.location,
@@ -449,15 +465,20 @@
             this.addReport(post).then(() => {
               this.message = "Report was saved successfully for submission later!"
               this.submitted = true
+              this.submitting = false
               setTimeout(() => {
                 this.message = ""
-                this.$router.push("/")
               }, 2000)
             })
           } else {
-            this.$axios.$post("/api/case-file-report/new", post).then(() => {
-              this.message = "Report submitted"
+            this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+              if (res.errors) {
+                this.errorMessage = res.errors
+                return goTo(scrollTo)
+              }
+              this.message = res.message
               this.submitted = true
+              this.submitting = false
               setTimeout(() => {
                 this.message = ""
                 this.$router.push("/")
@@ -466,11 +487,7 @@
               this.errorMessage = err
             })
           }
-        } else {
-          this.submitted = false
-          this.submitting = false
-          this.errorMessage = "Job ID exsits"
-        }
+        })
       }
     },
     created() {

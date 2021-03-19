@@ -149,111 +149,161 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
-router.post("/dispatch/new", (req, res) => {
-    Dispatch.create({
-        ArrivalContactName: req.body.ArrivalContactName,
-        JobId: req.body.JobId,
-        ReportType: req.body.ReportType,
-        appointmentDate: req.body.appointmentDate,
-        appointmentTime: req.body.appointmentTime,
-        callerName: req.body.callerName,
-        dateFormatted: req.body.dateFormatted,
-        emailAddress: req.body.emailAddress,
-        phoneNumber: req.body.phoneNumber,
-        callTimeUpdate: req.body.callTimeUpdate,
-        id: req.body.id,
-        location: req.body.location,
-        textTimeUpdate: req.body.textTimeUpdate,
-        propertyChkList: req.body.propertyChkList,
-        summary: req.body.summary,
-        teamMember: req.body.teamMember,
-        timeFormatted: req.body.timeFormatted,
-        teamMemberSig: req.body.teamMemberSig,
-        signDateTime: req.body.signDate
-    }, (err, report) => {
-        if (err) {
-            console.log(`CREATE error: ${err}`)
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(report)
+router.post("/dispatch/new",
+    check('ReportType').not().isEmpty().withMessage('Report type is required'),
+    body('JobId')
+        .not().isEmpty().withMessage("Job id is required")
+        .custom(value => {
+        return Dispatch.findOne({JobId: value}).then(dispatch => {
+            if (dispatch) {
+                return Promise.reject('Job id already in use');
+            }
+        });
+    }),
+    async (req, res) => {
+        const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+            // Build your resulting errors however you want! String, object, whatever - it works!
+            return `${param}: ${msg}`;
+        };
+        const result = validationResult(req).formatWith(errorFormatter);       
+        const dispatch = new Dispatch({
+            ArrivalContactName: req.body.ArrivalContactName,
+            JobId: req.body.JobId,
+            ReportType: req.body.ReportType,
+            appointmentDate: req.body.appointmentDate,
+            appointmentTime: req.body.appointmentTime,
+            callerName: req.body.callerName,
+            dateFormatted: req.body.dateFormatted,
+            emailAddress: req.body.emailAddress,
+            phoneNumber: req.body.phoneNumber,
+            callTimeUpdate: req.body.callTimeUpdate,
+            id: req.body.id,
+            location: req.body.location,
+            textTimeUpdate: req.body.textTimeUpdate,
+            propertyChkList: req.body.propertyChkList,
+            summary: req.body.summary,
+            teamMember: req.body.teamMember,
+            timeFormatted: req.body.timeFormatted,
+            teamMemberSig: req.body.teamMemberSig,
+            signDateTime: req.body.signDate
+        });
+        if (!result.isEmpty()) {
+            return res.json({ errors: result.array() })
         }
-    })
-    
+        await dispatch.save().then(() => {
+            res.json({message: "Report submitted"})
+        }).catch((err) => {
+            res.json(err)
+        })
 })
-router.post("/rapid-response/new", (req, res) => {
-    RapidResponse.create({
-        JobId: req.body.JobId,
-        DateOfLoss: req.body.DateOfLoss,
-        ClaimNumber: req.body.ClaimNumber,
-        PolicyNumber: req.body.PolicyNumber,
-        InsuranceCompany: req.body.InsuranceCompany,
-        adjusterName: req.body.adjusterName,
-        adjusterEmail: req.body.adjusterEmail,
-        adjusterPhone: req.body.adjusterPhone,
-        ContactName: req.body.ContactName,
-        DateOfEvaluation: req.body.DateOfEvaluation,
-        EmailAddress: req.body.EmailAddress,
-        EvaluationLogs: req.body.EvaluationLogs,
-        PhoneNumber: req.body.PhoneNumber,
-        Pictures: req.body.Pictures,
-        PictureTypes: req.body.PictureTypes,
-        ReportType: req.body.ReportType,
-        Steps: req.body.Steps,
-        TypeOfLoss: req.body.TypeOfLoss,
-        cusFirstName: req.body.cusFirstName,
-        cusLastName: req.body.cusLastName,
-        id: req.body.id,
-        location: req.body.location,
-        signDate: req.body.signDate,
-        teamMember: req.body.teamMember,
-        photoId: req.body.photoId,
-        jobFiles: req.body.jobFiles,
-        cardImages: req.body.cardImages,
-        intrusion: req.body.intrusionInfo,
-        preliminaryDetermination: req.body.selectedPreliminary,
-        moistureInspection: req.body.selectedInspection,
-        preRestorationEval: req.body.preRestorationEval
-    }, (err, report) => {
-        if (err) {
-            console.log(`CREATE error: ${err}`)
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(report)
+router.post("/rapid-response/new", 
+    check('id').not().isEmpty().withMessage('Team lead id is required')
+        .custom(value => {
+            return User.findOne({id: value}).then(user => {
+                if (!user) {
+                    return Promise.reject('User is not found')
+                }
+            })
+        }),
+    body('JobId')
+        .not().isEmpty().withMessage("Job id is required")
+        .custom(value => {
+            return RapidResponse.findOne({JobId: value}).then(report => {
+                if (report) {
+                    return Promise.reject('Job id already in use');
+                }
+            });
+    }),
+    body('photoId').not().isEmpty().withMessage("Photo ID is required"),
+    async (req, res) => {
+        const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+            // Build your resulting errors however you want! String, object, whatever - it works!
+            return `${param}: ${msg}`;
+        };
+        const result = validationResult(req).formatWith(errorFormatter);
+        const rapid = new RapidResponse({
+            JobId: req.body.JobId,
+            DateOfLoss: req.body.DateOfLoss,
+            ClaimNumber: req.body.ClaimNumber,
+            PolicyNumber: req.body.PolicyNumber,
+            InsuranceCompany: req.body.InsuranceCompany,
+            adjusterName: req.body.adjusterName,
+            adjusterEmail: req.body.adjusterEmail,
+            adjusterPhone: req.body.adjusterPhone,
+            ContactName: req.body.ContactName,
+            DateOfEvaluation: req.body.DateOfEvaluation,
+            EmailAddress: req.body.EmailAddress,
+            EvaluationLogs: req.body.EvaluationLogs,
+            PhoneNumber: req.body.PhoneNumber,
+            Pictures: req.body.Pictures,
+            PictureTypes: req.body.PictureTypes,
+            ReportType: req.body.ReportType,
+            Steps: req.body.Steps,
+            TypeOfLoss: req.body.TypeOfLoss,
+            cusFirstName: req.body.cusFirstName,
+            cusLastName: req.body.cusLastName,
+            id: req.body.id,
+            location: req.body.location,
+            signDate: req.body.signDate,
+            teamMember: req.body.teamMember,
+            photoId: req.body.photoId,
+            jobFiles: req.body.jobFiles,
+            cardImages: req.body.cardImages,
+            intrusion: req.body.intrusionInfo,
+            preliminaryDetermination: req.body.selectedPreliminary,
+            moistureInspection: req.body.selectedInspection,
+            preRestorationEval: req.body.preRestorationEval
+        })
+        if (!result.isEmpty()) {
+            return res.json({ errors: result.array() })
         }
-    })
+        await rapid.save().then(() => {
+            res.json({message: "Report submitted"})
+        }).catch((err) => {
+            res.json(err)
+        })
 })
-router.post("/case-file-report/new", (req, res) => {
-    CaseFile.create({
-        JobId: req.body.JobId,
-        date: req.body.date,
-        id: req.body.id,
-        location: req.body.location,
-        ReportType: req.body.ReportType,
-        selectedTmpRepairs: req.body.selectedTMPRepairs,
-        selectedContent: req.body.selectedContent,
-        selectedStructualCleaning: req.body.selectedStructualCleaning,
-        selectedStructualDrying: req.body.selectedStructualDrying,
-        selectedCleaningSection: req.body.selectedStructualCleaning,
-        contentCleaningInspection: req.body.contentCleaningInspection,
-        waterRestorationInspection: req.body.waterRestorationInspection,
-        waterRemediationAssesment: req.body.waterRemediationAssesment,
-        overviewScopeOfWork: req.body.overviewScopeOfWork,
-        specializedExpert: req.body.specializedExpert,
-        scopeOfWork: req.body.scopeOfWork,
-        projectWorkPlans: req.body.projectWorkPlans,
-        notes: req.body.notes,
-        afterHoursWork: req.body.afterHoursWork,
-        evaluationLogs: req.body.evaluationLogs,
-        verifySign: req.body.verifySig,
-        teamMember: req.body.teamMember,
-        CaseFileType: req.body.CaseFileType
-    }, (err, report) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(report)
+router.post("/case-file-report/new",
+    check('JobId').not().isEmpty().withMessage('Job ID is required'),
+    check('id').not().isEmpty().withMessage('Team Lead ID is required'),
+    async (req, res) => {
+        const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+            return `${param}: ${msg}`;
+        };
+        const result = validationResult(req).formatWith(errorFormatter);
+        const caseFile = new CaseFile({
+            JobId: req.body.JobId,
+            date: req.body.date,
+            id: req.body.id,
+            location: req.body.location,
+            ReportType: req.body.ReportType,
+            selectedTmpRepairs: req.body.selectedTMPRepairs,
+            selectedContent: req.body.selectedContent,
+            selectedStructualCleaning: req.body.selectedStructualCleaning,
+            selectedStructualDrying: req.body.selectedStructualDrying,
+            selectedCleaningSection: req.body.selectedStructualCleaning,
+            contentCleaningInspection: req.body.contentCleaningInspection,
+            waterRestorationInspection: req.body.waterRestorationInspection,
+            waterRemediationAssesment: req.body.waterRemediationAssesment,
+            overviewScopeOfWork: req.body.overviewScopeOfWork,
+            specializedExpert: req.body.specializedExpert,
+            scopeOfWork: req.body.scopeOfWork,
+            projectWorkPlans: req.body.projectWorkPlans,
+            notes: req.body.notes,
+            afterHoursWork: req.body.afterHoursWork,
+            evaluationLogs: req.body.evaluationLogs,
+            verifySign: req.body.verifySig,
+            teamMember: req.body.teamMember,
+            CaseFileType: req.body.CaseFileType
+        });
+        if (!result.isEmpty()) {
+            return res.json({ errors: result.array() })
         }
-    })
+        await caseFile.save().then(() => {
+            res.json({message: "Report submitted"})
+        }).catch((err) => {
+            res.json(err)
+        })
 })
 router.post("/coc/new", (req, res) => {
     COC.create({
@@ -275,16 +325,7 @@ router.post("/coc/new", (req, res) => {
         teamSign: req.body.teamSign,
         teamSignDate: req.body.teamSignDate,
         testimonial: req.body.testimonial,
-        cardholder: req.body.cardholderInfo,
-        billingAddress: req.body.billingAddress,
-        creditCardProvider: req.body.creditCard,
-        cardNumber: req.body.cardNumber,
-        cardholderName: req.body.cardholderName,
-        expirationDate: req.body.expDate,
-        cvcNumber: req.body.cvcNum,
-        cardZipCode: req.body.cardholderZip,
-        customerSignature: req.body.cusSign,
-        customerSigDate: req.body.customerSigDate
+        paymentOption: req.body.paymentOption
     }, (err, coc) => {
         if (err) {
             res.status(500).send('Error')

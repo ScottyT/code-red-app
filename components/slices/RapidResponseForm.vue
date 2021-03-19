@@ -49,8 +49,7 @@
           </div>
           <ValidationProvider v-slot="{ errors }" name="Job ID" rules="required" class="form__input--input-group">
             <label for="jobId" class="form__label">Job ID</label>
-            <input v-model="jobId" id="jobId" name="jobId" class="form__input" type="text" />
-           
+            <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
@@ -824,6 +823,7 @@
               uid: user.uid,
               signDate: this.signDate,
               teamMember: userNameObj,
+              photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
               timeIntrusion: this.timeIntrusionFormatted,
               intrusionInfo: this.intrusionSection,
@@ -833,23 +833,26 @@
             };
             if (this.$nuxt.isOffline) {
               const tempPost = {...post}
-              tempPost.photoId = this.idImage
+              //tempPost.photoId = this.idImage
               tempPost.jobFiles =this.uploadedFiles
               tempPost.cardImages = this.cardImages
               this.addReport(tempPost).then(() => {
-                this.message = "Report was saved successfully for submission later!"
+                this.successMessage = "Report was saved successfully for submission later!"
                 this.submitted = true
                 setTimeout(() => {
-                    this.message = ""
-                    this.$router.push("/")
+                    this.successMessage = ""
                 }, 2000)
               })
             } else {
-              this.$axios.$post("/api/rapid-response/new", post).then(() => {
-                this.message = "Report submitted"
+              this.$axios.$post("/api/rapid-response/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return goTo(scrollTo)
+                }
+                this.successMessage = res.message
                 this.submitted = true
                 setTimeout(() => {
-                    this.message = ""
+                    this.successMessage = ""
                     this.$router.push("/")
                 }, 2000)
               }).catch((err) => {

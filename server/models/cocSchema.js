@@ -20,16 +20,7 @@ const certificateOfCompletion = mongoose.Schema({
     teamSign: String,
     teamSignDate: String,
     testimonial: String,
-    cardholder: Object,
-    billingAddress: Object,
-    creditCardProvider: String,
-    cardNumber: String,
-    cardholderName: String,
-    expirationDate: String,
-    cvcNumber: String,
-    cardZipCode: String,
-    customerSignature: String,
-    customerSigDate: String
+    paymentOption: String
 })
 certificateOfCompletion.plugin(timestamps)
 module.exports = mongoose.model('COC', certificateOfCompletion, 'certificate-of-completion');

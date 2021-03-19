@@ -3,10 +3,47 @@
   <div>
     <span v-if="!isLoggedIn"><login-form /></span>
     <div class="profile" v-else>
-      <h1 class="text-center">Saved Forms</h1>
-      <h2 v-show="message">{{message}}</h2>
-      <ul v-if="$store.state.indexDb.reports.length > 0">
+      <div class="profile__title">
+        <h1 class="text-center">Saved Forms</h1>
+        <h2 v-show="message">{{message}}</h2>
+      </div>
+      <!-- <ul v-if="$store.state.indexDb.reports.length > 0">
         <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul> -->
+      <ul class="profile__group">
+        <h3>Dispatch and Rapid Response Reports</h3>
+        <li v-for="(report, i) in defaultReports" :key="`default-reports-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Containment Reports</h3>
+        <li v-for="(report, i) in containmentReps" :key="`containment-reps-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.CaseFileType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Credit Card Reports</h3>
+        <li v-for="(report, i) in creditCardReps" :key="`credit-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Certificate of Completion Reports</h3>
+        <li v-for="(report, i) in cocReports" :key="`coc-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>AOB Mitigation Contract</h3>
+        <li v-for="(report, i) in aobReports" :key="`coc-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
@@ -31,7 +68,37 @@
       }
     },
     computed: {
-      ...mapGetters(['isLoggedIn'])
+      ...mapGetters(['isLoggedIn']),
+      containmentReps() {
+        return this.savedReports.filter((v) => {
+          return v.CaseFileType == 'containment'
+        })
+      },
+      technicianReps() {
+        return this.savedReports.filter((v) => {
+          return v.CaseFileType == 'technician'
+        })
+      },
+      defaultReports() {
+        return this.savedReports.filter((v) => {
+          return v.ReportType == 'dispatch' || v.ReportType == 'rapid-response'
+        })
+      },
+      creditCardReps() {
+        return this.savedReports.filter((v) => {
+          return v.ReportType == 'credit-card'
+        })
+      },
+      cocReports() {
+        return this.savedReports.filter((v) => {
+          return v.ReportType == 'coc'
+        })
+      },
+      aobReports() {
+        return this.savedReports.filter((v) => {
+          return v.ReportType == 'aob'
+        })
+      }
     },
     mounted() {
       this.checkStorage()
@@ -64,8 +131,9 @@
       }),
       async submitForm(post, index) {
         try {
-          await this.$axios.$post(`/api/${post.ReportType}/new`, post).then(() => {
-            Object.keys(post).forEach(k => {
+          await this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
+            if (post.ReportType == 'rapid-response') {
+              Object.keys(post).forEach(k => {
                 if (k == "photoId") {                 
                     this.submitFiles(post, post.photoId, "Photo ID")
                 }
@@ -75,14 +143,18 @@
                 if (k == "cardImages") {
                     this.submitFiles(post, post.cardImages, "Card Images")
                 }
-            })
-            post.Pictures = this.filesUploading
-            this.message = "Report submitted"
+              })
+              post.Pictures = this.filesUploading
+            }
+            
+            this.message = res.message
             setTimeout(() => {
               this.message = ""
             }, 2000)
-            console.log(index)
-            this.deleteReport(post, index)
+            this.deleteReport({
+              reportInfo: post, 
+              reportIndex: index
+            })
           })
             
         } catch (e) {
@@ -144,3 +216,16 @@
     }
   }
 </script>
+<style lang="scss">
+.profile {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:100px 1fr;
+  &__title {
+    grid-column:1/4;
+  }
+  &__group {
+
+  }
+}
+</style>

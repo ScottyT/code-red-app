@@ -17,7 +17,20 @@
 <script>
 export default {
   name: 'SignaturePadModal',
-  props: ['sigData', 'sigRef', 'name'],
+  props: {
+    sigData: {
+      type: Object,
+      required: true
+    },
+    sigRef: {
+      type: String,
+      required: true
+    },
+    name: {
+      type: String,
+      default: "Signature"
+    }
+  },
   data() {
     return {
       sigDialog: false
