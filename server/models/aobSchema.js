@@ -1,7 +1,10 @@
 const mongoose = require('mongoose')
 const timestamps = require('mongoose-timestamp2');
 const aobMitigationContract = mongoose.Schema({
-    JobId: String,
+    JobId: {
+        type: String,
+        required: true
+    },
     ReportType: String,
     subjectProperty: String,
     cusSign: String,

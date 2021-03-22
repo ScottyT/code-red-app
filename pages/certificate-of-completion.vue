@@ -4,10 +4,17 @@
         <div v-else-if="isLoggedIn" class="form-wrapper">
             <h1 class="text-center">Water Emergency Services Incorporated</h1>
             <h2 class="text-center">Certificate of Completion</h2>
-            <ValidationObserver v-slot="{ handleSubmit }">
+            <ValidationObserver ref="form" v-slot="{errors}">
+                <v-dialog width="400px" v-model="errorDialog">
+                    <div class="modal__error">
+                    <div v-for="(error, i) in errors" :key="`error-${i}`">
+                        <h2 class="form__input--error">{{ error[0] }}</h2>
+                    </div>
+                    </div>
+                </v-dialog>
                 <h2>{{message}}</h2>
-                <h2 class="alert alert--error">{{errorMessage}}</h2>
-                <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+                <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
+                <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
                     <fieldset v-if="currentStep === 1">
                         <div class="form__form-group">
                             <ValidationProvider name="Job Id" rules="required" v-slot="{errors}">
@@ -293,11 +300,12 @@
 </template>
 <script>
 import {mapGetters, mapActions} from 'vuex';
+import goTo from 'vuetify/es5/services/goto'
 export default {
     data: (vm) => ({
         currentStep:1,
         message: '',
-        errorMessage: '',
+        errorMessage: [],
         submitted: false,
         subjectProperty: '',
         deductible: null,
@@ -382,10 +390,21 @@ export default {
         selectedJobId: "",
         paymentOptions: ["Cash", "Credit Card", "Thrive"],
         paymentOption: "",
-        cardSubmitted: false
+        cardSubmitted: false,
+        errorDialog: false
     }),
+    /* async asyncData({$axios}) {
+        try {
+            let data = await $axios.$get("/api/certificates");
+            return {
+                coc: data
+            }
+        } catch (e) {
+            console.error("SOMETHING WENT WRONG: " + e)
+        }
+    }, */
     computed: {
-        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["isLoggedIn", "getUser", "getReports"]),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -417,6 +436,11 @@ export default {
         },
         insuredPay2() {
             return this.deductible * .50
+        },
+        certificates() {
+            return this.getReports.filter((v) => {
+                return v.ReportType === "coc"
+            })
         }
     },
     watch: {
@@ -526,16 +550,43 @@ export default {
             }
             this.currentStep = step
         },
-        submitForm() {
-            /* if (this.currentStep === 1 && this.paymentOption !== 'Credit Card') {
-                this.onSubmit()
-            }   */
-            if (this.currentStep === 2) {
-                this.message = ''
+        submitForm() {  
+            this.errorMessage = []
+            const certificates = this.certificates.map((v) => {
+                return v.JobId
+            })
+            this.$refs.form.validate().then(success => {
+                if (!success) {
+                    this.errorDialog = true
+                    this.submitting = false
+                    this.submitted = false
+                    return goTo(0)
+                }
+                if (!certificates.includes(this.selectedJobId)) {
+                    if ((this.currentStep === 1 && this.paymentOption !== 'Credit Card') ||
+                        this.currentStep === 2) {
+                        this.onSubmit()
+                        return;
+                    }
+                    this.currentStep++;
+                } else {
+                    this.errorMessage.push("Duplicate Job ID is not allowed")
+                    return goTo(0)
+                }
+                
+            })            
+        },
+        onSubmit() {
+            this.message = ''
+            this.errorMessage = []
             let insuredPayment1Arr = {
               insuredPay: this.insuredPay1,
               day1Date: this.insuredPayment.day1DateFormatted
             };
+            const userNameObj = {
+                first: this.getUser.name.split(" ")[0],
+                last: this.getUser.name.split(" ")[1]
+            }
             let insuredPayment2Arr = {
               insuredPay: this.insuredPay2,
               day5Date: this.insuredPayment.day5DateFormatted
@@ -559,32 +610,35 @@ export default {
               teamSign: this.teamMemberSig.data,
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
-              paymentOption: this.paymentOption
+              paymentOption: this.paymentOption,
+              teamMember: userNameObj
             };
             if (this.$nuxt.isOffline) {
-                    this.addReport(post).then(() => {
-                        this.message = "COC was saved successfully for submission later!"
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.message = ""
-                        }, 2000)
-                    }).catch((err) => {
-                        this.errorMessage = err
-                    })
-                } else {
-                    this.$axios.$post("/api/coc/new", post).then(() => {
-                        this.message = "Certificate of Completion submitted"
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.message = ""
-                            this.$router.push("/")
-                        }, 2000)
-                    }).catch((err) => {
-                        this.errorMessage = err
-                    })
+              this.addReport(post).then(() => {
+                this.message = "COC was saved successfully for submission later!"
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                }, 2000)
+              }).catch((err) => {
+                this.errorMessage.push(err)
+              })
+            } else {
+              this.$axios.$post("/api/coc/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return
                 }
+                this.message = "Certificate of Completion submitted"
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                  this.$router.push("/")
+                }, 2000)
+              }).catch((err) => {
+                this.errorMessage.push(err)
+              })
             }
-            this.currentStep++;
         }
     }
 }

@@ -68,41 +68,43 @@
       }
     },
     computed: {
-      ...mapGetters(['isLoggedIn']),
+      ...mapGetters({
+        isLoggedIn: 'isLoggedIn',
+        getSavedReports: 'indexDb/getSavedReports'
+      }),
       containmentReps() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.CaseFileType == 'containment'
         })
       },
       technicianReps() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.CaseFileType == 'technician'
         })
       },
       defaultReports() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.ReportType == 'dispatch' || v.ReportType == 'rapid-response'
         })
       },
       creditCardReps() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.ReportType == 'credit-card'
         })
       },
       cocReports() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.ReportType == 'coc'
         })
       },
       aobReports() {
-        return this.savedReports.filter((v) => {
+        return this.getSavedReports.filter((v) => {
           return v.ReportType == 'aob'
         })
       }
     },
     mounted() {
       this.checkStorage()
-      this.savedReports = this.$store.state.indexDb.reports
     },
     async asyncData({
       $axios
@@ -210,9 +212,6 @@
           )
         })
       }
-    },
-    created() {
-        this.savedReports = this.$store.state.indexDb.reports
     }
   }
 </script>
@@ -225,7 +224,9 @@
     grid-column:1/4;
   }
   &__group {
-
+    li {
+      padding-bottom:10px;
+    }
   }
 }
 </style>

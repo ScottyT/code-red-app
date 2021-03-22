@@ -9,7 +9,7 @@
         agency or franchise.</p>
       <p>Please complete all fields. You may cancel this authorization at any time by contacting us. This
         authorization will remain in effect until cancelled.</p>
-        <form @submit.prevent="submitCard">
+        <form ref="cardForm" @submit.prevent="submitCard">
       <fieldset v-if="currentStep === 1" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
         <h3 class="form__label">Cardholder Name* (as shown on card)</h3>
         <span>
@@ -74,11 +74,12 @@
             <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
               <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
               <label :for="card" class="form__label">{{card}}</label>
-              <input v-if="card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
+              
             </div>
+            <input :required="selectedCard.card == 'Other'" v-if="selectedCard.card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider vid="cardNumber" v-slot="{errors}" name="Card number" class="form__input--input-group">
+          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
             <label for="cardNumber" class="form__label">Card Number:</label>
             <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
@@ -137,7 +138,7 @@
         </div>
       </fieldset>
       <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
-      <v-btn type="submit" @click="submit">{{ currentStep === 2 ? 'Submit Credit Card' : 'Next' }}</v-btn>
+      <v-btn type="submit" @click="submit">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
       </form>
     </ValidationObserver>
   </div>
@@ -181,7 +182,8 @@ import {mapActions, mapGetters} from 'vuex';
         cusSigModal: false,
         cusSigDate: new Date().toISOString().substr(0, 10),
         cusSigDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-        isSubmitted: false
+        isSubmitted: false,
+        submitText: 'Submit Credit Card'
     }),
     props: {
         jobId: {
@@ -203,13 +205,14 @@ import {mapActions, mapGetters} from 'vuex';
             let fullname = this.cardholderInfo.first + ' '+ [this.cardholderInfo.middle ? this.cardholderInfo.middle +' ' : null] + this.cardholderInfo.last
             return fullname;
         },
-        ...mapGetters(['getCards'])
+        ...mapGetters(['getCards', 'getUser'])
     },
     watch: {
         cusSigDate(val) {
             this.cusSigDateFormatted = this.formatDate(val)
         },
         isSubmitted(val) {
+            this.submitText = "Submitted"
             this.$emit("cardSubmit", this.isSubmitted)
         }
     },
@@ -229,6 +232,11 @@ import {mapActions, mapGetters} from 'vuex';
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
         },
+        parseDate(date) {
+          if (!date) return nullW
+          const [month, day, year] = date.split('/')
+          return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+        },
         acceptNumber() {
             var x = this.cardholderInfo.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
             this.cardholderInfo.phoneNumber = !x[2] ?
@@ -237,13 +245,16 @@ import {mapActions, mapGetters} from 'vuex';
         },
         async submitCard() {
             const cards = this.getCards.map((v) => { return v.cardNumber})
+            const userNameObj = {
+                first: this.getUser.name.split(" ")[0],
+                last: this.getUser.name.split(" ")[1]
+            };
             await this.$refs.cardForm.validate().then(success => {
               if (!success) {
                 this.isSubmitted = false
                 return;
               }
               if (this.currentStep === 2) {
-                this.isSubmitted = true
                 const post = {
                   JobId: this.jobId,
                   ReportType: 'credit-card',
@@ -256,29 +267,28 @@ import {mapActions, mapGetters} from 'vuex';
                   cvcNum: this.cvcNum,
                   cardholderZip: this.billingAddress.zip,
                   cusSign: this.cusSig.data,
-                  customerSigDate: this.cusSigDateFormatted
+                  customerSigDate: this.cusSigDateFormatted,
+                  teamMember: userNameObj
                 };
                 if (!cards.includes(this.cardNumber)) {
                   if (this.$nuxt.isOffline) {
                     this.addCreditCard(post).then(() => {
                       this.message = "Credit card info saved"
+                      this.isSubmitted = true
                       setTimeout(() => {
                         this.message = ""
-                      }, 2000);
+                      }, 5000);
                     }).catch((err) => {
                       this.errorMessage = err
                     })
                   } else {
-                    this.$axios.$post("/api/credit-card/new", post).then((res) => {
-                      
+                    this.$axios.$post("/api/credit-card/new", post).then((res) => {              
                       if (res.errors) {
-                        this.$refs.cardForm.setErrors({
-                          cardNumber: errors[0].msg
-                        });
+                        this.errorMessage = res.errors
                         return;
                       }
                       this.message = "Credit card info submitted"
-                      this.submitted = true
+                      this.isSubmitted = true
                       
                       setTimeout(() => {
                         this.message = ""

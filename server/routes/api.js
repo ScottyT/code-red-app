@@ -32,7 +32,10 @@ router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
     const caseFile = await CaseFile.find({});
-    const results = dispatch.concat(rapidresponse, caseFile)
+    const certificate = await COC.find({});
+    const aobContract = await AOB.find({});
+    const creditCard = await CreditCard.find({});
+    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -305,37 +308,65 @@ router.post("/case-file-report/new",
             res.json(err)
         })
 })
-router.post("/coc/new", (req, res) => {
-    COC.create({
-        JobId: req.body.JobId,
-        ReportType: "coc",
-        subjectProperty: req.body.subjectProperty,
-        deductible: req.body.deductible,
-        insuredMinEndDate: req.body.insuredEndDate,
-        insuredPayment1: req.body.insuredPayment1,
-        insuredPayment2: req.body.insuredPayment2,
-        nonInsuredMinEndDate: req.body.nonInsuredEndDate,
-        nonInsuredPayment1: req.body.nonInsuredPayment1,
-        nonInsuredPayment2: req.body.nonInsuredPayment2,
-        rating: req.body.rating,
-        representative: req.body.repPrint,
-        repSignTime: req.body.repSignTime,
-        representativeSign: req.body.repSign,
-        repSignDate: req.body.repSignDate,
-        teamSign: req.body.teamSign,
-        teamSignDate: req.body.teamSignDate,
-        testimonial: req.body.testimonial,
-        paymentOption: req.body.paymentOption
-    }, (err, coc) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(coc)
+router.post("/coc/new",
+    check('JobId').not().isEmpty().withMessage("Job ID is required")
+        .custom(value => {
+            return COC.findOne({JobId: value}).then(coc => {
+                if (coc) {
+                    return Promise.reject('Duplicate Job ID is not allowed')
+                }
+            })
+        }),
+    async (req, res) => {
+        const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+            return `${param}: ${msg}`;
+        };
+        const result = validationResult(req).formatWith(errorFormatter);
+        const certificate = new COC({
+            JobId: req.body.JobId,
+            ReportType: "coc",
+            subjectProperty: req.body.subjectProperty,
+            deductible: req.body.deductible,
+            insuredMinEndDate: req.body.insuredEndDate,
+            insuredPayment1: req.body.insuredPayment1,
+            insuredPayment2: req.body.insuredPayment2,
+            nonInsuredMinEndDate: req.body.nonInsuredEndDate,
+            nonInsuredPayment1: req.body.nonInsuredPayment1,
+            nonInsuredPayment2: req.body.nonInsuredPayment2,
+            rating: req.body.rating,
+            representative: req.body.repPrint,
+            repSignTime: req.body.repSignTime,
+            representativeSign: req.body.repSign,
+            repSignDate: req.body.repSignDate,
+            teamSign: req.body.teamSign,
+            teamSignDate: req.body.teamSignDate,
+            testimonial: req.body.testimonial,
+            paymentOption: req.body.paymentOption
+        });
+        if (!result.isEmpty()) {
+            return res.json({ errors: result.array() })
         }
-    })
+        await certificate.save().then(() => {
+            res.json({message: "Report submitted"})
+        }).catch((err) => {
+            res.json(err)
+        })
 })
-router.post("/aob/new", (req, res) => {
-    AOB.create({
+router.post("/aob/new",
+    check('JobId').not().isEmpty().withMessage("Job ID is required")
+    .custom(value => {
+        return AOB.findOne({JobId: value}).then(aob => {
+            if (aob) {
+                return Promise.reject('Duplicate Job ID is not allowed')
+            }
+        })
+    }),
+    async (req, res) => {
+    const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+        return `${param}: ${msg}`;
+    };
+    const result = validationResult(req).formatWith(errorFormatter);
+    const aobcontracts = new AOB({
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,
         subjectProperty: req.body.subjectProperty,
@@ -371,12 +402,14 @@ router.post("/aob/new", (req, res) => {
         witnessDate: req.body.witnessDate,
         numberOfRooms: req.body.numberOfRooms,
         numberOfFloors: req.body.numberOfFloors
-    }, (err, aob) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(aob)
-        }
+    });
+    if (!result.isEmpty()) {
+        return res.json({ errors: result.array() })
+    }
+    await aobcontracts.save().then(() => {
+        res.json({message: "Report submitted"})
+    }).catch((err) => {
+        res.json(err)
     })
 })
 router.post("/credit-card/new", [

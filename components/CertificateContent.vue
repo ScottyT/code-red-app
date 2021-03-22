@@ -154,7 +154,7 @@
               <p>{{certificate.testimonial}}</p>
             </div>
           </div>
-          <div class="report-details__bordered">
+          <!-- <div class="report-details__bordered">
             <h3>Cardholder Name</h3>
             <div class="report-details__data report-details__data--row">
               <label>Full name</label>
@@ -218,7 +218,7 @@
               <label>Cardholder Zip Code: </label>
               <div>{{certificate.cardZipCode}}</div>
             </div>
-          </div>
+          </div> -->
         </section>
         
         <section class="pdf-item sig-row">

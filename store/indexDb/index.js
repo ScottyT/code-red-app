@@ -70,3 +70,8 @@ export const actions = {
             .catch((err) => commit("setError", err))
     }
 }
+export const getters = {
+    getSavedReports: (state) => {
+        return state.reports
+    }
+}

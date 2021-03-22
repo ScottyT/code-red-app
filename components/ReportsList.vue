@@ -24,17 +24,19 @@
     </div>
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="span">
-        <div class="reports-list__report flip-list-item" v-for="report in sortedReports" :key="`${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}-${report.JobId}`">
+        <div class="reports-list__report flip-list-item" v-for="(report, i) in sortedReports" :key="`report-type-${i}`">
           <nuxt-link class="reports-list__report-link" :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`" v-if="page == 'reportsPage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span>{{report.CaseFileType}}</span>
-            <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p>
+            <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
+            <!-- <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p> -->
           </nuxt-link>
           <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
-            <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p>
+            <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
+            <!-- <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p> -->
           </nuxt-link>
         </div>
       </transition-group>
@@ -62,6 +64,9 @@ export default {
         if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;
         return 0;
       })
+    },
+    teamMemberName() {
+      return this.reportslist.indexOf("teamMember")
     }
   },
   methods: {

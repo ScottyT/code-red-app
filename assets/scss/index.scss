@@ -220,7 +220,7 @@ button {
     }
 
     &--input-group {
-      padding: 5px 25px 5px 0;
+      padding: 5px 25px 5px 5px;
       display:block;
       grid-template-columns: auto 1fr;
       grid-template-rows: 1fr 1fr;
@@ -364,7 +364,7 @@ button {
     }
 
     &--left-side input {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     /* @media only screen and (max-width: 991px) {
