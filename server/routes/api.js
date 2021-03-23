@@ -13,7 +13,6 @@ const { values } = require("idb-keyval");
 router.use(express.json())
 router.use(express.urlencoded({extended: true}));
 router.post("/employee/new", (req, res) => {
-    console.log(req.body)
     User.create({
         email: req.body.email,
         id: req.body.id,

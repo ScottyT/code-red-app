@@ -58,6 +58,10 @@ a {
       padding: 5px;
     }
   }
+
+  &__extended-menu {
+    font-size:.9em;
+  }
 }
 
 .modal {
@@ -238,6 +242,15 @@ button {
       width: 100%;
       padding: 10px;
       box-shadow: -1px 0 11px rgba(0, 0, 0, 0.2);
+    }
+
+    &--card-upload-group {
+      width:100%;
+      padding: 10px;
+      box-shadow: -1px 0 11px rgba(0, 0, 0, 0.2);
+      display:grid;
+      grid-template-columns:1fr 1fr 180px;
+      grid-template-rows:1fr;
     }
 
     &--input-group-simple {

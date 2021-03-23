@@ -71,31 +71,6 @@
               
               <p aria-label="Upload message goes here" name="Photo ID" id="photoId" ref="photoid"></p>
             </ValidationProvider>
-            <!-- <div class="form__input--upload-group">
-              <label class="form__label">Debit/Credit Card</label>
-              <keep-alive><ValidationProvider ref="front" v-if="currentUploadStep === 1" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload--front">
-                <p>Front side:</p>
-                <input type="hidden" v-model="frontCardImage" @click="validate" />
-                <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
-                <input type="file" name="frontCard" accept="image/*" ref="frontCard" capture="user" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
-              </ValidationProvider></keep-alive>
-              <keep-alive><ValidationProvider ref="back" v-if="currentUploadStep === 2" name="Back Side" rules="image" v-slot="{validate, errors}" class="card-upload--back">
-                <p>Back side:</p>
-                <input type="hidden" v-model="backCardImage" @click="validate" />
-                <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
-                <input type="file" name="backCard" accept="image/*" ref="backCard" capture="user" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
-              </ValidationProvider></keep-alive>
-              <div class="buttons-wrapper">
-                <v-btn @click="goToStep(currentUploadStep - 1)">Previous</v-btn>
-                <v-btn @click="goToStep(currentUploadStep + 1)" v-if="currentUploadStep === 1">Next</v-btn>
-                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="cardImages.length === 2 && currentUploadStep === 2 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-              </div>
-              <p aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
-            </div> -->
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
               <label for="cardZip" class="form__label">Zip code on card</label>
               <input id="cardZip" class="form__input" v-model="cardZip" name="cardZip" type="text" />
