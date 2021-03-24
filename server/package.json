@@ -4,7 +4,7 @@
   "description": "Backend server to connect to MongoDb",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "author": "Scott Tucker",
   "license": "Apache-2.0",

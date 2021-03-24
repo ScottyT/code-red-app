@@ -25,20 +25,20 @@
       <v-toolbar-title v-text="title" />
       <ul class="menu-items" v-if="!$vuetify.breakpoint.sm">
         <li class="menu-items__item">
-          <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
+          <a @click="signOut">{{isLoggedIn ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+        <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+        <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+        <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
-      <template v-slot:extension v-if="$vuetify.breakpoint.sm">
+      <!-- <template v-slot:extension v-if="$vuetify.breakpoint.sm">
         <ul class="menu-items__extended-menu menu-items">
           <li class="menu-items__item">
             <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
@@ -54,7 +54,7 @@
             <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
           </li>
         </ul>
-      </template>
+      </template> -->
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <nuxt />
@@ -137,7 +137,7 @@ export default {
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser"]),
+    ...mapGetters(["getUser", "isLoggedIn"]),
   },
   methods: {
     async signOut() {

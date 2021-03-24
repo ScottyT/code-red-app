@@ -5,6 +5,11 @@
     <h2 class="text-center">THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</h2>
     <ValidationObserver ref="form">
       <h2>{{message}}</h2>
+      <!-- <ul>
+        <li v-for="(error, i) in errors" :key="`error${i}`">
+          {{error[0]}}
+        </li>
+      </ul> -->
      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
       <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <fieldset v-if="currentStep === 1">
@@ -132,7 +137,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
                   <label for="initial2">Initial:</label>
                   <input id="initial2" type="text" v-model="initial2" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -154,7 +159,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
                   <label for="initial3">Initial:</label>
                   <input id="initial3" type="text" v-model="initial3" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -212,7 +217,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
                   <label for="initial4">Initial:</label>
                   <input id="initial4" type="text" v-model="initial4" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -336,7 +341,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial5" name="Initial">
                   <label for="initial5">Initial:</label>
                   <input id="initial5" type="text" v-model="initial5" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -506,7 +511,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial6" name="Initial">
                   <label for="initial6">Initial:</label>
                   <input id="initial6" type="text" v-model="initial6" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -528,7 +533,7 @@
                 to not have survived the execution of this Agreement. This Agreement may not be assigned
                 except with the written permission of {{abbreviation}}.</p>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial7">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial7" name="Initial7">
                   <label for="initial7">Initial:</label>
                   <input id="initial7" type="text" v-model="initial7" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -575,7 +580,7 @@
               to the balance of the Available Proceeds as defined above.
             </li>
             <div class="form__form-group form__form-group--inline">
-                <ValidationProvider rules="required" v-slot="{errors}" name="Initial">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial8" name="Initial">
                   <label for="initial8">Initial:</label>
                   <input id="initial8" type="text" v-model="initial8" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -697,21 +702,25 @@
           </div>
           <div class="form__form-group form__form-group--info-box">
               <div class="form__form-group--left-side">
-                  <ValidationProvider class="form__input--input-group">
+                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="Address">
                       <label for="address" class="form__label">Address</label>
                       <input id="address" type="text" class="form__input" v-model="location.address" />
+                      <span class="form__input--error">{{ errors[0] }}</span>
                   </ValidationProvider>
-                  <ValidationProvider class="form__input--input-group">
+                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="City">
                       <label for="city" class="form__label">City:</label>
                       <input id="city" type="text" v-model="location.city" class="form__input" />
+                      <span class="form__input--error">{{ errors[0] }}</span>
                   </ValidationProvider>
-                  <ValidationProvider class="form__input--input-group">
+                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="State">
                       <label for="state" class="form__label">State:</label>
                       <input id="state" class="form__input" type="text" v-model="location.state" />
+                      <span class="form__input--error">{{ errors[0] }}</span>
                   </ValidationProvider>
-                  <ValidationProvider class="form__input--input-group">
+                  <ValidationProvider rules="required|numeric" class="form__input--input-group" v-slot="{errors}" name="Zip">
                       <label for="zip" class="form__label">Zip:</label>
                       <input type="text" id="zip" class="form__input" v-model="location.zip" />
+                      <span class="form__input--error">{{ errors[0] }}</span>
                   </ValidationProvider>
               </div>
               <div class="form__form-group--right-side">

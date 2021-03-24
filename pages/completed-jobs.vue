@@ -65,7 +65,6 @@ export default {
             this.contentRendered = true
         },
         generateReport(key) {
-            console.log(this.$refs)
             this.htmlToPdfOptions.filename = `coc-${this.coc[key].JobId}`
             this.$refs["html2Pdf-" + key][0].generatePdf()
         },

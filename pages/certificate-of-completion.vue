@@ -1,7 +1,7 @@
 <template>
     <div>
-        <span v-if="!isLoggedIn"><LazyLoginForm /></span>
-        <div v-else-if="isLoggedIn" class="form-wrapper">
+        <span v-if="!authUser"><LazyLoginForm /></span>
+        <div class="form-wrapper">
             <h1 class="text-center">Water Emergency Services Incorporated</h1>
             <h2 class="text-center">Certificate of Completion</h2>
             <ValidationObserver ref="form" v-slot="{errors}">
@@ -391,7 +391,8 @@ export default {
         paymentOptions: ["Cash", "Credit Card", "Thrive"],
         paymentOption: "",
         cardSubmitted: false,
-        errorDialog: false
+        errorDialog: false,
+        authUser: false
     }),
     /* async asyncData({$axios}) {
         try {
@@ -478,6 +479,9 @@ export default {
     mounted() {
         this.checkStorage()
         this.mappingJobIds()
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser ? true : false
+        })
     },
     methods: {
         ...mapActions({

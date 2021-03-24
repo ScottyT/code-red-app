@@ -1,7 +1,11 @@
 <template>
   <div>
-    <span v-if="!isLoggedIn"><LazyLoginForm /></span>
-    <div v-else-if="isLoggedIn"><lazy-slices-block :slices="slices" /></div>
+    
+    <span v-if="!authUser">
+      <LazyLoginForm />
+    </span>
+    
+    <div v-if="authUser"><lazy-slices-block :slices="slices" /></div>
     <v-flex xs12 sm8 md6>
       <div class="text-center"></div>
     </v-flex>
@@ -10,6 +14,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
+
 export default {
   name: 'Home',
   data() {
@@ -27,6 +32,11 @@ export default {
   computed: {
     ...mapGetters(["getUser", "isLoggedIn"])
   },
+  /* async middleware({$fire, redirect}) {
+    if ($fire.auth.currentUser === null) {
+      return redirect("/login")
+    }
+  }, */
   async asyncData({ $prismic, error, $axios }) {
     try {
       const document = (await $prismic.api.getSingle('home')).data
@@ -40,7 +50,12 @@ export default {
       }
     } catch (e) {
       console.error("SOMETHING WENT WRONG: " + e)
-    }    
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.authUser = this.$fire.auth.currentUser ? true : false
+    })
   },
   head() {
     return {

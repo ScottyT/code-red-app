@@ -52,24 +52,25 @@
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--card-upload-group">             
-              <ValidationProvider ref="card" name="Front Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--front">
+              <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--front">
                 <p>Front side:</p>
-                <input type="hidden" v-model="frontCardImage" @click="validate" />
+                <input type="hidden" v-model="frontCardImage[0]" @click="validate" />
                 <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
-                <input type="file" name="frontcardimage" accept="image/*" ref="frontCard" capture="user" @change="filesChange" />
+                <input type="file" id="frontcard" name="frontcardimage" accept="image/*" ref="frontCard" capture="user" @change="filesChange" />
                 <span class="form__input--error">{{ errors[0] }}</span>
                 <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
               </ValidationProvider>
-              <ValidationProvider ref="card" v-if="frontCardImage !== null" name="Back Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--back">
+              
+              <ValidationProvider vid="backcard" ref="backcard" v-if="frontCardValue !== ''" name="Back Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--back">
                 <p>Back side:</p>
-                <input type="hidden" v-model="backCardImage" @click="validate" />
+                <input type="hidden" v-model="backCardImage[0]" @click="validate" />
                 <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
-                <input type="file" name="backcardimage" accept="image/*" ref="backCard" capture="user" @change="filesChange" />
+                <input type="file" id="backcard" name="backcardimage" accept="image/*" ref="backCard" capture="user" @change="filesChange" />
                 <span class="form__input--error">{{ errors[0] }}</span>
                 <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
               </ValidationProvider>
               <div class="buttons-wrapper">
-                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardImage !== null && backCardImage !== null) && $nuxt.isOnline"
+                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardValue !== '' && backCardValue !== '')"
                   :class="[uploaded ? 'button--disabled' : 'button']">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
                 <p class="card-upload__message" aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
               </div>
@@ -222,12 +223,14 @@ import {mapActions, mapGetters} from 'vuex';
         submitText: 'Submit Credit Card',
         cardDownloadUrls:[],
         cardImages: [],
-        frontCardImage: null,
-        backCardImage: null,
+        frontCardImage: [],
+        backCardImage: [],
         uploading: false,
         uploaded: false,
         cardTypes: ["Debit", "Credit"],
-        selectedCardType: ""
+        selectedCardType: "",
+        frontCardValue: '',
+        backCardValue: ''
     }),
     props: {
         jobId: {
@@ -289,12 +292,10 @@ import {mapActions, mapGetters} from 'vuex';
         },
         async filesChange(e) {
           const fileList = e.target.files
-          console.log(fileList)
           const uploadarea = e.target.name
-          if (this.cardImages.length > 2) {
-            return;
-          }
-          var {valid} = await this.$refs.card.validate(e);
+          const cardid = e.target.id
+          if (!fileList.length) return
+          var {valid} = await this.$refs[cardid].validate(e);
           if (valid) {
             var file = e.target.files[0];
             var blob = file.slice(0, file.size, file.type)
@@ -303,18 +304,20 @@ import {mapActions, mapGetters} from 'vuex';
               type: file.type
             })
             if (uploadarea === 'frontcardimage') {              
-              this.frontCardImage = newFile
+              this.frontCardImage[0] = newFile
+              this.frontCardValue = this.$refs.frontCard.value
             }
             if (uploadarea === 'backcardimage') {
-              this.backCardImage = newFile
+              this.backCardImage[0] = newFile
+              this.backCardValue = this.$refs.backCard.value
             }
-            this.cardImages.push(newFile)
-            var imagesArr = new Set()
-            imagesArr.add(fileList[0])
-            console.log(imagesArr)
+            this.cardImages = new Set([
+              ...this.frontCardImage,
+              ...this.backCardImage
+            ])           
            
             this.getImagePreview(newFile, uploadarea)
-          }
+          } 
         },
         getImagePreview(file, usekey) {
           if (/\.(jpe?g|png|gif)$/i.test(file.name)) {
@@ -386,7 +389,7 @@ import {mapActions, mapGetters} from 'vuex';
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
                   teamMember: userNameObj,
-
+                  cardImages: this.cardDownloadUrls
                 };
                 if (!cards.includes(this.cardNumber)) {
                   if (this.$nuxt.isOffline) {
@@ -411,7 +414,7 @@ import {mapActions, mapGetters} from 'vuex';
                       setTimeout(() => {
                         this.message = ""
                         this.errorMessage = ""
-                      }, 2000);
+                      }, 5000);
                     }).catch((err) => {
                       this.errorMessage = err
                     })

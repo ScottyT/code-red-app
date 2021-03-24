@@ -146,7 +146,7 @@ export default {
     },
     workbox: {
       importScripts: ['/firebase-auth-sw.js'],
-      dev: true,
+      dev: process.env.NODE_ENV === 'development',
       //enabled:false,
       //cachingExtensions: '@/plugins/workbox-sync.js',
       runtimeCaching: [
@@ -297,4 +297,7 @@ export default {
       },
     },
   },
+  generate: {
+    fallback: '404.html'
+  }
 }

@@ -73,13 +73,13 @@ export const actions = {
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
     if (!authUser) {
-      await dispatch('signout')
+      //await dispatch('signout')
       return
     }
     
     if (authUser && authUser.getIdToken) {
       try {
-        await axios.get(`http://localhost:8080/api/employee/${authUser.email}`).then((res) => {
+        await axios.get(`https://code-red-lm5dxmp3ka-uc.a.run.app/api/employee/${authUser.email}`).then((res) => {
           commit('SET_USER', {
             email: res.data.email,
             id: res.data.id,
@@ -94,6 +94,7 @@ export const actions = {
   },
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
+      this.$router.push("/login")
       commit('setUser', {
         email: null,
         id: null,

@@ -98,7 +98,7 @@ export default {
         {
           icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
-          to: '/aob-contract',
+          to: '/aob-contract-form',
           access: 'user'
         },
         {

@@ -1,8 +1,7 @@
 <template>
   <div>
-    <span v-if="!isLoggedIn"><login-form /></span>
+    <span v-if="!authUser"><LazyLoginForm /></span>
     <div v-else><slices-block :slices="slices" /></div>
-    <v-flex class="text-center"> </v-flex>
   </div>
 </template>
 <script>
@@ -15,7 +14,7 @@ export default {
   },
   data() {
     return {
-      authUser: null
+      authUser: false
     }
   },
   head() {
@@ -26,6 +25,11 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn'])
   },
+  /* async middleware({$fire, redirect}) {
+    if (!authUser) {
+      return redirect("/login")
+    }
+  }, */
   async asyncData({ $prismic, error, params }) {
     const document = (await $prismic.api.getByUID('page', params.uid)).data
     if (document) {
@@ -36,6 +40,11 @@ export default {
     } else {
       error({ statusCode: 404, message: 'Page not found' })
     }
-  }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.authUser = this.$fire.auth.currentUser ? true : false
+    })
+  },
 }
 </script>

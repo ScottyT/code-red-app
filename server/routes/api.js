@@ -9,7 +9,6 @@ const CreditCard = require("../models/creditCardSchema");
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
-const { values } = require("idb-keyval");
 router.use(express.json())
 router.use(express.urlencoded({extended: true}));
 router.post("/employee/new", (req, res) => {
@@ -414,8 +413,12 @@ router.post("/aob/new",
 router.post("/credit-card/new", [
     check('JobId').not().isEmpty().withMessage('Job id is required'),
     check('cardNumber', 'Card number is required')
-], (req, res) => {
-    CreditCard.create({
+], async (req, res) => {
+    const errorFormatter = ({ msg, param, value, nestedErrors }) => {
+        return `${param}: ${msg}`;
+    };
+    const result = validationResult(req).formatWith(errorFormatter);
+    const creditCard = new CreditCard({
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,
         cardholderInfo: req.body.cardholderInfo,
@@ -427,13 +430,16 @@ router.post("/credit-card/new", [
         cvcNum: req.body.cvcNum,
         cardholderZip: req.body.cardholderZip,
         customerSig: req.body.cusSign,
-        customerSignDate: req.body.customerSigDate
-    }, (err, creditcard) => {
-        if (err) {
-            res.status(500).json(err)
-        } else {
-            res.status(200).json(creditcard)
-        }
+        customerSignDate: req.body.customerSigDate,
+        cardImages: req.body.cardImages
+    });
+    if (!result.isEmpty) {
+        return res.json({ errors: result.array() })
+    }
+    await creditCard.save().then(() => {
+        res.json({message: "Report submitted"})
+    }).catch((err) => {
+        res.json(err)
     })
 })
 module.exports = router;

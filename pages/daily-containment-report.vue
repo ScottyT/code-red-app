@@ -1,7 +1,7 @@
 <template>
     <div>
-        <span v-if="!isLoggedIn"><LazyLoginForm /></span>
-        <div v-else-if="isLoggedIn">
+        <span v-if="!authUser"><LazyLoginForm /></span>
+        <div v-else>
             <LazyDailyContainmentForm />
         </div>
     </div>
@@ -11,11 +11,16 @@ import {mapGetters} from 'vuex';
 export default {
     data() {
         return {
-
+            authUser: false
         }
     },
     computed: {
         ...mapGetters(["isLoggedIn"])
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser ? true : false
+        })
     },
 }
 </script>
