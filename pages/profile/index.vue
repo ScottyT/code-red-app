@@ -1,7 +1,7 @@
 <template>
   <!-- This will be used for storing forms saved in offline mode -->
   <div>
-    <span v-if="!isLoggedIn"><login-form /></span>
+    <span v-if="!authUser"><login-form /></span>
     <div class="profile" v-else>
       <div class="profile__title">
         <h1 class="text-center">Saved Forms</h1>
@@ -65,6 +65,7 @@
         message: "",
         employees: [],
         filesUploading: [],
+        authUser: false,
       }
     },
     computed: {
@@ -105,6 +106,9 @@
     },
     mounted() {
       this.checkStorage()
+      this.$nextTick(() => {
+        this.authUser = this.$fire.auth.currentUser ? true : false
+      })
     },
     async asyncData({
       $axios
@@ -132,8 +136,9 @@
         deleteReport: 'indexDb/deleteReport'
       }),
       async submitForm(post, index) {
-        try {
-          await this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
+         try {
+           
+          this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
             if (post.ReportType == 'rapid-response') {
               Object.keys(post).forEach(k => {
                 if (k == "photoId") {                 
@@ -146,9 +151,11 @@
                     this.submitFiles(post, post.cardImages, "Card Images")
                 }
               })
-              post.Pictures = this.filesUploading
+             // post.Pictures = this.filesUploading
             }
-            
+            if (post.ReportType == 'credit-card') {
+              this.submitFiles(post, post.savedCardImages, "Card Images")
+            }
             this.message = res.message
             setTimeout(() => {
               this.message = ""
@@ -157,60 +164,59 @@
               reportInfo: post, 
               reportIndex: index
             })
-          })
-            
+          })            
         } catch (e) {
           this.message = e
         }
+        
       },
-      submitFiles(report, uploadarr, element) {
+      async submitFiles(report, uploadarr, element) {
         const today = new Date()
         const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
-        console.log("submitting files")
         uploadarr.forEach((file) => {
-          var storageRef = this.$fire.storage.ref()
-          
-          switch (element) {
-            case "Job files":
-              var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-              break;
-            default:
-              var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-          }
-
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              if (progress < 100) {
-                this.message = "Files uploading"
-              }
-              if(progress == 100) {
-                
-              }
-            },
-            (error) => {
-              console.log(error.message)
-            },
-            () => {
-              uploadRef.getDownloadURL().then((url) => {
-                var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
-                var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                const fileObj = {
-                  name: fileName,
-                  url: url,
-                  type: fileType
-                }
-                this.filesUploading.push(fileObj)
-                this.message = "Files uploaded"
-                setTimeout(() => {
-                    this.message = ""
-                }, 2000)
-              })
+            var storageRef = this.$fire.storage.ref()
+            
+            switch (element) {
+              case "Job files":
+                var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
+                var uploadTask = uploadRef.put(file)
+                break;
+              default:
+                var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
+                var uploadTask = uploadRef.put(file)
             }
-          )
-        })
+
+            uploadTask.on('state_changed',
+              (snapshot) => {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                if (progress < 100) {
+                  this.message = "Files uploading"
+                }
+                if(progress == 100) {
+                  uploadarr = []
+                }
+              },
+              (error) => {
+                console.log(error.message)
+              },
+              () => {
+                uploadRef.getDownloadURL().then((url) => {
+                  var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
+                  var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
+                  const fileObj = {
+                    name: fileName,
+                    url: url,
+                    type: fileType
+                  }
+                  this.filesUploading.push(fileObj)
+                  this.message = "Files uploaded"
+                  setTimeout(() => {
+                      this.message = ""
+                  }, 2000)
+                })
+              }
+            )
+          })
       }
     }
   }

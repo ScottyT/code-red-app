@@ -640,7 +640,7 @@ export default {
                 notes: this.notes,
                 evaluationLogs: evaluationLogs,
                 id: this.getUser.id,
-                ReportType: 'case-file',
+                ReportType: 'case-file-report',
                 CaseFileType: 'technician',
                 teamMember: userNameObj,
                 verifySig: this.verifySig.data,

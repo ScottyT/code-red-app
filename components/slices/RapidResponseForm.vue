@@ -808,14 +808,14 @@
             };
             if (this.$nuxt.isOffline) {
               const tempPost = {...post}
-              //tempPost.photoId = this.idImage
+              tempPost.photoId = this.idImage
               tempPost.jobFiles =this.uploadedFiles
-              tempPost.cardImages = this.cardImages
               this.addReport(tempPost).then(() => {
                 this.successMessage = "Report was saved successfully for submission later!"
                 this.submitted = true
                 setTimeout(() => {
                     this.successMessage = ""
+                    this.errorMessage = []
                 }, 2000)
               })
             } else {
@@ -913,38 +913,6 @@
               }
               this.getSinglePreview(this.idImage, 'idimage')
             }
-            break;
-          case "frontCard":
-            var {valid} = await this.$refs.front.validate(e);
-            
-            if (valid) {
-              for (var i=0; i<this.$refs.frontCard.files.length; i++) {
-                var filetype = this.$refs.frontCard.files[i].type
-                var file = this.$refs.frontCard.files[i]
-                var blob = file.slice(0, file.size, file.type)
-                var filetype = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                var newFile = new File([blob], `front-card-${job}${filetype}`, {type: file.type})
-                this.frontCardImage[0] = newFile
-                this.cardImages[0] = newFile
-              }
-              this.getSinglePreview(this.frontCardImage, 'frontcardimage');
-            }            
-            break;
-          case "backCard":
-            var {valid} = await this.$refs.back.validate(e);
-            
-            if (valid) {
-              for (var i=0; i<this.$refs.backCard.files.length; i++) {
-                var filetype = this.$refs.backCard.files[i].type
-                var file = this.$refs.backCard.files[i]
-                var blob = file.slice(0, file.size, file.type)
-                var filetype = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                var newFile = new File([blob], `back-card-${job}${filetype}`, {type: file.type})
-                this.backCardImage[0] = newFile
-                this.cardImages[1] = newFile
-              }
-              this.getSinglePreview(this.backCardImage, 'backcardimage');
-            }         
             break;
           case "files":
             var {valid} = await this.$refs.jobimages.validate(e)

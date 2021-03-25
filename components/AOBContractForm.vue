@@ -840,7 +840,7 @@
           </div> -->
         </fieldset>
         <div v-if="currentStep >= 2 && paymentOption == 'Credit Card'">
-          <lazy-credit-card-form ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+          <CreditCardForm ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
             @submit="submitForm" @cardSubmit="cardSubmittedValue" />
         </div>
         <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Credit Card'">Next</v-btn>
@@ -856,6 +856,9 @@ import {mapGetters, mapActions} from 'vuex'
   export default {
     name: "AOBContractForm",
     props: ['company', 'abbreviation'],
+    components: {
+      CreditCardForm: () => import('./CreditCardForm.vue')
+    },
     computed: {
         ...mapGetters(['getReports', 'getUser']),
         insuredDay1() {

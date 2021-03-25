@@ -52,25 +52,25 @@
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--card-upload-group">             
-              <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--front">
+              <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--front">
                 <p>Front side:</p>
                 <input type="hidden" v-model="frontCardImage[0]" @click="validate" />
                 <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
-                <input type="file" id="frontcard" name="frontcardimage" accept="image/*" ref="frontCard" capture="user" @change="filesChange" />
+                <input type="file" id="frontcard" name="frontcardimage" accept="image/*" ref="frontCard" @change="filesChange" />
                 <span class="form__input--error">{{ errors[0] }}</span>
                 <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
               </ValidationProvider>
               
-              <ValidationProvider vid="backcard" ref="backcard" v-if="frontCardValue !== ''" name="Back Side" rules="required|image" v-slot="{validate, errors}" class="card-upload card-upload--back">
+              <ValidationProvider vid="backcard" ref="backcard" v-if="frontCardValue !== ''" name="Back Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--back">
                 <p>Back side:</p>
                 <input type="hidden" v-model="backCardImage[0]" @click="validate" />
                 <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
-                <input type="file" id="backcard" name="backcardimage" accept="image/*" ref="backCard" capture="user" @change="filesChange" />
+                <input type="file" id="backcard" name="backcardimage" accept="image/*" ref="backCard" @change="filesChange" />
                 <span class="form__input--error">{{ errors[0] }}</span>
                 <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
               </ValidationProvider>
               <div class="buttons-wrapper">
-                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardValue !== '' && backCardValue !== '')"
+                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardValue !== '' && backCardValue !== '') && $nuxt.isOnline"
                   :class="[uploaded ? 'button--disabled' : 'button']">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
                 <p class="card-upload__message" aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
               </div>
@@ -110,8 +110,7 @@
           <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
             <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
               <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
-              <label :for="card" class="form__label">{{card}}</label>
-              
+              <label :for="card" class="form__label">{{card}}</label>            
             </div>
             <input :required="selectedCard.card == 'Other'" v-if="selectedCard.card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
@@ -175,7 +174,8 @@
         </div>
       </fieldset>
       <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
-      <v-btn type="submit" :class="[uploaded ? 'button':'button--disabled']" @click="submit">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
+      <v-btn type="submit" :class="[backCardValue !== '' ? 'button':'button--disabled']" @click="submit" 
+        v-if="(uploaded && $nuxt.isOnline) || (backCardValue && $nuxt.isOffline)">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
       </form>
     </ValidationObserver>
   </div>
@@ -294,7 +294,12 @@ import {mapActions, mapGetters} from 'vuex';
           const fileList = e.target.files
           const uploadarea = e.target.name
           const cardid = e.target.id
-          if (!fileList.length) return
+          console.log(cardid)
+          console.log("value of file input: ", e.target.files)
+          if (!fileList.length) {
+            console.log("no files: ", fileList)
+            return;
+          }
           var {valid} = await this.$refs[cardid].validate(e);
           if (valid) {
             var file = e.target.files[0];
@@ -306,17 +311,19 @@ import {mapActions, mapGetters} from 'vuex';
             if (uploadarea === 'frontcardimage') {              
               this.frontCardImage[0] = newFile
               this.frontCardValue = this.$refs.frontCard.value
+              this.$refs.frontcardimage.src = URL.createObjectURL(newFile)
             }
             if (uploadarea === 'backcardimage') {
               this.backCardImage[0] = newFile
               this.backCardValue = this.$refs.backCard.value
+              this.$refs.backcardimage.src = URL.createObjectURL(newFile)
             }
             this.cardImages = new Set([
               ...this.frontCardImage,
               ...this.backCardImage
-            ])           
-           
-            this.getImagePreview(newFile, uploadarea)
+            ])    
+
+            //this.getImagePreview(newFile, uploadarea)
           } 
         },
         getImagePreview(file, usekey) {
@@ -329,6 +336,7 @@ import {mapActions, mapGetters} from 'vuex';
           }
         },
         async submitFiles(uploadarr, element) {
+          // uploadarr is the array of Files 
           const field = element.getAttribute('name')
           uploadarr.forEach((file) => {
             var storageRef = this.$fire.storage.ref()
@@ -364,17 +372,19 @@ import {mapActions, mapGetters} from 'vuex';
           })
         },
         async submitCard() {
-            const cards = this.getCards.map((v) => { return v.cardNumber})
+            const cards = this.getCards.map((v) => { return v.cardNumber })
             const userNameObj = {
                 first: this.getUser.name.split(" ")[0],
                 last: this.getUser.name.split(" ")[1]
             };
+
             await this.$refs.cardForm.validate().then(success => {
               if (!success) {
                 this.isSubmitted = false
                 return;
               }
               if (this.currentStep === 2) {
+                let savedCardImages = [...this.cardImages]
                 const post = {
                   JobId: this.jobId,
                   ReportType: 'credit-card',
@@ -389,7 +399,7 @@ import {mapActions, mapGetters} from 'vuex';
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
                   teamMember: userNameObj,
-                  cardImages: this.cardDownloadUrls
+                  cardImages: this.$nuxt.isOffline ? savedCardImages : this.cardDownloadUrls
                 };
                 if (!cards.includes(this.cardNumber)) {
                   if (this.$nuxt.isOffline) {
@@ -403,7 +413,7 @@ import {mapActions, mapGetters} from 'vuex';
                       this.errorMessage = err
                     })
                   } else {
-                    this.$axios.$post("/api/credit-card/new", post).then((res) => {              
+                    this.$axios.$post("/api/credit-card/new", post).then((res) => {     
                       if (res.errors) {
                         this.errorMessage = res.errors
                         return;

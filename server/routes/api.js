@@ -42,6 +42,8 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
     const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
     const creditCard = await CreditCard.findOne({JobId: req.params.JobId})
+    const aob = await AOB.findOne({JobId: req.params.JobId});
+    const coc = await COC.findOne({JobId: req.params.JobId});
     switch (req.params.ReportType) {
         case "dispatch":
             res.json(repDispatch)
@@ -57,6 +59,12 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
             break;
         case "credit-card":
             res.json(creditCard);
+            break;
+        case "aob":
+            res.json(aob)
+            break;
+        case "coc":
+            res.json(coc)
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {

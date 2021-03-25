@@ -456,7 +456,7 @@
             selectedStructualCleaning: this.selectedStructualCleaning,
             evaluationLogs: evaluationLogs,
             verifySig: this.verifySig.data,
-            ReportType: 'case-file',
+            ReportType: 'case-file-report',
             CaseFileType: 'containment',
             teamMember: userNameObj,
             afterHoursWork: 'No'
