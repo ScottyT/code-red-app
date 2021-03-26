@@ -12,8 +12,14 @@ export const mutations = {
     addRep: (state, newReport) => {
         state.reports.push(newReport)
     },
-    deleteRep: (state, reportIndex) => {
-        state.reports.splice(reportIndex, 1)
+    deleteRep: (state, report) => {
+        for (var i = 0; i < state.reports.length; i++) {
+            var obj = state.reports[i];
+            if (report.key === obj.key) {
+                state.reports.splice(i, 1)
+                i--;
+            }
+        }
     },
     setError: (state, error) => {
         state.error = error
@@ -29,14 +35,13 @@ export const actions = {
     addCreditCard({commit, dispatch}, newReport) {
         dispatch('saveCreditCard', newReport)
     },
-    deleteReport({commit}, {reportInfo, reportIndex}) {
-        console.log(reportIndex)
-        commit('deleteRep', reportIndex)
+    deleteReport({commit}, reportInfo) {        
+        commit('deleteRep', reportInfo)
         if (reportInfo.ReportType === 'credit-card') {
             del(reportInfo.cardNumber)
             return;
         }
-        del(reportInfo.JobId)
+        del(reportInfo.key)
     },
     async checkStorage({ state, commit }) {
         await values().then((values) => {
@@ -52,12 +57,19 @@ export const actions = {
         if (newReport.CaseFileType === 'containment') {
             keyname = "containment-rep-"
         }
+        if (newReport.CaseFileType === 'technician') {
+            keyname = "technician-rep-"
+        }
         if (newReport.ReportType === 'dispatch' || newReport.ReportType === 'rapid-response') {
             keyname = "report-"
         }
-        if (newReport.ReportType === 'credit-card') {
-            keyname = "credit-card-"
+        if (newReport.ReportType === 'aob') {
+            keyname = "aob-"
         }
+        if (newReport.ReportType === 'coc') {
+            keyname = "coc-"
+        }
+        newReport.key = keyname + newReport.JobId
         await set(keyname + newReport.JobId, newReport).then(() => commit('addRep', newReport))
             .catch((err) => commit("setError", err))
     },

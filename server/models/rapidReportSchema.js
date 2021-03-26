@@ -13,7 +13,6 @@ const responseReport = mongoose.Schema({
     EvaluationLogs: Array,
     InsuranceCompany: String,
     PhoneNumber: String,
-    Pictures: Array,
     PictureTypes: Array,
     PolicyNumber: String,
     adjusterName: String,
@@ -33,12 +32,6 @@ const responseReport = mongoose.Schema({
     location: Map,
     signDate: String,
     teamMember: Map,
-    photoId: {
-        type: Array,
-        required: [true, 'Photo ID is required']
-    },
-    jobFiles: Array,
-    cardImages: Array,
     intrusion: Array,
     preliminaryDetermination: Array,
     moistureInspection: Array,

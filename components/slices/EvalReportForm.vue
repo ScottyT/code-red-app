@@ -374,7 +374,7 @@
       appointmentTime: '',
       notes: '',
       message: '',
-      errorMessage:'',
+      errorMessage:[],
       submitted: false,
       submitting: false,
       sourceIntrusion: "",
@@ -515,7 +515,6 @@
         const reports = this.getReports.map((v) => {
           return v.JobId
         })
-        let scrollTo = 0;
         const userNameObj = {
           first: user.name.split(" ")[0],
           last: user.name.split(" ")[1]
@@ -525,7 +524,7 @@
             this.errorDialog = true
             this.submitting = false
             this.submitted = false
-            return goTo(scrollTo)
+            return goTo(0)
           }
             const post = {
               JobId: this.jobId,
@@ -573,21 +572,22 @@
               })
             }
           } else {
-            this.errorMessage = "Duplicate Job Id's can't exsit"
+            this.errorMessage.push("Duplicate Job Id's can't exsit")
+            return goTo(0)
           }
           if(this.$nuxt.isOnline) {
               this.$axios.$post("/api/dispatch/new", post).then((res) => {
                 if (res.errors) {
                   this.errorMessage = res.errors
-                  return goTo(scrollTo)
+                  return goTo(0)
                 }
-                this.message = "Report submitted"
+                this.message = res.message
+                this.errorMessage = []
                 this.submitted = true
                 setTimeout(() => {
                   this.message = ""
-                  this.$router.push("/")
+                  window.location = "/"
                 }, 2000)
-                this.message = res.message
                 this.jobId = ""
                 this.callerName = ""
                 this.email = ""

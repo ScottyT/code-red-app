@@ -22,8 +22,7 @@ const creditCardReport = mongoose.Schema({
     cvcNum: String,
     cardholderZip: String,
     customerSig: String,
-    customerSignDate: String,
-    cardImages: Map
+    customerSignDate: String
 })
 creditCardReport.plugin(timestamps)
 module.exports = mongoose.model('CreditCard', creditCardReport, 'credit-cards')

@@ -286,10 +286,7 @@
                             </ValidationProvider>
                         </div>
                     </fieldset>
-                    <div v-if="currentStep >= 2 && paymentOption == 'Credit Card'">
-                        <lazy-credit-card-form ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :step="currentStep" :repPrint="repPrint"
-                            @submit="submitForm" @cardSubmit="cardSubmittedValue" />
-                    </div>
+                    
                     <!-- <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn> -->
                     <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Credit Card'">Next</v-btn>
                     <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Credit Card' ? 'button' : 'button--disabled'">Submit</v-btn>
@@ -390,7 +387,6 @@ export default {
         selectedJobId: "",
         paymentOptions: ["Cash", "Credit Card", "Thrive"],
         paymentOption: "",
-        cardSubmitted: false,
         errorDialog: false,
         authUser: false
     }),
@@ -637,7 +633,7 @@ export default {
                 this.submitted = true
                 setTimeout(() => {
                   this.message = ""
-                  this.$router.push("/")
+                  window.location = "/"
                 }, 2000)
               }).catch((err) => {
                 this.errorMessage.push(err)

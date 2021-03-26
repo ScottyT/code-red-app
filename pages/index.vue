@@ -13,22 +13,10 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: 'Home',
-  data() {
-    return {
-      authUser: null,
-      submitted: false,
-      submitting: false,
-      message: '',
-      idNumber: '',
-      password: '',
-      email: '',
-      passwordVisibility: false
-    }
-  },
   computed: {
     ...mapGetters(["getUser", "isLoggedIn"])
   },
@@ -40,10 +28,11 @@ export default {
   async asyncData({ $prismic, error, $axios }) {
     try {
       const document = (await $prismic.api.getSingle('home')).data
+      
       if (document) {
         return {
           title: document.title,
-          slices: document.body,
+          slices: document.body
         }
       } else {
         error({ statusCode: 404, message: 'Page not found' })
@@ -52,11 +41,31 @@ export default {
       console.error("SOMETHING WENT WRONG: " + e)
     }
   },
+  
+  methods: {
+    /* ...mapActions({
+      fetchReports: 'fetchReports'
+    }) */
+  },
   mounted() {
     this.$nextTick(() => {
       this.authUser = this.$fire.auth.currentUser ? true : false
     })
   },
+  data() {
+    return {
+      authUser: null,
+      submitted: false,
+      submitting: false,
+      message: '',
+      idNumber: '',
+      password: '',
+      email: '',
+      passwordVisibility: false,
+      reports: []
+    }
+  },
+  
   head() {
     return {
       title: 'Home',

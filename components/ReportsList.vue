@@ -2,21 +2,10 @@
   <div class="reports-list">
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
-        <autocomplete @clicked="displayResult" :items="reportslist" :placeholderText="'Search for reports...'" />
+        <lazy-autocomplete @clicked="displayResult" :items="reportslist" :placeholderText="'Search for reports...'" />
       </div>
       <div class="info-bar__sort">
           <label class="info-bar__sort--label">Sort By:</label>
-          <!-- <div class="info-bar__sort-box" @click="selectActive = !selectActive" :class="{ open: selectActive }">
-            <div class="info-bar__sort--trigger">
-              <span>{{ selectedOption.text }}</span>
-              <v-icon size="30px" light>{{ selectActive ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'}}</v-icon>
-            </div>
-            <div class="info-bar__sort--options">
-              <span class="info-bar__sort--option" v-for="option in selectOptions" :key="option.value" @click="sortList(option)">
-                {{option.text}}
-              </span>
-            </div>
-          </div> -->
           <a v-for="option in sortoptions" :key="option.value" @click="sortValue(option)" :class="[sortBy === option.value ? sortDirection : '']">
             {{option.text}}
           </a>
@@ -30,13 +19,12 @@
             <p>{{report.ReportType}}</p>
             <span>{{report.CaseFileType}}</span>
             <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
-            <!-- <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p> -->
           </nuxt-link>
           <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
+            <span v-show="report.CaseFileType">{{report.CaseFileType}}</span>
             <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
-            <!-- <p>{{`${report.teamMember.first} ${report.teamMember.last}`}}</p> -->
           </nuxt-link>
         </div>
       </transition-group>
@@ -45,7 +33,7 @@
   </div>
 </template>
 <script>
-import Autocomplete from './Autocomplete.vue'
+import {mapActions} from 'vuex';
 export default {
   name: "ReportsList",
   props: ['reportslist', 'sortoptions', 'page'],
@@ -53,8 +41,12 @@ export default {
     search: null,
     report: {},
     sortBy: 'JobId',
-    sortDirection: 'info-bar__sort--asc'
+    sortDirection: 'info-bar__sort--asc',
+    reports: []
   }),
+  async fetch() {
+    this.reports = await this.$axios.$get("/api/reports").then(res => res.json);
+  },
   computed: {
     sortedReports() {
       return this.reportslist.sort((r1, r2) => {
@@ -70,6 +62,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      sortReports: 'sortReports'
+    }),
     displayResult(value) {
       this.report = this.reportslist.find(e => {
         return e.JobId == value
@@ -88,9 +83,6 @@ export default {
         }
       })
     }
-  },
-  created() {
-    //this.addingCaseFileType()
   }
 }
 </script>
@@ -171,6 +163,7 @@ export default {
     display: block;
     box-shadow: -1px 2px 12px -2px rgba($color-black, .8);
     border: 1px solid #a09999;
+    height:100%;
 
     p {
       margin-bottom:5px;

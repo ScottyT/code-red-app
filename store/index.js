@@ -62,7 +62,8 @@ export const actions = {
       return unique
     }, [])
     commit('setEmployees', employees)
-    commit('setReports', reports)
+    //commit('setReports', reports)
+    await dispatch('fetchReports')
     commit('setCreditCards', creditcards)
     commit('setUser', {
       email: null,
@@ -92,6 +93,13 @@ export const actions = {
       }
     }
   },
+  async fetchReports({ commit }) {
+    await this.$axios.$get("/api/reports").then((res) => {
+      commit('setReports', res)
+    }).catch((err) => {
+      commit('setError', err)
+    })
+  },
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
       this.$router.push("/login")
@@ -101,6 +109,15 @@ export const actions = {
         role: null,
         name: null
       })
+    })
+  },
+  sortReports({ commit, state }, sortDirection) {
+    state.reports.sort((r1, r2) => {
+      let modifier = 1
+      if (sortDirection === 'info-bar__sort--desc') modifier = -1;
+      if (r1[this.sortBy] < r2[this.sortBy]) return -1 * modifier;
+      if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;
+      
     })
   },
   mappingJobIds({commit, state}) {

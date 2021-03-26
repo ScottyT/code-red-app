@@ -223,7 +223,6 @@ router.post("/rapid-response/new",
                 }
             });
     }),
-    body('photoId').not().isEmpty().withMessage("Photo ID is required"),
     async (req, res) => {
         const errorFormatter = ({ msg, param, value, nestedErrors }) => {
             // Build your resulting errors however you want! String, object, whatever - it works!
@@ -244,7 +243,6 @@ router.post("/rapid-response/new",
             EmailAddress: req.body.EmailAddress,
             EvaluationLogs: req.body.EvaluationLogs,
             PhoneNumber: req.body.PhoneNumber,
-            Pictures: req.body.Pictures,
             PictureTypes: req.body.PictureTypes,
             ReportType: req.body.ReportType,
             Steps: req.body.Steps,
@@ -255,9 +253,6 @@ router.post("/rapid-response/new",
             location: req.body.location,
             signDate: req.body.signDate,
             teamMember: req.body.teamMember,
-            photoId: req.body.photoId,
-            jobFiles: req.body.jobFiles,
-            cardImages: req.body.cardImages,
             intrusion: req.body.intrusionInfo,
             preliminaryDetermination: req.body.selectedPreliminary,
             moistureInspection: req.body.selectedInspection,
@@ -426,6 +421,7 @@ router.post("/credit-card/new", [
         return `${param}: ${msg}`;
     };
     const result = validationResult(req).formatWith(errorFormatter);
+
     const creditCard = new CreditCard({
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,
@@ -438,8 +434,7 @@ router.post("/credit-card/new", [
         cvcNum: req.body.cvcNum,
         cardholderZip: req.body.cardholderZip,
         customerSig: req.body.cusSign,
-        customerSignDate: req.body.customerSigDate,
-        cardImages: req.body.cardImages
+        customerSignDate: req.body.customerSigDate
     });
     if (!result.isEmpty) {
         return res.json({ errors: result.array() })

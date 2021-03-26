@@ -402,7 +402,7 @@
       sigDialog: false,
       uploading: false,
       successMessage: '',
-      errorMessage: '',
+      errorMessage: [],
       uploadSuccess: '',
       submitting: false,
       submitted: false,
@@ -828,7 +828,7 @@
                 this.submitted = true
                 setTimeout(() => {
                     this.successMessage = ""
-                    this.$router.push("/")
+                    window.location = "/"
                 }, 2000)
               }).catch((err) => {
                 this.errorMessage = err

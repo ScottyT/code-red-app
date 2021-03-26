@@ -1124,7 +1124,7 @@ import {mapGetters, mapActions} from 'vuex'
               this.submitted = true
               setTimeout(() => {
                 this.message = ""
-                this.$router.push("/")
+                window.location = "/"
               }, 2000)
             }).catch((err) => {
               this.errorMessage.push(err)

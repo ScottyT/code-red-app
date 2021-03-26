@@ -65,7 +65,7 @@
         message: "",
         employees: [],
         filesUploading: [],
-        authUser: false,
+        authUser: false
       }
     },
     computed: {
@@ -130,6 +130,7 @@
             console.log("something happened:", e)
         }
     },
+    
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
@@ -160,10 +161,7 @@
             setTimeout(() => {
               this.message = ""
             }, 2000)
-            this.deleteReport({
-              reportInfo: post, 
-              reportIndex: index
-            })
+            this.deleteReport(post)
           })            
         } catch (e) {
           this.message = e

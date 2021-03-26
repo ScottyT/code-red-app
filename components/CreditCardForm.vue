@@ -321,9 +321,7 @@ import {mapActions, mapGetters} from 'vuex';
             this.cardImages = new Set([
               ...this.frontCardImage,
               ...this.backCardImage
-            ])    
-
-            //this.getImagePreview(newFile, uploadarea)
+            ])
           } 
         },
         getImagePreview(file, usekey) {
@@ -384,7 +382,6 @@ import {mapActions, mapGetters} from 'vuex';
                 return;
               }
               if (this.currentStep === 2) {
-                let savedCardImages = [...this.cardImages]
                 const post = {
                   JobId: this.jobId,
                   ReportType: 'credit-card',
@@ -399,7 +396,7 @@ import {mapActions, mapGetters} from 'vuex';
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
                   teamMember: userNameObj,
-                  cardImages: this.$nuxt.isOffline ? savedCardImages : this.cardDownloadUrls
+                  //cardImages: this.$nuxt.isOffline ? savedCardImages : this.cardDownloadUrls
                 };
                 if (!cards.includes(this.cardNumber)) {
                   if (this.$nuxt.isOffline) {

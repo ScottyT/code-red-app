@@ -2,10 +2,13 @@
     <div class="form-wrapper form-wrapper__case-file">
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">Daily Technician Case File Report</h2>
-        <ValidationObserver v-slot="{ handleSubmit }">
+        <ValidationObserver ref="form" v-slot="{ errors }">
           <h2>{{message}}</h2>
-          <h2 class="alert alert--error">{{errorMessage}}</h2>
-          <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+          <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error[0]}}</h3>
+          <ul>
+            <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error}}</li>
+          </ul>
+          <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
             <div class="form__form-group">
               <ValidationProvider rules="required" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
                 <input type="hidden" v-model="selectedJobId" />
@@ -214,6 +217,7 @@
 </template>
 <script>
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+import goTo from 'vuetify/es5/services/goto'
   import {
     mapGetters, mapActions
   } from 'vuex';
@@ -231,7 +235,7 @@ export default {
           cityStateZip: null
         },
         message: '',
-        errorMessage: '',
+        errorMessage: [],
         submitted: false,
         submitting: false,
         contentCleaningInspection: [
@@ -618,16 +622,30 @@ export default {
             first: this.getUser.name.split(" ")[0],
             last: this.getUser.name.split(" ")[1]
         }
-          const reports = this.$store.state.jobids
+          const reports = this.$store.state.reports.filter((v) => {
+            return v.CaseFileType === 'technician'
+          })
+          const jobids = reports.map((v) => {
+            return v.JobId
+          })
+          const casefile = reports.map((v) => {
+            return v.CaseFileType
+          })
           const evaluationLogs= [
             {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
             {label: 'Start Time', value: this.evalStart},
             {label: 'End Time', value: this.evalEnd},
             {label: 'Total Time', value: this.duration}
-        ]
-          if (reports.includes(this.jobId)) {
+          ]
+          this.$refs.form.validate().then(success => {
+            if (!success) {
+              this.submitting = false;
+              this.submitted = false;
+              return goTo(0)
+            }
+            if (!jobids.includes(this.selectedJobId) && casefile.includes('technician')) {
               const post = {
-                JobId: this.jobId,
+                JobId: this.selectedJobId,
                 date: this.dateFormatted,
                 location: this.location,
                 contentCleaningInspection: this.selectedContentCleaning,
@@ -647,21 +665,30 @@ export default {
                 afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
                 notes: this.notes
               }
-              this.$axios.$post("/api/case-file-report/new", post).then(() => {
+              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+                  if (res.errors) {
+                    this.errorMessage = res.errors
+                    return goTo(0)
+                  }
                   this.message = "Report submitted"
+                  this.errorMessage = []
                   this.submitted = true
+                  this.submitting = false
                     setTimeout(() => {
                         this.message = ""
-                        this.$router.push("/")
+                        window.location = "/"
                     }, 2000)
               }).catch((err) => {
                   this.errorMessage = err
               })
-          } else {
-            this.submitted = false
-            this.submitting = false
-            this.errorMessage = "Job ID exsits"
-          }
+            } else {
+              this.submitted = false
+              this.submitting = false
+              this.errorMessage.push("Cannot have two technician reprots")
+              return goTo(0)
+            }
+          })
+          
       }
     },
     created() {
