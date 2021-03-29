@@ -1,15 +1,18 @@
 <template>
     <div>
-        <client-only>
-        <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" pdf-format="a4" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1100" :manual-pagination="false"
-                    :show-layout="false" :preview-modal="true" ref="html2Pdf" @beforeDownload="beforeDownload($event)">
-            <lazy-certificate-content :certificate="coc" @domRendered="domRendered()" slot="pdf-content" />
-        </vue-html2pdf>
-        </client-only>
+        <div class="coc-list-item" v-for="(item, i) in coc" :key="`coc-${i}`">
+            <p>Certificate for job {{item.JobId}}</p>
+            <client-only>
+            <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="3000" :manual-pagination="false"
+                        :show-layout="false" :preview-modal="true" :ref="`html2Pdf-${i}`" @beforeDownload="beforeDownload($event)">
+                <lazy-certificate-content :certificate="coc[i]" @domRendered="domRendered()" slot="pdf-content" />
+            </vue-html2pdf>
+            </client-only>
+            <v-btn @click="generateReport(i)">Download PDF</v-btn>
+            <!-- <lazy-certificate-content :certificate="coc[i]" @domRendered="domRendered()" slot="pdf-content" /> -->
+        </div>
         
-        <v-btn @click="generateReport">Download PDF</v-btn>
     </div>
-    <!-- <lazy-certificate-content :certificate="coc" /> -->
 </template>
 <script>
 export default {
@@ -19,22 +22,24 @@ export default {
         }
     },
     computed: {
-        htmlToPdfOptions() {
+        htmlToPdfOptions(e) {
+            console.log(e)
             return {
-                margin:0,
-                filename: `coc-${this.coc[0].JobId}`,
+                margin:[10, 10, 20, 10],
+                filename: `coc-${this.coc.JobId}`,
                 image: {
                     type: "jpeg",
                     quality: 0.98
                 },
                 html2canvas: {
-                    scale: 1,
+                    scale: 2,
                     useCORS: true
                 },
                 jsPDF: {
-                    unit: 'in',
+                    unit: 'px',
                     format: 'a4',
-                    orientation: 'portrait'
+                    orientation: 'portrait',
+                    hotfixes: ['px_scaling']
                 }
             }
         }
@@ -59,15 +64,15 @@ export default {
             console.log('dom rendered')
             this.contentRendered = true
         },
-        generateReport() {
-            this.$refs.html2Pdf.generatePdf()
+        generateReport(key) {
+            this.htmlToPdfOptions.filename = `coc-${this.coc[key].JobId}`
+            this.$refs["html2Pdf-" + key][0].generatePdf()
         },
         async beforeDownload({
             html2Pdf,
             options,
             pdfContent
         }) {
-            console.log(options)
             /* await html2Pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
             const totalPages = pdf.internal.getNumberOfPages()
             for (let i = 1; i <= totalPages; i++) {

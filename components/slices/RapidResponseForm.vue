@@ -23,7 +23,7 @@
             <label for="dateOfLoss" class="form__label">Date of Loss</label>
             <v-dialog ref="dolDialog" v-model="dolModal" :return-value.sync="dateOfLoss" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfLoss" v-model="dolFormatted" v-bind="attrs" class="form__input" v-on="on"
+                <input id="dateOfLoss" v-model="dolFormatted" v-bind="attrs" class="form__input" v-on="on" readonly
                   @blur="dateOfLoss = parseDate(dolFormatted)" />
               </template>
               <v-date-picker v-model="dateOfLoss" scrollable>
@@ -37,7 +37,7 @@
             <label for="dateOfEval" class="form__label">Date of Evaluation</label>
             <v-dialog ref="doeDialog" v-model="doeModal" :return-value.sync="dateOfEval" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfEval" v-model="doeFormatted" v-bind="attrs" class="form__input" v-on="on"
+                <input id="dateOfEval" v-model="doeFormatted" v-bind="attrs" class="form__input" v-on="on" readonly
                   @blur="dateOfEval = parseDate(doeFormatted)" />
               </template>
               <v-date-picker v-model="dateOfEval" scrollable>
@@ -49,8 +49,7 @@
           </div>
           <ValidationProvider v-slot="{ errors }" name="Job ID" rules="required" class="form__input--input-group">
             <label for="jobId" class="form__label">Job ID</label>
-            <input v-model="jobId" id="jobId" name="jobId" class="form__input" type="text" />
-           
+            <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
@@ -72,31 +71,6 @@
               
               <p aria-label="Upload message goes here" name="Photo ID" id="photoId" ref="photoid"></p>
             </ValidationProvider>
-            <div class="form__input--upload-group">
-              <label class="form__label">Debit/Credit Card</label>
-              <keep-alive><ValidationProvider ref="front" v-if="currentUploadStep === 1" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload--front">
-                <p>Front side:</p>
-                <input type="hidden" v-model="frontCardImage" @click="validate" />
-                <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
-                <input type="file" name="frontCard" accept="image/*" ref="frontCard" capture="user" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
-              </ValidationProvider></keep-alive>
-              <keep-alive><ValidationProvider ref="back" v-if="currentUploadStep === 2" name="Back Side" rules="image" v-slot="{validate, errors}" class="card-upload--back">
-                <p>Back side:</p>
-                <input type="hidden" v-model="backCardImage" @click="validate" />
-                <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
-                <input type="file" name="backCard" accept="image/*" ref="backCard" capture="user" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
-              </ValidationProvider></keep-alive>
-              <div class="buttons-wrapper">
-                <v-btn @click="goToStep(currentUploadStep - 1)">Previous</v-btn>
-                <v-btn @click="goToStep(currentUploadStep + 1)" v-if="currentUploadStep === 1">Next</v-btn>
-                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="cardImages.length === 2 && currentUploadStep === 2 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-              </div>
-              <p aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
-            </div>
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
               <label for="cardZip" class="form__label">Zip code on card</label>
               <input id="cardZip" class="form__input" v-model="cardZip" name="cardZip" type="text" />
@@ -177,7 +151,7 @@
                 <label for="dateOfIntrusion" class="form__label">Date of Intrusion</label>
                 <v-dialog ref="dateIntrusionDialog" v-model="intrusionLogsDialog.dateIntrusion" persistent :return-value.sync="dateIntrusion" transition="scale-transition" max-width="320px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="dateOfIntrusion" v-model="dateIntrusionFormatted" class="form__input" v-bind="attrs" v-on="on" />
+                    <input type="text" id="dateOfIntrusion" v-model="dateIntrusionFormatted" class="form__input" v-bind="attrs" readonly v-on="on" />
                     <span class="button" @click="dateIntrusion = ''">clear</span>
                   </template>
                   <v-date-picker v-if="intrusionLogsDialog.dateIntrusion" v-model="dateIntrusion" scrollable>
@@ -192,7 +166,7 @@
                 <v-dialog ref="timeIntrusion" v-model="intrusionLogsDialog.timeIntrusion" persistent
                   :return-value.sync="timeIntrusion" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" v-bind="attrs"
+                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs"
                       v-on="on" />
                     <span class="button" @click="timeIntrusion = ''">clear</span>
                   </template>
@@ -287,7 +261,7 @@
                 <v-dialog ref="dialogArrival" v-model="evalLogsDialog.arrivalAtProperty" persistent
                   :return-value.sync="arrivalAtProperty" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="arrivalProperty" v-model="arrivalFormatted" class="form__input"
+                    <input type="text" id="arrivalProperty" v-model="arrivalFormatted" class="form__input" readonly
                       v-bind="attrs" v-on="on" />
                     <span class="button" @click="arrivalAtProperty = ''">clear</span>
                   </template>
@@ -304,7 +278,7 @@
                 <v-dialog ref="dialogEvalStart" v-model="evalLogsDialog.evalStart" persistent
                   :return-value.sync="evalStart" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="evalStart" v-model="evalStartFormatted" class="form__input" v-bind="attrs"
+                    <input type="text" id="evalStart" v-model="evalStartFormatted" class="form__input" v-bind="attrs" readonly
                       v-on="on" />
                     <span class="button" @click="evalStart = ''">clear</span>
                   </template>
@@ -428,7 +402,7 @@
       sigDialog: false,
       uploading: false,
       successMessage: '',
-      errorMessage: '',
+      errorMessage: [],
       uploadSuccess: '',
       submitting: false,
       submitted: false,
@@ -742,8 +716,7 @@
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
         const g = new MapboxGeocoder({
-          accessToken:
-            'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA',
+          accessToken: process.env.mapboxKey,
           types: 'region,place,postcode,address',
         })
        const location = geocode.firstChild.childNodes[1].value.split(',', 3)
@@ -825,6 +798,7 @@
               uid: user.uid,
               signDate: this.signDate,
               teamMember: userNameObj,
+              photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
               timeIntrusion: this.timeIntrusionFormatted,
               intrusionInfo: this.intrusionSection,
@@ -836,22 +810,25 @@
               const tempPost = {...post}
               tempPost.photoId = this.idImage
               tempPost.jobFiles =this.uploadedFiles
-              tempPost.cardImages = this.cardImages
               this.addReport(tempPost).then(() => {
-                this.message = "Report was saved successfully for submission later!"
+                this.successMessage = "Report was saved successfully for submission later!"
                 this.submitted = true
                 setTimeout(() => {
-                    this.message = ""
-                    this.$router.push("/")
+                    this.successMessage = ""
+                    this.errorMessage = []
                 }, 2000)
               })
             } else {
-              this.$axios.$post("/api/rapid-response/new", post).then(() => {
-                this.message = "Report submitted"
+              this.$axios.$post("/api/rapid-response/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return goTo(scrollTo)
+                }
+                this.successMessage = res.message
                 this.submitted = true
                 setTimeout(() => {
-                    this.message = ""
-                    this.$router.push("/")
+                    this.successMessage = ""
+                    window.location = "/"
                 }, 2000)
               }).catch((err) => {
                 this.errorMessage = err
@@ -867,7 +844,7 @@
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocoder = new MapboxGeocoder({
-          accessToken: process.env.MAPBOX_API_KEY,
+          accessToken: process.env.mapboxKey,
           types: 'region,place,postcode,address',
           placeholder: 'Search for address...',
         })
@@ -936,38 +913,6 @@
               }
               this.getSinglePreview(this.idImage, 'idimage')
             }
-            break;
-          case "frontCard":
-            var {valid} = await this.$refs.front.validate(e);
-            
-            if (valid) {
-              for (var i=0; i<this.$refs.frontCard.files.length; i++) {
-                var filetype = this.$refs.frontCard.files[i].type
-                var file = this.$refs.frontCard.files[i]
-                var blob = file.slice(0, file.size, file.type)
-                var filetype = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                var newFile = new File([blob], `front-card-${job}${filetype}`, {type: file.type})
-                this.frontCardImage[0] = newFile
-                this.cardImages[0] = newFile
-              }
-              this.getSinglePreview(this.frontCardImage, 'frontcardimage');
-            }            
-            break;
-          case "backCard":
-            var {valid} = await this.$refs.back.validate(e);
-            
-            if (valid) {
-              for (var i=0; i<this.$refs.backCard.files.length; i++) {
-                var filetype = this.$refs.backCard.files[i].type
-                var file = this.$refs.backCard.files[i]
-                var blob = file.slice(0, file.size, file.type)
-                var filetype = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                var newFile = new File([blob], `back-card-${job}${filetype}`, {type: file.type})
-                this.backCardImage[0] = newFile
-                this.cardImages[1] = newFile
-              }
-              this.getSinglePreview(this.backCardImage, 'backcardimage');
-            }         
             break;
           case "files":
             var {valid} = await this.$refs.jobimages.validate(e)

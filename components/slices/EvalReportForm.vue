@@ -3,10 +3,17 @@
   <div class="form-wrapper form-wrapper__dispatch-form">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Dispatch Service Evaluation Report</h2>
-    <ValidationObserver v-slot="{ handleSubmit }">
+    <ValidationObserver ref="form" v-slot="{errors}">
+      <v-dialog width="400px" v-model="errorDialog">
+        <div class="modal__error">
+          <div v-for="(error, i) in errors" :key="`error-${i}`">
+            <h2 class="form__input--error">{{ error[0] }}</h2>
+          </div>
+        </div>
+      </v-dialog>
       <h2>{{ message }}</h2>
-      <h2 class="alert alert--error">{{errorMessage}}</h2>
-      <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
+      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <div class="form__form-group">
           <!-- <ValidationProvider
             v-slot="{ errors }"
@@ -17,7 +24,7 @@
             <input v-model="timeOfCall" class="form__input" type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>-->
-          <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="jobId" class="form__input--input-group">
+          <ValidationProvider ref="jobIdField" vid="JobId" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input--input-group">
             <label class="form__label">Job ID Number</label>
             <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
@@ -260,6 +267,7 @@
     mapActions
   } from 'vuex'
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+  import goTo from 'vuetify/es5/services/goto'
   export default {
     name: 'EvalReportForm',
     props: ['slice'],
@@ -366,7 +374,7 @@
       appointmentTime: '',
       notes: '',
       message: '',
-      errorMessage:'',
+      errorMessage:[],
       submitted: false,
       submitting: false,
       sourceIntrusion: "",
@@ -395,7 +403,8 @@
         isEmpty: true
       },
       signDateTime: new Date().toLocaleString(),
-      sigDialog: false
+      sigDialog: false,
+      errorDialog: false
     }),
     watch: {
       date(val) {
@@ -430,7 +439,7 @@
       this.$nuxt.$on('location-updated', (event) => {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
-        const accessToken = 'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA'
+        const accessToken = process.env.mapboxKey
         const g = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
@@ -492,7 +501,7 @@
       },
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const accessToken = process.env.MAPBOX_API_KEY
+        const accessToken = process.env.mapboxKey
         const geocoder = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
@@ -500,86 +509,104 @@
         })
         geocoder.setTypes('address').addTo('.form__geocoder')
       },
-      async submitForm() {
+      submitForm() {
         this.message = ""
         const user = this.getUser
-        const reports = this.getReports.map((v) => { return v.JobId })
+        const reports = this.getReports.map((v) => {
+          return v.JobId
+        })
         const userNameObj = {
           first: user.name.split(" ")[0],
           last: user.name.split(" ")[1]
         }
-
-        if (!reports.includes(this.jobId)) {
-          const post = {
-            JobId: this.jobId,
-            callerName: this.callerName,
-            ArrivalContactName: this.arrivalContactName,
-            phoneNumber: this.phone,
-            emailAddress: this.email,
-            location: this.location,
-            timeFormatted: this.timeFormatted,
-            dateFormatted: this.dateFormatted,
-            appointmentDate: this.appointmentDateFormatted,
-            appointmentTime: this.appointmentTimeFormatted,
-            callTimeUpdate: this.callTimeFormatted,
-            textTimeUpdate: this.textEtaTimeFormatted,
-            propertyChkList: this.selectedCheckboxes,
-            summary: this.notes,
-            ReportType: 'dispatch',
-            teamMember: userNameObj,
-            id: user.id,
-            teamMemberSig: this.teamMemberSig.data,
-            signDate: this.signDateTime
-          };
-          if (this.$nuxt.isOffline) {
-            this.addReport(post).then(() => {
-              this.message = "Report was saved successfully for submission later!"
-              this.jobId = ""
-              this.callerName = ""
-              this.email = ""
-              this.location = {
-                address: null,
-                city: null,
-                cityStateZip: null,
-              }
-              this.phone = ""
-              this.notes = ""
-              this.selectedCheckboxes = []
-              this.$refs.jobIdField.value = ""
-              this.submitted = true
-              setTimeout(() => {
-                this.message = ""
-                this.$router.push("/")
-              }, 2000)
-            })
-          } else {
-            await this.$axios.$post("/api/dispatch/new", post).then(() => {
-              this.message = "Report submitted"
-              this.submitted = true
-              setTimeout(() => {
-                this.message = ""
-                this.$router.push("/")
-              }, 2000)
-              this.message = "Report was saved successfully for submission later!"
-              this.jobId = ""
-              this.callerName = ""
-              this.email = ""
-              this.location = {
-                address: null,
-                city: null,
-                cityStateZip: null,
-              }
-              this.phone = ""
-              this.notes = ""
-              this.selectedCheckboxes = []
-              this.$refs.jobIdField.value = ""
-            }).catch((err) => {
-              this.errorMessage = err
-            })
+        this.$refs.form.validate().then(success => {
+          if (!success) {
+            this.errorDialog = true
+            this.submitting = false
+            this.submitted = false
+            return goTo(0)
           }
-        } else {
-          this.errorMessage = "Duplicate Job ID can't exist"
-        }        
+            const post = {
+              JobId: this.jobId,
+              callerName: this.callerName,
+              ArrivalContactName: this.arrivalContactName,
+              phoneNumber: this.phone,
+              emailAddress: this.email,
+              location: this.location,
+              timeFormatted: this.timeFormatted,
+              dateFormatted: this.dateFormatted,
+              appointmentDate: this.appointmentDateFormatted,
+              appointmentTime: this.appointmentTimeFormatted,
+              callTimeUpdate: this.callTimeFormatted,
+              textTimeUpdate: this.textEtaTimeFormatted,
+              propertyChkList: this.selectedCheckboxes,
+              summary: this.notes,
+              ReportType: 'dispatch',
+              teamMember: userNameObj,
+              id: user.id,
+              teamMemberSig: this.teamMemberSig.data,
+              signDate: this.signDateTime
+            };
+          if (!reports.includes(this.jobId)) {
+            
+            if (this.$nuxt.isOffline) {
+              this.addReport(post).then(() => {
+                this.message = "Report was saved successfully for submission later!"
+                this.jobId = ""
+                this.callerName = ""
+                this.email = ""
+                this.location = {
+                  address: null,
+                  city: null,
+                  cityStateZip: null,
+                }
+                this.phone = ""
+                this.notes = ""
+                this.selectedCheckboxes = []
+                this.$refs.jobIdField.value = ""
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                  this.$router.push("/")
+                }, 2000)
+              })
+            }
+          } else {
+            this.errorMessage.push("Duplicate Job Id's can't exsit")
+            return goTo(0)
+          }
+          if(this.$nuxt.isOnline) {
+              this.$axios.$post("/api/dispatch/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return goTo(0)
+                }
+                this.message = res.message
+                this.errorMessage = []
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                  window.location = "/"
+                }, 2000)
+                this.jobId = ""
+                this.callerName = ""
+                this.email = ""
+                this.location = {
+                  address: null,
+                  city: null,
+                  cityStateZip: null,
+                }
+                this.phone = ""
+                this.notes = ""
+                this.selectedCheckboxes = []
+                this.$refs.jobIdField.value = ""
+              }).catch((err) => {
+                this.errorMessage.push(err)
+              })
+            }
+          
+        })
+        
       },
       formatDate(dateReturned) {
         if (!dateReturned) return null
@@ -645,8 +672,6 @@
     },
     beforeDestroy() {
       this.$nuxt.$off('location-updated')
-    },
-    created() {
     }
   }
 </script>

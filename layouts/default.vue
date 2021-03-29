@@ -23,19 +23,38 @@
       </button> -->
 
       <v-toolbar-title v-text="title" />
-      <ul class="menu-items">
+      <ul class="menu-items" v-if="!$vuetify.breakpoint.sm">
         <li class="menu-items__item">
-          <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
+          <a @click="signOut">{{isLoggedIn ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item">
+        <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item">
+        <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
+        <li class="menu-items__item" v-show="isLoggedIn">
+          <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+        </li>
       </ul>
-      
+      <!-- <template v-slot:extension v-if="$vuetify.breakpoint.sm">
+        <ul class="menu-items__extended-menu menu-items">
+          <li class="menu-items__item">
+            <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
+          </li>
+          <span>{{getUser ? getUser.name : null}}</span>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/profile">View saved forms</nuxt-link>
+          </li>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+          </li>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+          </li>
+        </ul>
+      </template> -->
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <nuxt />
@@ -47,7 +66,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 export default {
   data() {
     return {
@@ -77,6 +96,12 @@ export default {
           icon: 'mdi-form-select',
           title: 'Daily Technician Case File Report',
           to: '/daily-technician-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'AOB & Mitigation Contract',
+          to: '/aob-contract-form',
           access: 'user'
         },
         {
@@ -112,25 +137,20 @@ export default {
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser"]),
+    ...mapGetters(["getUser", "isLoggedIn"]),
   },
   methods: {
+    ...mapActions({
+      fetchReports: 'fetchReports'
+    }),
     async signOut() {
       this.$store.dispatch("signout")
     }
   },
-  created() {
-    /* auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.user = user
-        this.$store.dispatch("fetchUser", user.email)
-        this.$store.dispatch("fetchEmployees")
-        this.$store.dispatch("fetchReports")
-      } else {
-        auth.signOut()
-        this.$router.push('/login')
-      }
-    }) */
+  mounted() {   
+    this.$nextTick(() => {
+      this.fetchReports()
+    })
   }
 }
 </script>

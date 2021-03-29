@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 const timestamps = require('mongoose-timestamp2');
 const responseReport = mongoose.Schema({
-    JobId: String,
+    JobId: {
+        type: String,
+        required: [true, 'Job id is required']
+    },
     DateOfLoss: String,
     ClaimNumber: String,
     ContactName: String,
@@ -10,7 +13,6 @@ const responseReport = mongoose.Schema({
     EvaluationLogs: Array,
     InsuranceCompany: String,
     PhoneNumber: String,
-    Pictures: Array,
     PictureTypes: Array,
     PolicyNumber: String,
     adjusterName: String,
@@ -23,13 +25,13 @@ const responseReport = mongoose.Schema({
     cusFirstName: String,
     cusLastName: String,
     customerSig: String,
-    id: String,
+    id: {
+        type: String,
+        required: [true, 'Team lead id is required']
+    },
     location: Map,
     signDate: String,
     teamMember: Map,
-    photoId: Array,
-    jobFiles: Array,
-    cardImages: Array,
     intrusion: Array,
     preliminaryDetermination: Array,
     moistureInspection: Array,

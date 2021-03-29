@@ -2,9 +2,12 @@ const mongoose = require('mongoose')
 const timestamps = require('mongoose-timestamp2');
 
 const certificateOfCompletion = mongoose.Schema({
-    JobId: String,
+    JobId: {
+        type: String,
+        required: true
+    },
     ReportType: String,
-    address: String,
+    subjectProperty: String,
     deductible: String,
     insuredMinEndDate: String,
     insuredPayment1: Map,
@@ -19,16 +22,9 @@ const certificateOfCompletion = mongoose.Schema({
     repSignDate: String,
     teamSign: String,
     teamSignDate: String,
+    teamMember: Object,
     testimonial: String,
-    cardholder: Object,
-    billingAddress: Object,
-    creditCardProvider: String,
-    cardNumber: String,
-    cardholderName: String,
-    expirationDate: String,
-    cvcNumber: String,
-    cardZipCode: String,
-    customerSignature: String,
-    customerSigDate: String
+    paymentOption: String
 })
+certificateOfCompletion.plugin(timestamps)
 module.exports = mongoose.model('COC', certificateOfCompletion, 'certificate-of-completion');

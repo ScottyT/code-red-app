@@ -2,8 +2,14 @@ const mongoose = require('mongoose')
 const timestamps = require('mongoose-timestamp2');
 
 const caseFileReport = mongoose.Schema({
-    JobId: String,
-    id: String,
+    JobId: {
+        type: String,
+        required: true
+    },
+    id: {
+        type: String,
+        required: true
+    },
     date: String,
     location: Map,
     ReportType: String,
@@ -26,4 +32,5 @@ const caseFileReport = mongoose.Schema({
     evaluationLogs: Array,
     verifySign: String
 })
+caseFileReport.plugin(timestamps)
 module.exports = mongoose.model('CaseFileReports', caseFileReport, 'case-file-report')

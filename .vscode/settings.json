@@ -7,6 +7,7 @@
   "html.format.wrapAttributes": "aligned-multiple",
   "editor.wrappingIndent": "same",
   "editor.formatOnSave": false,
+  "editor.multiCursorModifier": "ctrlCmd",
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.formatOnSave": false

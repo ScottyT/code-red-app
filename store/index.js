@@ -6,6 +6,8 @@ export const state = () => ({
   isAdmin: null,
   employees: [],
   reports: [],
+  creditCards:[],
+  jobids:[]
 })
 
 export const mutations = {
@@ -24,6 +26,9 @@ export const mutations = {
   setReports: (state, payload) => {
     state.reports = payload
   },
+  setCreditCards: (state, payload) => {
+    state.creditCards = payload
+  },
   SET_USER: (state, authUser) => {
    // console.log("authUser:", authUser)
     state.user = {
@@ -33,6 +38,9 @@ export const mutations = {
       role: authUser.role
     }
   },
+  setJobIds: (state, payload) => {
+    state.jobids = payload
+  }
 }
 
 export const actions = {
@@ -46,6 +54,7 @@ export const actions = {
     }
     const employees = await $axios.$get("/api/employees")
     const reports = await $axios.$get("/api/reports")
+    const creditcards = await $axios.$get("/api/credit-cards")
     let newArr = reports.reduce((unique, o) => {
       if (!unique.some(obj => obj.JobId === o.JobId && obj.ReportType === o.ReportType)) {
         unique.push(o)
@@ -53,7 +62,9 @@ export const actions = {
       return unique
     }, [])
     commit('setEmployees', employees)
-    commit('setReports', reports)
+    //commit('setReports', reports)
+    await dispatch('fetchReports')
+    commit('setCreditCards', creditcards)
     commit('setUser', {
       email: null,
       id: null,
@@ -63,7 +74,7 @@ export const actions = {
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
     if (!authUser) {
-      await dispatch('signout')
+      //await dispatch('signout')
       return
     }
     
@@ -82,8 +93,16 @@ export const actions = {
       }
     }
   },
+  async fetchReports({ commit }) {
+    await this.$axios.$get("/api/reports").then((res) => {
+      commit('setReports', res)
+    }).catch((err) => {
+      commit('setError', err)
+    })
+  },
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
+      this.$router.push("/login")
       commit('setUser', {
         email: null,
         id: null,
@@ -92,25 +111,18 @@ export const actions = {
       })
     })
   },
-  async fetchUser({ commit }, context) {
-    const userData = []
-    if (context == null) return
-    // Might use this way when i get cloud run deploy fixed
-    /* await this.$axios.$get(`/getuser/${context}`).then((res) => {
-      userData.push(res)
-      commit("setUser", userData)
-    }).catch((error) => {
-      commit('setError', error)
-    }) */
-    
-    /* await this.$fire.auth.currentUser
-      .getIdTokenResult()
-      .then((idTokenResult) => {
-        commit('setAdmin', idTokenResult.claims.admin)
-      })
-      .catch((error) => {
-        console.log(error)
-      }) */
+  sortReports({ commit, state }, sortDirection) {
+    state.reports.sort((r1, r2) => {
+      let modifier = 1
+      if (sortDirection === 'info-bar__sort--desc') modifier = -1;
+      if (r1[this.sortBy] < r2[this.sortBy]) return -1 * modifier;
+      if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;
+      
+    })
+  },
+  mappingJobIds({commit, state}) {
+    const jobids = state.reports.map((v) => { return v.JobId })
+    commit('setJobIds', jobids)
   }
 }
 export const getters = {
@@ -122,6 +134,9 @@ export const getters = {
   },
   getReports: (state) => {
     return state.reports
+  },
+  getCards: (state) => {
+    return state.creditCards
   },
   getFolders: (state) => {
     return state.folders

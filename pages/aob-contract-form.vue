@@ -1,9 +1,7 @@
 <template>
     <div>
         <span v-if="!authUser"><LazyLoginForm /></span>
-        <div v-else>
-            <LazyDailyContainmentForm />
-        </div>
+        <LazyAOBContractForm v-else company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </div>
 </template>
 <script>
@@ -14,13 +12,13 @@ export default {
             authUser: false
         }
     },
-    computed: {
-        ...mapGetters(["isLoggedIn"])
-    },
     mounted() {
         this.$nextTick(() => {
             this.authUser = this.$fire.auth.currentUser ? true : false
         })
+    },
+    computed: {
+        ...mapGetters(["isLoggedIn"])
     },
 }
 </script>

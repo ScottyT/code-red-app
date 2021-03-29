@@ -1,33 +1,31 @@
 <template>
     <div>
-        <span v-if="!isLoggedIn"><LazyLoginForm /></span>
-        <div v-else-if="isLoggedIn" class="form-wrapper">
+        <span v-if="!authUser"><LazyLoginForm /></span>
+        <div class="form-wrapper">
             <h1 class="text-center">Water Emergency Services Incorporated</h1>
             <h2 class="text-center">Certificate of Completion</h2>
-            <ValidationObserver v-slot="{ handleSubmit }">
+            <ValidationObserver ref="form" v-slot="{errors}">
+                <v-dialog width="400px" v-model="errorDialog">
+                    <div class="modal__error">
+                    <div v-for="(error, i) in errors" :key="`error-${i}`">
+                        <h2 class="form__input--error">{{ error[0] }}</h2>
+                    </div>
+                    </div>
+                </v-dialog>
                 <h2>{{message}}</h2>
-                <h2 class="alert alert--error">{{errorMessage}}</h2>
-                <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+                <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
+                <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
                     <fieldset v-if="currentStep === 1">
                         <div class="form__form-group">
-                            <span>
+                            <ValidationProvider name="Job Id" rules="required" v-slot="{errors}">
+                                <input type="hidden" v-model="selectedJobId" />
                                 <label for="selectJobId" class="form__label">Job ID</label>
                                 <select class="form__select" v-model="selectedJobId">
                                     <option disabled value="">Please select a Job Id</option>
-                                    <option v-for="(item, i) in jobIds" :key="`jobid-${i}`">{{item}}</option>
+                                    <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
                                 </select>
-                                <!-- <div class="form__select" @click="selectActive = !selectActive" :class="{ open: selectActive }">
-                                    <div class="info-bar__sort--trigger">
-                                        <span>{{ selectedJobId.text }}</span>
-                                        <v-icon size="30px" light>{{ selectActive ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'}}</v-icon>
-                                    </div>
-                                    <div class="info-bar__sort--options">
-                                        <span class="info-bar__sort--option" v-for="(option, i) in jobIds" :key="`jobids-${i}`" @click="selectedJob(option)">
-                                            {{option}}
-                                        </span>
-                                    </div>
-                                </div> -->
-                            </span>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
                         </div>
                         <p>This Assignment of Claim Agreement (hereinafter referred to as “Assignment” and/or “Agreement”) and Mitigation
 
@@ -39,7 +37,7 @@
                             The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
                             of the property more commonly known as and identified by the following address:
                         </p>
-                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Address">
+                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
                             <input type="text" class="form__input" v-model="subjectProperty" /><br />
                             <p>(hereinafter referred to as “Subject Property”)</p>
                             <span class="form__input--error">{{ errors[0] }}</span>
@@ -69,7 +67,7 @@
                                 <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)
                                         " />
                                     </template>
@@ -91,7 +89,7 @@
                                     <label for="insuredDay1" class="form__label">Day (1) Date:</label>
                                     <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal" :return-value.sync="insuredPayment.day1Date" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)
                                             " />
                                         </template>
@@ -114,7 +112,7 @@
                                     <label for="insuredDay5" class="form__label">Day (5) Date:</label>(upon pickup)
                                     <v-dialog ref="insuredPayDay5" v-model="insuredPayment.day5Modal" :return-value.sync="insuredPayment.day5Date" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="insuredDay5" v-model="insuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="insuredDay5" v-model="insuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="insuredPayment.day5Date = parseDate(insuredPayment.day5DateFormatted)
                                             " />
                                         </template>
@@ -142,7 +140,7 @@
                                 <v-dialog ref="dialognoninsuredEndDate" v-model="nonInsuredPayment.endDateModal" :return-value.sync="nonInsuredPayment.endDate"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.endDate = parseDate(nonInsuredPayment.endDateFormatted)
                                         " />
                                     </template>
@@ -158,7 +156,7 @@
                                 <v-dialog ref="nonInsuredDay1" v-model="nonInsuredPayment.day1Modal" :return-value.sync="nonInsuredPayment.day1Date"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.day1Date = parseDate(nonInsuredPayment.day1DateFormatted)
                                         " />
                                     </template>
@@ -174,7 +172,7 @@
                                 <v-dialog ref="nonInsuredDay5" v-model="nonInsuredPayment.day5Modal" :return-value.sync="nonInsuredPayment.day5Date"
                                     persistent width="400px">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                        <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                             v-on="on" @blur="nonInsuredPayment.day5Date = parseDate(nonInsuredPayment.day5DateFormatted)
                                         " />
                                     </template>
@@ -211,7 +209,7 @@
                                     <label for="timeRepPrint" class="form__label">Time</label>
                                     <v-dialog ref="timeRepDialog" v-model="repTimeModal" :return-value.sync="repPrintTime" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="NonInsuredDay5Date" v-model="repPrintTimeFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" />
+                                            <input id="NonInsuredDay5Date" v-model="repPrintTimeFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" readonly />
                                         </template>
                                         <v-time-picker v-model="repPrintTime" scrollable>
                                         <v-spacer></v-spacer>
@@ -230,7 +228,7 @@
                                     <label for="dateRepSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogRepSign" v-model="repSignModal" :return-value.sync="repSignDate" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateRepSign" v-model="repSignDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="dateRepSign" v-model="repSignDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="repSignDate = parseDate(repSignDateFormatted)" />
                                         </template>
                                         <v-date-picker v-model="repSignDate" scrollable>
@@ -250,7 +248,7 @@
                                     <label for="dateTeamSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogTeamSign" v-model="teamSignModal" :return-value.sync="teamSignDate" persistent width="400px">
                                         <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateTeamSign" v-model="teamSignDateFormatted" v-bind="attrs" class="form__input form__input--short"
+                                            <input id="dateTeamSign" v-model="teamSignDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
                                                 v-on="on" @blur="teamSignDate = parseDate(teamSignDateFormatted)" />
                                         </template>
                                         <v-date-picker v-model="teamSignDate" scrollable>
@@ -265,138 +263,48 @@
                                 <label for="testimonial" class="form__label">Would you care to give a Short Testimonial Note:</label>
                                 <textarea v-model="testimonial" class="form__input--textbox form__input"></textarea>
                             </div>
+                            <ValidationProvider name="Payment option" rules="required" v-slot="{errors}" class="form__input--input-group">
+                                <p class="form__label">Which payment method will you use?</p>
+                                <ul class="form__form-group--inline">
+                                    <li v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
+                                        <label :for="item">{{item}}</label>
+                                        <input :id="item" type="radio" v-model="paymentOption" :value="item" />
+                                    </li>
+                                </ul><br/>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                            <ValidationProvider v-if="paymentOption === 'Credit Card'" name="Existing credit card" rules="required" v-slot="{errors}">
+                                <p class="form__label">Are you using an existing credit card?</p>
+                                <ul class="form__form-group--inline">
+                                    <li class="form__input--radio">
+                                        <label for="Yes">Yes</label>
+                                        <input id="Yes" type="radio" v-model="existingCreditCard" value="Yes" />
+                                    </li>
+                                    <li class="form__input--radio">
+                                        <label for="No">No</label>
+                                        <input id="No" type="radio" v-model="existingCreditCard" value="No" />
+                                    </li>
+                                </ul>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                            <ValidationProvider v-if="existingCreditCard === 'Yes'" name="Card to link" rules="required" v-slot="{errors}">                              
+                                <input type="hidden" v-model="cardToUse" />
+                                <label class="form__label">Card number</label>
+                                <select class="form__select" v-model="cardToUse">
+                                    <option disabled value="">Please select a credit/debit cardf</option>
+                                    <option v-for="(item, i) in cardNumbers" :key="`cardnumbers-${i}`">{{item}}</option>
+                                </select>
+                                <span class="form__input--error">{{ errors[0] }}</span>                         
+                            </ValidationProvider>
                         </div>
                     </fieldset>
-                    <div v-if="currentStep >= 2">
-                        <p class="text-decoration-underline text-center"><strong>THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</strong></p>
-                        <p class="text-center">Water Emergency Services Incorporated (WESI) is an independent janitorial contractor. We are not affiliated, associated, endorsed by or in any way officially connected with any other company, agency or franchise.</p>
-                        <p>Please complete all fields. You may cancel this authorization at any time by contacting us. This authorization will remain in effect until cancelled.</p>
-                        <fieldset v-if="currentStep === 2" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
-                            <h3 class="form__label">Cardholder Name* (as shown on card)</h3>
-                            <span>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="First name" class="form__input--input-group">
-                                    <label for="firstname" class="form__label">First name</label>
-                                    <input id="firstname" type="text" class="form__input" v-model="cardholderName.first" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="alpha" v-slot="{errors}" name="Middle initial" class="form__input--input-group">
-                                    <label for="middle" class="form__label">Middle initial</label>
-                                    <input id="middle" type="text" class="form__input" v-model="cardholderName.middle" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Last name" class="form__input--input-group">
-                                    <label for="lastname" class="form__label">Last name</label>
-                                    <input id="lastname" type="text" class="form__input" v-model="cardholderName.last" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input--input-group">
-                                    <label for="cardholderemail" class="form__label">Cardholder Email</label>
-                                    <input id="cardholderemail" type="text" class="form__input" v-model="cardholderName.email" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
-                                    <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
-                                    <input id="cardholderphone" type="text" class="form__input" v-model="cardholderName.phoneNumber" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                            </span>
-                        </fieldset>
-                        <fieldset v-if="currentStep === 3" class="form__form-group form__form-group form__form-group--info-box">                            
-                            <div class="form__form-group--left-side">
-                                <h3 class="form__label">Billing Address*</h3>
-                            <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input--input-group">
-                                    <label for="addressLine1" class="form__label">Address Line 1:</label>
-                                    <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider name="Address Line 2" class="form__input--input-group">
-                                    <label for="addressLine2" class="form__label">Address Line 2:</label>
-                                    <input id="addressLine2" type="text" v-model="billingAddress.address2" class="form__input" />
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input--input-group">
-                                    <label for="city" class="form__label">City:</label>
-                                    <input id="city" type="text" v-model="billingAddress.city" class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input--input-group">
-                                    <label for="state" class="form__label">State:</label>
-                                    <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input--input-group">
-                                    <label for="zip" class="form__label">Zip:</label>
-                                    <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                            </div>
-                            <div class="form__form-group--right-side">
-                                <h3 class="form__label">Credit Card*</h3>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
-                                    <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
-                                        <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
-                                        <label :for="card" class="form__label">{{card}}</label>
-                                        <input v-if="card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
-                                    </div>
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
-                                    <label for="cardNumber" class="form__label">Card Number:</label>
-                                    <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group">
-                                    <label for="cardholderName" class="form__label">Cardholder Name</label>
-                                    <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group">
-                                    <label for="expDate" class="form__label">Expiration Date (mm/yy):</label>
-                                    <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required|length:3" v-slot="{errors}" name="CVC number" class="form__input--input-group">
-                                    <label for="cvc" class="form__label">CVC Number:</label>
-                                    <input type="text" id="cvc" v-model="cvcNum" class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                                <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group">
-                                    <label for="cvc" class="form__label">Cardholder zip code:</label>
-                                    <input type="text" id="cvc" v-model="billingAddress.zip" readonly class="form__input" />
-                                    <span class="form__input--error">{{ errors[0] }}</span>
-                                </ValidationProvider>
-                            </div>
-                        </fieldset>
-                        <fieldset v-if="currentStep === 4" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">                          
-                            <p>I, {{repPrint}}, authorize Water Emergency Services Incorporated 
-                            (WESI) to charge my credit card above for the agreed upon purchases and/or services within the above 
-                            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement. I understand that 
-                            my information will be saved to file for future transactions on my account and I hereby authorize WESI to charge 
-                            my credit card above for the agreed upon future transactions, purchases and/or services if any within the above 
-                            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement.</p>
-                            <span>
-                                <div class="form__input--input-group">
-                                    <label for="cusSig" class="form__label">Customer Signature:</label>
-                                    <lazy-signature-pad-modal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
-                                </div>
-                                <div class="form__input--input-group">
-                                    <label for="dateCusSign" class="form__label">Date</label>
-                                    <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs" class="form__input form__input--short"
-                                                v-on="on" @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
-                                        </template>
-                                        <v-date-picker v-model="cusSigDate" scrollable>
-                                            <v-spacer></v-spacer>
-                                            <v-btn text color="#fff" @click="cusSigModal = false">Cancel</v-btn>
-                                            <v-btn text color="#fff" @click="$refs.dialogCusSign.save(cusSigDate)">OK</v-btn>
-                                        </v-date-picker>
-                                    </v-dialog>
-                                </div>
-                            </span>
-                        </fieldset>
+                    <div v-if="currentStep >= 2 && paymentOption == 'Credit Card' && cardToUse !== ''">
+                        <CreditCardForm ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+                            @submit="submitForm" @cardSubmit="cardSubmittedValue" />
                     </div>
-                    <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn>
-                    <v-btn type="submit">{{ currentStep === 4 ? 'Submit' : 'Next' }}</v-btn>
+                    <!-- <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn> -->
+                    <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Credit Card' && existingCreditCard == 'No')">Next</v-btn>
+                    <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Credit Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>
             </ValidationObserver>
         </div>
@@ -404,11 +312,12 @@
 </template>
 <script>
 import {mapGetters, mapActions} from 'vuex';
+import goTo from 'vuetify/es5/services/goto'
 export default {
     data: (vm) => ({
         currentStep:1,
         message: '',
-        errorMessage: '',
+        errorMessage: [],
         submitted: false,
         subjectProperty: '',
         deductible: null,
@@ -458,6 +367,7 @@ export default {
         teamSignDate: null,
         teamSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         testimonial:"",
+        usingCreditCard: false,
         cardholderName: {
             first: "",
             middle: "",
@@ -490,15 +400,16 @@ export default {
         cusSigDate: new Date().toISOString().substr(0, 10),
         cusSigDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         selectedJobId: "",
-        selectActive: false
+        paymentOptions: ["Cash", "Credit Card", "Thrive"],
+        paymentOption: "",
+        errorDialog: false,
+        authUser: false,
+        existingCreditCard: "",
+        cardToUse: "",
+        cardSubmitted: false
     }),
     computed: {
-        ...mapGetters(["isLoggedIn", "getReports"]),
-        jobIds() {
-            return this.getReports.map((v) => {
-                return v.JobId
-            })
-        },
+        ...mapGetters(["isLoggedIn", "getUser", "getReports"]),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -514,10 +425,6 @@ export default {
         nonInsuredDay5() {
             return this.nonInsuredPayment.day5Date;
         },
-        cardName() {
-            let fullname = this.cardholderName.first + ' '+ [this.cardholderName.middle ? this.cardholderName.middle +' ' : null] + this.cardholderName.last
-            return fullname;
-        },
         insuredPay1: {
             get() {
                 let pay = this.deductible * .50
@@ -530,6 +437,19 @@ export default {
         },
         insuredPay2() {
             return this.deductible * .50
+        },
+        certificates() {
+            return this.getReports.filter((v) => {
+                return v.ReportType === "coc"
+            })
+        },
+        cardNumbers() {
+            var cards = this.getReports.filter((v) => {
+                return v.ReportType === "credit-card"
+            })
+            return cards.map((v) => {
+                return v.cardNumber
+            })
         }
     },
     watch: {
@@ -566,11 +486,16 @@ export default {
     },
     mounted() {
         this.checkStorage()
+        this.mappingJobIds()
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser ? true : false
+        })
     },
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',
-            checkStorage: 'indexDb/checkStorage'
+            checkStorage: 'indexDb/checkStorage',
+            mappingJobIds: 'mappingJobIds'
         }),
         selectedJob(option) {
             this.selectedJobId = option;
@@ -579,6 +504,9 @@ export default {
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
+        },
+        cardSubmittedValue(params) {
+            this.cardSubmitted = params
         },
         formatTime(timeReturned) {
             if (!timeReturned) return null
@@ -614,8 +542,8 @@ export default {
             }
         },
         acceptNumber() {
-            var x = this.cardholder.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
-            this.cardholder.phoneNumber = !x[2] ?
+            var x = this.cardholderName.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
+            this.cardholderName.phoneNumber = !x[2] ?
             x[1] :
             '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
         },
@@ -634,71 +562,95 @@ export default {
             }
             this.currentStep = step
         },
-        async submitForm() {
-            if (this.currentStep === 4) {
-                this.message = ''
-                let insuredPayment1Arr = {
-                    insuredPay: this.insuredPay1,
-                    day1Date: this.insuredPayment.day1DateFormatted
-                };
-                let insuredPayment2Arr = {
-                    insuredPay: this.insuredPay2,
-                    day5Date: this.insuredPayment.day5DateFormatted
-                };
-                const post = {
-                    JobId: this.selectedJobId,
-                    ReportType: "coc",
-                    address: this.address,
-                    deductible: this.deductible,
-                    insuredEndDate: this.insuredEndDateFormatted,
-                    insuredPayment1: insuredPayment1Arr,
-                    insuredPayment2: insuredPayment2Arr,
-                    nonInsuredEndDate: this.nonInsuredPayment.endDateFormatted,
-                    nonInsuredPayment1: this.nonInsuredPayment.day1DateFormatted,
-                    nonInsuredPayment2: this.nonInsuredPayment.day5DateFormatted,
-                    rating: this.selectedRating,
-                    repPrint: this.repPrint,
-                    repSignTime: this.repPrintTimeFormatted,
-                    repSign: this.repSign.data,
-                    repSignDate: this.repSignDateFormatted,
-                    teamSign: this.teamMemberSig.data,
-                    teamSignDate: this.teamSignDateFormatted,
-                    testimonial: this.testimonial,
-                    cardholderInfo: this.cardholderName,
-                    billingAddress: this.billingAddress,
-                    creditCard: this.selectedCard.card == 'Other' ? this.selectedCard.otherCard : this.selectedCard.card,
-                    cardNumber: this.cardNumber,
-                    cardholderName: this.cardName,
-                    expDate: this.expirationDate,
-                    cvcNum: this.cvcNum,
-                    cardholderZip: this.billingAddress.zip,
-                    cusSign: this.cusSig.data,
-                    customerSigDate: this.cusSigDateFormatted
-                };
-                if (this.$nuxt.isOffline) {
-                    this.addReport(post).then(() => {
-                        this.message = "COC was saved successfully for submission later!"
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.message = ""
-                        }, 2000)
-                    }).catch((err) => {
-                        this.errorMessage = err
-                    })
-                } else {
-                    this.$axios.$post("/api/coc/new", post).then(() => {
-                        this.message = "Certificate of Completion submitted"
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.message = ""
-                            this.$router.push("/")
-                        }, 2000)
-                    }).catch((err) => {
-                        this.errorMessage = err
-                    })
+        submitForm() {  
+            this.errorMessage = []
+            const certificates = this.certificates.map((v) => {
+                return v.JobId
+            })
+            this.$refs.form.validate().then(success => {
+                if (!success) {
+                    this.errorDialog = true
+                    this.submitting = false
+                    this.submitted = false
+                    return goTo(0)
                 }
+                if (!certificates.includes(this.selectedJobId)) {
+                    if ((this.currentStep === 1 && this.paymentOption !== 'Credit Card' || this.cardToUse !== '') ||
+                        this.currentStep === 2) {
+                        this.onSubmit()
+                        return;
+                    }
+                    this.currentStep++;
+                } else {
+                    this.errorMessage.push("Duplicate Job ID is not allowed")
+                    return goTo(0)
+                }
+                
+            })            
+        },
+        onSubmit() {
+            this.message = ''
+            this.errorMessage = []
+            let insuredPayment1Arr = {
+              insuredPay: this.insuredPay1,
+              day1Date: this.insuredPayment.day1DateFormatted
+            };
+            const userNameObj = {
+                first: this.getUser.name.split(" ")[0],
+                last: this.getUser.name.split(" ")[1]
             }
-            this.currentStep++;
+            let insuredPayment2Arr = {
+              insuredPay: this.insuredPay2,
+              day5Date: this.insuredPayment.day5DateFormatted
+            };
+            const post = {
+              JobId: this.selectedJobId,
+              ReportType: "coc",
+              subjectProperty: this.subjectProperty,
+              deductible: this.deductible,
+              insuredEndDate: this.insuredEndDateFormatted,
+              insuredPayment1: insuredPayment1Arr,
+              insuredPayment2: insuredPayment2Arr,
+              nonInsuredEndDate: this.nonInsuredPayment.endDateFormatted,
+              nonInsuredPayment1: this.nonInsuredPayment.day1DateFormatted,
+              nonInsuredPayment2: this.nonInsuredPayment.day5DateFormatted,
+              rating: this.selectedRating,
+              repPrint: this.repPrint,
+              repSignTime: this.repPrintTimeFormatted,
+              repSign: this.repSign.data,
+              repSignDate: this.repSignDateFormatted,
+              teamSign: this.teamMemberSig.data,
+              teamSignDate: this.teamSignDateFormatted,
+              testimonial: this.testimonial,
+              paymentOption: this.paymentOption,
+              teamMember: userNameObj
+            };
+            if (this.$nuxt.isOffline) {
+              this.addReport(post).then(() => {
+                this.message = "COC was saved successfully for submission later!"
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                }, 2000)
+              }).catch((err) => {
+                this.errorMessage.push(err)
+              })
+            } else {
+              this.$axios.$post("/api/coc/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return
+                }
+                this.message = "Certificate of Completion submitted"
+                this.submitted = true
+                setTimeout(() => {
+                  this.message = ""
+                  window.location = "/"
+                }, 2000)
+              }).catch((err) => {
+                this.errorMessage.push(err)
+              })
+            }
         }
     }
 }

@@ -23,13 +23,38 @@
       </button> -->
 
       <v-toolbar-title v-text="title" />
-      <ul class="menu-items">
+      <ul class="menu-items" v-if="!$vuetify.breakpoint.sm">
         <li class="menu-items__item">
           <a @click="signOut">{{$fire.auth.currentUser ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/profile">View saved forms</nuxt-link>
+        </li>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+        </li>
+        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+        </li>
       </ul>
-      
+      <template v-slot:extension v-if="$vuetify.breakpoint.sm">
+        <ul class="menu-items__extended-menu menu-items">
+          <li class="menu-items__item">
+            <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
+          </li>
+          <span>{{getUser ? getUser.name : null}}</span>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/profile">View saved forms</nuxt-link>
+          </li>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+          </li>
+          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+            <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+          </li>
+        </ul>
+      </template>
     </v-app-bar>
     <v-main>
       <nuxt />
@@ -68,6 +93,18 @@ export default {
           icon: 'mdi-form-select',
           title: 'Daily Technician Case File Report',
           to: '/daily-technician-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'AOB & Mitigation Contract',
+          to: '/aob-contract-form',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Certificate of Completion',
+          to: '/certificate-of-completion',
           access: 'user'
         },
         {

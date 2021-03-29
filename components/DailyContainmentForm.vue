@@ -2,15 +2,22 @@
   <div class="form-wrapper form-wrapper__case-file">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
-    <ValidationObserver v-slot="{ handleSubmit }">
+    <ValidationObserver ref="form" v-slot="{errors}">
       <h2>{{message}}</h2>
-      <h2 class="alert alert--error">{{errorMessage}}</h2>
-      <form ref="form" class="form" @submit.prevent="handleSubmit(submitForm)" v-if="!submitted">
+      <ul>
+        <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error[0]}}</li>
+      </ul>
+      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
+      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <div class="form__form-group">
-          <ValidationProvider ref="jobIdField" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="JobId"
+          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id"
                               class="form__input--input-group">
+            <input type="hidden" v-model="selectedJobId" />
             <label class="form__label">Job ID Number</label>
-            <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
+            <select class="form__select" v-model="selectedJobId">
+              <option disabled value="">Please select a Job ID</option>
+              <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+            </select>
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
@@ -176,6 +183,7 @@
     mapGetters, mapActions
   } from 'vuex'
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
+  import goTo from 'vuetify/es5/services/goto'
   import moment from 'moment';
   export default {
     name: "DailyContainmentForm",
@@ -183,14 +191,13 @@
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       dateDialog: false,
-      jobId: null,
       location: {
         address: null,
         city: null,
         cityStateZip: null
       },
       message: '',
-      errorMessage: '',
+      errorMessage: [],
       tmpRepairSection: [{
         subheading: "Temporary Repairs",
         sublist: [{
@@ -342,7 +349,8 @@
         isEmpty: true
       },
       submitting: false,
-      submitted: false
+      submitted: false,
+      selectedJobId: ""
     }),
     watch: {
       date(val) {
@@ -359,7 +367,7 @@
       }
     },
     computed: {
-      ...mapGetters(['getUser', 'getReports']),
+      ...mapGetters(['getUser']),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -370,11 +378,13 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
+      this.mappingJobIds()
     },
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage'
+        checkStorage: 'indexDb/checkStorage',
+        mappingJobIds: 'mappingJobIds'
       }),
       formatDate(dateReturned) {
         if (!dateReturned) return null
@@ -400,7 +410,7 @@
       },
       createGeocoder() {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const accessToken = process.env.MAPBOX_API_KEY
+        const accessToken = process.env.mapboxKey
         const geocoder = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',
@@ -415,70 +425,92 @@
       },
       async submitForm() {
         this.message = ''
+        this.submitting = true
         const user = this.getUser;
         const userNameObj = {
           first: user.name.split(" ")[0],
           last: user.name.split(" ")[1]
         }
-        const reports = this.getReports.map((v) => { return v.JobId })
+        const reports = this.$store.state.reports.filter((v) => {
+            return v.CaseFileType === 'containment'
+          })
+          const jobids = reports.map((v) => {
+            return v.JobId
+          })
+          const casefile = reports.map((v) => {
+            return v.CaseFileType
+          })
         const evaluationLogs= [
           {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
           {label: 'Start Time', value: this.evalStart},
           {label: 'End Time', value: this.evalEnd},
           {label: 'Total Time', value: this.duration}
         ]
-        if (reports.includes(this.jobId)) {
-          const post = {
-            JobId: this.jobId,
-            id: user.id,
-            date: this.dateFormatted,
-            location: this.location,
-            selectedTMPRepairs: this.selectedTMPRepairs,
-            selectedContent: this.selectedContent,
-            selectedStructualCleaning: this.selectedStructualCleaning,
-            selectedStructualDrying: this.selectedStructualDrying,
-            selectedStructualCleaning: this.selectedStructualCleaning,
-            evaluationLogs: evaluationLogs,
-            verifySig: this.verifySig.data,
-            ReportType: 'case-file',
-            CaseFileType: 'containment',
-            teamMember: userNameObj,
-            afterHoursWork: 'No'
-          };
-          if (this.$nuxt.isOffline) {
-            this.addReport(post).then(() => {
-              this.message = "Report was saved successfully for submission later!"
-              this.submitted = true
-              setTimeout(() => {
-                this.message = ""
-                this.$router.push("/")
-              }, 2000)
-            })
-          } else {
-            this.$axios.$post("/api/case-file-report/new", post).then(() => {
-              this.message = "Report submitted"
-              this.submitted = true
-              setTimeout(() => {
-                this.message = ""
-                this.$router.push("/")
-              }, 2000)
-            }).catch((err) => {
-              this.errorMessage = err
-            })
+        this.$refs.form.validate().then(success => {
+          if (!success) {
+            this.submitting = false
+            this.submitted = false
+            return goTo(0)
           }
-        } else {
-          this.submitted = false
-          this.submitting = false
-          this.errorMessage = "Job ID exsits"
-        }
+          if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
+            const post = {
+              JobId: this.selectedJobId,
+              id: user.id,
+              date: this.dateFormatted,
+              location: this.location,
+              selectedTMPRepairs: this.selectedTMPRepairs,
+              selectedContent: this.selectedContent,
+              selectedStructualCleaning: this.selectedStructualCleaning,
+              selectedStructualDrying: this.selectedStructualDrying,
+              selectedStructualCleaning: this.selectedStructualCleaning,
+              evaluationLogs: evaluationLogs,
+              verifySig: this.verifySig.data,
+              ReportType: 'case-file-report',
+              CaseFileType: 'containment',
+              teamMember: userNameObj,
+              afterHoursWork: 'No'
+            };
+            if (this.$nuxt.isOffline) {
+              this.addReport(post).then(() => {
+                this.message = "Report was saved successfully for submission later!"
+                this.submitted = true
+                this.submitting = false
+                setTimeout(() => {
+                  this.message = ""
+                }, 2000)
+              })
+            } else {
+              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorMessage = res.errors
+                  return goTo(0)
+                }
+                this.message = res.message
+                this.submitted = true
+                this.submitting = false
+                this.errorMessage = []
+                setTimeout(() => {
+                  this.message = ""
+                  window.location = "/"
+                }, 2000)
+              }).catch((err) => {
+                this.errorMessage = err
+              })
+            }
+          } else {
+            this.submitted = false
+            this.submitting = false
+            this.errorMessage.push("Cannot have two containment reprots")
+            return goTo(0)
+          }      
+        })
       }
     },
     created() {
       this.$nuxt.$on('location-updated', (event) => {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
-        const accessToken =
-          'pk.eyJ1Ijoic2NyYXBweXQiLCJhIjoiY2s2MTRkOGpzMGYyYjNycGtudjAyeHN6ZiJ9.T_ep9Ehc0iE1TDgkx69qhA'
+        const accessToken = process.env.mapboxKey
         const g = new MapboxGeocoder({
           accessToken: accessToken,
           types: 'region,place,postcode,address',

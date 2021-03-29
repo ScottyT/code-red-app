@@ -49,7 +49,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  max-width: 660px;
+  max-width: 1200px;
   width: 100%;
   height: 100%;
 
@@ -57,6 +57,10 @@ a {
     a {
       padding: 5px;
     }
+  }
+
+  &__extended-menu {
+    font-size:.9em;
   }
 }
 
@@ -98,9 +102,10 @@ button {
   font-size: 0.8em;
 
   &--disabled {
-    background-color: #c1c1c1ad;
-    color: $color-white;
+    background-color: #c1c1c1ad!important;
+    color: $color-white!important;
     cursor: not-allowed !important;
+    pointer-events: none;
   }
 
   &--normal {
@@ -113,6 +118,7 @@ button {
 .alert {
   &--error {
     color: red;
+    font-size:1.1em;
   }
 }
 
@@ -168,7 +174,7 @@ button {
     &--long {
       display: flex;
       flex-wrap: wrap;
-      font-size: 0.9em;
+      //font-size: 0.9em;
     }
   }
 
@@ -218,10 +224,11 @@ button {
     }
 
     &--input-group {
-      padding: 5px 25px 5px 0;
+      padding: 5px 25px 5px 5px;
       display:block;
       grid-template-columns: auto 1fr;
       grid-template-rows: 1fr 1fr;
+      width:auto;
 
       @include respond(tabletLargeMax) {
         display: block;
@@ -235,6 +242,15 @@ button {
       width: 100%;
       padding: 10px;
       box-shadow: -1px 0 11px rgba(0, 0, 0, 0.2);
+    }
+
+    &--card-upload-group {
+      width:100%;
+      padding: 10px;
+      box-shadow: -1px 0 11px rgba(0, 0, 0, 0.2);
+      display:grid;
+      grid-template-columns:1fr 1fr 180px;
+      grid-template-rows:1fr;
     }
 
     &--input-group-simple {
@@ -304,6 +320,7 @@ button {
         flex-direction: row;
         align-items: flex-start;
         flex-wrap: wrap;
+        margin-bottom:10px;
         &.hidden {
           display:none;
         }
@@ -360,7 +377,7 @@ button {
     }
 
     &--left-side input {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     /* @media only screen and (max-width: 991px) {
@@ -387,6 +404,10 @@ button {
     }
     &--listing {
       & > li {
+        //padding-bottom:15px;
+        list-style-type:lower-alpha;
+      }
+      ol > li {
         list-style-type:lower-alpha;
         padding-bottom:15px;
       }
@@ -394,21 +415,21 @@ button {
         margin-left:-20px;
       }
     }
+    &--listing-num {
+      list-style-type:decimal;
+      li {
+        padding-bottom:10px;
+      }
+      ol {
+        list-style-type:lower-alpha;
+      }
+    }
     &--sublisting {
-      
       li {
         list-style-type: none;
         padding-right:10px;
       }
     }
-  }
-}
-
-.info-bar {
-  &__sort-box {
-    
-
-    
   }
 }
 
@@ -484,6 +505,20 @@ button {
     }
   }
 
+  &__listing {
+    list-style-type:decimal;
+
+    > li {
+      padding-bottom:10px;
+      ol {
+        list-style-type:lower-alpha;
+        > li {
+          padding-bottom:10px;
+        }
+      }
+    }
+  }
+
   &__file-listing {
     height: 300px;
   }
@@ -532,9 +567,7 @@ button {
       font-weight: 900;
     }
   }
-  &__data-sig {
-    height:150px;
-  }
+  
   &__company-logo {
     max-width:100px;
     margin:auto;
@@ -554,6 +587,15 @@ button {
     align-items:flex-start;
     flex-direction:column;
     display:flex;
+    > div {
+      align-items:flex-start;
+    }
+  }
+  &__data-sig {
+    //height:150px;
+    > div {
+      height:245px;
+    }
   }
 }
 
