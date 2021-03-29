@@ -22,6 +22,7 @@ const certificateOfCompletion = mongoose.Schema({
     repSignDate: String,
     teamSign: String,
     teamSignDate: String,
+    teamMember: Object,
     testimonial: String,
     paymentOption: String
 })

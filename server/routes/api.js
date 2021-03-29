@@ -341,6 +341,7 @@ router.post("/coc/new",
             repSignDate: req.body.repSignDate,
             teamSign: req.body.teamSign,
             teamSignDate: req.body.teamSignDate,
+            teamMember: req.body.teamMember,
             testimonial: req.body.testimonial,
             paymentOption: req.body.paymentOption
         });
@@ -402,7 +403,8 @@ router.post("/aob/new",
         witness: req.body.witness,
         witnessDate: req.body.witnessDate,
         numberOfRooms: req.body.numberOfRooms,
-        numberOfFloors: req.body.numberOfFloors
+        numberOfFloors: req.body.numberOfFloors,
+        teamMember: req.body.teamMember
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })

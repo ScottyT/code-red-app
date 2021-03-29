@@ -25,17 +25,6 @@
                                     <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
                                 </select>
                                 <span class="form__input--error">{{ errors[0] }}</span>
-                                <!-- <div class="form__select" @click="selectActive = !selectActive" :class="{ open: selectActive }">
-                                    <div class="info-bar__sort--trigger">
-                                        <span>{{ selectedJobId.text }}</span>
-                                        <v-icon size="30px" light>{{ selectActive ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'}}</v-icon>
-                                    </div>
-                                    <div class="info-bar__sort--options">
-                                        <span class="info-bar__sort--option" v-for="(option, i) in jobIds" :key="`jobids-${i}`" @click="selectedJob(option)">
-                                            {{option}}
-                                        </span>
-                                    </div>
-                                </div> -->
                             </ValidationProvider>
                         </div>
                         <p>This Assignment of Claim Agreement (hereinafter referred to as “Assignment” and/or “Agreement”) and Mitigation
@@ -284,12 +273,38 @@
                                 </ul><br/>
                                 <span class="form__input--error">{{ errors[0] }}</span>
                             </ValidationProvider>
+                            <ValidationProvider v-if="paymentOption === 'Credit Card'" name="Existing credit card" rules="required" v-slot="{errors}">
+                                <p class="form__label">Are you using an existing credit card?</p>
+                                <ul class="form__form-group--inline">
+                                    <li class="form__input--radio">
+                                        <label for="Yes">Yes</label>
+                                        <input id="Yes" type="radio" v-model="existingCreditCard" value="Yes" />
+                                    </li>
+                                    <li class="form__input--radio">
+                                        <label for="No">No</label>
+                                        <input id="No" type="radio" v-model="existingCreditCard" value="No" />
+                                    </li>
+                                </ul>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                            <ValidationProvider v-if="existingCreditCard === 'Yes'" name="Card to link" rules="required" v-slot="{errors}">                              
+                                <input type="hidden" v-model="cardToUse" />
+                                <label class="form__label">Card number</label>
+                                <select class="form__select" v-model="cardToUse">
+                                    <option disabled value="">Please select a credit/debit cardf</option>
+                                    <option v-for="(item, i) in cardNumbers" :key="`cardnumbers-${i}`">{{item}}</option>
+                                </select>
+                                <span class="form__input--error">{{ errors[0] }}</span>                         
+                            </ValidationProvider>
                         </div>
                     </fieldset>
-                    
+                    <div v-if="currentStep >= 2 && paymentOption == 'Credit Card' && cardToUse !== ''">
+                        <CreditCardForm ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+                            @submit="submitForm" @cardSubmit="cardSubmittedValue" />
+                    </div>
                     <!-- <v-btn type="button" v-if="currentStep !== 1" @click="goToStep(currentStep - 1)">Previous</v-btn> -->
-                    <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Credit Card'">Next</v-btn>
-                    <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Credit Card' ? 'button' : 'button--disabled'">Submit</v-btn>
+                    <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Credit Card' && existingCreditCard == 'No')">Next</v-btn>
+                    <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Credit Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>
             </ValidationObserver>
         </div>
@@ -388,18 +403,11 @@ export default {
         paymentOptions: ["Cash", "Credit Card", "Thrive"],
         paymentOption: "",
         errorDialog: false,
-        authUser: false
+        authUser: false,
+        existingCreditCard: "",
+        cardToUse: "",
+        cardSubmitted: false
     }),
-    /* async asyncData({$axios}) {
-        try {
-            let data = await $axios.$get("/api/certificates");
-            return {
-                coc: data
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
-    }, */
     computed: {
         ...mapGetters(["isLoggedIn", "getUser", "getReports"]),
         insuredDay1() {
@@ -417,10 +425,6 @@ export default {
         nonInsuredDay5() {
             return this.nonInsuredPayment.day5Date;
         },
-        cardName() {
-            let fullname = this.cardholderName.first + ' '+ [this.cardholderName.middle ? this.cardholderName.middle +' ' : null] + this.cardholderName.last
-            return fullname;
-        },
         insuredPay1: {
             get() {
                 let pay = this.deductible * .50
@@ -437,6 +441,14 @@ export default {
         certificates() {
             return this.getReports.filter((v) => {
                 return v.ReportType === "coc"
+            })
+        },
+        cardNumbers() {
+            var cards = this.getReports.filter((v) => {
+                return v.ReportType === "credit-card"
+            })
+            return cards.map((v) => {
+                return v.cardNumber
             })
         }
     },
@@ -563,7 +575,7 @@ export default {
                     return goTo(0)
                 }
                 if (!certificates.includes(this.selectedJobId)) {
-                    if ((this.currentStep === 1 && this.paymentOption !== 'Credit Card') ||
+                    if ((this.currentStep === 1 && this.paymentOption !== 'Credit Card' || this.cardToUse !== '') ||
                         this.currentStep === 2) {
                         this.onSubmit()
                         return;

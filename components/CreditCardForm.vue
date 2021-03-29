@@ -396,7 +396,7 @@ import {mapActions, mapGetters} from 'vuex';
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
                   teamMember: userNameObj,
-                  //cardImages: this.$nuxt.isOffline ? savedCardImages : this.cardDownloadUrls
+                  cardImages: this.$nuxt.isOffline ? this.cardImages : this.cardDownloadUrls
                 };
                 if (!cards.includes(this.cardNumber)) {
                   if (this.$nuxt.isOffline) {

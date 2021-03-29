@@ -12,19 +12,19 @@
         </div>
     </div>
     <div class="reports-list__reports">
-      <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="span">
+      <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="div">
         <div class="reports-list__report flip-list-item" v-for="(report, i) in sortedReports" :key="`report-type-${i}`">
           <nuxt-link class="reports-list__report-link" :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`" v-if="page == 'reportsPage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span>{{report.CaseFileType}}</span>
-            <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
+            <p>{{report.teamMember}}</p>
           </nuxt-link>
           <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span v-show="report.CaseFileType">{{report.CaseFileType}}</span>
-            <p>{{report.teamMember === undefined ? '' : report.teamMember.first+' '+ report.teamMember.last}}</p>
+            <p>{{report.teamMember}}</p>
           </nuxt-link>
         </div>
       </transition-group>
@@ -44,9 +44,6 @@ export default {
     sortDirection: 'info-bar__sort--asc',
     reports: []
   }),
-  async fetch() {
-    this.reports = await this.$axios.$get("/api/reports").then(res => res.json);
-  },
   computed: {
     sortedReports() {
       return this.reportslist.sort((r1, r2) => {
@@ -58,7 +55,9 @@ export default {
       })
     },
     teamMemberName() {
-      return this.reportslist.indexOf("teamMember")
+      return this.reportslist.map((v) => {
+        return v.teamMember.first + ' ' + v.teamMember.last
+      })
     }
   },
   methods: {
@@ -76,13 +75,16 @@ export default {
       }
       this.sortBy = s.value
     },
-    addingCaseFileType() {
+    formattingTeamMember() {
       this.sortedReports.forEach((v) => {
-        if (v.ReportType === 'case-file') {
-          v.ReportType = 'case-file-' + v.CaseFileType
-        }
+        if (v.teamMember) {
+          v.teamMember = v.teamMember.first + ' ' + v.teamMember.last
+        }       
       })
     }
+  },
+  mounted() {
+    this.formattingTeamMember()
   }
 }
 </script>
@@ -90,22 +92,23 @@ export default {
 .flip-list-item {
   perspective: 5000px;
   transition: all 500ms cubic-bezier(0.59, 0.12, 0.34, 0.95);
-  transform: translate3d(0, 10px, 0) scale(1);
+  //transform: translate3d(0, 10px, 0) scale(1);
+}
+
+.flip-list-move {
+  transition: transform 500ms cubic-bezier(0.59, 0.12, 0.34, 0.95);
+  //transform: translate3d(0, 10px, 0) scale(1);
 }
 
 .flip-list-enter,
 .flip-list-leave-to {
   opacity: 0;
+  transition: all 500ms cubic-bezier(0.59, 0.12, 0.34, 0.95);
   transform: translate3d(0, -110px, 0) scale(.01);
 }
 
 .flip-list-leave-active {
   position: absolute;
-}
-
-.flip-list-move {
-  transition: all 500ms cubic-bezier(0.59, 0.12, 0.34, 0.95);
-  transform: translate3d(0, 10px, 0) scale(1);
 }
 
 .shown {

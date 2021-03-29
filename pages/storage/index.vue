@@ -37,6 +37,17 @@
         return redirect("/")
       }
     },
+    async asyncData({ $axios }) {
+      try {
+        let data = await $axios.$get("/api/reports");
+        let dataFilters = data.filter((v) => {
+          return v.ReportType !== 'credit-card'
+        })
+        return { reports: dataFilters }
+      } catch (e) {
+        console.error("SOMETHING WENT WRONG: " + e)
+      }
+    },
     computed: {
       ...mapGetters(["getReports", "isLoggedIn"]),
       filteredRep() {
@@ -49,9 +60,6 @@
       this.$nextTick(() => {
         this.authUser = this.$fire.auth.currentUser ? true : false
       })
-    },
-    created() {
-      this.reports = this.$store.state.reports
     }
   }
 </script>

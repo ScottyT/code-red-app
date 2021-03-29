@@ -137,8 +137,7 @@
         deleteReport: 'indexDb/deleteReport'
       }),
       async submitForm(post, index) {
-         try {
-           
+         try {           
           this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
             if (post.ReportType == 'rapid-response') {
               Object.keys(post).forEach(k => {
@@ -148,14 +147,10 @@
                 if (k == "jobFiles") {
                     this.submitFiles(post, post.jobFiles, "Job files")
                 }
-                if (k == "cardImages") {
-                    this.submitFiles(post, post.cardImages, "Card Images")
-                }
               })
-             // post.Pictures = this.filesUploading
             }
             if (post.ReportType == 'credit-card') {
-              this.submitFiles(post, post.savedCardImages, "Card Images")
+              this.submitFiles(post, post.cardImages, "Card Images")
             }
             this.message = res.message
             setTimeout(() => {

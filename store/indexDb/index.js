@@ -74,6 +74,7 @@ export const actions = {
             .catch((err) => commit("setError", err))
     },
     async saveCreditCard({ state, commit }, newReport) {
+        newReport.key = newReport.cardNumber
         await set(newReport.cardNumber, newReport).then(() => commit('addRep', newReport))
             .catch((err) => commit("setError", err))
     },

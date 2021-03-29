@@ -15,7 +15,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn'])
+    ...mapGetters(['isLoggedIn']),
+    /* reportslist() {
+      return reports.filter((v) => {
+        return v.ReportType !== 'credit-card'
+      })
+    } */
   },
   async middleware({store, redirect}) {
     if (store.state.user.role !== "admin") {
@@ -26,9 +31,11 @@ export default {
     try {
       let data = await $axios.$get("/api/reports")
       let employees = await $axios.$get("/api/employees")
-      //let data = dispatchData.concat(rapidResponseData)
+      let dataFilters = data.filter((v) => {
+        return v.ReportType !== 'credit-card'
+      })
       return {
-        reports: data,
+        reports: dataFilters,
         empList: employees
       }
     } catch (e) {
@@ -40,8 +47,8 @@ export default {
       loading:true,
       empList:[],
       reportsdata:[],
-      reportsList:[],
-      reports: []
+      //reportsList:[],
+      //reports: []
     }
   }
 }

@@ -14,14 +14,7 @@
       </div>
     </div>
     <h2 v-if="reports && reports.length < 0">You don't have any reports to show</h2>
-      <reports-list :reportslist="repList" :sortoptions="sortOptions" page="reportsPage" v-else />
-      
-      <!-- <div class="filter-pills">
-        <div class="filter-pills__pill" v-for="(filter, i) in filteredArr" :key="i" @click="removeFilter(filter)">
-          <v-icon light class="filter-pills__pill-icon">mdi-close-circle</v-icon>{{filter.name}}
-        </div>
-      </div> -->
-      
+      <reports-list :reportslist="repList" :sortoptions="sortOptions" page="reportsPage" v-else />     
     </div>
 </template>
 <script>
@@ -55,7 +48,7 @@ import Autocomplete from './Autocomplete.vue'
     }),
     computed:{
       list: {
-        get() {
+        get() {         
           return this.reports
         },
         set(value) {
