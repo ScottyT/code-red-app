@@ -11,7 +11,7 @@
         </div>
       </v-dialog>
       <h2 class="alert alert--success">{{ successMessage }}</h2>
-      <h2 class="alert alert--error">{{errorMessage}}</h2>
+      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
       <form v-if="!submitted" class="form" enctype="multipart/form-data" @submit.prevent="submitForm">
         <div class="form__form-group">
           <ValidationProvider name="Team lead id" rules="required|numeric"

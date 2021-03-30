@@ -110,18 +110,6 @@
         this.authUser = this.$fire.auth.currentUser ? true : false
       })
     },
-    async asyncData({
-      $axios
-    }) {
-      try {
-        let data = await $axios.$get("/api/employees");
-        return {
-          employees: data
-        }
-      } catch (e) {
-        console.log("something happened:", e)
-      }
-    },
     async asyncData({$axios}) {
         try {
             let data = await $axios.$get("/api/employees");

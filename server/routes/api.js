@@ -5,10 +5,19 @@ const RapidResponse = require("../models/rapidReportSchema");
 const CaseFile = require("../models/caseFileSchema");
 const COC = require("../models/cocSchema");
 const AOB = require("../models/aobSchema");
+const Job = require('../models/jobSchema');
 const CreditCard = require("../models/creditCardSchema");
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
+const jobSchema = require("../models/jobSchema");
+
+const createJob = function(job) {
+    return Job.create(job).then(docJob => {
+        console.log("created job:", docJob);
+        return docJob
+    });
+};
 router.use(express.json())
 router.use(express.urlencoded({extended: true}));
 router.post("/employee/new", (req, res) => {
@@ -36,6 +45,16 @@ router.get('/reports', async (req, res) => {
     const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard)
     res.json(results)
 })
+/* router.get("/jobs/:JobId", async(req, res) => {
+    const jobs = await Job.findOne({name: req.params.JobId}).populate("dispatchreports")
+    res.json(jobs)
+}) */
+/* router.post('/jobs/new', async (req, res) => {
+    const job = new Job({
+        name: req.body.name,
+
+    })
+}) */
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
@@ -148,11 +167,20 @@ router.get('/credit-cards', (req, res) => {
     })
 })
 router.get('/credit-card/:cardNumber', (req, res) => {
-    CreditCard.findOne({cardNumber: req.body.cardNumber}, (err, creditcard) => {
+    /* CreditCard.findOne({cardNumber: req.params.cardNumber}, (err, creditcard) => {
         if (err) {
             res.status(500).send('Error')
         } else if (creditcard) {
             res.status(200).json(creditcard)
+        } else {
+            res.status(400).send('Credit card not found')
+        }
+    }) */
+    CreditCard.findOne({cardNumber: req.params.cardNumber}).populate('dispatch').exec((err, card) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if(card) {
+            res.status(200).json(card)
         } else {
             res.status(400).send('Credit card not found')
         }
@@ -174,7 +202,8 @@ router.post("/dispatch/new",
             // Build your resulting errors however you want! String, object, whatever - it works!
             return `${param}: ${msg}`;
         };
-        const result = validationResult(req).formatWith(errorFormatter);       
+       // const employee = await User.findOne({id: req.body.id})
+        const result = validationResult(req).formatWith(errorFormatter);
         const dispatch = new Dispatch({
             ArrivalContactName: req.body.ArrivalContactName,
             JobId: req.body.JobId,
@@ -191,10 +220,11 @@ router.post("/dispatch/new",
             textTimeUpdate: req.body.textTimeUpdate,
             propertyChkList: req.body.propertyChkList,
             summary: req.body.summary,
+            //user: employee._id,
             teamMember: req.body.teamMember,
             timeFormatted: req.body.timeFormatted,
             teamMemberSig: req.body.teamMemberSig,
-            signDateTime: req.body.signDate
+            signDateTime: req.body.signDate,
         });
         if (!result.isEmpty()) {
             return res.json({ errors: result.array() })
@@ -423,7 +453,12 @@ router.post("/credit-card/new", [
         return `${param}: ${msg}`;
     };
     const result = validationResult(req).formatWith(errorFormatter);
-
+    //var dispatchrep = {}
+    const dRep = await Dispatch.findOne({JobId: req.body.JobId});
+    /* .populate('dispatch').exec((err, dispatch) => {
+        //console.log('dispatch:', dispatch)
+        dispatchrep = dispatch
+    }); */
     const creditCard = new CreditCard({
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,
@@ -436,8 +471,10 @@ router.post("/credit-card/new", [
         cvcNum: req.body.cvcNum,
         cardholderZip: req.body.cardholderZip,
         customerSig: req.body.cusSign,
-        customerSignDate: req.body.customerSigDate
+        customerSignDate: req.body.customerSigDate,
+        dispatch: dRep._id
     });
+    
     if (!result.isEmpty) {
         return res.json({ errors: result.array() })
     }

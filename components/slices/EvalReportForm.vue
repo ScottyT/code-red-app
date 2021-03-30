@@ -512,7 +512,10 @@
       submitForm() {
         this.message = ""
         const user = this.getUser
-        const reports = this.getReports.map((v) => {
+        const dispatchReports = this.getReports.filter((v) => {
+          return v.ReportType === 'dispatch'
+        })
+        const reports = dispatchReports.map((v) => {
           return v.JobId
         })
         const userNameObj = {

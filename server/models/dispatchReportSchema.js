@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('./userSchema');
 const timestamps = require('mongoose-timestamp2');
 const dispatchReport = mongoose.Schema({
     ArrivalContactName: String,
@@ -23,6 +24,7 @@ const dispatchReport = mongoose.Schema({
     propertyChkList:Array,
     summary: String,
     teamMember: Map,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     timeFormatted: String,
     teamMemberSig: String,
     signDate: String
