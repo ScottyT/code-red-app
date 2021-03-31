@@ -404,11 +404,9 @@ button {
     }
     &--listing {
       & > li {
-        //padding-bottom:15px;
         list-style-type:lower-alpha;
       }
       ol > li {
-        list-style-type:lower-alpha;
         padding-bottom:15px;
       }
       h3 {

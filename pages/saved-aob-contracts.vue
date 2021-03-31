@@ -3,7 +3,7 @@
         <div class="contracts-list-item" v-for="(item, i) in contracts" :key="`contract-${i}`">
             <p>AOB & Mitigation Contract Job ID: {{item.JobId}}</p>
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="9000" :manual-pagination="false"
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="10000" :manual-pagination="true"
                     :show-layout="false" :preview-modal="true" :ref="`aobhtml2pdf-${i}`">
                     <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                 </vue-html2pdf>

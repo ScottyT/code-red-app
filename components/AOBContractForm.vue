@@ -839,18 +839,17 @@
             <VueSignaturePad class="form__input" width="100%" height="100%" id="sketch" ref="sketchPad" :options="{onBegin}" />
           </div> -->
         </fieldset>
-        <div v-if="currentStep >= 2 && paymentOption == 'Credit Card'">
-          <CreditCardForm ref="creditCardForm" :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
-            @submit="submitForm" @cardSubmit="cardSubmittedValue" />
+        <div v-if="currentStep >= 2 && paymentOption == 'Card'">
+          <CreditCardForm ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
+          :jobId="selectedJobId" :repPrint="repPrint" @submit="submitForm" @cardSubmit="cardSubmittedValue" />
         </div>
-        <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Credit Card'">Next</v-btn>
-        <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Credit Card' ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
+        <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Card'">Next</v-btn>
+        <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Card' ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
       </form>
     </ValidationObserver>
   </div>
 </template>
 <script>
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
   export default {
@@ -962,7 +961,7 @@ import {mapGetters, mapActions} from 'vuex'
         },
         cardSubmitted: false,
         currentStep: 1,
-        paymentOptions: ["Cash", "Credit Card", "Thrive"],
+        paymentOptions: ["Cash", "Card", "Thrive"],
         paymentOption: ""
     }),
     watch: {
@@ -1048,7 +1047,7 @@ import {mapGetters, mapActions} from 'vuex'
                 return goTo(0)
               }
               if (!contracts.includes(this.selectedJobId)) {
-                if ((this.currentStep === 1 && this.paymentOption !== 'Credit Card') || this.currentStep === 2) {
+                if ((this.currentStep === 1 && this.paymentOption !== 'Card') || this.currentStep === 2) {
                   this.onSubmit()
                   return;
                 }

@@ -1,7 +1,7 @@
 <template>
   <div class="reports-detail-wrapper">
     <h1>Report details</h1>
-    <v-btn @click="generateReport">Download PDF</v-btn>
+    <!-- <v-btn @click="generateReport">Download PDF</v-btn>
     <client-only>
       <vue-html2pdf :filename="`${reportType}-${report.JobId}`" :paginate-elements-by-height="1400" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf" @beforeDownload="beforeDownload($event)">
@@ -9,7 +9,7 @@
         <report-details slot="pdf-content" @domRendered="domRendered()" :report="report" />
 
       </vue-html2pdf>
-    </client-only>
+    </client-only> -->
     <response-report-details :report="report" v-if="reportType == 'rapid-response'" />
     <lazy-case-file-details :report="report" v-else-if="reportType.includes('case-file-')" />
     <report-details :report="report" v-else />
@@ -30,11 +30,11 @@
         title: "Report " + this.repId
       }
     },
-    /* async middleware({ store, redirect, route }) {
+    async middleware({ store, redirect, route }) {
       if (store.state.user.role !== "admin") {    
         return redirect("/")
       }
-    }, */
+    },
     async asyncData({
       $prismic,
       params,

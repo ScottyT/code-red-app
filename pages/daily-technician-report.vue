@@ -12,6 +12,11 @@
     mapGetters, mapActions
   } from 'vuex';
   export default {
+    head() {
+      return {
+        title: "Daily Technician Form"
+      }
+    },
     data() {
         return {
             authUser: false

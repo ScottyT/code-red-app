@@ -494,7 +494,7 @@
                   window.location = "/"
                 }, 2000)
               }).catch((err) => {
-                this.errorMessage = err
+                this.errorMessage.push(err)
               })
             }
           } else {

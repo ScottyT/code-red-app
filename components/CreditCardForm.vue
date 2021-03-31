@@ -4,7 +4,7 @@
       <h2>{{message}}</h2>
       <h2 class="alert alert--error">{{errorMessage}}</h2>
       <p class="text-decoration-underline text-center"><strong>THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</strong></p>
-      <p class="text-center">Water Emergency Services Incorporated (WESI) is an independent janitorial contractor.
+      <p class="text-center">{{company}} ({{abbreviation}}) is an independent janitorial contractor.
         We are not affiliated, associated, endorsed by or in any way officially connected with any other company,
         agency or franchise.</p>
       <p>Please complete all fields. You may cancel this authorization at any time by contacting us. This
@@ -142,10 +142,10 @@
           </ValidationProvider>
         </div>
         <div class="form__form-group form__form-group--inline">
-          <p>I, {{repPrint}}, authorize Water Emergency Services Incorporated
-          (WESI) to charge my credit card above for the agreed upon purchases and/or services within the above
+          <p>I, {{repPrint}}, authorize {{company}}
+          ({{abbreviation}}) to charge my credit card above for the agreed upon purchases and/or services within the above
           Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement. I understand that
-          my information will be saved to file for future transactions on my account and I hereby authorize WESI to
+          my information will be saved to file for future transactions on my account and I hereby authorize {{abbreviation}} to
           charge
           my credit card above for the agreed upon future transactions, purchases and/or services if any within the
           above
@@ -245,6 +245,12 @@ import {mapActions, mapGetters} from 'vuex';
         },
         partOfLastSection: {
             type: Boolean
+        },
+        company: {
+          type: String
+        },
+        abbreviation: {
+          type: String
         }
     },
     computed: {
@@ -410,7 +416,7 @@ import {mapActions, mapGetters} from 'vuex';
                       this.errorMessage = err
                     })
                   } else {
-                    this.$axios.$post("/api/credit-card/new", post).then((res) => {     
+                    this.$axios.$post("/api/credit-card/new", post).then((res) => {
                       if (res.errors) {
                         this.errorMessage = res.errors
                         return;

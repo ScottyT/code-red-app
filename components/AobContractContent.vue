@@ -1,7 +1,7 @@
 <template>
     <div class="report-details">
         <div class="report-details__content">
-            <section class="pdf-content">
+            <section slot="pdf-content">
                     
                     <div class="report-details__company-logo">
                         <img src="https://images.prismic.io/water-emergency-services/31b3f2ab-d44e-4f77-8072-faef63fcceb5_WESI+new+Shield+Graphic_800x800.png?auto=compress,format" />
@@ -216,7 +216,7 @@
                                         of this Equipment Rental Agreement. This payment is herein referred to as the “Deposit”.
                                     </li>
                                     
-                                    <li style="margin-top:30px;">
+                                    <li>
                                         The Property Representative agrees to pay {{abbreviation}} rent (herein referred to as “Rent”) for the
                                         use of
                                         the equipment. The rent inclusive of sales tax will be equal to the most recent geographical
@@ -252,7 +252,7 @@
                                         To the extent permitted by law, the Property Representative will be responsible for the risk of loss,
                                         theft, damage, or destruction to the equipment from any and every cause.
                                     </li>
-                                   <!--  <div class="html2pdf__page-break"/> -->
+                                    <div class="html2pdf__page-break"/>
                                     <li>
                                         If the equipment is lost or damaged the Property Representative will continue paying Rent, will
                                         provide {{abbreviation}} with prompt written notice of such loss or damage and will, if the equipment is
@@ -312,7 +312,7 @@
                                 </ol>
                             </li>
                             
-                            <li style="margin-top:30px;">
+                            <li>
                                 <span class="font-weight-bold">Terms and Conditions:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
@@ -360,6 +360,7 @@
                                     depending on the skills and thoroughness of the adjustor, analyst and {{abbreviation}}. The goal is
                                     to make {{abbreviation}} whole.</p>
                                 </li>
+                                <div class="html2pdf__page-break"/>
                                 <li>
                                     FRAUD:
                                     In most statesthe Property Representative is legally required to pay its deductible. Property
@@ -376,7 +377,7 @@
                                     legal authorities of any misrepresentations, fraudulent activity and/or any other illegal
                                     activity and {{abbreviation}} reserves the right to pursue any and all legal action if necessary.
                                 </li>
-                                <div class="html2pdf__page-break"/>
+                                
                                 <li>
                                     NO GUARANTEE OF COVERAGE:
                                     {{abbreviation}} is not able to guarantee, warrant, assure, state or represent as to the sufficiency of

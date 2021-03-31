@@ -7,6 +7,11 @@
 <script>
 import {mapGetters} from 'vuex';
 export default {
+    head() {
+        return {
+            title: "AOB & Mitigation Contract"
+        }
+    },
     data() {
         return {
             authUser: false

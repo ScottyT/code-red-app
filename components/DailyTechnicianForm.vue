@@ -6,7 +6,7 @@
           <h2>{{message}}</h2>
           <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error[0]}}</h3>
           <ul>
-            <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error}}</li>
+            <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error[0]}}</li>
           </ul>
           <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
             <div class="form__form-group">
