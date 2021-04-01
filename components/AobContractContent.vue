@@ -113,7 +113,7 @@
                                     </ol>
                             </li>
                             
-                            <li style="margin-top:30px;">
+                            <li>
                                 <span class="font-weight-bold">Property Representative Cooperation Required:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
@@ -252,7 +252,7 @@
                                         To the extent permitted by law, the Property Representative will be responsible for the risk of loss,
                                         theft, damage, or destruction to the equipment from any and every cause.
                                     </li>
-                                    <div class="html2pdf__page-break"/>
+                                    
                                     <li>
                                         If the equipment is lost or damaged the Property Representative will continue paying Rent, will
                                         provide {{abbreviation}} with prompt written notice of such loss or damage and will, if the equipment is
@@ -270,6 +270,7 @@
                                         The equipment is the property of {{abbreviation}} and will remain the property of {{abbreviation}}
                                         unless otherwise provided herein.
                                     </li>
+                                    <div class="html2pdf__page-break"/>
                                     <li>
                                         The Property Representative will not encumber the equipment or allow the equipment to be encumbered or
                                         pledge the equipment as security in any manner.
@@ -448,6 +449,7 @@
                                     (24) hours following its execution. This Agreement cannot be cancelled once work is
                                     commenced except by the written agreement of both parties.
                                 </li>
+                                <div class="html2pdf__page-break"/>
                                 <li>
                                     <p>
                                     INTEREST:
@@ -465,7 +467,7 @@
                                     enforcement of any terms of this entire Agreement.
                                     </p>
                                 </li>
-                                <div class="html2pdf__page-break"/>
+                                <!-- <div class="html2pdf__page-break"/> -->
                                 <li>
                                     PAYMENT:
                                     The Property Representative is responsible for payment of all services, fees, rentals,
@@ -525,7 +527,8 @@
                                 per this Agreement. This payment will be applied to the balance of the Available Proceeds as
                                 defined above.
                             </li>
-                            <li>
+                            <div class="html2pdf__page-break"/>
+                            <li style="margin-top:20px;">
                                 Pending Insurance<br />
                                 If insurance coverage is in question on the Subject Property by the Property Representative, then
                                 the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
@@ -540,6 +543,7 @@
                                 reserve said services and equipment herein per this Agreement. This payment will be applied to
                                 the balance of the Available Proceeds as defined above.
                             </li>
+                            
                             <li>
                                 Non-Insured<br />
                                 If there is not any insurance coverage on the Subject Property, then Property Representative
@@ -552,7 +556,7 @@
                             </li>
                         </ol>
                     </div>
-                     <div class="html2pdf__page-break"/>
+                     <!-- <div class="html2pdf__page-break"/> -->
                     <div class="report-details__bordered pdf-detail">
                         <div class="report-details__data report-details__data--row">
                             <div class="report-details__data-field">
@@ -581,7 +585,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="report-details__bordered">
+                    <div class="report-details__bordered pdf-detail">
                         <div class="report-details__data report-details__data--row">
                             <div class="report-details__data-field">
                                 <label>Non-Insured or Still Pending Coverage: Agreed “Term” End Date:</label>
@@ -597,6 +601,7 @@
                             <div>{{contracts.nonInsuredDay5}}</div>
                         </div>
                     </div>
+                    
                     <div class="report-details__section">
                         <div class="report-details__data">
                             <label>Address:</label>
@@ -635,8 +640,11 @@
                         <label>Minimum believed Square Foot as defined above: </label>
                         <div>{{contracts.minimumSqft}}</div>
                     </div>
-                    <p class="text-center">Property Representative understands Water Emergency Services Incorporated is not affiliated, associated, endorsed 
-by, or in any way officially connected with any other company, agency or franchise.</p>
+                    <div class="html2pdf__page-break"/>
+                    <div class="pdf-item">
+                        <p class="text-center detail-margin-top">Property Representative understands Water Emergency Services Incorporated is not affiliated, associated, endorsed 
+                            by, or in any way officially connected with any other company, agency or franchise.</p>
+                    </div>
                     <div class="report-details__bordered">
                         <div class="report-details__data report-details__data--row">
                             <label>Driver's License Number:</label>
@@ -669,6 +677,78 @@ by, or in any way officially connected with any other company, agency or franchi
                         <label>Witness date:</label>
                         <div>{{contracts.witnessDate}}</div>
                     </div>
+                    <div class="report-details__data data-section">
+                        <div class="data-section__heading">Debit/Credit Cards</div>
+                        <div class="data-section__data" v-for="card in cards" :key="card.cardNumber">
+                            <div class="data-section__data--group">
+                                <div class="data-section__subheading">Cardholder</div>
+                                <div class="data-section__data--group-item">
+                                    <label>Name:</label>
+                                    <div>{{card.cardholderName}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Email:</label>
+                                    <div>{{card.cardholderInfo.email}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Phone number:</label>
+                                    <div>{{card.cardholderInfo.phoneNumber}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Name of card:</label>
+                                    <div>{{card.creditCard}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Card Number:</label>
+                                    <div>{{card.cardNumber}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>CVC Number:</label>
+                                    <div>{{card.cvcNum}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Expiration Date:</label>
+                                    <div>{{card.expirationDate}}</div>
+                                </div>
+                            </div>
+                            <div class="data-section__data--group">
+                                <div class="data-section__subheading">Billing Address</div>
+                                <div class="data-section__data--group-item">
+                                    <label>Address 1:</label>
+                                    <div>{{card.billingAddress.address1}}</div>
+                                </div>
+                                <div class="data-section__data--group-item" v-show="card.billingAddress.address2">
+                                    <label>Address 2:</label>
+                                    <div>{{card.billingAddress.address2}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>City: </label>
+                                    <div>{{card.billingAddress.city}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>State: </label>
+                                    <div>{{card.billingAddress.state}}</div>
+                                </div>
+                                <div class="data-section__data--group-item">
+                                    <label>Zip: </label>
+                                    <div>{{card.billingAddress.zip}}</div>
+                                </div>
+                            </div>
+                            <div class="data-section__data--group data-section__signature">
+                                <label>Card Owner Signature:</label>
+                                <div class="data-section__data--group-item">                                  
+                                    <div class="report-details__data--sig pdf-sig"
+                                        :style="'background-image:url('+card.customerSig+')'"></div>
+                                    <!--  <img class="pdf-sig report-details__data--cusSig" :src="contracts.repSignature" />   -->
+                                </div> 
+                            </div>
+                            <div class="data-section__card-images">
+                                <div class="card-image" v-for="(image, i) in cardImages" :key="`card-${i}`">
+                                    <img :src="image.url" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </section>
         </div>
     </div>
@@ -677,17 +757,121 @@ by, or in any way officially connected with any other company, agency or franchi
 export default {
     name: "AobContractContent",
     props: ['contracts', 'company', 'abbreviation'],
+    data() {
+        return {
+            cards: [],
+            errorMessage: "",
+            cardImages: []
+        }
+    },
+    methods: {
+        getcards() {
+            this.$axios.$get(`/api/reports/credit-card/${this.contracts.JobId}`).then((res) => {
+                this.cards = res
+            });
+        },
+        async getCardImages() {
+            var storageRef = this.$fire.storage.ref()
+            var listRef = storageRef.child(this.contracts.JobId)
+            if (listRef == null) {
+                return;
+            }
+            listRef.listAll().then((res) => {
+                console.log(res)
+                res.items.forEach((itemRef) => {
+                    var itemPath = itemRef.location.path_;
+                    storageRef.child(itemPath).getDownloadURL().then((url) => {
+                        var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
+                        var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
+                        const fileObj = {
+                            name: fileName,
+                            url: url,
+                            type: fileType
+                        }
+                        this.cardImages.push(fileObj)
+                    }).catch((err) => {
+                        this.errorMessage = err
+                    })
+                })
+            })
+        }
+    },
     mounted() {
         this.$nextTick(() => {
-        setTimeout(() => {
-          this.$emit("domRendered");
-        }, 1000)
+            
+            setTimeout(() => {
+                this.$emit("domRendered");
+            }, 1000)
       })
+    },
+    created() {
+        this.getcards()
+        this.getCardImages()
     }
 }
 </script>
 <style lang="scss" scoped>
+.data-section {
+    margin: 20px 0;
+    display:grid;
+    grid-template-columns: 1fr;
+    /* grid-template-rows:repeat(auto-fit, minmax(100px, 1fr));
+    width:100%; */
+    &__heading {
+        //grid-column: span 2;
+        font-size:1.4em;
+        font-weight:bold;
+        text-align:center;
+    }
+    &__subheading {
+        font-size:1.2em;
+        font-weight:bold;
+        grid-row:1/2;
+        text-decoration: underline;
+    }
+    &__data {
+        width:100%;
+        border:1px solid black;
+        padding:5px;
+        margin-top:5px;
+        display:grid;
+        grid-column:1 span;
+        grid-template-columns:1fr;
+        grid-template-rows:1fr 1fr 150px 120px;
+        &--group {
+            padding-bottom:20px;
+            display:grid;
+            grid-template-rows:50px 1fr;
+            grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+        }
+        &--group-item {
+            height:100%;
+            &:not(:last-child) {
+                padding-bottom:5px;
+            }
+        }
+    }
+    &__signature {
+        grid-template-columns:1fr;
+    }
+    &__card-images {
+        position:relative;
+        display:inline-flex;
+        flex-direction:row;
+        justify-content:space-between;
+        div:nth-child(2) {
+            left:300px;
+        }
+    }
+}
+.card-image {
+    max-width:200px;
+    position:absolute;
+    top:0;
+    display:inline-block;
+}
 .pdf-item {
+    //margin-top:10px;
     .detail-margin-top {
         margin-top:10px;
     }

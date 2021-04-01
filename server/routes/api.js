@@ -41,7 +41,7 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
     const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
     const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
-    const creditCard = await CreditCard.findOne({JobId: req.params.JobId})
+    const creditCard = await CreditCard.find({JobId: req.params.JobId})
     const aob = await AOB.findOne({JobId: req.params.JobId});
     const coc = await COC.findOne({JobId: req.params.JobId});
     switch (req.params.ReportType) {

@@ -23,7 +23,7 @@ export default {
     computed: {
         htmlToPdfOptions(e) {
             return {
-                margin:[20, 10, 20, 10],
+                margin:[10, 10, 20, 10],
                 filename: `aob-${this.contracts.JobId}`,
                 image: {
                     type: "jpeg",
@@ -45,7 +45,11 @@ export default {
     async asyncData({ $axios }) {
         try {
             let data = await $axios.$get("/api/aob-mitigation-contracts");
-            return { contracts: data }
+            //let cardData = await $axios.$get(`/api/reports/credit-card/${contracts.JobId}`);
+            return { 
+                contracts: data, 
+                //cards: cardData
+            }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
         }
@@ -53,6 +57,7 @@ export default {
     data() {
         return {
             contracts: [],
+            cards: [],
             contentRendered: false
         }
     },

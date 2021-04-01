@@ -131,7 +131,6 @@ export default {
     },
     async selectedFiles(e) {
       const fileList = e.target.value
-      console.log("filelist:", fileList)
     },
     async deleteFiles(e) {
       var storageRef = this.$fire.storage.ref()

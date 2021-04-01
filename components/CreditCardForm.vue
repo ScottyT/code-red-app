@@ -1,5 +1,4 @@
 <template>
-  <div>
     <ValidationObserver ref="cardForm">
       <h2>{{message}}</h2>
       <h2 class="alert alert--error">{{errorMessage}}</h2>
@@ -36,6 +35,11 @@
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
             <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
             <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderInfo.phoneNumber" />
+            <span class="form__input--error">{{ errors[0] }}</span>
+          </ValidationProvider>
+          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
+            <label for="cardNumber" class="form__label">Card Number:</label>
+            <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </span>
@@ -115,11 +119,7 @@
             <input :required="selectedCard.card == 'Other'" v-if="selectedCard.card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
-            <label for="cardNumber" class="form__label">Card Number:</label>
-            <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
+          
           <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group">
             <label for="cardholderName" class="form__label">Cardholder Name</label>
             <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
@@ -174,11 +174,10 @@
         </div>
       </fieldset>
       <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
-      <v-btn type="submit" :class="[backCardValue !== '' ? 'button':'button--disabled']" @click="submit" 
-        v-if="(uploaded && $nuxt.isOnline) || (backCardValue && $nuxt.isOffline)">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
+      <button type="submit" :class="[backCardValue !== '' ? 'button button--normal':'button--disabled']" @click="submit" 
+        v-if="(cardDownloadUrls.length > 1 && $nuxt.isOnline) || (backCardValue && $nuxt.isOffline)">{{ currentStep === 2 ? submitText : 'Next' }}</button>
       </form>
     </ValidationObserver>
-  </div>
 </template>
 <script>
 import {mapActions, mapGetters} from 'vuex';
@@ -300,8 +299,6 @@ import {mapActions, mapGetters} from 'vuex';
           const fileList = e.target.files
           const uploadarea = e.target.name
           const cardid = e.target.id
-          console.log(cardid)
-          console.log("value of file input: ", e.target.files)
           if (!fileList.length) {
             console.log("no files: ", fileList)
             return;
@@ -311,10 +308,10 @@ import {mapActions, mapGetters} from 'vuex';
             var file = e.target.files[0];
             var blob = file.slice(0, file.size, file.type)
             var filetype = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-            var newFile = new File([blob], `${uploadarea}-${this.jobId}${filetype}`, {
+            var newFile = new File([blob], `${uploadarea}-${this.cardNumber}${filetype}`, {
               type: file.type
             })
-            if (uploadarea === 'frontcardimage') {              
+            if (uploadarea === 'frontcardimage') {          
               this.frontCardImage[0] = newFile
               this.frontCardValue = this.$refs.frontCard.value
               this.$refs.frontcardimage.src = URL.createObjectURL(newFile)
@@ -342,6 +339,7 @@ import {mapActions, mapGetters} from 'vuex';
         async submitFiles(uploadarr, element) {
           // uploadarr is the array of Files 
           const field = element.getAttribute('name')
+
           uploadarr.forEach((file) => {
             var storageRef = this.$fire.storage.ref()
             var uploadRef = storageRef.child(`${this.jobId}/${file.name}`)
@@ -361,7 +359,7 @@ import {mapActions, mapGetters} from 'vuex';
             }, (error) => {
               console.log(error.message)
             }, () => {
-              this.uploaded = true
+              
               uploadRef.getDownloadURL().then((url) => {
                 var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
                 var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
@@ -373,8 +371,14 @@ import {mapActions, mapGetters} from 'vuex';
                 this.cardDownloadUrls.push(fileObj)
               })
             })
+            
           })
+
         },
+        /* async submitFiles(uploadarr, element) {
+          let finalArray = [];
+          up
+        }, */
         async submitCard() {
             const cards = this.getCards.map((v) => { return v.cardNumber })
             const userNameObj = {

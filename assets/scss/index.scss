@@ -112,6 +112,7 @@ button {
     max-width: 150px;
     background: $color-black;
     color: $color-white;
+    font-size:.9em;
   }
 }
 
@@ -394,6 +395,7 @@ button {
       & > span {
         display: inline-flex;
         padding:5px 0;
+        flex-wrap:wrap;
       }
     }
 
