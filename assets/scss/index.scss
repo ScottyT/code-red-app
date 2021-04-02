@@ -98,7 +98,7 @@ button {
   color: $color-white !important;
   background-color: $color-black;
   text-align: center;
-  display: block; 
+  display: inline-block; 
   font-size: 0.8em;
 
   &--disabled {

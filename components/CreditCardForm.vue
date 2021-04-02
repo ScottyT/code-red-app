@@ -342,7 +342,7 @@ import {mapActions, mapGetters} from 'vuex';
 
           uploadarr.forEach((file) => {
             var storageRef = this.$fire.storage.ref()
-            var uploadRef = storageRef.child(`${this.jobId}/${file.name}`)
+            var uploadRef = storageRef.child(`${this.cardNumber}/${file.name}`)
             var uploadTask = uploadRef.put(file)
             uploadTask.on('state_changed', (snapshot) => {
               var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -375,10 +375,6 @@ import {mapActions, mapGetters} from 'vuex';
           })
 
         },
-        /* async submitFiles(uploadarr, element) {
-          let finalArray = [];
-          up
-        }, */
         async submitCard() {
             const cards = this.getCards.map((v) => { return v.cardNumber })
             const userNameObj = {

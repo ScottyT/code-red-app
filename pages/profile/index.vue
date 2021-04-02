@@ -174,6 +174,9 @@
                 var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
                 var uploadTask = uploadRef.put(file)
                 break;
+              case "Card Images":
+                var uploadRef = storageRef.child(`${report.cardNumber}/${file.name}`)
+                var uploadTask = uploadRef.put(file)
               default:
                 var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
                 var uploadTask = uploadRef.put(file)

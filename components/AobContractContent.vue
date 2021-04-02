@@ -528,7 +528,7 @@
                                 defined above.
                             </li>
                             <div class="html2pdf__page-break"/>
-                            <li style="margin-top:20px;">
+                            <li style="margin-top:10px;">
                                 Pending Insurance<br />
                                 If insurance coverage is in question on the Subject Property by the Property Representative, then
                                 the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
@@ -658,8 +658,7 @@
                             <div class="report-details__data-field">
                                 <label>Property Representative Signature:</label>
                                 <div class="report-details__data--sig pdf-sig"
-                                    :style="'background-image:url('+contracts.repSignature+')'"></div>  
-                                   <!--  <img class="pdf-sig report-details__data--cusSig" :src="contracts.repSignature" />   -->
+                                    :style="'background-image:url('+contracts.repSignature+')'"></div>
                             </div>                       
                         </div>
                         <div class="report-details__data report-details__data--row">
@@ -677,6 +676,7 @@
                         <label>Witness date:</label>
                         <div>{{contracts.witnessDate}}</div>
                     </div>
+                    <div class="html2pdf__page-break"/>
                     <div class="report-details__data data-section">
                         <div class="data-section__heading">Debit/Credit Cards</div>
                         <div class="data-section__data" v-for="card in cards" :key="card.cardNumber">
@@ -739,14 +739,14 @@
                                 <div class="data-section__data--group-item">                                  
                                     <div class="report-details__data--sig pdf-sig"
                                         :style="'background-image:url('+card.customerSig+')'"></div>
-                                    <!--  <img class="pdf-sig report-details__data--cusSig" :src="contracts.repSignature" />   -->
                                 </div> 
                             </div>
                             <div class="data-section__card-images">
-                                <div class="card-image" v-for="(image, i) in cardImages" :key="`card-${i}`">
+                                <div class="card-image" v-for="(image, i) in cardImages.filter(v => v.cardNumber == card.cardNumber)" :key="`card-${i}`">                                   
                                     <img :src="image.url" />
                                 </div>
                             </div>
+                            <div class="html2pdf__page-break"/>
                         </div>
                     </div>
             </section>
@@ -755,59 +755,54 @@
 </template>
 <script>
 export default {
-    name: "AobContractContent",
-    props: ['contracts', 'company', 'abbreviation'],
-    data() {
-        return {
-            cards: [],
-            errorMessage: "",
-            cardImages: []
-        }
-    },
-    methods: {
-        getcards() {
-            this.$axios.$get(`/api/reports/credit-card/${this.contracts.JobId}`).then((res) => {
-                this.cards = res
-            });
-        },
-        async getCardImages() {
-            var storageRef = this.$fire.storage.ref()
-            var listRef = storageRef.child(this.contracts.JobId)
-            if (listRef == null) {
-                return;
-            }
-            listRef.listAll().then((res) => {
-                console.log(res)
-                res.items.forEach((itemRef) => {
-                    var itemPath = itemRef.location.path_;
-                    storageRef.child(itemPath).getDownloadURL().then((url) => {
-                        var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
-                        var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
-                        const fileObj = {
-                            name: fileName,
-                            url: url,
-                            type: fileType
-                        }
-                        this.cardImages.push(fileObj)
-                    }).catch((err) => {
-                        this.errorMessage = err
-                    })
-                })
-            })
-        }
-    },
-    mounted() {
-        this.$nextTick(() => {
-            
-            setTimeout(() => {
-                this.$emit("domRendered");
-            }, 1000)
-      })
-    },
-    created() {
-        this.getcards()
-        this.getCardImages()
+  name: "AobContractContent",
+  props: ['contracts', 'company', 'abbreviation'],
+  data() {
+    return {
+      cards: [],
+      errorMessage: "",
+      cardImages: []
     }
+  },
+  methods: {
+    getCardImages(card) {
+      var storageRef = this.$fire.storage.ref()
+      var listRef = storageRef.child(card)
+      listRef.listAll().then((res) => {
+        res.items.forEach((itemRef) => {
+          var itemPath = itemRef.location.path_;
+          storageRef.child(itemPath).getDownloadURL().then((url) => {
+            var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
+            var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
+            const fileObj = {
+              cardNumber: card,
+              name: fileName,
+              url: url,
+              type: fileType
+            }
+            this.cardImages.push(fileObj)
+          }).catch((err) => {
+            this.errorMessage = err
+          })
+        })
+      })
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.$emit("domRendered");
+      }, 1000)
+    })
+  },
+  created() {
+    this.$axios.$get(`/api/reports/credit-card/${this.contracts.JobId}`).then((res) => {
+      this.cards = res
+      this.cards.forEach((card) => {
+        this.getCardImages(card.cardNumber)
+      })
+    });
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -815,10 +810,7 @@ export default {
     margin: 20px 0;
     display:grid;
     grid-template-columns: 1fr;
-    /* grid-template-rows:repeat(auto-fit, minmax(100px, 1fr));
-    width:100%; */
     &__heading {
-        //grid-column: span 2;
         font-size:1.4em;
         font-weight:bold;
         text-align:center;
@@ -831,13 +823,12 @@ export default {
     }
     &__data {
         width:100%;
-        border:1px solid black;
         padding:5px;
         margin-top:5px;
         display:grid;
         grid-column:1 span;
         grid-template-columns:1fr;
-        grid-template-rows:1fr 1fr 150px 120px;
+        grid-template-rows:1fr 1fr 150px 210px;
         &--group {
             padding-bottom:20px;
             display:grid;
@@ -859,19 +850,20 @@ export default {
         display:inline-flex;
         flex-direction:row;
         justify-content:space-between;
+        height:200px;
         div:nth-child(2) {
-            left:300px;
+            left:400px;
         }
     }
 }
 .card-image {
-    max-width:200px;
+    max-width:300px;
+    height:200px;
     position:absolute;
     top:0;
     display:inline-block;
 }
 .pdf-item {
-    //margin-top:10px;
     .detail-margin-top {
         margin-top:10px;
     }

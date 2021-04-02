@@ -1,13 +1,10 @@
 <template>
-  <div class="report-details">
-    <div class="report-details__content">
-      <section slot="pdf-content">
-        <section class="pdf-item">
-          <div class="report-details__company-logo">
-            <img
-                 src="https://images.prismic.io/water-emergency-services/31b3f2ab-d44e-4f77-8072-faef63fcceb5_WESI+new+Shield+Graphic_800x800.png?auto=compress,format" />
-          </div>
-          <div class="text-center pdf-first-section">
+  <section slot="pdf-content">
+        <div class="text-center pdf-first-section">
+            <div class="report-details__company-logo">
+              <img
+                  src="https://images.prismic.io/water-emergency-services/31b3f2ab-d44e-4f77-8072-faef63fcceb5_WESI+new+Shield+Graphic_800x800.png?auto=compress,format" />
+            </div>
             <h2>{{company}}</h2>
             <h3>CERTIFICATE OF COMPLETION</h3>
             <p class="pdf-detail">This Assignment of Claim Agreement (hereinafter referred to as “Assignment” and/or “Agreement”) and
@@ -23,8 +20,8 @@
             <label>(hereinafter referred to as “Subject Property”)</label>
             <p class="text-decoration-underline"><strong>Water Emergency Services Incorporated has completed the
                 Assignment of Benefit Agreement and Mitigation Contract in full</strong></p>
-          </div>
-          <p class="pdf-detail">
+        </div>
+        <div class="report-details"><p class="pdf-detail report-details__data">
             SHARE: Property Representative will send a copy of this Agreement, Contract, Certificate of Completion,
             Xactimate and
             the WESI W9 to the insurance company, the insurance company’s representatives and mortgage institutions to
@@ -34,8 +31,8 @@
             of business information including but not limited to the services that WESI has provided, currently is
             providing and/or may
             be required to provide in the future.
-          </p>
-          <p class="pdf-detail">
+        </p>
+        <p class="pdf-detail report-details__data">
             DIRECTION OF PAYMENT: Property Representative hereby authorizes and unequivocally instructs direct payment
             of
             any benefits or proceeds for services rendered pursuant to the Assignment of Claim Agreement and Mitigation
@@ -45,15 +42,15 @@
             including but not limited to all invoices, tasks, billable hours and billable units partially and /or
             completely provided by
             WESI.
-          </p>
+        </p></div>
           <div class="report-details__bordered pdf-detail">
             <div class="report-details__data report-details__data--row">
               <div class="report-details__data-field">
-                <label>Insured Deductible:</label>
+                <label>Insured Deductible: </label>
                 <span>${{certificate.deductible}}</span>
               </div>
               <div class="report-details__data-field">
-                <label>Insured: Agreed “Term” of Service Minimum End Date:</label>
+                <label>Insured: Agreed “Term” of Service Minimum End Date: </label>
                 <span>{{certificate.insuredMinEndDate}}</span>
               </div>
             </div>
@@ -113,8 +110,8 @@
             the
             Subject Property by Water Emergency Services Incorporated.
           </p>
-        </section>
-        <div class="html2pdf__page-break"/>
+          
+  
         <section class="pdf-item pdf-detail">
           <div class="report-details__bordered">
             <div class="report-details__data report-details__data--row">
@@ -154,109 +151,118 @@
               <p>{{certificate.testimonial}}</p>
             </div>
           </div>
-          <!-- <div class="report-details__bordered">
-            <h3>Cardholder Name</h3>
-            <div class="report-details__data report-details__data--row">
-              <label>Full name</label>
-              <div>{{certificate.cardholderName}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Cardholder Email: </label>
-              <div>{{certificate.cardholder.email}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Cardholder Phone Number: </label>
-              <div>{{certificate.cardholder.phoneNumber}}</div>
-            </div>
-          </div>
-          <div class="report-details__bordered">
-            <h3>Billing Address</h3>
-            <div class="report-details__data report-details__data--row">
-              <label>Address Line 1: </label>
-              <div>{{certificate.billingAddress.address1}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Address Line 2: </label>
-              <div>{{certificate.billingAddress.address2}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>City: </label>
-              <div>{{certificate.billingAddress.city}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>State: </label>
-              <div>{{certificate.billingAddress.state}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Zip: </label>
-              <div>{{certificate.billingAddress.zip}}</div>
-            </div>
-          </div>
-          <div class="report-details__bordered">
-            <h3>Credit Card</h3>
-            <div class="report-details__data report-details__data--row">
-              <label>Credit Card Company: </label>
-              <div>{{certificate.creditCardProvider}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Card Number: </label>
-              <div>{{certificate.cardNumber}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Cardholder Name: </label>
-              <div>{{certificate.cardholderName}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Expiration Date: </label>
-              <div>{{certificate.expirationDate}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>CVC Number: </label>
-              <div>{{certificate.cvcNumber}}</div>
-            </div>
-            <div class="report-details__data report-details__data--row">
-              <label>Cardholder Zip Code: </label>
-              <div>{{certificate.cardZipCode}}</div>
-            </div>
-          </div> -->
         </section>
-        
-        <section class="pdf-item sig-row">
-          <p class="detail-margin-top">
-            I, {{certificate.representative}}, authorize Water Emergency Services Incorporated
-            (WESI) to charge my credit card above for the agreed upon purchases and/or services within the above
-            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement. I understand that
-            my information will be saved to file for future transactions on my account and I hereby authorize WESI to
-            charge
-            my credit card above for the agreed upon future transactions, purchases and/or services if any within the
-            above
-            Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement.
-          </p>
-          <div class="report-details__data report-details__data--row pdf-detail">
-            <div class="report-details__data-field">
-              <label>Customer Signature:</label>
-              <!-- <div class="report-details__data--sig pdf-sig"
-                   :style="'background-image:url('+certificate.customerSignature+')'"></div> -->
-                   <img class="pdf-sig" :src="certificate.customerSignature" />
-            </div>
-            <div class="report-details__data-field">
-              <label>Date: </label>
-              <div>{{certificate.customerSigDate}}</div>
+        <section class="pdf-item pdf-detail">
+          <div class="report-details__data data-section">
+            <div class="data-section__heading">Debit/Credit Cards</div>
+            <div class="data-section__data" v-for="card in cards" :key="card.cardNumber">
+              <div class="data-section__data--group">
+                <div class="data-section__subheading">Cardholder</div>
+                <div class="data-section__data--group-item">
+                  <label>Name:</label>
+                  <div>{{card.cardholderName}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Email:</label>
+                  <div>{{card.cardholderInfo.email}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Phone number:</label>
+                  <div>{{card.cardholderInfo.phoneNumber}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Name of card:</label>
+                  <div>{{card.creditCard}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Card Number:</label>
+                  <div>{{card.cardNumber}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>CVC Number:</label>
+                  <div>{{card.cvcNum}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Expiration Date:</label>
+                  <div>{{card.expirationDate}}</div>
+                </div>
+              </div>
+              <div class="data-section__data--group">
+                <div class="data-section__subheading">Billing Address</div>
+                <div class="data-section__data--group-item">
+                  <label>Address 1:</label>
+                  <div>{{card.billingAddress.address1}}</div>
+                </div>
+                <div class="data-section__data--group-item" v-show="card.billingAddress.address2">
+                  <label>Address 2:</label>
+                  <div>{{card.billingAddress.address2}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>City: </label>
+                  <div>{{card.billingAddress.city}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>State: </label>
+                  <div>{{card.billingAddress.state}}</div>
+                </div>
+                <div class="data-section__data--group-item">
+                  <label>Zip: </label>
+                  <div>{{card.billingAddress.zip}}</div>
+                </div>
+              </div>
+              <div class="data-section__data--group data-section__signature">
+                <label>Card Owner Signature:</label>
+                <div class="data-section__data--group-item">
+                  <div class="report-details__data--sig pdf-sig" :style="'background-image:url('+card.customerSig+')'">
+                  </div>
+                </div>
+              </div>
+              <div class="data-section__card-images">
+                <div class="card-image" v-for="(image, i) in cardImages.filter(v => v.cardNumber == card.cardNumber)"
+                     :key="`card-${i}`">
+                  <img :src="image.url" />
+                </div>
+              </div>
+              <div class="html2pdf__page-break" />
             </div>
           </div>
-        </section>
       </section>
-    </div>
-  </div>
+      </section>
 </template>
 <script>
 export default {
     name:"CertificateContent",
-    props: ['certificate'],
+    props: ['certificate', 'company', 'abbreviation'],
     data() {
         return {
-            company: "Water Emergency Services Incorporated"
+            cards:[],
+            errorMessage: "",
+            cardImages: []
         }
+    },
+    mehtods: {
+      getCardImages(card) {
+        var storageRef = this.$fire.storage.ref()
+        var listRef = storageRef.child(card)
+        listRef.listAll().then((res) => {
+          res.items.forEach((itemRef) => {
+            var itemPath = itemRef.location.path_;
+            storageRef.child(itemPath).getDownloadURL().then((url) => {
+              var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
+              var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
+              const fileObj = {
+                cardNumber: card,
+                name: fileName,
+                url: url,
+                type: fileType
+              }
+              this.cardImages.push(fileObj)
+            }).catch((err) => {
+              this.errorMessage = err
+            })
+          })
+        })
+      }
     },
     mounted() {
         this.$nextTick(() => {
@@ -264,23 +270,102 @@ export default {
           this.$emit("domRendered");
         }, 1000)
       })
+    },
+    created() {
+      this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
+        this.cards = res
+        /* this.cards.forEach((card) => {
+          this.getCardImages(card.cardNumber)
+        }) */
+      });
     }
 }
 </script>
 <style lang="scss" scoped>
+.data-section {
+    margin: 20px 0;
+    display:grid;
+    grid-template-columns: 1fr;
+    &__heading {
+        font-size:1.4em;
+        font-weight:bold;
+        text-align:center;
+    }
+    &__subheading {
+        font-size:1.2em;
+        font-weight:bold;
+        grid-row:1/2;
+        text-decoration: underline;
+    }
+    &__data {
+        width:100%;
+        padding:5px;
+        margin-top:5px;
+        display:grid;
+        grid-column:1 span;
+        grid-template-columns:1fr;
+        grid-template-rows:1fr 1fr 150px 210px;
+        &--group {
+            padding-bottom:20px;
+            display:grid;
+            grid-template-rows:50px 1fr;
+            grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+        }
+        &--group-item {
+            height:100%;
+            &:not(:last-child) {
+                padding-bottom:5px;
+            }
+        }
+    }
+    &__signature {
+        grid-template-columns:1fr;
+    }
+    &__card-images {
+        position:relative;
+        display:inline-flex;
+        flex-direction:row;
+        justify-content:space-between;
+        height:200px;
+        div:nth-child(2) {
+            left:400px;
+        }
+    }
+}
+.card-image {
+    max-width:300px;
+    height:200px;
+    position:absolute;
+    top:0;
+    display:inline-block;
+}
+.pdf-detail {
+  padding-bottom: 10px;
+
+  label {
+    font-weight:bold;
+    margin-right:5px;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+}
+.report-details {
+  max-width:600px;
+  width:100%;
+  margin:auto;
+}
+.pdf-first-section {
+  text-align: center;
+  margin-bottom: 10px;
+}
 .pdf-item {
     .detail-margin-top {
         margin-top:10px;
     }
-    .pdf-detail {
-        &:not(:last-child) {
-          margin-bottom: 10px;
-        }
-    }
-    .pdf-first-section {
-        text-align:center;
-        margin-bottom:10px;
-    }
+    
+    
     .pdf-sig {
         width:500px;
         height:295px;

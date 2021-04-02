@@ -3,12 +3,12 @@
         <div class="contracts-list-item" v-for="(item, i) in contracts" :key="`contract-${i}`">
             <p>AOB & Mitigation Contract Job ID: {{item.JobId}}</p>
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="10000" :manual-pagination="true"
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="9000" :manual-pagination="true"
                     :show-layout="false" :preview-modal="true" :ref="`aobhtml2pdf-${i}`">
                     <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                 </vue-html2pdf>
             </client-only>
-            
+            <!-- <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" /> -->
             <v-btn @click="generateReport(i)">Download PDF</v-btn> 
         </div>      
     </div>
@@ -35,7 +35,7 @@ export default {
                 },
                 jsPDF: {
                     unit: 'px',
-                    format: 'a4',
+                    format: 'letter',
                     orientation: 'portrait',
                     hotfixes: ['px_scaling']
                 }
@@ -57,20 +57,18 @@ export default {
     data() {
         return {
             contracts: [],
-            cards: [],
-            contentRendered: false
+            contentRendered: false,
+            errorMessage: ''
         }
     },
     methods: {
         domRendered() {
-            console.log('dom rendered')
             this.contentRendered = true
         },
         generateReport(key) {
-            console.log(this.$refs)
             this.htmlToPdfOptions.filename = `aob-${this.contracts[key].JobId}`
             this.$refs["aobhtml2pdf-"+key][0].generatePdf()
-        },
+        }
     }
 }
 </script>
