@@ -57,6 +57,7 @@ export default {
         return {
             coc:[],
             contentRendered: false,
+            cards: []
         }
     },
     methods: {

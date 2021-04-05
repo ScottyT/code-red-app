@@ -1,12 +1,23 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const timestamps = require('mongoose-timestamp2');
 
 const userSchema = mongoose.Schema({
     email: {
         type: String,
-        requred: [true, 'Email is required']
+        required: [true, 'Email is required']
     },
-    id: String,
-    name: String,
-    role: String
-})
+    id: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        required: true
+    }
+});
+userSchema.plugin(timestamps)
 module.exports = mongoose.model('Employee', userSchema)

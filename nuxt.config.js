@@ -70,6 +70,7 @@ export default {
     },
     '~/plugins/vee-validate.js',
     '~/plugins/signature.js',
+    '~/plugins/axios.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' }
   ],
   /*

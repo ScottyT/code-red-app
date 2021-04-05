@@ -12,23 +12,23 @@
               Contract (hereinafter referred to as “Contract”) is entered into by and between:
             </p>
             <p class="pdf-detail">
-              Water Emergency Services Incorporated (hereinafter referred to as “WESI” and/or “Insured”)
+              {{company}} (hereinafter referred to as “{{abbreviation}}” and/or “Insured”)
               and The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
               of the property more commonly known as and identified by the following address:
             </p>
             <span class="text-decoration-underline pdf-detail">{{certificate.subjectProperty}}</span><br />
             <label>(hereinafter referred to as “Subject Property”)</label>
-            <p class="text-decoration-underline"><strong>Water Emergency Services Incorporated has completed the
+            <p class="text-decoration-underline"><strong>{{company}} has completed the
                 Assignment of Benefit Agreement and Mitigation Contract in full</strong></p>
         </div>
         <div class="report-details"><p class="pdf-detail report-details__data">
             SHARE: Property Representative will send a copy of this Agreement, Contract, Certificate of Completion,
             Xactimate and
-            the WESI W9 to the insurance company, the insurance company’s representatives and mortgage institutions to
-            allow WESI
+            the {{abbreviation}} W9 to the insurance company, the insurance company’s representatives and mortgage institutions to
+            allow {{abbreviation}}
             to communicate, share and exchange through reasonable introduction and/or through means found proper in the
             daily course
-            of business information including but not limited to the services that WESI has provided, currently is
+            of business information including but not limited to the services that {{abbreviation}} has provided, currently is
             providing and/or may
             be required to provide in the future.
         </p>
@@ -37,11 +37,11 @@
             of
             any benefits or proceeds for services rendered pursuant to the Assignment of Claim Agreement and Mitigation
             Contract and
-            that such payment be made payable directly and solely to WESI and sent exclusively to WESI from the
+            that such payment be made payable directly and solely to {{abbreviation}} and sent exclusively to {{abbreviation}} from the
             insurance company
             including but not limited to all invoices, tasks, billable hours and billable units partially and /or
             completely provided by
-            WESI.
+            {{abbreviation}}.
         </p></div>
           <div class="report-details__bordered pdf-detail">
             <div class="report-details__data report-details__data--row">
@@ -81,7 +81,7 @@
               <label>Insured Payment 4) = Succeeding Day of “Available Proceeds” for Remaining Balance</label>
             </div>
           </div>
-          <div class="report-details__bordered">
+          <div class="report-details__bordered pdf-detail">
             <div class="report-details__data report-details__data--row">
               <div class="report-details__data-field">
                 <label>Non-Insured or Still Pending Coverage: Agreed “Term” of Service Minimum End Date:</label>
@@ -101,14 +101,14 @@
                 Balance</label>
             </div>
           </div>
-          <div class="report-details__data-field">
+          <div class="report-details__data-field pdf-detail">
             <label>Rating: </label>
             <div>{{certificate.rating}}</div>
           </div>
           <p class="pdf-detail">
             I am satisfied with the completion of all mitigation services and all other related services performed on
             the
-            Subject Property by Water Emergency Services Incorporated.
+            Subject Property by {{company}}.
           </p>
           
   
@@ -152,8 +152,7 @@
             </div>
           </div>
         </section>
-        <section class="pdf-item pdf-detail">
-          <div class="report-details__data data-section">
+          <div class="report-details__data data-section pdf-detail">
             <div class="data-section__heading">Debit/Credit Cards</div>
             <div class="data-section__data" v-for="card in cards" :key="card.cardNumber">
               <div class="data-section__data--group">
@@ -223,10 +222,9 @@
                   <img :src="image.url" />
                 </div>
               </div>
-              <div class="html2pdf__page-break" />
+              <div class="html2pdf__page-break"/>
             </div>
           </div>
-      </section>
       </section>
 </template>
 <script>
@@ -235,16 +233,17 @@ export default {
     props: ['certificate', 'company', 'abbreviation'],
     data() {
         return {
-            cards:[],
+          cards: [],
             errorMessage: "",
             cardImages: []
         }
     },
-    mehtods: {
-      getCardImages(card) {
+    methods: {
+      fetchcardimages(card) {
         var storageRef = this.$fire.storage.ref()
         var listRef = storageRef.child(card)
         listRef.listAll().then((res) => {
+          console.log(res)
           res.items.forEach((itemRef) => {
             var itemPath = itemRef.location.path_;
             storageRef.child(itemPath).getDownloadURL().then((url) => {
@@ -265,7 +264,18 @@ export default {
       }
     },
     mounted() {
-        this.$nextTick(() => {
+      //console.log(this.cards)
+      /* var cardArr = []
+      var _this2 = this;
+        this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
+          
+          res.forEach((x) => {
+            //cardArr.push(x.cardNumber)
+            _this2.cards = x
+          })
+        });
+      console.log(cardArr) */
+      this.$nextTick(() => {
         setTimeout(() => {
           this.$emit("domRendered");
         }, 1000)
@@ -274,10 +284,11 @@ export default {
     created() {
       this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
         this.cards = res
-        /* this.cards.forEach((card) => {
-          this.getCardImages(card.cardNumber)
-        }) */
-      });
+        this.cards.forEach((card) => {
+          console.log(card.cardNumber)
+          this.fetchcardimages(card.cardNumber)
+        })
+      })
     }
 }
 </script>

@@ -15,12 +15,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn']),
-    /* reportslist() {
-      return reports.filter((v) => {
-        return v.ReportType !== 'credit-card'
-      })
-    } */
+    ...mapGetters(['isLoggedIn'])
   },
   async middleware({store, redirect}) {
     if (store.state.user.role !== "admin") {
@@ -30,9 +25,10 @@ export default {
   async asyncData({ $axios }) {
     try {
       let data = await $axios.$get("/api/reports")
+     
       let employees = await $axios.$get("/api/employees")
       let dataFilters = data.filter((v) => {
-        return v.ReportType !== 'credit-card'
+        return v.ReportType !== 'credit-card' && v.ReportType !== 'aob' && v.ReportType !== 'coc'
       })
       return {
         reports: dataFilters,

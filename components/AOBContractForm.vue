@@ -5,11 +5,6 @@
     <h2 class="text-center">THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</h2>
     <ValidationObserver ref="form">
       <h2>{{message}}</h2>
-      <!-- <ul>
-        <li v-for="(error, i) in errors" :key="`error${i}`">
-          {{error[0]}}
-        </li>
-      </ul> -->
      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
       <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <fieldset v-if="currentStep === 1">
@@ -589,6 +584,12 @@
           </ol>
           <div class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
               <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
+              <span>
+                <label for="InsuredDeductible" class="form__label">Insured Deductible:</label>
+                <span class="form__input--currency">$<input type="text" id="InsuredDeductible"
+                         class="form__input form__input--short" v-model="deductible"
+                         @keypress="currencyFormat" /></span>
+              </span>
             <span>
               <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” End Date:</label>
               <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="400px">
@@ -717,7 +718,7 @@
                       <input id="state" class="form__input" type="text" v-model="location.state" />
                       <span class="form__input--error">{{ errors[0] }}</span>
                   </ValidationProvider>
-                  <ValidationProvider rules="required|numeric" class="form__input--input-group" v-slot="{errors}" name="Zip">
+                  <ValidationProvider rules="required|numeric|length:5" class="form__input--input-group" v-slot="{errors}" name="Zip">
                       <label for="zip" class="form__label">Zip:</label>
                       <input type="text" id="zip" class="form__input" v-model="location.zip" />
                       <span class="form__input--error">{{ errors[0] }}</span>
@@ -860,6 +861,19 @@ import {mapGetters, mapActions} from 'vuex'
     },
     computed: {
         ...mapGetters(['getReports', 'getUser']),
+        insuredPay1: {
+            get() {
+                let pay = this.deductible * .50
+                if (pay) { return pay }
+                else { return 500.00 }
+            },
+            set(value) {
+                this.insuredPayment.firstStep = value
+            }
+        },
+        insuredPay2() {
+            return this.deductible * .50
+        },
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -887,6 +901,7 @@ import {mapGetters, mapActions} from 'vuex'
       submitted: false,
       submitting: false,
       subjectProperty: '',
+      deductible: null,
       cusSign: {
           data: '',
           isEmpty: true
@@ -925,8 +940,6 @@ import {mapGetters, mapActions} from 'vuex'
             day5Date: new Date().toISOString().substr(0, 10),
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         },
-        insuredPay1: '',
-        insuredPay2: '',
         location: {
             address: null,
             city: null,
@@ -1012,6 +1025,17 @@ import {mapGetters, mapActions} from 'vuex'
             if (!dateReturned) return null
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
+        },
+        currencyFormat($event) {
+            let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+            // only allow number and one dot
+            if ((keyCode < 48 || keyCode > 57) && (keyCode !== 46 || this.deductible.indexOf('.') != -1)) { // 46 is dot
+                $event.preventDefault();
+            }
+            // restrict to 2 decimal places
+            if(this.deductible!=null && this.deductible.indexOf(".")>-1 && (this.deductible.split('.')[1].length > 1)){
+                $event.preventDefault();
+            }
         },
         formatTime(timeReturned) {
             if (!timeReturned) return null

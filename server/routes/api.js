@@ -11,19 +11,33 @@ const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
 router.use(express.json())
 router.use(express.urlencoded({extended: true}));
-router.post("/employee/new", (req, res) => {
-    User.create({
+router.post("/employee/new",
+    check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
+    check('name').not().isEmpty().withMessage("Name is required"),
+    check('id').not().isEmpty().withMessage("ID is required")
+    .custom(value => {
+        return User.findOne({id: value}).then(user => {
+            if (user) {
+                return Promise.reject('ID already in use');
+            }
+        });
+    }),
+    check('role').not().isEmpty().withMessage('Role is required'),
+async (req, res) => {
+    const result = validationResult(req);
+    const employee = new User({
         email: req.body.email,
         id: req.body.id,
         name: req.body.name,
         role: req.body.role
-    }, (err, employee) => {
-        if (err) {
-            console.log(`CREATE error: ${err}`)
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(employee)
-        }
+    });
+    if (!result.isEmpty()) {
+        return res.json(result)
+    }
+    await employee.save().then(() => {
+        res.json({message: "Created new employee"})
+    }).catch((err) => {
+        res.json({errors: err})
     })
 })
 router.get('/reports', async (req, res) => {
