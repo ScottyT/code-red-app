@@ -3,6 +3,7 @@
         <div class="create-user__box">
             <h1>Create User</h1>
             <p>{{submittedMessage}}</p>
+            <p>{{successMessage}}</p>
             <p class="alert alert--error">{{errorMessage}}</p>
             <ValidationObserver ref="createUser" v-slot="{ passes }">
                 <form class="form" @submit.prevent="passes(onSubmit)">
@@ -16,6 +17,10 @@
                     </ValidationProvider>
                     <ValidationProvider vid="id" name="ID" v-slot="{errors}" class="form__input--input-group-simple">
                         <input v-model="id" type="number" placeholder="ID" class="form__input" />
+                        <span class="form__input--error">{{ errors.msg }}</span>
+                    </ValidationProvider>
+                    <ValidationProvider vid="password" name="Password" v-slot="{errors}" class="form__input--input-group-simple">
+                        <input v-model="password" type="password" placeholder="Password" class="form__input" />
                         <span class="form__input--error">{{ errors.msg }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="role" name="Role" v-slot="{errors}" class="form__input--input-group-simple">
@@ -42,7 +47,9 @@ export default {
             email: '',
             id: '',
             role: '',
-            submittedMessage: ''
+            submittedMessage: '',
+            password: '',
+            successMessage: ''
         }
     },
     async middleware({store, redirect}) {
@@ -58,6 +65,13 @@ export default {
                 id: this.id,
                 role: this.role
             }
+            this.$axios.$post("/api/auth/signup", {
+                name: this.name,
+                email: this.email,
+                password: this.password
+            }).then((res) => {
+                this.successMessage = `Successfully created employee ${res.displayName}`
+            })
             this.$axios.$post("/api/employee/new", post).then((res) => {
                 if (res.errors) {
                     this.$refs.createUser.setErrors({

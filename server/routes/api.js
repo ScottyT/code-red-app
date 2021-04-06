@@ -6,11 +6,14 @@ const CaseFile = require("../models/caseFileSchema");
 const COC = require("../models/cocSchema");
 const AOB = require("../models/aobSchema");
 const CreditCard = require("../models/creditCardSchema");
+const createUser = require('../controllers/authController');
+const checkIfAuthenticated = require('../middleware/authMiddleware');
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
 router.use(express.json())
 router.use(express.urlencoded({extended: true}));
+router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
     check('name').not().isEmpty().withMessage("Name is required"),
