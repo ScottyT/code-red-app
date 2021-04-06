@@ -86,15 +86,13 @@
               class="form__input form__input--long" />
 
             <label class="form__label">City, State, Zip</label>
-            <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long"
-              readonly />
+            <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label">Address</label>
             <input
               v-model="location.address"
               name="Address"
               type="text"
               class="form__input form__input--long"
-              readonly
             />
             <!-- <label class="form__label">City, State, Zip</label>
             <input
@@ -837,7 +835,8 @@
           } else {
             this.submitted = false
             this.submitting = false
-            this.errorMessage = "Duplicate Job ID can't exist"
+            this.errorMessage.push("Duplicate Job ID can't exist")
+            return goTo(0)
           }
         })
       },

@@ -11,6 +11,13 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <v-list v-show="isLoggedIn && getUser.role === 'admin'">
+        <v-list-item router exact to="/profile/create">
+          <v-list-item-content>
+            Create Employee
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="true" fixed app class="header-navigation">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />

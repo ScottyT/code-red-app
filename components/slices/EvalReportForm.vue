@@ -73,11 +73,9 @@
             <input id="ContactName" v-model="arrivalContactName" name="ContactName" type="text"
                    class="form__input form__input--long" />
             <label class="form__label">Address</label>
-            <input v-model="location.address" name="Address" type="text" class="form__input form__input--long"
-                   readonly />
+            <input v-model="location.address" name="Address" type="text" class="form__input form__input--long" />
             <label class="form__label">City, State, Zip</label>
-            <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long"
-                   readonly />
+            <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label" for="phone">Phone Number</label>
             <input id="phone" v-model="phone" name="Phone" class="form__input" type="phone" @input="acceptNumber" />
             <ValidationProvider v-slot="{ errors }" name="Email" rules="email">
