@@ -35,7 +35,7 @@
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
         <li class="menu-items__item" v-if="$fire.auth.currentUser">
-          <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+          <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
       <template v-slot:extension v-if="$vuetify.breakpoint.sm">
@@ -51,7 +51,7 @@
             <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
           </li>
           <li class="menu-items__item" v-if="$fire.auth.currentUser">
-            <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+            <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
           </li>
         </ul>
       </template>

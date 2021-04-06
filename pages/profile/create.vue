@@ -30,6 +30,11 @@
 </template>
 <script>
 export default {
+    head() {
+        return {
+            title: "Create Employee"
+        }
+    },
     data() {
         return {
             errorMessage: '',

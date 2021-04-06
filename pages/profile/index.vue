@@ -59,6 +59,11 @@
   } from 'vuex';
   export default {
     name: "profile",
+    head() {
+      return {
+        title: "Profile"
+      }
+    },
     data() {
       return {
         savedReports: [],

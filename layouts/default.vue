@@ -42,10 +42,10 @@
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
         <li class="menu-items__item" v-show="isLoggedIn">
-          <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+          <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
-      <!-- <template v-slot:extension v-if="$vuetify.breakpoint.sm">
+      <template v-slot:extension v-if="$vuetify.breakpoint.sm">
         <ul class="menu-items__extended-menu menu-items">
           <li class="menu-items__item">
             <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
@@ -58,10 +58,10 @@
             <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
           </li>
           <li class="menu-items__item" v-if="$fire.auth.currentUser">
-            <nuxt-link to="/saved-aob-contracts">View Assignment of Benefits & Mitigation Contracts</nuxt-link>
+            <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
           </li>
         </ul>
-      </template> -->
+      </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <nuxt />

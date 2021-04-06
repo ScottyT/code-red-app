@@ -243,7 +243,6 @@ export default {
         var storageRef = this.$fire.storage.ref()
         var listRef = storageRef.child(card)
         listRef.listAll().then((res) => {
-          console.log(res)
           res.items.forEach((itemRef) => {
             var itemPath = itemRef.location.path_;
             storageRef.child(itemPath).getDownloadURL().then((url) => {
@@ -264,17 +263,6 @@ export default {
       }
     },
     mounted() {
-      //console.log(this.cards)
-      /* var cardArr = []
-      var _this2 = this;
-        this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
-          
-          res.forEach((x) => {
-            //cardArr.push(x.cardNumber)
-            _this2.cards = x
-          })
-        });
-      console.log(cardArr) */
       this.$nextTick(() => {
         setTimeout(() => {
           this.$emit("domRendered");
@@ -285,7 +273,6 @@ export default {
       this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
         this.cards = res
         this.cards.forEach((card) => {
-          console.log(card.cardNumber)
           this.fetchcardimages(card.cardNumber)
         })
       })
