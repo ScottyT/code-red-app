@@ -57,7 +57,7 @@
       </template>
     </v-app-bar>
     <v-main>
-      <nuxt />
+      <nuxt class="pa-6" />
     </v-main>
     <v-footer dark :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>

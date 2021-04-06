@@ -502,7 +502,7 @@
             this.submitting = false
             this.errorMessage.push("Cannot have two containment reprots")
             return goTo(0)
-          }      
+          }  
         })
       }
     },

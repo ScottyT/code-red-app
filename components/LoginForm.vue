@@ -56,11 +56,11 @@ export default {
             this.submitting = true
             this.errorMessage = ""
             await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
-                this.submitting = false
                 /* this.$router.push("/") */
                 window.location = "/"
             }).catch(err => {
                 this.errorMessage = err.message
+                this.submitting = false
             })
         }
     }

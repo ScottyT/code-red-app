@@ -64,7 +64,7 @@
       </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
-      <nuxt />
+      <nuxt class="pa-6" />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -103,6 +103,12 @@ export default {
           icon: 'mdi-form-select',
           title: 'Daily Technician Case File Report',
           to: '/daily-technician-report',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Sketches',
+          to: '/sketches',
           access: 'user'
         },
         {

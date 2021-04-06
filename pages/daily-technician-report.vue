@@ -2,9 +2,7 @@
   <div>
     <span v-if="!authUser">
       <LazyLoginForm /></span>
-    <div v-else>
-      <LazyDailyTechnicianForm />
-    </div>
+    <LazyDailyTechnicianForm v-else />
   </div>
 </template>
 <script>

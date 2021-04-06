@@ -1,9 +1,7 @@
 <template>
     <div>
         <span v-if="!authUser"><LazyLoginForm /></span>
-        <div v-else>
-            <LazyDailyContainmentForm />
-        </div>
+        <LazyDailyContainmentForm v-else />
     </div>
 </template>
 <script>
