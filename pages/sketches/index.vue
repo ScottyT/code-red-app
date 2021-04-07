@@ -14,7 +14,7 @@
 <script>
 import {mapGetters} from 'vuex';
 export default {
-    layout: 'dashboard-layout',
+    layout: 'default',
     head() {
         return {
             title: "Sketch Forms"

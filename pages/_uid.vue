@@ -1,17 +1,13 @@
 <template>
   <div>
     <span v-if="!authUser"><LazyLoginForm /></span>
-    <div v-else><slices-block :slices="slices" /></div>
+    <lazy-slices-block v-else :slices="slices" />
   </div>
 </template>
 <script>
 import {mapGetters} from 'vuex'
-import SlicesBlock from '~/components/SlicesBlock.vue'
 export default {
   name: 'Page',
-  components: {
-    SlicesBlock,
-  },
   data() {
     return {
       authUser: false

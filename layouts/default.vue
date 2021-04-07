@@ -64,7 +64,7 @@
       </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
-      <nuxt class="pa-6" />
+      <nuxt class="ma-6" />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>

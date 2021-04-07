@@ -147,6 +147,10 @@ button {
     display: flex;
     justify-content: center;
 
+    .button {
+      margin-right: 10px;
+    }
+
     &--submit {
       margin-top: 10px;
       max-width: 150px;

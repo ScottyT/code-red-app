@@ -6,8 +6,10 @@ const CaseFile = require("../models/caseFileSchema");
 const COC = require("../models/cocSchema");
 const AOB = require("../models/aobSchema");
 const CreditCard = require("../models/creditCardSchema");
+const Sketch = require("../models/sketchSchema");
 const createUser = require('../controllers/authController');
-const checkIfAuthenticated = require('../middleware/authMiddleware');
+const { createSketch } = require('../controllers/formController');
+const { checkIfAuthenticated } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
@@ -175,6 +177,18 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
+router.post("/sketch/:uid/new", 
+    check('JobId').not().isEmpty().withMessage('Job ID is required')
+    .custom((value, {req}) => {       
+        return Sketch.findOne({JobId: value, sketchType: req.body.sketchType}).then(sketch => {
+            if (sketch) {
+                return Promise.reject('Job ID is already in use')
+            }
+        });
+    }),
+    check('sketch').not().isEmpty().withMessage('Sketch is required'),
+    check('teamMember').not().isEmpty().withMessage('Employee must be logged in'),
+    createSketch);
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),
     body('JobId')

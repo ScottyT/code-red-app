@@ -5,7 +5,7 @@
       <LazyLoginForm />
     </span>
     
-    <div v-if="authUser"><lazy-slices-block :slices="slices" /></div>
+    <lazy-slices-block v-else :slices="slices" />
     <v-flex xs12 sm8 md6>
       <div class="text-center"></div>
     </v-flex>
