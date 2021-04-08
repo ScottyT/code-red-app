@@ -97,6 +97,12 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Sketches',
+          to: '/sketches',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'
@@ -111,6 +117,11 @@ export default {
           icon: 'mdi-clipboard',
           title: 'Reports',
           to: '/reports'
+        },
+        {
+          icon: 'mdi-clipboard',
+          title: 'Field Jacket',
+          to: '/field-jacket'
         },
         {
           icon: 'mdi-folder',

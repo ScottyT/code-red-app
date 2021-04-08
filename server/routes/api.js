@@ -52,7 +52,8 @@ router.get('/reports', async (req, res) => {
     const certificate = await COC.find({});
     const aobContract = await AOB.find({});
     const creditCard = await CreditCard.find({});
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard)
+    const sketches = await Sketch.find({});
+    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -177,6 +178,26 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
+router.get('/sketch', (req, res) => {
+    Sketch.find({}, (err, sketch) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(sketch)
+        }
+    })
+})
+router.get('/sketch/:sketchType/:JobId', (req,res) => {
+    Sketch.findOne({JobId: req.params.JobId, sketchType: req.params.sketchType}, (err, sketch) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (sketch) {
+            res.status(200).json(sketch)
+        } else {
+            res.status(404).send('Item no found')
+        }
+    })
+})
 router.post("/sketch/:uid/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {       
@@ -187,7 +208,14 @@ router.post("/sketch/:uid/new",
         });
     }),
     check('sketch').not().isEmpty().withMessage('Sketch is required'),
-    check('teamMember').not().isEmpty().withMessage('Employee must be logged in'),
+    check('teamMember').not().isEmpty().withMessage('Employee must be logged in')
+    .custom(value => {
+        return User.findOne({name: value.first + ' ' + value.last}).then(user => {
+            if (!user) {
+                return Promise.reject('You are not authorized')
+            }
+        })
+    }),
     createSketch);
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),

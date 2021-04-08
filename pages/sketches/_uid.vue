@@ -1,5 +1,8 @@
 <template>
-    <LazySketchForms :formname="formName" />
+    <div>
+        <span v-if="!authUser"><LazyLoginForm /></span>
+        <LazySketchForms v-else :formname="formName" />
+    </div>
 </template>
 <script>
 export default {
@@ -8,11 +11,16 @@ export default {
             title: "Sketch"
         }
     },
-    async middleware({store, redirect}) {
+    data() {
+        return {
+            authUser: false
+        }
+    },
+    /* async middleware({store, redirect}) {
         if (store.state.user.email == null) {
             return redirect("/")
         }
-    },
+    }, */
     async asyncData({$axios, params}) {
         try {
             var formName = ""
@@ -33,6 +41,11 @@ export default {
         } catch(e) {
 
         }
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser
+        })
     }
 }
 </script>

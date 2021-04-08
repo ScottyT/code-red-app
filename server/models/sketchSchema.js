@@ -11,7 +11,7 @@ const sketchReport = mongoose.Schema({
         required: true
     },
     teamMember: {
-        type: String,
+        type: Map,
         required: true
     },
     sketchType: String,

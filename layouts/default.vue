@@ -130,6 +130,12 @@ export default {
           access: 'admin'
         },
         {
+          icon: 'mdi-clipboard',
+          title: 'Field Jacket',
+          to: '/field-jacket',
+          access: 'admin'
+        },
+        {
           icon: 'mdi-folder',
           title: 'Storage',
           to: '/storage',

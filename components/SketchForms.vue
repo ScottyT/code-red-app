@@ -76,8 +76,14 @@ export default {
             } = this.$refs.sketchRef.saveSignature();
             this.sketchData.isEmpty = isEmpty
         },
-        async onSubmit() {
-            const token = await this.$fire.auth.currentUser.getIdToken()
+        onSubmit() {
+            /* this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+                var xhr = new XMLHttpRequest();
+                xhr.setRequestHeader('authorization', idToken)
+            }).catch((error) => {
+                console.log(error)
+            }) */
+            
             this.submittedMessage = ""
             const userNameObj = {
                 first: this.getUser.name.split(" ")[0],
@@ -90,12 +96,11 @@ export default {
                 ReportType: 'sketch-report',
                 sketchType: this.$route.params.uid
             };
-            
-            await this.$axios.$post(`/api/sketch/${this.$route.params.uid}/new`, post).then((res) => {
+            this.$axios.$post(`/api/sketch/${this.$route.params.uid}/new`, post).then((res) => {
                 if (res.errors) {
                     this.$refs.form.setErrors({
                         JobId: res.errors.find(obj => obj.param === 'JobId'),
-                        sketch: res.errors.find(obj => obj.param === 'sketch')
+                        sketch: res.errors.find(obj => obj.param === 'sketch'),
                     })
                     return;
                 }
