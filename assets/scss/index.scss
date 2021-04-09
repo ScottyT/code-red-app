@@ -314,11 +314,48 @@ button {
     font-weight: 500;
     padding-right: 7px;
   }
+  &__table {
+    display:grid;
+    &--rows {
+      grid-template-columns:1.2fr repeat(7, 1fr);
+      width:100%;
+      &:not(:first-child) {
+        .col {
+          border-bottom:1px solid;
+          border-left: 2px solid;
+          border-top:1px solid;
+        }
+      }
+      &:last-child .col {
+        border-bottom:2px solid;
+      }
+      .col {
+        border-color:black;
+        border-top:2px solid;
+        border-bottom:1px solid;
+        &:not(:first-child) {
+          border-right:1px solid;
+        }
+        &:not(:last-child) {
+          border-left:1px solid;
+        }
+        &:first-child {
+          border-left:2px solid;
+          border-right:1px solid;
+        }
+        &:last-child {
+          border-left:1px solid;
+          border-right:2px solid;
+        }
+      }
+    }
+  }
 
   &__form-group {
     display: flex;
     flex-wrap: wrap;
     //font-size: 1.1em;
+    
     &--info-box {
         justify-content: space-between;
         border: 1px solid $color-black;

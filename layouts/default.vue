@@ -64,7 +64,7 @@
       </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
-      <nuxt class="ma-6" />
+      <nuxt class="mt-6 mb-6" />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -109,6 +109,12 @@ export default {
           icon: 'mdi-form-select',
           title: 'Sketches',
           to: '/sketches',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Atmospheric Readings',
+          to: '/atmospheric-readings',
           access: 'user'
         },
         {

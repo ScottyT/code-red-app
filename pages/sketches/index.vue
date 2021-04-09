@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <span v-show="!authUser"><LazyLoginForm /></span> -->
-        <div class="sketch-forms">
+        <div class="sketch-forms pa-6">
             <h1>Sketch Forms</h1>
             <ul class="menu-items">
                 <li v-for="form in sketchForms" :key="form.value">

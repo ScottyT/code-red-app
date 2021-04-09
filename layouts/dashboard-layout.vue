@@ -103,6 +103,12 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Atmospheric Readings',
+          to: '/atmospheric-readings',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'
