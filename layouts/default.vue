@@ -119,6 +119,12 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/inventory-log',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'

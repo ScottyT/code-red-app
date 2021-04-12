@@ -51,11 +51,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getUser'])
+        ...mapGetters(['getUser', 'getReports'])
     },
     methods: {
         ...mapActions({
-            mappingJobIds: 'mappingJobIds'
+            mappingJobIds: 'mappingJobIds',
+            checkStorage: 'indexDb/checkStorage',
+            addReport: 'indexDb/addReport'
         }),
         clear() {
             this.$refs.sketchRef.clearSignature();
@@ -82,6 +84,15 @@ export default {
                 first: this.getUser.name.split(" ")[0],
                 last: this.getUser.name.split(" ")[1]
             }
+            const sketchReps = this.getReports.filter((v) => {
+                return v.ReportType === 'sketch-report'
+            })
+            const sketchRepsIds = sketchReps.map((v) => {
+                return v.JobId
+            })
+            const sketchTypes = sketchReps.map((v) => {
+                return v.sketchType
+            })
             const post = {
                 JobId: this.selectedJobId,
                 teamMember: userNameObj,
@@ -89,20 +100,36 @@ export default {
                 ReportType: 'sketch-report',
                 sketchType: this.$route.params.uid
             };
-            this.$axios.$post(`/api/sketch/${this.$route.params.uid}/new`, post).then((res) => {
-                if (res.errors) {
-                    this.$refs.form.setErrors({                       
-                        JobId: res.errors.find(obj => obj.param === 'JobId'),
-                        sketch: res.errors.find(obj => obj.param === 'sketch'),
+            if (this.$nuxt.isOffline) {
+                if (!sketchRepsIds.includes(this.selectedJobId) && sketchTypes.includes(this.$route.params.uid)) {
+                    this.addReport(post).then(() => {
+                        this.submittedMessage = "Form was saved successfully"
+                        this.errorMessage = ""
+                        setTimeout(() => {
+                            this.submittedMessage = ""
+                            this.errorMessage = ""
+                        }, 5000)
                     })
-                    return;
                 }
-                this.submittedMessage = res.message
-            })
+            } else {
+                this.errorMessage = "Job ID already exists for this sketch type"
+            }
+            if (this.$nuxt.isOnline) {
+                this.$axios.$post(`/api/sketch/${this.$route.params.uid}/new`, post).then((res) => {
+                    if (res.errors) {
+                        this.$refs.form.setErrors({                       
+                            JobId: res.errors.find(obj => obj.param === 'JobId'),
+                            sketch: res.errors.find(obj => obj.param === 'sketch'),
+                        })
+                    }
+                    this.submittedMessage = res.message
+                })
+            }
         }
     },
     mounted() {
         this.mappingJobIds()
+        this.checkStorage()
     }
 }
 </script>                                                                                                                                       

@@ -1,4 +1,5 @@
 const Sketch = require('../models/sketchSchema');
+const Logging = require('../models/loggingSchema');
 const { validationResult } = require('express-validator');
 
 const createSketch = async (req, res) => {
@@ -21,4 +22,27 @@ const createSketch = async (req, res) => {
         res.json(err)
     })
 }
-module.exports = { createSketch }
+const createLogs = async (req, res) => {
+    const errors = validationResult(req)
+    const logs = new Logging({
+        JobId: req.body.JobId,
+        ReportType: req.body.ReportType,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        logType: req.body.logType,
+        readingsLog: req.body.readingsLog,
+        lossClassification: req.body.lossClassification,
+        inventoryLog: req.body.inventoryLog,
+        notes: req.body.notes
+    });
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, logType: req.body.logType}).exec()
+    if (!errors.isEmpty() || logsReport !== null) {
+        return res.json(errors)
+    }
+    await logs.save().then(() => {
+        res.json({message: "Form submitted"})
+    }).catch((err) => {
+        res.json(err)
+    })
+}
+module.exports = { createSketch, createLogs }

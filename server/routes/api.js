@@ -7,9 +7,9 @@ const COC = require("../models/cocSchema");
 const AOB = require("../models/aobSchema");
 const CreditCard = require("../models/creditCardSchema");
 const Sketch = require("../models/sketchSchema");
+const Logging = require('../models/loggingSchema');
 const createUser = require('../controllers/authController');
-const { createSketch } = require('../controllers/formController');
-const { checkIfAuthenticated } = require('../middleware/authMiddleware');
+const { createSketch, createLogs } = require('../controllers/formController');
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
@@ -217,6 +217,16 @@ router.post("/sketch/:uid/new",
         })
     }),
     createSketch);
+router.post("/logs/:logType/new",
+    check('JobId').not().isEmpty().withMessage('Job ID is required')
+    .custom((value, {req}) => {
+        return Logging.findOne({JobId: value, logType: req.body.logType}).then(log => {
+            if (log) {
+                return Promise.reject('Job ID is already in use for this type of form')
+            }
+        })
+    }),
+    createLogs);
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),
     body('JobId')

@@ -1,0 +1,552 @@
+<template>
+    <div class="form-wrapper">
+        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h2 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h2>
+        <ValidationObserver ref="form" v-slot="{passes}">
+            <form ref="form" class="form" @submit.prevent="passes(onSubmit)">
+                <div class="form__form-group">
+                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
+                        <input type="hidden" v-model="selectedJobId" />
+                        <label class="form__label">Job ID:</label>
+                        <select class="form__select" v-model="selectedJobId">
+                            <option disabled value="">Please select a Job ID</option>
+                            <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
+                        </select>
+                        <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
+                    </ValidationProvider>
+                    <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input--input-group">
+                        <label id="initDate" class="form__label">Initial Starting Date:</label>
+                        <input type="hidden" v-model="initDate" />
+                        <v-dialog ref="initDateDialog" v-model="initDateModal" :return-value.sync="initDate" persistent width="400px">
+                            <template v-slot:activator="{on, attrs}">
+                                <input id="initDate" v-model="initDateFormatted" v-bind="attrs" class="form__input" v-on="on" @blur="initDate = parseDate(initDateFormatted)" />
+                            </template>
+                            <v-date-picker v-model="initDate" scrollable>
+                                <v-spacer></v-spacer>
+                                <v-btn text color="#fff" @click="initDateModal = false">Cancel</v-btn>
+                                <v-btn text color="#fff" @click="$refs.initDateDialog.save(initDate)">OK</v-btn>
+                            </v-date-picker>
+                        </v-dialog>
+                        <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+                    </ValidationProvider>
+                    <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input--input-group">
+                        <label id="enddate" class="form__label">End Date:</label>
+                        <input type="hidden" v-model="endDate" />
+                        <v-dialog ref="endDateDialog" v-model="endDateModal" :return-value.sync="endDate" persistent width="400px">
+                            <template v-slot:activator="{on, attrs}">
+                                <input id="enddate" v-model="endDateFormatted" v-bind="attrs" class="form__input" v-on="on"  />
+                            </template>
+                            <v-date-picker v-model="endDate" scrollable :min="initDate">
+                                <v-spacer></v-spacer>
+                                <v-btn text color="#fff" @click="endDateModal = false">Cancel</v-btn>
+                                <v-btn text color="#fff" @click="$refs.endDateDialog.save(endDate)">OK</v-btn>
+                            </v-date-picker>
+                        </v-dialog>
+                        <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+                    </ValidationProvider>
+                </div>
+                <div class="form__table inventory-logs">
+                    <div class="form__table form__table--rows">
+                        <div class="form__table--cols">
+                            
+                        </div>
+                        <div class="form__table--cols" v-for="n in 7" :key="n">
+                            <div class="font-weight-bold">Day {{n}}</div>
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows">
+                        <div class="form__table--cols">
+                            <div>Tech ID #</div>
+                        </div>
+                        <div class="form__table--cols" v-for="(item, i) in techIdArr.day" :key="`techid-${i}`">
+                            <input class="form__input" type="text" v-model="item.value" />
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows" v-for="(row, i) in unitQuantityArr" :key="`unit-${i}`">
+                        <div class="form__table--cols">
+                            <label class="form__label">{{row.text}}</label>
+                        </div>
+                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
+                            <input type="number" class="form__input" v-model="col.value" />
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows" v-for="(row, i) in checkBoxArr" :key="`checkbox-row-${i}`">
+                        <div class="form__table--cols">
+                            <label class="form__label">{{row.text}}</label>
+                        </div>
+                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`check-col-${j}`">
+                            <input type="checkbox" v-model="col.value" />
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows" v-for="(row, i) in serviceArr" :key="`service-${i}`">
+                        <div class="form__table--cols">
+                            <label class="form__label">{{row.text}}</label>
+                        </div>
+                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`service-col-${j}`">
+                            <input type="checkbox" v-model="col.value" />
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows" v-for="(row, i) in onSiteArr" :key="`on-site-${i}`">
+                        <div class="form__table--cols">
+                            <label class="form__label">{{row.text}}</label>
+                        </div>
+                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`col-on-site-${j}`">
+                            <input type="number" class="form__input" v-model="col.value" />
+                        </div>
+                    </div>
+                    <div class="form__table form__table--rows" v-for="(row, i) in catArr" :key="`row-cat-${i}`">
+                        <div class="form__table--cols">
+                            <label class="form__label">{{row.text}}</label>
+                        </div>
+                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`col-cat-${j}`">
+                            <input type="text" class="form__input" v-model="col.value" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form__button-wrapper"><button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
+            </form>
+        </ValidationObserver>
+    </div>
+</template>
+<script>
+import {mapGetters, mapActions} from 'vuex';
+export default {
+    data: (vm) => ({
+        submittedMessage: "",
+        submitting: false,
+        errorMessage: "",
+        selectedJobId: "",
+        initDate: new Date().toISOString().substr(0, 10),
+        initDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+        endDate: vm.addDays(new Date(), 7).toISOString().substr(0, 10),
+        endDateFormatted: vm.formatDate(vm.addDays(new Date(), 7).toISOString().substr(0, 10)),
+        initDateModal: false,
+        endDateModal: false,
+        techIdArr: {
+            text: "Tech ID #",
+            day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]
+        },
+        unitQuantityArr: [
+            {text: "Air Mover", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Mini Air Mover", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Thermal Air Mover", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Dehumidifier LGR+", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Air Scrubber", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Negative Air Machine", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "HEPA VAC", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Containment Posts", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Generator", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "2'' Water Pump", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Water Extractor", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Truck Mount Extractor", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Containment Bags", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Truck load of debris", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Dumpster", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ],
+        checkBoxArr: [
+            {text: "Evaluation", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Containment", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Structural Drying", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Anti-Microbials", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Microbial - Sealants", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Structural Cleaning", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Quality Control", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Debris Removed", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Content Handling", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ],
+        serviceArr: [
+            {text: "Plumber", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Electrician", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "HVAC Company", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ],
+        onSiteArr: [
+            {text: "(On-Site) Textile Bag #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Furniture #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Item Box #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Storage Unit #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Debris Bag #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Disposal Unit #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "(On-Site) Moving Van #", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ],
+        catArr: [
+            {text: "Class/Category", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ]
+    }),
+    watch: {
+        initDate(val) {
+            this.initDateFormatted = this.formatDate(val)
+            this.endDateFormatted = this.formatDate(this.addDays(val, 7).toISOString().substr(0, 10))
+        },
+        endDate(val) {
+            this.endDateFormatted = this.formatDate(val)
+        }
+    },
+    computed: {
+        ...mapGetters(['getReports'])
+    },
+    methods: {
+        ...mapActions({
+            mappingJobIds: 'mappingJobIds',
+            addReport: 'indexDb/addReport',
+            checkStorage: 'indexDb/checkStorage',
+        }),
+        addDays(d, days) {
+            const date = new Date(d);
+            date.setDate(date.getDate() + days);
+            return date;
+        },
+        formatDate(dateReturned) {
+            if (!dateReturned) return null
+            const [year, month, day] = dateReturned.split('-')
+            return `${month}/${day}/${year}`
+        },
+        parseDate(date) {
+            if (!date) return null
+            const [month, day, year] = date.split('/')
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+        },
+        onSubmit() {
+            this.submittedMessage = ""
+            const reports = this.getReports.filter((v) => {
+                return v.ReportType === 'logs-report'
+            })
+            const jobids = reports.map((v) => {
+                return v.JobId
+            })
+            const logtype = reports.map((v) => {
+                return v.logType
+            })
+            const finalArr = this.techIdArr.day.concat(this.unitQuantityArr, this.checkBoxArr, this.serviceArr, this.onSiteArr, this.catArr)
+            console.log(finalArr)
+            const post = {
+                JobId: this.selectedJobId,
+                ReportType: "logs-report",
+                startDate: this.initDateFormatted,
+                endDate: this.endDateFormatted,
+                logType: "quantity-inventory-logs",
+
+            }
+        }
+    }
+}
+</script>
+<style lang="scss">
+.inventory-logs {
+    grid-template-rows:60px repeat(39, 1fr);
+}
+</style>
