@@ -11,6 +11,7 @@
                 </div>
             </v-dialog> -->
             <p class="font-weight-bold">{{submittedMessage}}</p>
+            <h3 class="alert alert--error">{{errorMessage}}</h3>
             <form ref="form" class="form" @submit.prevent="passes(onSubmit)">
                 <div class="form__form-group">
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
@@ -264,7 +265,7 @@ export default {
         errorDialog: false,
         submittedMessage: "",
         submitting: false,
-        errorMessage: [],
+        errorMessage: "",
         selectedJobId: "",
         initDate: new Date().toISOString().substr(0, 10),
         initDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -315,13 +316,10 @@ export default {
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.ReportType === 'logs-report'
+                return v.ReportType === 'atmospheric-readings'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
-            })
-            const logtype = reports.map((v) => {
-                return v.logType
             })
             const post = {
                 JobId: this.selectedJobId,
@@ -334,7 +332,7 @@ export default {
                 notes: this.notes
             };
             if (this.$nuxt.isOffline)  {
-                if (!jobids.includes(this.selectedJobId) && logtype.includes('atmospheric-readings')) {
+                if (!jobids.includes(this.selectedJobId)) {
                     this.addReport(post).then(() => {
                         this.submittedMessage = "Form was successfully saved"
                         this.errorMessage = ""
@@ -349,7 +347,7 @@ export default {
                 }
             } 
             if (this.$nuxt.isOnline) {
-                this.$axios.$post(`/api/logs/${post.logType}/new`, post).then((res) => {
+                this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
                     if (res.errors) {
                         this.$refs.form.setErrors({
                             JobId: res.errors.find(obj => obj.param === 'JobId')
@@ -357,6 +355,10 @@ export default {
                         return goTo(0)
                     }
                     this.submittedMessage = res.message
+                    this.submitted = true
+                    setTimeout(() => {
+                        window.location = "/"
+                    }, 2000)
                 })
             }
         }

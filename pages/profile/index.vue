@@ -48,6 +48,20 @@
             @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
+      <ul class="profile__group">
+        <h3>Sketch Reports</h3>
+        <li v-for="(report, i) in sketchReports" :key="`coc-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Logs</h3>
+        <li v-for="(report, i) in logReports" :key="`coc-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -106,6 +120,16 @@
       aobReports() {
         return this.getSavedReports.filter((v) => {
           return v.ReportType == 'aob'
+        })
+      },
+      sketchReports() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType == 'sketch-report'
+        })
+      },
+      logReports() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType == 'logs-report'
         })
       }
     },

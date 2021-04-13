@@ -3,7 +3,9 @@
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
-            <form ref="form" class="form" @submit.prevent="passes(onSubmit)">
+            <p class="font-weight-bold">{{submittedMessage}}</p>
+            <h3 class="alert alert--error">{{errorMessage}}</h3>
+            <form ref="form" class="form" @submit.prevent="passes(onSubmit)" v-if="!submitted">
                 <div class="form__form-group">
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
@@ -74,7 +76,7 @@
                         <div class="form__table--cols">
                             <label class="form__label">{{row.text}}</label>
                         </div>
-                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`check-col-${j}`">
+                        <div class="form__table--cols" v-for="(col, j) in row.day" @click="parentClick" :key="`check-col-${j}`">
                             <input type="checkbox" v-model="col.value" />
                         </div>
                     </div>
@@ -82,7 +84,7 @@
                         <div class="form__table--cols">
                             <label class="form__label">{{row.text}}</label>
                         </div>
-                        <div class="form__table--cols" v-for="(col, j) in row.day" :key="`service-col-${j}`">
+                        <div class="form__table--cols" v-for="(col, j) in row.day" @click="parentClick" :key="`service-col-${j}`">
                             <input type="checkbox" v-model="col.value" />
                         </div>
                     </div>
@@ -110,10 +112,12 @@
 </template>
 <script>
 import {mapGetters, mapActions} from 'vuex';
+import goTo from 'vuetify/es5/services/goto'
 export default {
     data: (vm) => ({
         submittedMessage: "",
         submitting: false,
+        submitted: false,
         errorMessage: "",
         selectedJobId: "",
         initDate: new Date().toISOString().substr(0, 10),
@@ -520,33 +524,77 @@ export default {
             const [month, day, year] = date.split('/')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
+        parentClick(event) {
+            var childArr = event.target.childNodes;
+            childArr.forEach(child => {
+                if (child.type === 'checkbox') {
+                    child.checked = !child.checked
+                }
+            })
+        },
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.ReportType === 'logs-report'
+                return v.logType === 'quantity-inventory-logs'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
             })
-            const logtype = reports.map((v) => {
-                return v.logType
-            })
             const finalArr = this.techIdArr.day.concat(this.unitQuantityArr, this.checkBoxArr, this.serviceArr, this.onSiteArr, this.catArr)
-            console.log(finalArr)
             const post = {
                 JobId: this.selectedJobId,
                 ReportType: "logs-report",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
                 logType: "quantity-inventory-logs",
-
+                inventoryLog: finalArr
+            };
+            
+            const reportLog = reports.find(v => v.logType === post.logType)
+            console.log(reportLog)
+            if (this.$nuxt.isOffline) {
+                if (!jobids.includes(this.selectedJobId)) {
+                    this.addReport(post).then(() => {
+                        this.submittedMessage = "Form was saved successfully"
+                        this.errorMessage = ""
+                        this.submitted = true
+                        setTimeout(() => {
+                            this.submittedMessage = ""
+                            this.errorMessage = ""
+                        }, 5000)
+                    })
+                } else {
+                    this.errorMessage = "Job ID of this report already exists"
+                    return goTo(0)
+                }          
+            }
+            if (this.$nuxt.isOnline) {
+                this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
+                    if (res.errors) {
+                        this.$refs.form.setErrors({
+                            JobId: res.errors.find(obj => obj.param === 'JobId')
+                        })
+                        return goTo(0)
+                    }
+                    this.submittedMessage = res.message
+                    this.submitted = true
+                    setTimeout(() => {
+                        window.location = "/"
+                    }, 2000)
+                })
             }
         }
+    },
+    mounted() {
+        this.mappingJobIds()
     }
 }
 </script>
 <style lang="scss">
 .inventory-logs {
     grid-template-rows:60px repeat(39, 1fr);
+    /* input[type=checkbox] {
+        width:100%;
+    } */
 }
 </style>

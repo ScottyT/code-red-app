@@ -53,7 +53,8 @@ router.get('/reports', async (req, res) => {
     const aobContract = await AOB.find({});
     const creditCard = await CreditCard.find({});
     const sketches = await Sketch.find({});
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches)
+    const logging = await Logging.find({});
+    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches, logging)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -187,18 +188,38 @@ router.get('/sketch', (req, res) => {
         }
     })
 })
-router.get('/sketch/:sketchType/:JobId', (req,res) => {
+router.get('/sketch-report/:sketchType/:JobId', (req,res) => {
     Sketch.findOne({JobId: req.params.JobId, sketchType: req.params.sketchType}, (err, sketch) => {
         if (err) {
             res.status(500).send('Error')
         } else if (sketch) {
             res.status(200).json(sketch)
         } else {
-            res.status(404).send('Item no found')
+            res.status(404).send('Item not found')
         }
     })
 })
-router.post("/sketch/:uid/new", 
+router.get('/logs', (req, res) => {
+    Logging.find({}, (err, logs) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(logs)
+        }
+    })
+})
+router.get('/logs-report/:logType/:JobId', (req, res) => {
+    Logging.findOne({JobId: req.params.JobId, logType: req.params.logType}, (err, log) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (log) {
+            res.status(200).json(log)
+        } else {
+            res.status(404).send('Item not found')
+        }
+    })
+})
+router.post("/sketch-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {       
         return Sketch.findOne({JobId: value, sketchType: req.body.sketchType}).then(sketch => {
@@ -217,7 +238,7 @@ router.post("/sketch/:uid/new",
         })
     }),
     createSketch);
-router.post("/logs/:logType/new",
+router.post("/logs-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {
         return Logging.findOne({JobId: value, logType: req.body.logType}).then(log => {

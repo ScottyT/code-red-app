@@ -1,10 +1,22 @@
 <template>
     <div class="pa-6 field-jacket-wrapper">
-        <div v-for="(item, i) in sketchReports" :key="`item-${i}`">
-            <nuxt-link :to="`/field-jacket/${item.ReportType}/${[item.ReportType === 'sketch-report' ? item.sketchType+'/'+item.JobId : item.JobId]}`">
-                <p>{{item.JobId}}</p>
-                <p>{{item.sketchType}}</p>
-            </nuxt-link>
+        <div class="block-group">
+            <h3>Sketch Reports</h3>
+            <div v-for="(item, i) in sketchReports" :key="`item-${i}`">
+                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.sketchType}/${item.JobId}`">
+                    <p>{{item.JobId}}</p>
+                    <p>{{item.sketchType}}</p>
+                </nuxt-link>
+            </div>
+        </div>
+        <div class="block-group">
+            <h3>Log Reports</h3>
+            <div v-for="(item, i) in logReports" :key="`logs-${i}`">
+                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.logType}/${item.JobId}`">
+                    <p>{{item.JobId}}</p>
+                    <p>{{item.logType}}</p>
+                </nuxt-link>
+            </div>
         </div>
     </div>
 </template>
@@ -19,7 +31,8 @@ export default {
     },
     data() {
         return {
-            sketchReports:[]
+            sketchReports:[],
+            logReports:[]
         }
     },
     async middleware({store, redirect}) {
@@ -30,8 +43,10 @@ export default {
     async asyncData({$axios, params}) {
         try {
             let sketchData = await $axios.$get("/api/sketch");
+            let logsData = await $axios.$get("/api/logs");
             return {
-                sketchReports: sketchData
+                sketchReports: sketchData,
+                logReports: logsData
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
@@ -47,7 +62,7 @@ export default {
 
     & > div {
         margin:10px;
-        max-width:200px;
+        
         width:100%;
     }
 }

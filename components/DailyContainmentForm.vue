@@ -491,7 +491,6 @@
                 this.errorMessage = []
                 setTimeout(() => {
                   this.message = ""
-                  window.location = "/"
                 }, 2000)
               }).catch((err) => {
                 this.errorMessage.push(err)

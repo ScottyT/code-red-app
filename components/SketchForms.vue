@@ -108,6 +108,7 @@ export default {
                         setTimeout(() => {
                             this.submittedMessage = ""
                             this.errorMessage = ""
+                            window.location = "/"
                         }, 5000)
                     })
                 }
@@ -115,7 +116,7 @@ export default {
                 this.errorMessage = "Job ID already exists for this sketch type"
             }
             if (this.$nuxt.isOnline) {
-                this.$axios.$post(`/api/sketch/${this.$route.params.uid}/new`, post).then((res) => {
+                this.$axios.$post(`/api/sketch-report/new`, post).then((res) => {
                     if (res.errors) {
                         this.$refs.form.setErrors({                       
                             JobId: res.errors.find(obj => obj.param === 'JobId'),
@@ -123,6 +124,9 @@ export default {
                         })
                     }
                     this.submittedMessage = res.message
+                    setTimeout(() => {
+                        window.location = "/"
+                    }, 2000)
                 })
             }
         }
