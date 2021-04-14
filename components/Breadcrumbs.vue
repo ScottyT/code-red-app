@@ -5,10 +5,10 @@
                 <v-icon>mdi-chevron-left</v-icon>Go back
             </a>
         </div>
-        <nav class="breadcrumb-wrapper__breadcrumb" aria-label="breadcrumbs">
+        <nav class="breadcrumb-wrapper__breadcrumb" aria-label="breadcrumbs" v-if="displayStrip">
             <ul>
                 <li v-for="(item, i) in crumbs" :key="`breadcrumb-${i}`" :class="item.classes">
-                    <nuxt-link :to="item.to">{{item.name}}</nuxt-link>
+                    <nuxt-link :to="item.to" exact>{{item.name}}</nuxt-link>
                     <v-icon class="breadcrumb-wrapper__breadcrumb--icon">mdi-chevron-right</v-icon>
                 </li>
             </ul>
@@ -18,19 +18,36 @@
 <script>
 export default {
   name: "Breadcrumbs",
+  props: {
+    page: {
+      type: String,
+      required: true
+    },
+    displayStrip: {
+      type: Boolean,
+      default: true,
+      required: false
+    }
+  },
   computed: {
     crumbs() {
-      const pathArray = this.$route.path.split("/")
+      const pathArray = this.$route.path.split('/')
       pathArray.shift()
       var breadcrumbs = pathArray.reduce((crumbs, path, index) => {
+        console.log("crumbs:", crumbs)
+        console.log(path[index - 1])
         crumbs.push({
           path: path,
           name: path.charAt(0).toUpperCase() + path.slice(1),
           to: crumbs[index - 1] ? "/" + crumbs[index - 1].path + "/" + path : "/" + path,
           classes: index === pathArray.length - 1 ? 'is-active' : ''
         })
+        
         return crumbs
       }, [])
+      console.log(pathArray)
+      console.log("breadcrumbs:", breadcrumbs)
+      
       return breadcrumbs
     }
   }

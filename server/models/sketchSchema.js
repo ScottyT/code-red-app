@@ -14,7 +14,7 @@ const sketchReport = mongoose.Schema({
         type: Map,
         required: true
     },
-    sketchType: String,
+    formType: String,
     ReportType: String
 });
 sketchReport.plugin(timestamps)

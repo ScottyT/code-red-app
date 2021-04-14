@@ -1,5 +1,6 @@
 <template>
-    <div class="report-details-wrapper">
+    <div class="report-details-wrapper pa-6">
+        <LazyBreadcrumbs page="field-jacket" :displayStrip="false" />
         <h1>{{formName}} for job {{jobId}}</h1>
         
         <span v-if="reportType === 'sketch-report'">
@@ -81,7 +82,7 @@ export default {
     computed: {
         htmlToPdfOptions(e) {
             return {
-                margin:[10, 10, 20, 10],
+                margin:[20, 10, 20, 10],
                 filename: `${this.reportType}-${this.formType}-${this.jobId}`,
                 image: {
                     type: "jpeg",
@@ -89,11 +90,12 @@ export default {
                 },
                 html2canvas: {
                     scale: 2,
-                    useCORS: true
+                    useCORS: true,
+                    width:800
                 },
                 jsPDF: {
                     unit: 'px',
-                    format: 'letter',
+                    format: 'a4',
                     orientation: 'portrait',
                     hotfixes: ['px_scaling']
                 }
@@ -108,27 +110,3 @@ export default {
     }
 }
 </script>
-<style lang="scss" scoped>
-.pdf-item {
-    position:relative;
-    .text-center {
-        text-align:center;
-    }
-    &__company-logo {
-        width:100px;
-        
-        margin:0 auto;
-    }
-    &__inline {
-        display:inline-block;
-    }
-    &__sketch-area {
-        width:800px;
-        height:500px;
-        background-size:contain;
-    }
-}
-.pdf-sig {
-    
-}
-</style>

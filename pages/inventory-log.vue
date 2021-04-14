@@ -60,7 +60,7 @@
                         <div class="form__table--cols">
                             <div>Tech ID #</div>
                         </div>
-                        <div class="form__table--cols" v-for="(item, i) in techIdArr.day" :key="`techid-${i}`">
+                        <div class="form__table--cols" v-for="(item, i) in techIdArr[0].day" :key="`techid-${i}`">
                             <input class="form__input" type="text" v-model="item.value" />
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                             <label class="form__label">{{row.text}}</label>
                         </div>
                         <div class="form__table--cols" v-for="(col, j) in row.day" @click="parentClick" :key="`check-col-${j}`">
-                            <input type="checkbox" v-model="col.value" />
+                            <input type="checkbox" :checked="false" v-model="col.value" />
                         </div>
                     </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in serviceArr" :key="`service-${i}`">
@@ -126,8 +126,8 @@ export default {
         endDateFormatted: vm.formatDate(vm.addDays(new Date(), 7).toISOString().substr(0, 10)),
         initDateModal: false,
         endDateModal: false,
-        techIdArr: {
-            text: "Tech ID #",
+        techIdArr: [
+            {text: "Tech ID #",
             day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
@@ -136,8 +136,8 @@ export default {
                 {text: "day5",value: ""},
                 {text: "day6",value: ""},
                 {text: "day7",value: ""}
-            ]
-        },
+            ]}
+        ],
         unitQuantityArr: [
             {text: "Air Mover", day: [
                 {text: "day1", value: ""},
@@ -277,13 +277,13 @@ export default {
         ],
         checkBoxArr: [
             {text: "Evaluation", day: [
-                {text: "day1", value: ""},
-                {text: "day2",value: ""},
-                {text: "day3",value: ""},
-                {text: "day4",value: ""},
-                {text: "day5",value: ""},
-                {text: "day6",value: ""},
-                {text: "day7",value: ""}
+                {text: "day1", value: false},
+                {text: "day2",value: false},
+                {text: "day3",value: false},
+                {text: "day4",value: false},
+                {text: "day5",value: false},
+                {text: "day6",value: false},
+                {text: "day7",value: false}
             ]},
             {text: "Containment", day: [
                 {text: "day1", value: ""},
@@ -540,7 +540,7 @@ export default {
             const jobids = reports.map((v) => {
                 return v.JobId
             })
-            const finalArr = this.techIdArr.day.concat(this.unitQuantityArr, this.checkBoxArr, this.serviceArr, this.onSiteArr, this.catArr)
+            const finalArr = this.techIdArr.concat(this.unitQuantityArr, this.checkBoxArr, this.serviceArr, this.onSiteArr, this.catArr)
             const post = {
                 JobId: this.selectedJobId,
                 ReportType: "logs-report",
@@ -551,7 +551,6 @@ export default {
             };
             
             const reportLog = reports.find(v => v.logType === post.logType)
-            console.log(reportLog)
             if (this.$nuxt.isOffline) {
                 if (!jobids.includes(this.selectedJobId)) {
                     this.addReport(post).then(() => {

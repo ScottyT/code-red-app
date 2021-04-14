@@ -1,35 +1,42 @@
 <template>
-    
+    <div class="field-jacket-wrapper">
+        <LazyBreadcrumbs page="field-jacket" />
+        
+        <div class="block-group">
+            <h1 class="text-capitalize">{{apiname}} report</h1>
+            <div class="block-group__col" v-for="(item, i) in data" :key="`item-${i}`">
+                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
+                    <p>{{item.JobId}}</p>
+                    <p>{{item.formType}}</p>
+                </nuxt-link>
+            </div>
+        </div>
+    </div>
 </template>
 <script>
 export default {
-    layout: "dashboard-layout",
-    head() {
-        return {
-            title: "Sketch -" + this.id
-        }
-    },
-    data() {
-        return {
-            report: {}
-        }
-    },
-    async middleware({store, redirect}) {
-        if (store.state.user.role !== "admin") {
-            return redirect("/")
-        }
-    },
+    name:"formtype",
     async asyncData({$axios, params}) {
+        var reportType = params.id;
+        var apiname = ""
+        var formType = ""
+        
         try {
-            var slug = params.slug;
-            var id = params.id;
-            let data = await $axios.$get(`/api/sketch/${id}`);
+            switch (reportType) {
+                case "sketch-report":
+                    apiname = "sketch"
+                    break;
+                case "logs-report":
+                    apiname = "logs"
+            }
+            let data = await $axios.$get(`/api/${apiname}`);
             return {
-                report: data,
-                id
+                data,
+                reportType,
+                apiname
             }
         } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
+            console.error(e)
         }
     }
 }

@@ -35,7 +35,6 @@ export default {
                 },
                 jsPDF: {
                     unit: 'px',
-                    format: 'letter',
                     orientation: 'portrait',
                     hotfixes: ['px_scaling']
                 }

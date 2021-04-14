@@ -188,8 +188,8 @@ router.get('/sketch', (req, res) => {
         }
     })
 })
-router.get('/sketch-report/:sketchType/:JobId', (req,res) => {
-    Sketch.findOne({JobId: req.params.JobId, sketchType: req.params.sketchType}, (err, sketch) => {
+router.get('/sketch-report/:formType/:JobId', (req,res) => {
+    Sketch.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, sketch) => {
         if (err) {
             res.status(500).send('Error')
         } else if (sketch) {
@@ -208,8 +208,8 @@ router.get('/logs', (req, res) => {
         }
     })
 })
-router.get('/logs-report/:logType/:JobId', (req, res) => {
-    Logging.findOne({JobId: req.params.JobId, logType: req.params.logType}, (err, log) => {
+router.get('/logs-report/:formType/:JobId', (req, res) => {
+    Logging.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, log) => {
         if (err) {
             res.status(500).send('Error')
         } else if (log) {

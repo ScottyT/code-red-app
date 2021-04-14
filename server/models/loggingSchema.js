@@ -7,7 +7,7 @@ const logging = mongoose.Schema({
         required: true
     },
     ReportType: String,
-    logType: String,
+    formType: String,
     startDate: String,
     endDate: String,
     readingsLog: Array,

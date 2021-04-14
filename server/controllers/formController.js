@@ -8,7 +8,7 @@ const createSketch = async (req, res) => {
         JobId: req.body.JobId,
         teamMember: req.body.teamMember,
         sketch: req.body.sketch,
-        sketchType: req.params.uid,
+        formType: req.params.uid,
         ReportType: req.body.ReportType
     });
     const sketchReport = await Sketch.findOne({JobId: req.body.JobId, sketchType: req.body.sketchType}).exec()
@@ -29,13 +29,13 @@ const createLogs = async (req, res) => {
         ReportType: req.body.ReportType,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
-        logType: req.body.logType,
+        formType: req.body.logType,
         readingsLog: req.body.readingsLog,
         lossClassification: req.body.lossClassification,
         inventoryLog: req.body.inventoryLog,
         notes: req.body.notes
     });
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, logType: req.body.logType}).exec()
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
     if (!errors.isEmpty() || logsReport !== null) {
         return res.json(errors)
     }

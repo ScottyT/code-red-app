@@ -1,20 +1,24 @@
 <template>
     <div class="pa-6 field-jacket-wrapper">
         <div class="block-group">
-            <h3>Sketch Reports</h3>
+            <nuxt-link :to="`/field-jacket/sketch-report`">
+                <h3>Sketch Reports</h3>
+            </nuxt-link>
             <div v-for="(item, i) in sketchReports" :key="`item-${i}`">
-                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.sketchType}/${item.JobId}`">
+                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
                     <p>{{item.JobId}}</p>
-                    <p>{{item.sketchType}}</p>
+                    <p>{{item.formType}}</p>
                 </nuxt-link>
             </div>
         </div>
         <div class="block-group">
-            <h3>Log Reports</h3>
+            <nuxt-link :to="`/field-jacket/logs-report`">
+                <h3>Log Reports</h3>
+            </nuxt-link>
             <div v-for="(item, i) in logReports" :key="`logs-${i}`">
-                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.logType}/${item.JobId}`">
+                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
                     <p>{{item.JobId}}</p>
-                    <p>{{item.logType}}</p>
+                    <p>{{item.formType}}</p>
                 </nuxt-link>
             </div>
         </div>
@@ -44,6 +48,7 @@ export default {
         try {
             let sketchData = await $axios.$get("/api/sketch");
             let logsData = await $axios.$get("/api/logs");
+            let data = sketchData.concat(logsData)
             return {
                 sketchReports: sketchData,
                 logReports: logsData
@@ -56,14 +61,16 @@ export default {
 </script>
 <style lang="scss">
 .field-jacket-wrapper {
-    display:flex;
+    display:grid;
     justify-content:flex-start;
-    flex-direction:row;
-
-    & > div {
-        margin:10px;
-        
-        width:100%;
+    flex-direction:column;
+    max-width:800px;
+    margin:auto;
+    grid-template-rows:80px 1fr;
+    grid-template-columns:1fr 1fr;
+    
+    .breadcrumb-wrapper {
+        grid-column: 2 span;
     }
 }
 </style>

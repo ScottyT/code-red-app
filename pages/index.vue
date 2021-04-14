@@ -1,6 +1,5 @@
 <template>
-  <div>
-    
+  <div>  
     <span v-if="!authUser">
       <LazyLoginForm />
     </span>
