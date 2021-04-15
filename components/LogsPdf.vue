@@ -3,7 +3,7 @@
         <section class="pdf-item">
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
-            <div class="pdf-item__row">
+            <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
                     <label>Job ID: </label>
                     <span>{{report.JobId}}</span>
@@ -18,18 +18,16 @@
                 </div>
             </div>
             <div class="pdf-item__row" v-if="report.notes !== undefined">
-                    <label>Notes: </label>
-                    <div class="pdf-item__textbox">{{report.notes}}</div>
+                <label>Notes: </label>
+                <div class="pdf-item__textbox">{{report.notes}}</div>
             </div>
-        </section>
-        <section class="pdf-item" style="margin-top:40px;">
             <div class="pdf-item__table inventory-logs" v-if="report.formType === 'quantity-inventory-logs'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="n">
-                        <div>Day {{n}}</div>
+                        <p class="pdf-item__table--data-heading">Day {{n}}</p>
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.inventoryLog" :key="`inventory-${i}`">
@@ -47,15 +45,17 @@
                         <div>Description</div>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="n">
-                        <div>Day {{n}}</div>
+                        <p class="pdf-item__table--data-heading">Day {{n}}</p>
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.readingsLog" :key="`row-${i}`">
                     <div class="pdf-item__table--cols">
-                        {{row.text}}
+                        <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <span>{{col.value}}</span>
+                        <!-- <p class="pdf-item__table--data" v-if="!updated">{{col.value}}</p> -->
+                        <input type="text" class="pdf-item__table--data" :readonly="report.readingsLog[i].day[j].value !== '' ? true : false"
+                            v-model="newdata.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                 
@@ -65,28 +65,60 @@
                         <div>Loss Classification</div>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="n">
-                        <div>4</div>
+                        <p class="pdf-item__table--data-heading">4</p>
                     </div>
                 </div>
                 
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.lossClassification" :key="`loss-${i}`">
                     <div class="pdf-item__table--cols">
-                        {{row.text}}
+                        <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <p>{{col.value}}</p>
+                        <p class="pdf-item__table--data">{{col.value}}</p>
                     </div>
                 </div>
                 </span>
             </div>
+            
         </section>
+        <v-btn class="button" @click="updateReport" v-show="$route.name == 'saved-reports-formType-id'">Update</v-btn>
+       <!--  <section class="pdf-item" style="margin-top:40px;">
+            
+        </section> -->
     </div>
 </template>
 <script>
 export default {
     name: "LogsPdf",
     props: ['formType', 'formName', 'reportType', 'report', 'company'],
-    
+    data() {
+        return {
+            editing: false,
+            udpateMessage: '',
+            newdata: {},
+            updated: false
+        }
+    },
+    async fetch() {
+        this.newdata = await this.$axios.$get(`/api/logs-report/${this.formType}/${this.report.JobId}`)
+    },
+    methods: {
+        arrayAlreadyHasArray(arr, testArr) {
+            /* for (var x = 0; x < this.newdata.readingsLog.length; x++) {
+                for (var y = 0; y < this.report.readingsLog.length; y++) {
+
+                }
+            } */
+            
+        },
+        updateReport() {
+            // use indexDb for offline support here
+            console.log(this.newdata)
+            /* this.$axios.$post(`/api/logs-report/${formType}/${params.id}`).then((res) => {
+                this.udpateMessage = res.message
+            }) */
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -97,6 +129,7 @@ export default {
 }
 .pdf-item {
     position:relative;
+    padding-bottom:20px;
     .text-center {
         text-align:center;
     }
@@ -121,8 +154,8 @@ export default {
     }
     &__textbox {
         height:150px;
-        padding:5px;
         width:100%;
+        padding-left:7px;
     }
     &__table {
         display:grid;
@@ -161,6 +194,12 @@ export default {
             }
         }
         &--data {
+            text-align:center;
+            color:$color-white;
+            display:block;
+            width:100%;
+        }
+        &--data-heading {
             text-align:center;
         }
     }

@@ -1,25 +1,55 @@
 <template>
-    <div class="pa-6 field-jacket-wrapper">
+    <div class="pa-6 reports-wrapper">
         <div class="block-group">
-            <nuxt-link :to="`/field-jacket/sketch-report`">
-                <h3>Sketch Reports</h3>
-            </nuxt-link>
-            <div v-for="(item, i) in sketchReports" :key="`item-${i}`">
-                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
-                    <p>{{item.JobId}}</p>
-                    <p>{{item.formType}}</p>
-                </nuxt-link>
+            <h3 class="reports-wrapper__heading">
+                <nuxt-link :to="`/field-jacket/sketch-report`">Sketch Reports</nuxt-link>
+            </h3>
+            <div class="block-group--grid">
+                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in sketchReports" :key="`item-${i}`">
+                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
+                        <p>{{item.JobId}}</p>
+                        <p>{{item.formType}}</p>
+                    </nuxt-link>
+                </div>
             </div>
         </div>
         <div class="block-group">
-            <nuxt-link :to="`/field-jacket/logs-report`">
-                <h3>Log Reports</h3>
-            </nuxt-link>
-            <div v-for="(item, i) in logReports" :key="`logs-${i}`">
-                <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
-                    <p>{{item.JobId}}</p>
-                    <p>{{item.formType}}</p>
-                </nuxt-link>
+            <h3 class="reports-wrapper__heading">
+                <nuxt-link  :to="`/field-jacket/logs-report`">Log Reports</nuxt-link>
+            </h3>
+            <div class="block-group--grid">
+                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in logReports" :key="`logs-${i}`">
+                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
+                        <p>{{item.JobId}}</p>
+                        <p>{{item.formType}}</p>
+                    </nuxt-link>
+                </div>
+            </div>
+        </div>
+        <div class="block-group">
+            <h3 class="reports-wrapper__heading">
+                <nuxt-link :to="`/field-jacket/dispatch-rapid-report`">Dispatch and Rapid Response Reports</nuxt-link>
+            </h3>
+            <div class="block-group--grid">
+                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in defaultData" :key="`logs-${i}`">
+                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.JobId}`">
+                        <p>{{item.JobId}}</p>
+                        <p>{{item.ReportType}}</p>
+                    </nuxt-link>
+                </div>
+            </div>
+        </div>
+        <div class="block-group">
+            <h3 class="reports-wrapper__heading">
+                Daily Containment and Tech Reports
+            </h3>
+            <div class="block-group--grid">
+                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in conTechData" :key="`logs-${i}`">
+                    <nuxt-link :to="`/field-jacket/${item.ReportType}-${item.CaseFileType}/${item.JobId}`">
+                        <p>{{item.JobId}}</p>
+                        <p>{{item.CaseFileType}}</p>
+                    </nuxt-link>
+                </div>
             </div>
         </div>
     </div>
@@ -46,12 +76,27 @@ export default {
     },
     async asyncData({$axios, params}) {
         try {
-            let sketchData = await $axios.$get("/api/sketch");
-            let logsData = await $axios.$get("/api/logs");
+            let reports = await $axios.$get("/api/reports");
+            let sketchData = reports.filter((v) => {
+                return v.ReportType === 'sketch-report'
+            })
+            let logsData = reports.filter((v) => {
+                return v.ReportType === 'logs-report'
+            })
+            let defaultData = reports.filter((v) => {
+                return v.ReportType == 'dispatch' || v.ReportType == 'rapid-response'
+            })
+            let conTechData = reports.filter((v) => {
+                return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
+            })
+            
+
             let data = sketchData.concat(logsData)
             return {
                 sketchReports: sketchData,
-                logReports: logsData
+                logReports: logsData,
+                defaultData,
+                conTechData
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
@@ -59,18 +104,3 @@ export default {
     }
 }
 </script>
-<style lang="scss">
-.field-jacket-wrapper {
-    display:grid;
-    justify-content:flex-start;
-    flex-direction:column;
-    max-width:800px;
-    margin:auto;
-    grid-template-rows:80px 1fr;
-    grid-template-columns:1fr 1fr;
-    
-    .breadcrumb-wrapper {
-        grid-column: 2 span;
-    }
-}
-</style>

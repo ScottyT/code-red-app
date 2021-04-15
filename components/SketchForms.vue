@@ -91,11 +91,12 @@ export default {
                 return v.JobId
             })
             const sketchTypes = sketchReps.map((v) => {
-                return v.sketchType
+                return v.formType
             })
             const post = {
                 JobId: this.selectedJobId,
                 teamMember: userNameObj,
+                formType: this.$route.params.uid,
                 sketch: this.sketchData.data,
                 ReportType: 'sketch-report',
                 sketchType: this.$route.params.uid
@@ -108,13 +109,12 @@ export default {
                         setTimeout(() => {
                             this.submittedMessage = ""
                             this.errorMessage = ""
-                            window.location = "/"
                         }, 5000)
                     })
+                } else {
+                    this.errorMessage = "Job ID already exists for this sketch type"
                 }
-            } else {
-                this.errorMessage = "Job ID already exists for this sketch type"
-            }
+            } 
             if (this.$nuxt.isOnline) {
                 this.$axios.$post(`/api/sketch-report/new`, post).then((res) => {
                     if (res.errors) {

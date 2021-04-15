@@ -9,7 +9,7 @@ const CreditCard = require("../models/creditCardSchema");
 const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const createUser = require('../controllers/authController');
-const { createSketch, createLogs } = require('../controllers/formController');
+const { createSketch, createLogs, updateLogs } = require('../controllers/formController');
 const router = express.Router();
 
 const { body, check, validationResult } = require('express-validator');
@@ -248,6 +248,7 @@ router.post("/logs-report/new",
         })
     }),
     createLogs);
+router.post("/logs-report/:formType/:JobId/update", updateLogs);
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),
     body('JobId')

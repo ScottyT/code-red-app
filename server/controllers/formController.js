@@ -1,6 +1,7 @@
 const Sketch = require('../models/sketchSchema');
 const Logging = require('../models/loggingSchema');
 const { validationResult } = require('express-validator');
+const { options } = require('../routes/api');
 
 const createSketch = async (req, res) => {
     const errors = validationResult(req)
@@ -45,4 +46,17 @@ const createLogs = async (req, res) => {
         res.json(err)
     })
 }
-module.exports = { createSketch, createLogs }
+const updateLogs = async (req, res) => {
+    const logs = new Logging({
+        readingsLog: req.body.readingsLog,
+        lossClassification: req.body.lossClassification,
+        inventoryLog: req.body.inventoryLog
+    });
+    await logs.save().then(savedDoc => {
+        savedDoc === logs;
+        res.json({message: "Report updated"})
+    }).catch((err) => {
+        res.json(err)
+    });
+}
+module.exports = { createSketch, createLogs, updateLogs }

@@ -136,10 +136,10 @@ export default {
           access: 'user'
         },
         {
-          icon: 'mdi-clipboard',
-          title: 'Reports',
-          to: '/reports',
-          access: 'admin'
+          icon: 'mdi-form-select',
+          title: 'Forms to finish later',
+          to: '/saved-reports',
+          access: 'user'
         },
         {
           icon: 'mdi-clipboard',

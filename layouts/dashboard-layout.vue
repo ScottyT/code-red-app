@@ -127,11 +127,6 @@ export default {
         },
         {
           icon: 'mdi-clipboard',
-          title: 'Reports',
-          to: '/reports'
-        },
-        {
-          icon: 'mdi-clipboard',
           title: 'Field Jacket',
           to: '/field-jacket'
         },

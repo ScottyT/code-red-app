@@ -453,7 +453,7 @@ export default {
             ]}
         ],
         catArr: [
-            {text: "Class/Category", day: [
+            {text: "Class/Category Water 1", day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
                 {text: "day3",value: ""},
@@ -462,7 +462,7 @@ export default {
                 {text: "day6",value: ""},
                 {text: "day7",value: ""}
             ]},
-            {text: "Class/Category", day: [
+            {text: "Class/Category Water 2", day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
                 {text: "day3",value: ""},
@@ -471,7 +471,7 @@ export default {
                 {text: "day6",value: ""},
                 {text: "day7",value: ""}
             ]},
-            {text: "Class/Category", day: [
+            {text: "Class/Category Water 3", day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
                 {text: "day3",value: ""},
@@ -480,7 +480,7 @@ export default {
                 {text: "day6",value: ""},
                 {text: "day7",value: ""}
             ]},
-            {text: "Class/Category", day: [
+            {text: "Class/Category Water 4", day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
                 {text: "day3",value: ""},

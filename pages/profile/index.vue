@@ -163,7 +163,8 @@
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
-        deleteReport: 'indexDb/deleteReport'
+        deleteReport: 'indexDb/deleteReport',
+        fetchReports: 'fetchReports'
       }),
       async submitForm(post, index) {
          try {           
@@ -186,7 +187,8 @@
               this.message = ""
             }, 2000)
             this.deleteReport(post)
-          })            
+            this.fetchReports()
+          })         
         } catch (e) {
           this.message = e
         }

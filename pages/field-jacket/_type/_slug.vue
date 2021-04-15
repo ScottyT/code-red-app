@@ -1,31 +1,23 @@
 <template>
     <div class="report-details-wrapper pa-6">
         <LazyBreadcrumbs page="field-jacket" :displayStrip="false" />
-        <h1>{{formName}} for job {{jobId}}</h1>
+        <!-- <h1>{{formName}} for job {{jobId}}</h1> -->
+
         
-        <span v-if="reportType === 'sketch-report'">
-            <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
-                    <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
-                </vue-html2pdf>
-            </client-only>
-            <v-btn @click="generateReport(0)">Download PDF</v-btn>
+        <span v-if="reportType === 'dispatch'">
+            <LazyReportDetails :report="report" />
         </span>
-        <span v-if="reportType === 'logs-report'">
-            <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
-                    <LazyLogsPdf :formType="formType" :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
-                 </vue-html2pdf>
-            </client-only>
-            <v-btn @click="generateReport(0)">Download PDF</v-btn>
+        <span v-if="reportType === 'rapid-response'">
+            <LazyResponseReportDetails :report="report" />
+        </span>
+        <span v-if="report.ReportType === 'case-file'">
+            <LazyCaseFileDetails :report="report" />
         </span>
     </div>
 </template>
 <script>
 export default {
-    layout: "default",
+    layout: "dashboard-layout",
     head() {
         return {
             title: "Sketch -" + this.formType + '-' + this.jobId
@@ -48,7 +40,7 @@ export default {
             var formType = params.id;
             var reportType = params.type;
             var jobId = params.uid;
-            let data = await $axios.$get(`/api/${params.type}/${formType}/${jobId}`);
+            let data = await $axios.$get(`/api/reports/${params.type}/${params.slug}`);
             switch (formType) {
                 case "moisture-sketch":
                     formName = "Moisture Mapping Location and Sketch"
@@ -73,7 +65,6 @@ export default {
                 jobId,
                 formType,
                 reportType,
-                formName
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
