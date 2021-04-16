@@ -12,8 +12,15 @@ const logging = mongoose.Schema({
     endDate: String,
     readingsLog: Array,
     lossClassification: Array,
-    inventoryLog: Array,
-    notes: String
+    techIds: Array,
+    quantityData: Array,
+    checkData: Array,
+    categoryData: Array,
+    notes: String,
+    teamMember: {
+        type: Object,
+        required: true
+    }
 });
 logging.plugin(timestamps);
 module.exports = mongoose.model('Logs', logging);

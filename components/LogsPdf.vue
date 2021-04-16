@@ -1,8 +1,11 @@
 <template>
-    <div class="pdf-content" slot="pdf-content">
+    <p v-if="$fetchState.pending">Fetching content...</p>
+    <div v-else class="pdf-content" slot="pdf-content">
+        <LazyBreadcrumbs page="saved-reports" v-if="$route.name == 'saved-reports-formType-id'" />
         <section class="pdf-item">
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
+            <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
                     <label>Job ID: </label>
@@ -30,12 +33,39 @@
                         <p class="pdf-item__table--data-heading">Day {{n}}</p>
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.inventoryLog" :key="`inventory-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows">
+                    <div class="pdf-item__table--cols">
+                        <label>Tech ID #</label>
+                    </div>
+                    <div class="pdf-item__table--cols" v-for="n in 7" :key="`techids-col-${n}`">
+                        <input type="number" class="pdf-item__table--data" readonly v-model="report.teamMember.id" />
+                    </div>
+                </div>
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.quantityData" :key="`unitquanitity-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
-                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`inventory-col-${j}`">
-                        <p class="pdf-item__table--data">{{col.value}}</p>
+                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
+                        <input type="number" class="pdf-item__table--data" :readonly="report.quantityData[i].day[j].value !== '' ? true : false"
+                            v-model="newdata.quantityData[i].day[j].value" />
+                    </div>
+                </div>
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
+                    <div class="pdf-item__table--cols">
+                        <label>{{row.text}}</label>
+                    </div>
+                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
+                        <input type="checkbox" class="pdf-item__table--data" :readonly="report.checkData[i].day[j].value !== '' ? true : false"
+                            v-model="newdata.checkData[i].day[j].value" />
+                    </div>
+                </div>
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
+                    <div class="pdf-item__table--cols">
+                        <label>{{row.text}}</label>
+                    </div>
+                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
+                        <input type="text" class="pdf-item__table--data" :readonly="report.categoryData[i].day[j].value !== '' ? true : false"
+                            v-model="newdata.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -48,12 +78,19 @@
                         <p class="pdf-item__table--data-heading">Day {{n}}</p>
                     </div>
                 </div>
+                <div class="pdf-item__table pdf-item__table--rows">
+                    <div class="pdf-item__table--cols">
+                        <label>Tech ID #</label>
+                    </div>
+                    <div class="pdf-item__table--cols" v-for="n in 7" :key="`techids-col-${n}`">
+                        <input type="number" class="pdf-item__table--data" readonly v-model="report.teamMember.id" />
+                    </div>
+                </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.readingsLog" :key="`row-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <!-- <p class="pdf-item__table--data" v-if="!updated">{{col.value}}</p> -->
                         <input type="text" class="pdf-item__table--data" :readonly="report.readingsLog[i].day[j].value !== '' ? true : false"
                             v-model="newdata.readingsLog[i].day[j].value" />
                     </div>
@@ -74,17 +111,14 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <p class="pdf-item__table--data">{{col.value}}</p>
+                        <input type="text" class="pdf-item__table--data" :readonly="report.lossClassification[i].day[j].value !== '' ? true : false" 
+                            v-model="newdata.lossClassification[i].day[j].value" />
                     </div>
                 </div>
                 </span>
-            </div>
-            
+            </div>           
         </section>
-        <v-btn class="button" @click="updateReport" v-show="$route.name == 'saved-reports-formType-id'">Update</v-btn>
-       <!--  <section class="pdf-item" style="margin-top:40px;">
-            
-        </section> -->
+        <v-btn class="button mt-4" @click="updateReport" v-show="$route.name == 'saved-reports-formType-id'">Update</v-btn>
     </div>
 </template>
 <script>
@@ -94,29 +128,29 @@ export default {
     data() {
         return {
             editing: false,
-            udpateMessage: '',
+            updateMessage: '',
             newdata: {},
-            updated: false
+            updated: false,
+            errorMessage: ""
         }
     },
     async fetch() {
         this.newdata = await this.$axios.$get(`/api/logs-report/${this.formType}/${this.report.JobId}`)
     },
     methods: {
-        arrayAlreadyHasArray(arr, testArr) {
-            /* for (var x = 0; x < this.newdata.readingsLog.length; x++) {
-                for (var y = 0; y < this.report.readingsLog.length; y++) {
-
-                }
-            } */
-            
-        },
         updateReport() {
             // use indexDb for offline support here
-            console.log(this.newdata)
-            /* this.$axios.$post(`/api/logs-report/${formType}/${params.id}`).then((res) => {
-                this.udpateMessage = res.message
-            }) */
+            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.newdata).then((res) => {
+                if (res.errors) {
+                    this.errorMessage = res.errors
+                    return;                
+                }
+                this.updateMessage = res.message
+                setTimeout(() => {
+                    this.updateMessage = ""
+                    this.$router.push("/saved-reports")
+                }, 5000)
+            })
         }
     }
 }
@@ -124,20 +158,25 @@ export default {
 <style lang="scss" scoped>
 .pdf-content {
     margin:auto;
-    max-width:800px;
+    max-width:870px;
     width:100%;
 }
 .pdf-item {
     position:relative;
-    padding-bottom:20px;
     .text-center {
         text-align:center;
     }
     .logs-pdf {
-        grid-template-rows:40px repeat(13, 1fr);
+        grid-template-rows:repeat(13, 23px);
+        padding:10px;
+        background-color:$color-white;
+        color:$color-black;
     }
     .inventory-logs {
-        grid-template-rows:repeat(40, 25px);
+        grid-template-rows:repeat(40, 23px);
+        padding:10px;
+        background-color:$color-white;
+        color:$color-black;
     }
     &__company-logo {
         width:100px;        
@@ -161,6 +200,7 @@ export default {
         display:grid;
         &--rows {
             grid-template-columns:1.8fr repeat(7, 1fr);
+            grid-template-rows:23px;
             width:100%;
             &:not(:first-child) {
                 .pdf-item__table--cols {
@@ -195,9 +235,9 @@ export default {
         }
         &--data {
             text-align:center;
-            color:$color-white;
             display:block;
             width:100%;
+            height:100%;
         }
         &--data-heading {
             text-align:center;

@@ -2,7 +2,7 @@
     <div class="pa-6 reports-wrapper">
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
-                <nuxt-link :to="`/field-jacket/sketch-report`">Sketch Reports</nuxt-link>
+                Sketch Reports
             </h3>
             <div class="block-group--grid">
                 <div class="reports-wrapper__data block-group__col" v-for="(item, i) in sketchReports" :key="`item-${i}`">
@@ -15,7 +15,7 @@
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
-                <nuxt-link  :to="`/field-jacket/logs-report`">Log Reports</nuxt-link>
+                Log Reports
             </h3>
             <div class="block-group--grid">
                 <div class="reports-wrapper__data block-group__col" v-for="(item, i) in logReports" :key="`logs-${i}`">
@@ -28,7 +28,7 @@
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
-                <nuxt-link :to="`/field-jacket/dispatch-rapid-report`">Dispatch and Rapid Response Reports</nuxt-link>
+                Dispatch and Rapid Response Reports
             </h3>
             <div class="block-group--grid">
                 <div class="reports-wrapper__data block-group__col" v-for="(item, i) in defaultData" :key="`logs-${i}`">
@@ -55,6 +55,7 @@
     </div>
 </template>
 <script>
+import {mapActions} from 'vuex';
 export default {
     name: "FieldJacket",
     layout: "dashboard-layout",
@@ -66,7 +67,20 @@ export default {
     data() {
         return {
             sketchReports:[],
-            logReports:[]
+            logReports:[],
+            reports:[]
+        }
+    },
+    computed: {
+        isOnline() {
+            return this.$nuxt.isOnline
+        }
+    },
+    watch: {
+        isOnline(val) {
+            if (val) {
+                this.fetchReports()
+            }
         }
     },
     async middleware({store, redirect}) {
@@ -101,6 +115,11 @@ export default {
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
         }
+    },
+    methods: {
+        ...mapActions({
+            fetchReports: 'fetchReports'
+        })
     }
 }
 </script>

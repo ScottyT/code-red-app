@@ -34,8 +34,6 @@ export default {
       const pathArray = this.$route.path.split('/')
       pathArray.shift()
       var breadcrumbs = pathArray.reduce((crumbs, path, index) => {
-        console.log("crumbs:", crumbs)
-        console.log(path[index - 1])
         crumbs.push({
           path: path,
           name: path.charAt(0).toUpperCase() + path.slice(1),
@@ -45,8 +43,6 @@ export default {
         
         return crumbs
       }, [])
-      console.log(pathArray)
-      console.log("breadcrumbs:", breadcrumbs)
       
       return breadcrumbs
     }

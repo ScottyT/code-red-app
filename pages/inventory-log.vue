@@ -491,6 +491,11 @@ export default {
             ]}
         ]
     }),
+    async middleware({$fire, redirect}) {
+        if ($fire.auth.currentUser === null) {
+            return redirect("/")
+        }
+    },
     watch: {
         initDate(val) {
             this.initDateFormatted = this.formatDate(val)
@@ -540,17 +545,20 @@ export default {
             const jobids = reports.map((v) => {
                 return v.JobId
             })
-            const finalArr = this.techIdArr.concat(this.unitQuantityArr, this.checkBoxArr, this.serviceArr, this.onSiteArr, this.catArr)
+            var numberInputs = this.unitQuantityArr.concat(this.onSiteArr)
+            var checkboxInputs = this.checkBoxArr.concat(this.serviceArr)
             const post = {
                 JobId: this.selectedJobId,
                 ReportType: "logs-report",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
                 logType: "quantity-inventory-logs",
-                inventoryLog: finalArr
+                techIds: this.techIdArr,
+                quantityData: numberInputs,
+                checkData: checkboxInputs,
+                categoryData: this.catArr
             };
             
-            const reportLog = reports.find(v => v.logType === post.logType)
             if (this.$nuxt.isOffline) {
                 if (!jobids.includes(this.selectedJobId)) {
                     this.addReport(post).then(() => {

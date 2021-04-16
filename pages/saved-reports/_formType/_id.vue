@@ -1,11 +1,11 @@
 <template>
     <div class="pa-6 report-details-wrapper">
-        <span v-if="report.formType === 'atmospheric-readings'">
-            <LazyLogsPdf :formType="formType" :formName="formName" :report="report" company="Water Emergency Services Incorporated" />
-        </span>
+        <LazyLogsPdf :formType="formType" :formName="formName" :report="report" company="Water Emergency Services Incorporated" />
+        <v-btn class="button--normal" @click="deleteReport(report)">Submit Report</v-btn>
     </div>
 </template>
 <script>
+import {mapActions} from 'vuex';
 export default {
     name: "updateform",
     async asyncData({$axios, params}) {
@@ -31,6 +31,11 @@ export default {
         } catch (e) {
             console.error(e)
         }
+    },
+    methods: {
+        ...mapActions({
+            deleteReport: 'deleteSavedReport'
+        })
     }
 }
 </script>

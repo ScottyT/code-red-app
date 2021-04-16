@@ -12,7 +12,7 @@
             </v-dialog> -->
             <p class="font-weight-bold">{{submittedMessage}}</p>
             <h3 class="alert alert--error">{{errorMessage}}</h3>
-            <form ref="form" class="form" @submit.prevent="passes(onSubmit)">
+            <form ref="form" class="form" @submit.prevent="passes(onSubmit)" v-if="!submitted">
                 <div class="form__form-group">
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
@@ -63,6 +63,14 @@
                             <div>Day {{n}}</div>
                         </div>
                     </div>
+                    <div class="form__table form__table--rows">
+                        <div class="form__table--cols">
+                            <div>Tech ID #</div>
+                        </div>
+                        <div class="form__table--cols" v-for="n in 7" :key="n">
+                            <input type="text" class="form__input" readonly v-model="getUser.id" />
+                        </div>
+                    </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in readingsArr" :key="`row-${i}`">
                         <div class="form__table--cols">
                             <div>{{row.text}}</div>
@@ -105,16 +113,7 @@ import {mapActions, mapGetters} from 'vuex';
 import goTo from 'vuetify/es5/services/goto'
 export default {
     data: (vm) => ({
-        readingsArr:[
-            {text: "Tech ID #", day: [
-                {text: "day1", value: ""},
-                {text: "day2",value: ""},
-                {text: "day3",value: ""},
-                {text: "day4",value: ""},
-                {text: "day5",value: ""},
-                {text: "day6",value: ""},
-                {text: "day7",value: ""}
-            ]},
+        readingsArr:[           
             {text: "Affected Temperature", day: [
                 {text: "day1", value: ""},
                 {text: "day2",value: ""},
@@ -273,11 +272,12 @@ export default {
         endDateFormatted: vm.formatDate(vm.addDays(new Date(), 7).toISOString().substr(0, 10)),
         initDateModal: false,
         endDateModal: false,
-        notes: ""
+        notes: "",
+        submitted: false
     }),
     async middleware({$fire, redirect}) {
         if ($fire.auth.currentUser === null) {
-            return redirect("/login")
+            return redirect("/")
         }
     },
     watch: {
@@ -290,7 +290,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports'])
+        ...mapGetters(['getReports', 'getUser'])
     },
     methods: {
         ...mapActions({
@@ -329,13 +329,15 @@ export default {
                 logType: "atmospheric-readings",
                 readingsLog: this.readingsArr,
                 lossClassification: this.lossArr,
-                notes: this.notes
+                notes: this.notes,
+                employee: this.getUser
             };
             if (this.$nuxt.isOffline)  {
                 if (!jobids.includes(this.selectedJobId)) {
                     this.addReport(post).then(() => {
                         this.submittedMessage = "Form was successfully saved"
                         this.errorMessage = ""
+                        this.submitted = true
                         setTimeout(() => {
                             this.submittedMessage = ""
                             this.errorMessage = ""
@@ -347,7 +349,16 @@ export default {
                 }
             } 
             if (this.$nuxt.isOnline) {
-                this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
+                this.addReport(post).then(() => {
+                        this.submittedMessage = "Form was successfully saved"
+                        this.errorMessage = ""
+                        this.submitted = true
+                        setTimeout(() => {
+                            this.submittedMessage = ""
+                            this.errorMessage = ""
+                        }, 5000)
+                    })
+                /* this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
                     if (res.errors) {
                         this.$refs.form.setErrors({
                             JobId: res.errors.find(obj => obj.param === 'JobId')
@@ -359,7 +370,7 @@ export default {
                     setTimeout(() => {
                         window.location = "/"
                     }, 2000)
-                })
+                }) */
             }
         }
     },

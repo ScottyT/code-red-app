@@ -199,8 +199,15 @@ router.get('/sketch-report/:formType/:JobId', (req,res) => {
         }
     })
 })
-router.get('/logs', (req, res) => {
-    Logging.find({}, (err, logs) => {
+router.get('/logs/:employeeId', (req, res) => {
+   /*  Logging.find({}, (err, logs) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(logs)
+        }
+    }) */
+    Logging.find({}).where('teamMember.id').equals(req.params.employeeId).exec((err, logs) => {
         if (err) {
             res.status(500).send('Error')
         } else {
@@ -244,6 +251,13 @@ router.post("/logs-report/new",
         return Logging.findOne({JobId: value, logType: req.body.logType}).then(log => {
             if (log) {
                 return Promise.reject('Job ID is already in use for this type of form')
+            }
+        })
+    }),
+    check('employee').custom(value => {
+        return User.findOne({id: value.id}).then(user => {
+            if (!user) {
+                return Promise.reject('You are not authorized')
             }
         })
     }),

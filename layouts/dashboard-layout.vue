@@ -126,9 +126,16 @@ export default {
           access: 'user'
         },
         {
+          icon: 'mdi-form-select',
+          title: 'Forms to finish later',
+          to: '/saved-reports',
+          access: 'user'
+        },
+        {
           icon: 'mdi-clipboard',
           title: 'Field Jacket',
-          to: '/field-jacket'
+          to: '/field-jacket',
+          access: 'admin'
         },
         {
           icon: 'mdi-folder',

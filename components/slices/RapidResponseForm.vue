@@ -708,6 +708,8 @@
     },
     mounted() {
       this.createGeocoder()
+      this.fetchReports()
+      this.checkStorage()
     },
     created() {
       this.$nuxt.$on('location-updated', (event) => {
@@ -746,7 +748,8 @@
       ...mapActions({
         addReport: 'indexDb/addReport',
         checkStorage: 'indexDb/checkStorage',
-        resetForm: 'indexDb/resetReport'
+        resetForm: 'indexDb/resetReport',
+        fetchReports: 'fetchReports'
       }),
       
       submitForm() {

@@ -7,7 +7,8 @@ export const state = () => ({
   employees: [],
   reports: [],
   creditCards:[],
-  jobids:[]
+  jobids:[],
+  logreports:[]
 })
 
 export const mutations = {
@@ -40,6 +41,19 @@ export const mutations = {
   },
   setJobIds: (state, payload) => {
     state.jobids = payload
+  },
+  setLogReports: (state, payload) => {
+    console.log(payload)
+    state.logreports = payload
+  },
+  deleteSavedRep: (state, payload) => {
+    for (var i = 0; i < state.logreports.length; i++) {
+      var obj = state.logreports[i];
+      if (payload._id === obj._id) {
+        state.logreports.splice(i, 1)
+        i--;
+      }
+    }
   }
 }
 
@@ -51,6 +65,7 @@ export const actions = {
       await dispatch('onAuthStateChangedAction', {
         authUser
       })
+      
     }
     const employees = await $axios.$get("/api/employees")
     const reports = await $axios.$get("/api/reports")
@@ -62,7 +77,7 @@ export const actions = {
       return unique
     }, [])
     commit('setEmployees', employees)
-    //commit('setReports', reports)
+    commit('setReports', reports)
     await dispatch('fetchReports')
     commit('setCreditCards', creditcards)
     commit('setUser', {
@@ -93,6 +108,13 @@ export const actions = {
       }
     }
   },
+  async fetchLogs({ commit, state }) {
+    await this.$axios.$get(`/api/logs/${state.user.id}`).then((res) => {
+      commit('setLogReports', res)
+    }).catch((err) => {
+      commit('setError', err)
+    })
+  },
   async fetchReports({ commit }) {
     await this.$axios.$get("/api/reports").then((res) => {
       commit('setReports', res)
@@ -120,9 +142,13 @@ export const actions = {
       
     })
   },
-  mappingJobIds({commit, state}) {
-    const jobids = state.reports.map((v) => { return v.JobId })
+  mappingJobIds({commit, state, dispatch}) {
+    dispatch('fetchReports')
+    const jobids = [...new Set(state.reports.map((v) => { return v.JobId }))]
     commit('setJobIds', jobids)
+  },
+  deleteSavedReport({commit}, item) {    
+    commit('deleteSavedRep', item)
   }
 }
 export const getters = {
