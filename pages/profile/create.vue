@@ -65,13 +65,13 @@ export default {
                 id: this.id,
                 role: this.role
             }
-            this.$axios.$post("/api/auth/signup", {
+            /* this.$axios.$post("/api/auth/signup", {
                 name: this.name,
                 email: this.email,
                 password: this.password
             }).then((res) => {
                 this.successMessage = `Successfully created employee ${res.displayName}`
-            })
+            }) */
             this.$axios.$post("/api/employee/new", post).then((res) => {
                 if (res.errors) {
                     this.$refs.createUser.setErrors({

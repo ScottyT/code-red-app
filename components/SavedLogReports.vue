@@ -1,7 +1,9 @@
 <template>
-    <p v-if="$fetchState.pending">Fetching content...</p>
-    <div v-else class="pdf-content" slot="pdf-content">
-        <section class="pdf-item">
+    <div class="pdf-content">
+        <p v-if="report == null">Fetching content...</p>
+        
+        <section class="pdf-item" v-else>
+            <LazyBreadcrumbs page="saved-reports" v-if="$route.name == 'saved-reports-formType-id'" />
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
             <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
@@ -45,8 +47,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                        <input type="number" class="pdf-item__table--data" :readonly="report.quantityData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.quantityData[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :readonly="shadowArr.quantityData[i].day[j].value !== '' ? true : false"
+                            v-model="report.quantityData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
@@ -54,8 +56,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
-                        <input type="checkbox" class="pdf-item__table--data" :readonly="report.checkData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.checkData[i].day[j].value" />
+                        <input type="checkbox" class="pdf-item__table--data" :readonly="shadowArr.checkData[i].day[j].value !== '' ? true : false"
+                            v-model="report.checkData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
@@ -63,8 +65,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.categoryData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.categoryData[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :readonly="shadowArr.categoryData[i].day[j].value !== '' ? true : false"
+                            v-model="report.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -82,7 +84,7 @@
                         <label>Tech ID #</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="`techids-col-${n}`">
-                        <input type="number" class="pdf-item__table--data" readonly v-model="report.teamMember.id" />
+                        <input type="number" class="pdf-item__table--data" v-model="$store.state.user.id" readonly />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.readingsLog" :key="`row-${i}`">
@@ -90,8 +92,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.readingsLog[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.readingsLog[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :readonly="shadowArr.readingsLog[i].day[j].value !== '' ? true : false"
+                            v-model="report.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                 
@@ -110,36 +112,40 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.lossClassification[i].day[j].value !== '' ? true : false" 
-                            v-model="newdata.lossClassification[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :readonly="shadowArr.lossClassification[i].day[j].value !== '' ? true : false"
+                            v-model="report.lossClassification[i].day[j].value" />
                     </div>
                 </div>
                 </span>
-            </div>           
+            </div>
         </section>
         <v-btn class="button mt-4" @click="updateReport" v-show="$route.name == 'saved-reports-formType-id'">Update</v-btn>
     </div>
 </template>
 <script>
 export default {
-    name: "LogsPdf",
-    props: ['formType', 'formName', 'reportType', 'report', 'company'],
+    name: "SavedLogReports",
+    props: ['formType', 'formName', 'report', 'shadowArr', 'reportType', 'company'],
     data() {
         return {
-            editing: false,
-            updateMessage: '',
-            newdata: {},
-            updated: false,
+            updateMessage: "",
             errorMessage: ""
         }
     },
-    async fetch() {
-        this.newdata = await this.$axios.$get(`/api/logs-report/${this.formType}/${this.report.JobId}`)
+    computed: {
+        
     },
     methods: {
         updateReport() {
-            // use indexDb for offline support here
-            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.newdata).then((res) => {
+           /*  this.$axios.$post(`/api/employee/${this.$fire.auth.currentUser.email}/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
+                if (res.errors) {
+                    this.errorMessage = res.errors
+                    return;                
+                }
+                this.updateMessage = res.errorMessage
+
+            }) */
+            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
                     return;                
@@ -149,6 +155,7 @@ export default {
                     this.updateMessage = ""
                     this.$router.push("/saved-reports")
                 }, 5000)
+
             })
         }
     }
@@ -166,13 +173,13 @@ export default {
         text-align:center;
     }
     .logs-pdf {
-        grid-template-rows:repeat(13, 23px);
+        grid-template-rows:repeat(13, 1fr);
         padding:10px;
         background-color:$color-white;
         color:$color-black;
     }
     .inventory-logs {
-        grid-template-rows:repeat(40, 23px);
+        grid-template-rows:repeat(40, 1fr);
         padding:10px;
         background-color:$color-white;
         color:$color-black;
@@ -199,7 +206,7 @@ export default {
         display:grid;
         &--rows {
             grid-template-columns:1.8fr repeat(7, 1fr);
-            grid-template-rows:23px;
+            grid-template-rows:35px;
             width:100%;
             &:not(:first-child) {
                 .pdf-item__table--cols {

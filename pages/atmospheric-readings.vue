@@ -330,7 +330,7 @@ export default {
                 readingsLog: this.readingsArr,
                 lossClassification: this.lossArr,
                 notes: this.notes,
-                employee: this.getUser
+                teamMember: this.getUser
             };
             if (this.$nuxt.isOffline)  {
                 if (!jobids.includes(this.selectedJobId)) {
@@ -349,7 +349,7 @@ export default {
                 }
             } 
             if (this.$nuxt.isOnline) {
-                this.addReport(post).then(() => {
+                /* this.addReport(post).then(() => {
                         this.submittedMessage = "Form was successfully saved"
                         this.errorMessage = ""
                         this.submitted = true
@@ -357,8 +357,8 @@ export default {
                             this.submittedMessage = ""
                             this.errorMessage = ""
                         }, 5000)
-                    })
-                /* this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
+                    }) */
+                this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
                     if (res.errors) {
                         this.$refs.form.setErrors({
                             JobId: res.errors.find(obj => obj.param === 'JobId')
@@ -370,7 +370,7 @@ export default {
                     setTimeout(() => {
                         window.location = "/"
                     }, 2000)
-                }) */
+                })
             }
         }
     },

@@ -1,14 +1,8 @@
 <template>
     <div class="autocomplete" :class="{ 'is-focused': inputFocused === true }">
         <label class="autocomplete__placeholder" for="searchbox">{{placeholderText}}</label>
-        <input id="searchbox" class="autocomplete__input" ref="searchText" @click="focusInput" type="text" v-model="search" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"/>
-        <ul class="autocomplete__results" v-show="isOpen">
-            <li class="autocomplete__result" v-for="(result, i) in results" :key="i" @click="setResult(result)" :class="{ 'is-active': i === arrowCounter }">
-                <nuxt-link v-if="isLink" :to="`/reports/${result.ReportType}/${result.JobId}`">
-                    {{result.JobId}}
-                </nuxt-link>
-            </li>
-        </ul>
+        <input class="autocomplete__input" :class="theme === 'light' ? 'autocomplete__input--light' : 'autocomplete__input--dark'" 
+            ref="searchText" @change="sendReportsToParent" placeholder="Search..." type="text" v-model="search" />      
     </div>
 </template>
 <script>
@@ -17,17 +11,15 @@ export default {
     props: {
         items: {
             type: Array,
-            required: false,
-            default: () => [],
-        },
-        isLink: {
-            type: Boolean,
-            required: false,
-            default: true
+            required: true
         },
         placeholderText: {
             type: String,
             required: false
+        },
+        theme: {
+            type: String,
+            default: 'dark'
         }
     },
     data() {
@@ -41,58 +33,23 @@ export default {
         }
     },
     computed: {
-        /* filteredItems() {
+        filteredItems() {
            
            return this.items.filter((x) => {
-               return x.JobId.indexOf(this.search) !== -1
+               return x.JobId.indexOf(this.search) >= 0;
            })
-        } */
-    },
-    watch: {
-        search(val) {
-            this.results = []
-            this.items.forEach(element => {
-                if (element.JobId.includes(val) && val != "") {
-                    this.results.push(element)
-                }
-            })
         }
     },
+    /* watch: {
+        search(val) {           
+            this.items.filter((item) => {
+                return item.JobId.indexOf(this.search) >= 0
+            })
+        }
+    }, */
     methods: {
-        focusInput() {
-            //this.$refs.searchText.focus();
-            this.inputFocused = true
-            //this.results = this.filteredItems
-            this.isOpen = true;
-        },
-        handleClickOutside(evt) {
-            if (!this.$el.contains(evt.target)) {
-                this.isOpen = false;
-                this.arrowCounter = -1
-                this.inputFocused = true
-            }
-        },
-        onArrowDown(e) {
-            e.preventDefault()
-            if (this.arrowCounter < this.results.length) {
-                this.arrowCounter = this.arrowCounter + 1
-            }
-        },
-        onArrowUp(e) {
-            e.preventDefault()
-            if (this.arrowCounter > 0) {
-                this.arrowCounter = this.arrowCounter - 1
-            }
-        },
-        onEnter() {
-            this.search = this.results[this.arrowCounter]
-            this.isOpen = false
-            this.arrowCounter = -1
-        },
-        setResult(result) {
-            this.search = result
-            this.isOpen = false
-            this.$emit('clicked', result)
+        sendReportsToParent() {
+            this.$emit('sendReportsToParent', this.filteredItems)
         }
     },
     mounted() {
@@ -112,6 +69,7 @@ export default {
     text-align:left;
     position:relative;
     height:35px;
+    margin-bottom:20px;
 
     &:before {
         position:absolute;
@@ -166,6 +124,7 @@ export default {
             width:100%;
             height:100%;
             display:flex;
+            flex-direction:column;
             padding:8px 0px;
         }
         &:before {
@@ -187,14 +146,22 @@ export default {
         &.is-active:before {
             opacity:.1;
         }
+        &--subtitle {
+            font-size:.9em;
+            color:rgba($color-white, .6);
+        }
     }
     &__input {
         width:100%;
         padding:5px 0;
         position:absolute;
         left:0;
+        color:white;
         &:focus {
             outline:none;
+        }
+        &--light {
+            color:black;
         }
     }
     &__placeholder {

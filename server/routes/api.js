@@ -30,15 +30,20 @@ router.post("/employee/new",
     check('role').not().isEmpty().withMessage('Role is required'),
 async (req, res) => {
     const result = validationResult(req);
-    const employee = new User({
+    /* const employee = new User({
         email: req.body.email,
         id: req.body.id,
         name: req.body.name,
-        role: req.body.role
+        role: req.body.role,
+    }); */
+    const employee = new User(req.body)
+    const reports = new Logging({
+        JobId: "2222"
     });
     if (!result.isEmpty()) {
         return res.json(result)
     }
+    employee.savedreports.push(reports)
     await employee.save().then(() => {
         res.json({message: "Created new employee"})
     }).catch((err) => {
@@ -127,7 +132,7 @@ router.get('/employees', (req, res) => {
     })
 })
 router.get('/employee/:email', (req, res) => {
-    User.findOne({email: req.params.email}, (err, employee) => {
+    User.findOne({email: req.params.email}).populate('savedreports').exec((err, employee) => {
         if (err) {
             res.status(500).send('Error')
         } else if (employee) {
@@ -137,6 +142,8 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
+router.post("/employee/:email/:formType/:JobId/update", updateLogs)
+//router.delete("/employee:email/:formType/:JobId/delete", )
 router.get('/certificates', (req, res) => {
     COC.find({}, (err, coc) => {
         if (err) {
@@ -200,13 +207,6 @@ router.get('/sketch-report/:formType/:JobId', (req,res) => {
     })
 })
 router.get('/logs/:employeeId', (req, res) => {
-   /*  Logging.find({}, (err, logs) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(logs)
-        }
-    }) */
     Logging.find({}).where('teamMember.id').equals(req.params.employeeId).exec((err, logs) => {
         if (err) {
             res.status(500).send('Error')
@@ -254,7 +254,7 @@ router.post("/logs-report/new",
             }
         })
     }),
-    check('employee').custom(value => {
+    check('teamMember').custom(value => {
         return User.findOne({id: value.id}).then(user => {
             if (!user) {
                 return Promise.reject('You are not authorized')

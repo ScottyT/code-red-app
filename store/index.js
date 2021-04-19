@@ -8,7 +8,8 @@ export const state = () => ({
   reports: [],
   creditCards:[],
   jobids:[],
-  logreports:[]
+  logreports:[],
+  clonelogs: []
 })
 
 export const mutations = {
@@ -43,14 +44,16 @@ export const mutations = {
     state.jobids = payload
   },
   setLogReports: (state, payload) => {
-    console.log(payload)
     state.logreports = payload
   },
+  setCloneLogs: (state, payload) => {
+    state.clonelogs = payload
+  },
   deleteSavedRep: (state, payload) => {
-    for (var i = 0; i < state.logreports.length; i++) {
-      var obj = state.logreports[i];
+    for (var i = 0; i < state.clonelogs.length; i++) {
+      var obj = state.clonelogs[i];
       if (payload._id === obj._id) {
-        state.logreports.splice(i, 1)
+        state.clonelogs.splice(i, 1)
         i--;
       }
     }
@@ -110,6 +113,7 @@ export const actions = {
   },
   async fetchLogs({ commit, state }) {
     await this.$axios.$get(`/api/logs/${state.user.id}`).then((res) => {
+      let copyArr = JSON.parse(JSON.stringify(res));
       commit('setLogReports', res)
     }).catch((err) => {
       commit('setError', err)

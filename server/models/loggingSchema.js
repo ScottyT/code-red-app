@@ -20,6 +20,10 @@ const logging = mongoose.Schema({
     teamMember: {
         type: Object,
         required: true
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Employee'
     }
 });
 logging.plugin(timestamps);

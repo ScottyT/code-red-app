@@ -61,7 +61,7 @@
                             <div>Tech ID #</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, i) in techIdArr[0].day" :key="`techid-${i}`">
-                            <input class="form__input" type="text" v-model="item.value" />
+                            <input class="form__input" type="text" readonly v-model="getUser.id" />
                         </div>
                     </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in unitQuantityArr" :key="`unit-${i}`">
@@ -506,7 +506,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports'])
+        ...mapGetters(['getReports', 'getUser'])
     },
     methods: {
         ...mapActions({
@@ -556,7 +556,8 @@ export default {
                 techIds: this.techIdArr,
                 quantityData: numberInputs,
                 checkData: checkboxInputs,
-                categoryData: this.catArr
+                categoryData: this.catArr,
+                teamMember: this.getUser
             };
             
             if (this.$nuxt.isOffline) {
