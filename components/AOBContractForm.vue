@@ -1157,7 +1157,7 @@ import {mapGetters, mapActions} from 'vuex'
     },
     mounted() {
         this.checkStorage()
-        this.mappingJobIds()
+        //this.mappingJobIds()
     }
   }
 </script>

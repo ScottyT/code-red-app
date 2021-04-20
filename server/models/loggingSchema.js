@@ -12,7 +12,6 @@ const logging = mongoose.Schema({
     endDate: String,
     readingsLog: Array,
     lossClassification: Array,
-    techIds: Array,
     quantityData: Array,
     checkData: Array,
     categoryData: Array,

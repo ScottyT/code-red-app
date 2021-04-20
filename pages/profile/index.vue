@@ -43,23 +43,24 @@
       </ul>
       <ul class="profile__group">
         <h3>AOB Mitigation Contract</h3>
-        <li v-for="(report, i) in aobReports" :key="`coc-${i}`">
+        <li v-for="(report, i) in aobReports" :key="`aob-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Sketch Reports</h3>
-        <li v-for="(report, i) in sketchReports" :key="`coc-${i}`">
+        <li v-for="(report, i) in sketchReports" :key="`sketch-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Logs</h3>
-        <li v-for="(report, i) in logReports" :key="`coc-${i}`">
-          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+        <li v-for="(report, i) in logReports" :key="`logs-${i}`">
+          <nuxt-link :to="`/profile/${report.logType}/${report.JobId}`">
+            <p>{{report.JobId}}</p>
+          </nuxt-link>
         </li>
       </ul>
     </div>
@@ -163,8 +164,7 @@
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
-        deleteReport: 'indexDb/deleteReport',
-        fetchReports: 'fetchReports'
+        deleteReport: 'indexDb/deleteReport'
       }),
       async submitForm(post, index) {
          try {           
@@ -257,6 +257,7 @@
     grid-column:1/4;
   }
   &__group {
+    margin-bottom:10px;
     li {
       padding-bottom:10px;
     }

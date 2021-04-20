@@ -68,20 +68,14 @@ export const actions = {
       await dispatch('onAuthStateChangedAction', {
         authUser
       })
-      
     }
     const employees = await $axios.$get("/api/employees")
-    const reports = await $axios.$get("/api/reports")
+    
     const creditcards = await $axios.$get("/api/credit-cards")
-    let newArr = reports.reduce((unique, o) => {
-      if (!unique.some(obj => obj.JobId === o.JobId && obj.ReportType === o.ReportType)) {
-        unique.push(o)
-      }
-      return unique
-    }, [])
+    
     commit('setEmployees', employees)
-    commit('setReports', reports)
-    await dispatch('fetchReports')
+    
+    
     commit('setCreditCards', creditcards)
     commit('setUser', {
       email: null,
@@ -105,7 +99,7 @@ export const actions = {
             role: res.data.role,
             name: res.data.name
           })
-        })       
+        })
       } catch (e) {
         console.error(e)
       }
@@ -119,16 +113,30 @@ export const actions = {
       commit('setError', err)
     })
   },
-  async fetchReports({ commit }) {
-    await this.$axios.$get("/api/reports").then((res) => {
-      commit('setReports', res)
-    }).catch((err) => {
-      commit('setError', err)
-    })
+  async fetchReports({ commit, dispatch }, authUser) {
+    if (authUser) {
+      await authUser.getIdToken(true).then((idToken) => {
+        this.$axios.$get("/api/reports").then((res) => {
+          commit('setReports', res)
+          dispatch('mappingJobIds')
+        })
+      }).catch((err) => {
+        commit('setError', err)
+      })
+      /* await axios.get("https://code-red-lm5dxmp3ka-uc.a.run.app/api/reports", {
+        headers: {
+          'Authorization': `token ${authUser.getIdToken}`
+        }
+      }).then((res) => {
+        commit('setReports', res)
+      }).catch((err) => {
+        commit('setError', err)
+      }) */
+    }
   },
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
-      this.$router.push("/login")
+      this.$router.go()
       commit('setUser', {
         email: null,
         id: null,
@@ -146,8 +154,7 @@ export const actions = {
       
     })
   },
-  mappingJobIds({commit, state, dispatch}) {
-    dispatch('fetchReports')
+  mappingJobIds({commit, state}) {
     const jobids = [...new Set(state.reports.map((v) => { return v.JobId }))]
     commit('setJobIds', jobids)
   },

@@ -83,7 +83,7 @@ export default {
     watch: {
         isOnline(val) {
             if (val) {
-                this.fetchReports()
+                this.fetchReports(this.$fire.auth.currentUser)
             }
         }
     },

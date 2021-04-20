@@ -1,5 +1,6 @@
 <template>
-    <div class="form-wrapper">
+    <LazyLoginForm v-if="!$fire.auth.currentUser" />
+    <div class="form-wrapper" v-else>
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
@@ -491,6 +492,11 @@ export default {
             ]}
         ]
     }),
+    head() {
+        return {
+            title: "Unit Quantity and Equipment Inventory"
+        }
+    },
     async middleware({$fire, redirect}) {
         if ($fire.auth.currentUser === null) {
             return redirect("/")
@@ -553,7 +559,6 @@ export default {
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
                 logType: "quantity-inventory-logs",
-                techIds: this.techIdArr,
                 quantityData: numberInputs,
                 checkData: checkboxInputs,
                 categoryData: this.catArr,

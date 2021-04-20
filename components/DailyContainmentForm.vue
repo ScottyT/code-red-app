@@ -378,13 +378,12 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
-      this.mappingJobIds()
+     // this.mappingJobIds()
     },
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage',
-        mappingJobIds: 'mappingJobIds'
+        checkStorage: 'indexDb/checkStorage'
       }),
       formatDate(dateReturned) {
         if (!dateReturned) return null

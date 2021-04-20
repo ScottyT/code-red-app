@@ -65,7 +65,7 @@
   </v-app>
 </template>
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 export default {
   data() {
     return {
@@ -161,22 +161,19 @@ export default {
    // ...mapGetters(['getReports']),
   },
   methods: {
+    ...mapActions({
+      fetchReports: 'fetchReports',
+      fetchLogs: 'fetchLogs'
+    }),
     async signOut() {
       this.$store.dispatch("signout")
     }
   },
-  created() {
-    /* auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.user = user
-        this.$store.dispatch("fetchUser", user.email)
-        this.$store.dispatch("fetchEmployees")
-        
-      } else {
-        auth.signOut()
-        this.$router.push('/login')
-      }
-    }) */
+  mounted() {
+    this.$nextTick(() => {
+      this.fetchReports(this.$fire.auth.currentUser)
+      this.fetchLogs()
+    })
   }
 }
 </script>

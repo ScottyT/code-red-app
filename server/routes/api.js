@@ -222,7 +222,7 @@ router.get('/logs-report/:formType/:JobId', (req, res) => {
         } else if (log) {
             res.status(200).json(log)
         } else {
-            res.status(404).send('Item not found')
+            res.status(200).json({error: "Item not found"})
         }
     })
 })

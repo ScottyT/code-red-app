@@ -1,15 +1,13 @@
 <template>
-    <div>
-        <!-- <span v-show="!authUser"><LazyLoginForm /></span> -->
-        <div class="sketch-forms pa-6">
-            <h1>Sketch Forms</h1>
-            <ul class="menu-items">
-                <li v-for="form in sketchForms" :key="form.value">
-                    <nuxt-link :to="`/sketches/${form.value}`">{{form.text}}</nuxt-link>
-                </li>
-            </ul>
-        </div>
-    </div>
+  <LazyLoginForm v-if="!$fire.auth.currentUser" />
+  <div class="sketch-forms pa-6" v-else>
+    <h1>Sketch Forms</h1>
+    <ul class="menu-items">
+      <li v-for="form in sketchForms" :key="form.value">
+        <nuxt-link :to="`/sketches/${form.value}`">{{form.text}}</nuxt-link>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 import {mapGetters} from 'vuex';
@@ -34,16 +32,6 @@ export default {
         ...mapGetters({
             isLoggedIn: 'isLoggedIn'
         })
-    },
-    async middleware({store, redirect}) {
-        if (store.state.user.email == null) {
-            return redirect("/")
-        }
-    },
-    /* mounted() {
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser ? true : false
-        })
-    } */
+    }
 }
 </script>

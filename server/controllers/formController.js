@@ -35,7 +35,6 @@ const createLogs = async (req, res) => {
         formType: req.body.logType,
         readingsLog: req.body.readingsLog,
         lossClassification: req.body.lossClassification,
-        techIds: req.body.techIds,
         quantityData: req.body.quantityData,
         checkData: req.body.checkData,
         categoryData: req.body.categoryData,
@@ -43,7 +42,7 @@ const createLogs = async (req, res) => {
         teamMember: req.body.teamMember
     });
     //const logs = new Logging(req.body)
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).populate('user').exec()
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.logType}).populate('user').exec()
     
     if (!errors.isEmpty() || logsReport !== null) {
         return res.json(errors)
@@ -59,8 +58,7 @@ const createLogs = async (req, res) => {
     await employee.save()
 }
 const updateLogs = async (req, res) => {
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
-    logsReport.techIds = req.body.techIds
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.logType}).exec()
     logsReport.readingsLog = req.body.readingsLog
     logsReport.lossClassification = req.body.lossClassification
     logsReport.quantityData = req.body.quantityData

@@ -734,7 +734,6 @@ export default {
         })
         this.createGeocoder();
         this.checkStorage();
-        this.mappingJobIds();
         
     },
     beforeDestroy() {

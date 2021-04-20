@@ -160,13 +160,21 @@ export default {
           },
         },
         {
-          urlPattern: "https://code-red-app.web.app",
+          urlPattern: "https://code-red-app.web.app/*",
           handler: 'networkFirst',
           method: 'GET',
           strategyOptions: {
             cacheableResponse: { statuses: [0, 200] }
           },
 
+        },
+        {
+          urlPatter: "http://localhost:3000/*",
+          handler: 'networkFirst',
+          method: 'GET',
+          strategyOptions: {
+            cacheableResponse: { statuses: [0, 200] }
+          }
         },
         {
           urlPattern:

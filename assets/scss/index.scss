@@ -84,6 +84,11 @@ a {
 }
 
 .modal {
+  &__content {
+    padding:5px;
+    background-color:$color-white;
+    color:$color-black;
+  }
   &__footer {
     display: flex;
     background-color: #a7a7a7;

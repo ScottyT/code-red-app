@@ -1,5 +1,6 @@
 <template>
-    <div class="form-wrapper">
+    <LazyLoginForm v-if="!authUser" />
+    <div class="form-wrapper" v-else>
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">ATMOSPHERIC READINGS</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
@@ -273,13 +274,19 @@ export default {
         initDateModal: false,
         endDateModal: false,
         notes: "",
-        submitted: false
+        submitted: false,
+        authUser: false
     }),
-    async middleware({$fire, redirect}) {
+    head() {
+        return {
+            title: "Atmospheric Readings"
+        }
+    },
+    /* async middleware({$fire, redirect}) {
         if ($fire.auth.currentUser === null) {
             return redirect("/")
         }
-    },
+    }, */
     watch: {
         initDate(val) {
             this.initDateFormatted = this.formatDate(val)
@@ -375,8 +382,11 @@ export default {
         }
     },
     mounted() {
-        this.checkStorage()
-        this.mappingJobIds()
+        //this.checkStorage()
+        //this.mappingJobIds()
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser ? true : false
+        })
     }
 }
 </script>

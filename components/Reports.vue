@@ -3,9 +3,10 @@
     <LazyAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
       <div class="reports-wrapper__data block-group__col" v-for="(item, i) in fetchreports" :key="`item-${i}`">
-        <nuxt-link :to="`/saved-reports/${item.formType}/${item.JobId}`">
+        <nuxt-link :to="`/field-jacket/${routeSwitching(item)}/${item.JobId}`">
           <p>{{item.JobId}}</p>
-          <p>{{item.formType}}</p>
+          <p v-show="item.formType !== ''">{{item.formType}}</p>
+          <p v-show="item.CaseFileType !== ''">{{item.CaseFileType}}</p>
           <p>{{item.ReportType}}</p>
         </nuxt-link>
       </div>
@@ -22,10 +23,30 @@ export default {
             fetchreports: []
         }
     },
+    computed: {
+      
+    },
     methods: {
-        reportsFetched(reports) {
-            this.fetchreports = reports
+      routeSwitching(item) {
+        var route = ""
+        switch (item.ReportType) {
+          case "case-file":
+            route = "case-file-" + item.CaseFileType
+            break;
+          case "logs-report":
+            route = "logs-report/"+item.formType
+            break;
+          case "sketch-report":
+            route = "sketch-report/"+item.formType
+            break;
+          default:
+            route = item.ReportType
         }
+        return route
+      },
+      reportsFetched(reports) {
+        this.fetchreports = reports
+      }
     },
     created() {
         this.fetchreports = this.reports

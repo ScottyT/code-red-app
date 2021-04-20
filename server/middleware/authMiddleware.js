@@ -1,33 +1,31 @@
 const admin = require('../firebase-service');
 
 const getAuthToken = (req, res, next) => {
-      if (req.body.token) {
-        req.authToken = req.body.token;
+      if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        req.authToken = req.headers.authorization.split(' ')[1];
       } else {
-        req.authToken = null;
+        req.authToken = null
       }
       next();
 };
 
 const checkIfAuthenticated = (req, res, next) => {
   
-    /* getAuthToken(req, res, async () => {
+    getAuthToken(req, res, async () => {
        try {
          const { authToken } = req;
-         await admin
+          console.log(authToken)
+         const userInfo = await admin
            .auth()
-           .verifyIdToken(authToken).then((decodedToken) => {
-             console.log(decodedToken)
-             res.setHeader('authorization', `Bearer ${decodedToken.uid}`)
-             res.send({status: 'Ok'})
-           })
+           .verifyIdToken(authToken);
+          req.authId = userInfo.uid
          return next();
        } catch (e) {
          return res
            .status(401)
            .send({ error: 'You are not authorized to make this request' });
        }
-    }); */
+    });
 };
 
 module.exports = { getAuthToken, checkIfAuthenticated }

@@ -169,6 +169,16 @@ export default {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
     ...mapGetters(["getUser", "isLoggedIn"]),
+    isOnline() {
+      return this.$nuxt.isOnline
+    }
+  },
+  watch: {
+    isOnline(val) {
+      if (val) {
+        this.fetchReports(this.$fire.auth.currentUser)
+      }
+    }
   },
   methods: {
     ...mapActions({
@@ -181,7 +191,7 @@ export default {
   },
   mounted() {   
     this.$nextTick(() => {
-      this.fetchReports()
+      this.fetchReports(this.$fire.auth.currentUser)
       this.fetchLogs()
     })
   }

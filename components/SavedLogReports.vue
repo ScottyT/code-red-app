@@ -1,12 +1,21 @@
 <template>
     <div class="pdf-content">
+        <v-dialog class="modal" v-model="alertDialog" width="500">
+            <div class="modal__content">
+                <p>You are about to fully submit this report. Doing this will delete it from the saved reports area. Are you sure you want to continue?</p>
+            </div>
+            <div class="modal__footer">
+                <v-btn class="button--normal" text @click="alertDialog = false">Yes, continue</v-btn>
+                <v-btn class="button--normal" text @click="alertDialog = false">No</v-btn>
+            </div>
+        </v-dialog>
         <p v-if="report == null">Fetching content...</p>
         
         <section class="pdf-item" v-else>
-            <LazyBreadcrumbs page="saved-reports" v-if="$route.name == 'saved-reports-formType-id'" />
+            <LazyBreadcrumbs page="saved-reports" />
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
-            <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
+            
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
                     <label>Job ID: </label>
@@ -96,8 +105,7 @@
                             v-model="report.readingsLog[i].day[j].value" />
                     </div>
                 </div>
-                
-                <span v-if="report.formType === 'atmospheric-readings'" class="loss-classification">
+                              
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Loss Classification</div>
@@ -116,35 +124,69 @@
                             v-model="report.lossClassification[i].day[j].value" />
                     </div>
                 </div>
-                </span>
             </div>
         </section>
-        <v-btn class="button mt-4" @click="updateReport" v-show="$route.name == 'saved-reports-formType-id'">Update</v-btn>
+        <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
+        <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
+        
+        <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline && currentDate === report.endDate">Submit</v-btn>
+        <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
+        <h2 v-show="errorMessage !== ''">{{errorMessage}}</h2>
     </div>
 </template>
 <script>
+import {mapActions, mapGetters} from 'vuex'
 export default {
     name: "SavedLogReports",
     props: ['formType', 'formName', 'report', 'shadowArr', 'reportType', 'company'],
     data() {
         return {
             updateMessage: "",
-            errorMessage: ""
+            errorMessage: "",
+            savedreport: {},
+            alertDialog: false,
+            newreport: false
         }
     },
     computed: {
-        
+        ...mapGetters({
+            savedReports: 'indexDb/getSavedReports',
+            getReports: 'getReports'
+        }),
+        /* savedreport() {
+            var logReports = this.getReports.filter((v) => {
+                return v.ReportType === 'logs-report'
+            })
+            return logReports.filter((v) => {
+                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+            })
+        }, */
+        currentDate() {
+            var date = new Date().toISOString().substr(0, 10)
+            return this.formatDate(date)
+        },
+        isOnline() {
+            return this.$nuxt.isOnline
+        }
+    },
+    async fetch() {
+        this.$axios.$get(`/api/logs-report/${this.$route.params.formType}/${this.$route.params.id}`).then((res) => {
+            if (res.error) {
+                this.newreport = true
+                return
+            }
+            this.savedreport = res
+            this.newreport = false
+        })
     },
     methods: {
-        updateReport() {
-           /*  this.$axios.$post(`/api/employee/${this.$fire.auth.currentUser.email}/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
-                if (res.errors) {
-                    this.errorMessage = res.errors
-                    return;                
-                }
-                this.updateMessage = res.errorMessage
-
-            }) */
+        ...mapActions({
+            addReport: 'indexDb/addReport',
+            deleteRep: 'indexDb/deleteReport',
+            checkStorage: 'indexDb/checkStorage'
+        }),
+        submitReport() {
+            this.alertDialog = !this.alertDialog
             this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
@@ -153,11 +195,50 @@ export default {
                 this.updateMessage = res.message
                 setTimeout(() => {
                     this.updateMessage = ""
+                    this.deleteRep(this.report)
                     this.$router.push("/saved-reports")
                 }, 5000)
-
-            })
+            })          
+        },
+        updateReport() {
+            try {
+                this.addReport(this.report).then(() => {
+                    if (this.$nuxt.isOnline && this.newreport) {
+                        this.$axios.$post(`/api/logs-report/new`, this.report).then((res) => {
+                            if (res.errors) {
+                                this.errorMessage = res.errors
+                                return;                
+                            }
+                            this.updateMessage = res.message
+                        })
+                    } else {
+                        this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
+                            if (res.errors) {
+                                this.errorMessage = res.errors
+                                return;                
+                            }
+                            this.updateMessage = res.message
+                        })
+                    }
+                    this.updateMessage = "Form was updated successfully"           
+                    setTimeout(() => {
+                        this.$router.go(-1)
+                        this.updateMessage = ""
+                    }, 2000)
+                })
+                
+            } catch (e) {
+                this.errorMessage = e
+            }
+        },
+        formatDate(dateReturned) {
+            if (!dateReturned) return null
+            const [year, month, day] = dateReturned.split('-')
+            return `${month}/${day}/${year}`
         }
+    },
+    mounted() {
+        this.checkStorage()
     }
 }
 </script>
@@ -173,7 +254,7 @@ export default {
         text-align:center;
     }
     .logs-pdf {
-        grid-template-rows:repeat(13, 1fr);
+        grid-template-rows:repeat(18, 1fr);
         padding:10px;
         background-color:$color-white;
         color:$color-black;
