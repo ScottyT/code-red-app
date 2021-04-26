@@ -1,6 +1,9 @@
 <template>
-    <div class="pa-6 report-details-wrapper">
-        <LazySavedLogReports :formType="formType" :formName="formName" :report="reports[0]" :shadowArr="clonedreports[0]"  />
+    <div class="pa-6 report-details-wrapper" v-if="$nuxt.isOnline">
+        <LazySavedLogReports company="Water Emergency Services Incorporated" :report="logreport" />
+    </div>
+    <div class="pa-6 report-details-wrapper" v-else>
+        <LazySavedLogReports company="Water Emergency Services Incorporated" :report="report" />
     </div>
 </template>
 <script>
@@ -10,6 +13,7 @@ export default {
         try {
             var formName = ""
             let formType = params.formType;
+            let logreports = await $axios.$get(`/api/logs-report/${formType}/${params.id}`);
             switch (formType) {
                 case "atmospheric-readings":
                     formName = "Atmospheric Readings"
@@ -22,7 +26,8 @@ export default {
             }
             return {
                 formName,
-                formType
+                formType,
+                logreport: logreports
             }
         } catch(e) {
             console.error(e)
@@ -31,33 +36,38 @@ export default {
     data() {
         return {
             reports: [],
-            clonedreports: []
+            clonedreports: [],
+            report: {},
+            logreport: {}
         }
     },
     computed: {
         ...mapGetters({
-            getSavedReports: 'indexDb/getSavedReports'
+            getSavedReports: 'indexDb/getSavedReports',
         }),
-        savedReport() {
-            return this.getSavedReports.filter((v) => {
-                return v.logType === this.$route.params.formType && v.JobId === this.$route.params.id
-            })
-        },
-        clonedReport() {
-            return JSON.parse(JSON.stringify(this.savedReport))
+        isOnline() {
+            return this.$nuxt.isOnline
         }
     },
     methods: {
         ...mapActions({
             checkStorage: 'indexDb/checkStorage'
-        })
+        }),
+        offlinereport() {
+            var saved = this.getSavedReports.find((v) => {
+                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+            })
+            this.report = saved
+        }
     },
     mounted() {
         this.checkStorage()
+        this.offlinereport()
     },
-    created() {
+    /* created() {
+        
         this.reports = this.getSavedReports
         this.clonedreports = JSON.parse(JSON.stringify(this.getSavedReports))
-    }
+    } */
 }
 </script>

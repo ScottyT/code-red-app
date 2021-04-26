@@ -73,7 +73,7 @@ export const actions = {
             keyname = newReport.formType
         }
         if (newReport.ReportType === 'logs-report') {
-            keyname = newReport.logType
+            keyname = newReport.formType
         }
         newReport.key = keyname + newReport.JobId
         await set(keyname + newReport.JobId, newReport).then(() => commit('addRep', newReport))

@@ -38,9 +38,9 @@ export default {
         }
     },
     methods: {
-        ...mapActions({
+        /* ...mapActions({
             fetchLogs: 'fetchLogs'
-        })
+        }) */
     },
     mounted() {
         

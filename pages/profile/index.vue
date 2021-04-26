@@ -55,13 +55,16 @@
             @click="submitForm(report, i)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group">
+      <ul class="profile__group block-group">
         <h3>Logs</h3>
-        <li v-for="(report, i) in logReports" :key="`logs-${i}`">
-          <nuxt-link :to="`/profile/${report.logType}/${report.JobId}`">
-            <p>{{report.JobId}}</p>
-          </nuxt-link>
-        </li>
+        <div class="block-group--grid">
+          <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col">
+            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`">
+              <p>{{report.JobId}}</p>
+              <p>{{report.formType}}</p>
+            </nuxt-link>
+          </li>
+        </div>       
       </ul>
     </div>
   </div>
@@ -129,15 +132,31 @@
         })
       },
       logReports() {
-        return this.getSavedReports.filter((v) => {
+       
+        var savedLogs = this.getSavedReports.filter((v) => {
           return v.ReportType == 'logs-report'
         })
+        return savedLogs.concat(this.$store.state.logreports)
+      },
+      isOnline() {
+        return this.$nuxt.isOnline
+      }
+    },
+    watch: {
+      isOnline(val) {
+        if (val) {
+          this.fetchLogs(this.$fire.auth.currentUser)
+        } else {
+          this.checkStorage()
+        }
       }
     },
     mounted() {
       this.checkStorage()
+      //this.fetchLogs(this.$fire.auth.currentUser)
       this.$nextTick(() => {
         this.authUser = this.$fire.auth.currentUser ? true : false
+        
       })
     },
     async asyncData({
@@ -164,11 +183,16 @@
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
-        deleteReport: 'indexDb/deleteReport'
+        deleteReport: 'indexDb/deleteReport',
+        fetchLogs: 'fetchLogs'
       }),
       async submitForm(post, index) {
          try {           
           this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
+            if (res.errors) {
+              this.message = "Something went wrong"
+              return;
+            }
             if (post.ReportType == 'rapid-response') {
               Object.keys(post).forEach(k => {
                 if (k == "photoId") {                 

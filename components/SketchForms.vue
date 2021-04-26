@@ -1,4 +1,5 @@
 <template>
+    <span><LazyBreadcrumbs page="Sketches" />
     <div class="form-wrapper">
         <h1>{{formname}}</h1>
         <h2>{{submittedMessage}}</h2>
@@ -33,6 +34,7 @@
             </form>
         </ValidationObserver>
     </div>
+    </span>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'

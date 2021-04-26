@@ -18,7 +18,8 @@ router.use(express.urlencoded({extended: true}));
 router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
-    check('name').not().isEmpty().withMessage("Name is required"),
+    check('fname').not().isEmpty().withMessage("First name is required"),
+    check('lname').not().isEmpty().withMessage("Last name is required"),
     check('id').not().isEmpty().withMessage("ID is required")
     .custom(value => {
         return User.findOne({id: value}).then(user => {

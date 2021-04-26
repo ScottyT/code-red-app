@@ -68,7 +68,7 @@
         </ul>
       </div>
     </div>
-    <!-- <div class="report-details__section--pictures">
+    <div class="report-details__section--pictures">
       <h2>Photographs</h2>
 
       <span v-show="pictures.length > 0">
@@ -79,7 +79,7 @@
           </a>
         </div>
       </span>
-    </div> -->
+    </div>
     <div class="report-details__section">
       <div class="report-details__data">
         <h2>Insurance Company:</h2>

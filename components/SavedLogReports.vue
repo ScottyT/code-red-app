@@ -9,12 +9,12 @@
                 <v-btn class="button--normal" text @click="alertDialog = false">No</v-btn>
             </div>
         </v-dialog>
-        <p v-if="report == null">Fetching content...</p>
+        <p v-if="$fetchState.pending">Fetching content...</p>
         
         <section class="pdf-item" v-else>
             <LazyBreadcrumbs page="saved-reports" />
             <h1 class="text-center">{{company}}</h1>
-            <h2 class="text-center">{{formName}}</h2>
+            <!-- <h2 class="text-center">{{formName}}</h2> -->
             
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
@@ -56,8 +56,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                        <input type="number" class="pdf-item__table--data" :readonly="shadowArr.quantityData[i].day[j].value !== '' ? true : false"
-                            v-model="report.quantityData[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data"
+                            v-model="savedreport.quantityData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
@@ -65,8 +65,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
-                        <input type="checkbox" class="pdf-item__table--data" :readonly="shadowArr.checkData[i].day[j].value !== '' ? true : false"
-                            v-model="report.checkData[i].day[j].value" />
+                        <input type="checkbox" class="pdf-item__table--data" 
+                            v-model="savedreport.checkData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
@@ -74,8 +74,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="shadowArr.categoryData[i].day[j].value !== '' ? true : false"
-                            v-model="report.categoryData[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" 
+                            v-model="savedreport.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -101,8 +101,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="shadowArr.readingsLog[i].day[j].value !== '' ? true : false"
-                            v-model="report.readingsLog[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" 
+                            v-model="savedreport.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                               
@@ -120,8 +120,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <input type="number" class="pdf-item__table--data" :readonly="shadowArr.lossClassification[i].day[j].value !== '' ? true : false"
-                            v-model="report.lossClassification[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data"
+                            v-model="savedreport.lossClassification[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -129,7 +129,7 @@
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
         
-        <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline && currentDate === report.endDate">Submit</v-btn>
+        <v-btn class="button mt-4" @click="submitReport" >Submit</v-btn>
         <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
         <h2 v-show="errorMessage !== ''">{{errorMessage}}</h2>
     </div>
@@ -138,21 +138,25 @@
 import {mapActions, mapGetters} from 'vuex'
 export default {
     name: "SavedLogReports",
-    props: ['formType', 'formName', 'report', 'shadowArr', 'reportType', 'company'],
+    props: ['report', 'reportType', 'company'],
     data() {
         return {
             updateMessage: "",
             errorMessage: "",
             savedreport: {},
             alertDialog: false,
-            newreport: false
+            newreport: false,
+            //rep: {}
         }
     },
     computed: {
         ...mapGetters({
             savedReports: 'indexDb/getSavedReports',
-            getReports: 'getReports'
+            getReports: 'getReports',
         }),
+        showSubmit() {
+            return this.$nuxt.isOnline && this.currentDate === this.savedreport.endDate
+        },
         /* savedreport() {
             var logReports = this.getReports.filter((v) => {
                 return v.ReportType === 'logs-report'
@@ -170,13 +174,20 @@ export default {
         }
     },
     async fetch() {
-        this.$axios.$get(`/api/logs-report/${this.$route.params.formType}/${this.$route.params.id}`).then((res) => {
+        await this.$axios.$get(`/api/logs-report/${this.$route.params.formType}/${this.$route.params.id}`).then((res) => {
             if (res.error) {
                 this.newreport = true
+                this.savedreport = this.savedReports.find((v) => {
+                    return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+                })
                 return
             }
             this.savedreport = res
             this.newreport = false
+        }).catch((err) => {
+            this.savedreport = this.savedReports.find((v) => {
+                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+            })
         })
     },
     methods: {

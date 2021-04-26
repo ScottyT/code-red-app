@@ -333,7 +333,7 @@ export default {
                 ReportType: "logs-report",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
-                logType: "atmospheric-readings",
+                formType: "atmospheric-readings",
                 readingsLog: this.readingsArr,
                 lossClassification: this.lossArr,
                 notes: this.notes,

@@ -97,7 +97,7 @@ export const actions = {
             email: res.data.email,
             id: res.data.id,
             role: res.data.role,
-            name: res.data.name
+            name: res.data.fname + ' ' + res.data.lname
           })
         })
       } catch (e) {
@@ -105,13 +105,15 @@ export const actions = {
       }
     }
   },
-  async fetchLogs({ commit, state }) {
-    await this.$axios.$get(`/api/logs/${state.user.id}`).then((res) => {
-      let copyArr = JSON.parse(JSON.stringify(res));
-      commit('setLogReports', res)
-    }).catch((err) => {
-      commit('setError', err)
-    })
+  async fetchLogs({ commit, state }, authUser) {
+    if (authUser) {
+      await this.$axios.$get(`/api/employee/${state.user.email}`).then((res) => {
+        let copyArr = JSON.parse(JSON.stringify(res));
+        commit('setLogReports', res.savedreports)
+      }).catch((err) => {
+        commit('setError', err)
+      })
+    }   
   },
   async fetchReports({ commit, dispatch }, authUser) {
     if (authUser) {

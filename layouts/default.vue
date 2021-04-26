@@ -192,7 +192,6 @@ export default {
   mounted() {   
     this.$nextTick(() => {
       this.fetchReports(this.$fire.auth.currentUser)
-      this.fetchLogs()
     })
   }
 }

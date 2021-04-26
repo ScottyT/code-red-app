@@ -248,7 +248,7 @@
             </span>
             <span class="form__input--input-group">
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
-              <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterName" @input="acceptNumber" />
+              <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" @input="acceptNumber" />
             </span>
           </div>
           <div class="form__form-group--block form__section">

@@ -4,13 +4,14 @@ const createUser = async (req, res) => {
     const {
         email,
         password,
-        name
+        fname,
+        lname
     } = req.body;
 
     const user = await admin.auth().createUser({
         email,
         password,
-        displayName: name
+        displayName: fname + ' ' + lname
     });
 
     return res.send(user);
