@@ -356,15 +356,6 @@ export default {
                 }
             } 
             if (this.$nuxt.isOnline) {
-                /* this.addReport(post).then(() => {
-                        this.submittedMessage = "Form was successfully saved"
-                        this.errorMessage = ""
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.submittedMessage = ""
-                            this.errorMessage = ""
-                        }, 5000)
-                    }) */
                 this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
                     if (res.errors) {
                         this.$refs.form.setErrors({

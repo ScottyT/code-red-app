@@ -10,11 +10,10 @@
             </div>
         </v-dialog>
         <p v-if="$fetchState.pending">Fetching content...</p>
-        
         <section class="pdf-item" v-else>
             <LazyBreadcrumbs page="saved-reports" />
             <h1 class="text-center">{{company}}</h1>
-            <!-- <h2 class="text-center">{{formName}}</h2> -->
+            <h2 class="text-center">{{formName}}</h2>
             
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
@@ -57,7 +56,7 @@
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
                         <input type="number" class="pdf-item__table--data"
-                            v-model="savedreport.quantityData[i].day[j].value" />
+                            v-model="report.quantityData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
@@ -66,7 +65,7 @@
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
                         <input type="checkbox" class="pdf-item__table--data" 
-                            v-model="savedreport.checkData[i].day[j].value" />
+                            v-model="report.checkData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
@@ -75,7 +74,7 @@
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
                         <input type="text" class="pdf-item__table--data" 
-                            v-model="savedreport.categoryData[i].day[j].value" />
+                            v-model="report.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -102,7 +101,7 @@
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
                         <input type="text" class="pdf-item__table--data" 
-                            v-model="savedreport.readingsLog[i].day[j].value" />
+                            v-model="report.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                               
@@ -121,7 +120,7 @@
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
                         <input type="number" class="pdf-item__table--data"
-                            v-model="savedreport.lossClassification[i].day[j].value" />
+                            v-model="report.lossClassification[i].day[j].value" />
                     </div>
                 </div>
             </div>
@@ -138,7 +137,7 @@
 import {mapActions, mapGetters} from 'vuex'
 export default {
     name: "SavedLogReports",
-    props: ['report', 'reportType', 'company'],
+    props: ['formName', 'formType','report', 'reportType', 'company'],
     data() {
         return {
             updateMessage: "",

@@ -60,6 +60,10 @@ ul {
 a {
   color: inherit !important;
   text-decoration: none;
+  &.disabled {
+    pointer-events: none;
+    color:#a7a7a7;
+  }
 }
 
 .menu-items {

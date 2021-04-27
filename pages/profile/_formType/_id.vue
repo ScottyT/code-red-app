@@ -1,9 +1,9 @@
 <template>
     <div class="pa-6 report-details-wrapper" v-if="$nuxt.isOnline">
-        <LazySavedLogReports company="Water Emergency Services Incorporated" :report="logreport" />
+        <LazySavedLogReports :formName="formName" :formType="formType" company="Water Emergency Services Incorporated" :report="logreport" />
     </div>
     <div class="pa-6 report-details-wrapper" v-else>
-        <LazySavedLogReports company="Water Emergency Services Incorporated" :report="report" />
+        <LazySavedLogReports :formName="formName" :formType="formType" company="Water Emergency Services Incorporated" :report="report" />
     </div>
 </template>
 <script>
@@ -14,6 +14,11 @@ export default {
             var formName = ""
             let formType = params.formType;
             let logreports = await $axios.$get(`/api/logs-report/${formType}/${params.id}`);
+            if (logreports.hasOwnProperty('status')) {
+                logreports = store.state.indexDb.reports.find((v) => {
+                    return v.JobId === params.id && v.formType === params.formType
+                })
+            }
             switch (formType) {
                 case "atmospheric-readings":
                     formName = "Atmospheric Readings"
@@ -63,11 +68,6 @@ export default {
     mounted() {
         this.checkStorage()
         this.offlinereport()
-    },
-    /* created() {
-        
-        this.reports = this.getSavedReports
-        this.clonedreports = JSON.parse(JSON.stringify(this.getSavedReports))
-    } */
+    }
 }
 </script>

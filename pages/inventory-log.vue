@@ -1,5 +1,5 @@
 <template>
-    <LazyLoginForm v-if="!$fire.auth.currentUser" />
+    <LazyLoginForm v-if="!authUser" />
     <div class="form-wrapper" v-else>
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h2>
@@ -127,6 +127,7 @@ export default {
         endDateFormatted: vm.formatDate(vm.addDays(new Date(), 7).toISOString().substr(0, 10)),
         initDateModal: false,
         endDateModal: false,
+        authUser: false,
         techIdArr: [
             {text: "Tech ID #",
             day: [
@@ -497,11 +498,6 @@ export default {
             title: "Unit Quantity and Equipment Inventory"
         }
     },
-    async middleware({$fire, redirect}) {
-        if ($fire.auth.currentUser === null) {
-            return redirect("/")
-        }
-    },
     watch: {
         initDate(val) {
             this.initDateFormatted = this.formatDate(val)
@@ -558,7 +554,7 @@ export default {
                 ReportType: "logs-report",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
-                logType: "quantity-inventory-logs",
+                formType: "quantity-inventory-logs",
                 quantityData: numberInputs,
                 checkData: checkboxInputs,
                 categoryData: this.catArr,
@@ -600,6 +596,9 @@ export default {
     },
     mounted() {
         this.mappingJobIds()
+        this.$nextTick(() => {
+            this.authUser = this.$fire.auth.currentUser ? true : false
+        })
     }
 }
 </script>

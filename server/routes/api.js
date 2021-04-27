@@ -223,7 +223,7 @@ router.get('/logs-report/:formType/:JobId', (req, res) => {
         } else if (log) {
             res.status(200).json(log)
         } else {
-            res.status(200).json({error: "Item not found"})
+            res.status(200).json({error: "Item not found", status: 404})
         }
     })
 })
@@ -249,7 +249,7 @@ router.post("/sketch-report/new",
 router.post("/logs-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {
-        return Logging.findOne({JobId: value, logType: req.body.logType}).then(log => {
+        return Logging.findOne({JobId: value, formType: req.body.formType}).then(log => {
             if (log) {
                 return Promise.reject('Job ID is already in use for this type of form')
             }

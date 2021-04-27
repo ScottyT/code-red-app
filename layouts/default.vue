@@ -125,6 +125,12 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Psychrometric Chart',
+          to: '/psychrometric-charting',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'
@@ -133,12 +139,6 @@ export default {
           icon: 'mdi-form-select',
           title: 'Certificate of Completion',
           to: '/certificate-of-completion',
-          access: 'user'
-        },
-        {
-          icon: 'mdi-form-select',
-          title: 'Forms to finish later',
-          to: '/saved-reports',
           access: 'user'
         },
         {

@@ -58,8 +58,8 @@
       <ul class="profile__group block-group">
         <h3>Logs</h3>
         <div class="block-group--grid">
-          <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col">
-            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`">
+          <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
+            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
               <p>{{report.JobId}}</p>
               <p>{{report.formType}}</p>
             </nuxt-link>
@@ -132,11 +132,23 @@
         })
       },
       logReports() {
-       
         var savedLogs = this.getSavedReports.filter((v) => {
           return v.ReportType == 'logs-report'
         })
-        return savedLogs.concat(this.$store.state.logreports)
+        var concatlogs = savedLogs.concat(this.$store.state.logreports)
+        let checkKeyPresenceInArray = key => this.$store.state.logreports.some(obj => Object.keys(obj).includes(key));
+        if (checkKeyPresenceInArray('_id') && this.$nuxt.isOnline) {
+          const result = Array.from(new Set(concatlogs.map(s => s._id)))
+            .map(id => {
+              return {
+                _id: id,
+                JobId: concatlogs.find(s => s._id === id).JobId,
+                formType: concatlogs.find(s => s._id === id).formType
+              }
+            });
+            return result
+        }
+        return concatlogs
       },
       isOnline() {
         return this.$nuxt.isOnline
@@ -153,7 +165,7 @@
     },
     mounted() {
       this.checkStorage()
-      //this.fetchLogs(this.$fire.auth.currentUser)
+      this.fetchLogs(this.$fire.auth.currentUser)
       this.$nextTick(() => {
         this.authUser = this.$fire.auth.currentUser ? true : false
         
@@ -170,14 +182,6 @@
       } catch (e) {
         console.log("something happened:", e)
       }
-    },
-    async asyncData({$axios}) {
-        try {
-            let data = await $axios.$get("/api/employees");
-            return { employees: data}
-        } catch (e) {
-            console.log("something happened:", e)
-        }
     },
     
     methods: {
