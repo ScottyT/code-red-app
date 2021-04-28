@@ -23,7 +23,8 @@
                     <!-- <img :src="bgimage" />
                     <canvas id="chart" width=800 height=700></canvas> -->
                     <!-- <VueSignaturePad id="charting" width="800px" height="700px" ref="chartPad" @load="onInit" :images="bgimage" :options="{ onBegin }" /> -->
-                </div>               
+                </div>
+                <v-btn class="button--normal">Submit</v-btn>            
             </form>
         </ValidationObserver>
     </div>
@@ -61,6 +62,9 @@ export default {
         onInit() {
             console.log(this.$refs.chartPad.getPropImagesAndCacheImages())
         } */
+        onSubmit() {
+            
+        }
     },
     mounted() {
         
