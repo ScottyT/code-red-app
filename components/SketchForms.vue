@@ -95,10 +95,10 @@ export default {
             const sketchTypes = sketchReps.map((v) => {
                 return v.formType
             })
+            // Todo: change teamMember to send all of employee data
             const post = {
                 JobId: this.selectedJobId,
                 teamMember: userNameObj,
-                formType: this.$route.params.uid,
                 sketch: this.sketchData.data,
                 ReportType: 'sketch-report',
                 sketchType: this.$route.params.uid
@@ -134,7 +134,6 @@ export default {
         }
     },
     mounted() {
-        this.mappingJobIds()
         this.checkStorage()
     }
 }

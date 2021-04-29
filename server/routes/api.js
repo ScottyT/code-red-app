@@ -154,10 +154,6 @@ router.get('/certificates', (req, res) => {
         }
     })
 })
-/* router.get('/certificate/:JobId', async (res, res) => {
-    const certificate = await COC.findOne({JobId: req.params.JobId});
-    res.json(certificate);
-}) */
 router.get('/aob-mitigation-contracts', (req, res) => {
     AOB.find({}, (err, aob) => {
         if (err) {
@@ -230,7 +226,7 @@ router.get('/logs-report/:formType/:JobId', (req, res) => {
 router.post("/sketch-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {       
-        return Sketch.findOne({JobId: value, sketchType: req.body.sketchType}).then(sketch => {
+        return Sketch.findOne({JobId: value, formType: req.body.sketchType}).then(sketch => {
             if (sketch) {
                 return Promise.reject('Job ID is already in use')
             }
@@ -239,7 +235,7 @@ router.post("/sketch-report/new",
     check('sketch').not().isEmpty().withMessage('Sketch is required'),
     check('teamMember').not().isEmpty().withMessage('Employee must be logged in')
     .custom(value => {
-        return User.findOne({name: value.first + ' ' + value.last}).then(user => {
+        return User.findOne({id: value.id}).then(user => {
             if (!user) {
                 return Promise.reject('You are not authorized')
             }

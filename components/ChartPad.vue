@@ -1,14 +1,14 @@
 <template>
     <div class="chart-wrapper">
-        <!-- <span>
-            
+        <span>
             <canvas id="chart" width=943 height=642></canvas>
-        </span> -->
-        <VueSignaturePad class="chart-wrapper__chart" :images="[bgimage]" ref="chart" width="100%" :height="$vuetify.breakpoint.width < 991 ? '657px':'642px'" :options="{onEnd}" />
+            <canvas id="copy" width=943 height=642></canvas>
+        </span>
         <div class="button-wrapper">
-            <v-btn class="button--normal" id="save" @click="save">Save</v-btn>
-            <v-btn class="button--normal" @click="draw" id="draw">Draw</v-btn>
-            <v-btn class="button--normal" @click="erase" id="erase">Erase</v-btn>
+            <v-btn class="button--normal" id="save">Save</v-btn>
+            <v-btn class="button--normal" id="draw">Draw</v-btn>
+            <v-btn class="button--normal" id="erase">Erase</v-btn>
+            <v-btn class="button--normal" id="undo">Undo</v-btn>
         </div>
     </div>
 </template>
@@ -26,103 +26,53 @@ export default {
         }
     },
     methods: {
-        onEnd() {
-            const {isEmpty, data} = this.$refs.chart.saveSignature()
-            this.storedimage.data = data
-            this.storedimage.isEmpty = isEmpty
-            console.log(this.storedimage.data)
-        },
-        onLoad() {
-            var canvas = this.$refs.chart.$refs.signaturePadCanvas
-            var ctx = canvas.getContext("2d")
-            var img = new Image()
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-            }
-            
-            img.crossOrigin = 'anonymous'
-            img.src = this.bgimage
-            console.log(this.$refs)
-            //this.$refs.chart.addImages([this.bgimage])
-
-        },
         save() {
-            const {isEmpty, data} = this.$refs.chart.saveSignature()
-            this.storedimage.data = data
-            this.storedimage.isEmpty = isEmpty
-        },
-        erase() {        
-            var canvas = this.$refs.chart.$refs.signaturePadCanvas
-            var ctx = canvas.getContext("2d");
-            ctx.lineWidth = 6
-            ctx.globalCompositeOperation = 'destination-out';
-        },
-        draw() {
-            var canvas = this.$refs.chart.$refs.signaturePadCanvas
-            var ctx = canvas.getContext("2d");
-            ctx.lineWidth = 1;
-            ctx.globalCompositeOperation = 'source-over';
-        },
-        resizeHandler() {
-            this.$refs.chart.fromDataURL(this.storedimage.data)
-            this.$refs.chart.resizeCanvas()
-            this.$nextTick(() => {
-                //this.$refs.chart.signatureData = this.storedimage.data
-                
-            })
+            this.$emit('chartimage')
         }
     },
-    /* created() {
-        window.addEventListener("resize", this.resizeHandler)
-    },*/
-    destroyed() {
-        window.removeEventListener("resize", this.resizeHandler)
-    },
     mounted() {
-        this.onLoad()
-        window.addEventListener("resize", this.resizeHandler)
-        /* var canvas = document.getElementById('chart');
+        var canvas = document.getElementById('chart');
+        var copyCanvas = document.getElementById('copy');
         var ctx = canvas.getContext("2d");
-        
+        var storedImage = ""
+        var signaturePad = new SignaturePad(canvas);        
+        signaturePad.penColor = "rgb(0, 0, 0)";
+        signaturePad.maxWidth = 1.5;
+
         //Draw image to canvas
         var img = new Image()
         img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+            ctx.drawImage(img, 0, 0, canvas.clientWidth, canvas.clientHeight)
+            storedImage = canvas.toDataURL()
         }
         img.crossOrigin = 'anonymous';
         img.src = this.bgimage
-        
-        var signaturePad = new SignaturePad(canvas);
-        signaturePad.penColor = "rgb(0, 0, 0)";
-        signaturePad.maxWidth = 2;
-        var storedImage = ""
+             
+        var padData = null
         
         signaturePad.onEnd = function(event) {
             storedImage = signaturePad.toDataURL()
         }
-        
         function resizeCanvas() {
-            if (signaturePad.isEmpty()) {
-                return;
-            }
             var ratio =  Math.max(window.devicePixelRatio || 1, 1);
             // This part causes the canvas to be cleared
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
-            canvas.getContext("2d").scale(ratio, ratio);
+            copyCanvas.width = canvas.offsetWidth * ratio;
+            copyCanvas.height = canvas.offsetHeight * ratio;
 
-            signaturePad.fromDataURL(storedImage);
+            canvas.getContext("2d").scale(ratio, ratio);
+            copyCanvas.getContext("2d").scale(ratio, ratio);      
         }
-        var timeout;
-        window.addEventListener("resize", (e) => {
-            if (!timeout) {
-                timeout = setTimeout(() => {
-                    timeout = null
-                    resizeCanvas()
-                }, 50);
+        function drawCanvas() {
+            resizeCanvas()
+            signaturePad = new SignaturePad(canvas);
+            if (storedImage !== "") {
+                signaturePad.fromDataURL(storedImage);
             }
-        }, false);
-        resizeCanvas();
+        }
+        window.addEventListener("resize", drawCanvas);
+        drawCanvas();
 
         function download(dataURL, filename) {
             var blob = dataURLToBlob(dataURL);
@@ -138,7 +88,27 @@ export default {
 
             window.URL.revokeObjectURL(url);
         }
-
+        function undo() {
+            const data = signaturePad.toData();
+            if (padData) {
+                data.forEach(d => {
+                    if (!padData.includes(d)) {
+                        padData.push(d)
+                    }
+                })
+            } else {
+                padData = data
+            }
+            if (padData && padData.length !== 0) {
+                data.pop()
+                signaturePad.fromData(data)
+                copyCanvas.getContext("2d").drawImage(img, 0, 0, canvas.clientWidth, canvas.clientHeight)
+                copyCanvas.getContext("2d").drawImage(canvas, 0, 0, canvas.clientWidth, canvas.clientHeight)
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                canvas.getContext("2d").drawImage(copyCanvas, 0, 0, canvas.offsetWidth, canvas.offsetHeight)
+                storedImage = canvas.toDataURL()
+            }
+        }
         function dataURLToBlob(dataURL) {
             // Code taken from https://github.com/ebidel/filer.js
             var parts = dataURL.split(';base64,');
@@ -157,9 +127,9 @@ export default {
         var saveButton = document.getElementById('save');
         saveButton.addEventListener('click', (event) => {
             var data = signaturePad.toDataURL()
-            download(data, "chart.png");
-            console.log(data)
-            console.log("image:", img)
+            //download(data, "chart.png");
+            this.storedimage.data = data
+            this.$emit('chartimage', data)
         })
         document.getElementById('draw').addEventListener('click', () => {
             ctx.lineWidth = 1;
@@ -168,7 +138,15 @@ export default {
         document.getElementById('erase').addEventListener('click', (event) => {
             ctx.lineWidth = 6
             ctx.globalCompositeOperation = 'destination-out';
-        }) */
+        })
+        document.getElementById('undo').addEventListener('click', () => {
+            
+            undo()
+        })
+
+        this.$nextTick(() => {
+           // this.storedimage = signaturePad.toDataURL()
+        })
     }
 }
 </script>
@@ -221,5 +199,8 @@ canvas {
     position:absolute;
     top:0;
     left:0;
+}
+#copy {
+    visibility: hidden;
 }
 </style>

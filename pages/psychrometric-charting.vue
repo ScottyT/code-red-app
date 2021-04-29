@@ -18,19 +18,20 @@
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
                     </ValidationProvider>
                 </div>
-                <div class="form__form-group">
-                    <LazyChartPad />
-                    <!-- <img :src="bgimage" />
-                    <canvas id="chart" width=800 height=700></canvas> -->
-                    <!-- <VueSignaturePad id="charting" width="800px" height="700px" ref="chartPad" @load="onInit" :images="bgimage" :options="{ onBegin }" /> -->
-                </div>
-                <v-btn class="button--normal">Submit</v-btn>            
-            </form>
+                
+                <ValidationProvider class="form__form-group" vid="sketch" name="Chart" v-slot="{errors, ariaMsg}">
+                    <input type="hidden" v-model="chartSketch.data" />
+                    <LazyChartPad ref="chartPad" @chartimage="getChart" />                       
+                    <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
+                </ValidationProvider>
+                <v-btn class="button--normal" type="submit">Submit</v-btn>
+                          
+            </form>            
         </ValidationObserver>
     </div>
 </template>
 <script>
-
+import {mapGetters} from 'vuex';
 export default {
     data() {
         return {
@@ -40,7 +41,7 @@ export default {
             selectedJobId: "",
             chartSketch: {
                 isEmpty: true,
-                data: null
+                data: ""
             },
             bgimage: "https://images.prismic.io/wateremergencyservices-pwa/f4073fed-21fa-41f6-9bfe-4a37485a97cb_PsychrometricChartImage-1200x675.png?auto=compress,format"
         }
@@ -50,20 +51,54 @@ export default {
             title: "Psychrometric Charting"
         }
     },
+    computed: {
+        ...mapGetters({
+            getUser: 'getUser',
+            getReports: 'getReports'
+        })
+    },
     methods: {
-        /* save() {
-            const { isEmpty, data } = this.$refs.chartPad.saveSignature();
-            this.chartSketch.data = data;
-            this.chartSketch.isEmpty = isEmpty
+        getChart(value) {
+            this.chartSketch.data = value
         },
-        onBegin() {
-            
-        },
-        onInit() {
-            console.log(this.$refs.chartPad.getPropImagesAndCacheImages())
-        } */
         onSubmit() {
-            
+            const data = this.$refs.chartPad.storedimage.data
+            this.submittedMessage = ""
+            const reports = this.getReports.filter((v) => {
+                return v.ReportType = "sketch-report"
+            })
+            const chartReps = reports.filter((v) => {
+                return v.formType = "psychrometric-chart"
+            })
+            if (chartReps.length > 0) {
+                const jobids = reports.map((v) => {
+                    return v.JobId
+                })
+            }         
+            const post = {
+                JobId: this.selectedJobId,
+                ReportType: "sketch-report",
+                sketchType: "psychrometric-chart",
+                teamMember: this.getUser,
+                sketch: data
+            }
+            if (this.$nuxt.isOffline) {
+
+            }
+            if (this.$nuxt.isOnline) {
+                this.$axios.$post("/api/sketch-report/new", post).then((res) => {
+                    if (res.errors) {
+                        this.$refs.form.setErrors({
+                            JobId: res.errors.find(obj => obj.param === 'JobId'),
+                            sketch: res.errors.find(obj => obj.param === 'sketch')
+                        })
+                    }
+                    this.submittedMessage = res.message
+                    setTimeout(() => {
+                        window.location = "/"
+                    }, 2000)
+                })
+            }
         }
     },
     mounted() {

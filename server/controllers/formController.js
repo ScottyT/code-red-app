@@ -10,10 +10,10 @@ const createSketch = async (req, res) => {
         JobId: req.body.JobId,
         teamMember: req.body.teamMember,
         sketch: req.body.sketch,
-        formType: req.params.uid,
+        formType: req.body.sketchType,
         ReportType: req.body.ReportType
     });
-    const sketchReport = await Sketch.findOne({JobId: req.body.JobId, sketchType: req.body.sketchType}).exec()
+    const sketchReport = await Sketch.findOne({JobId: req.body.JobId, formType: req.body.sketchType}).exec()
     //returns the error
     if (!errors.isEmpty() || sketchReport !== null) {
         return res.json(errors)
