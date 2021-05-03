@@ -5,7 +5,7 @@
             <canvas id="copy" width=943 height=642></canvas>
         </span>
         <div class="button-wrapper">
-            <v-btn class="button--normal" id="save">Save</v-btn>
+            <v-btn class="button--normal" id="save">{{storedimage.data !== '' ? 'Saved' : 'Save'}}</v-btn>
             <v-btn class="button--normal" id="draw">Draw</v-btn>
             <v-btn class="button--normal" id="erase">Erase</v-btn>
             <v-btn class="button--normal" id="undo">Undo</v-btn>
@@ -74,19 +74,13 @@ export default {
         window.addEventListener("resize", drawCanvas);
         drawCanvas();
 
-        function download(dataURL, filename) {
+        function downloadURL(dataURL, filename) {
             var blob = dataURLToBlob(dataURL);
             var url = window.URL.createObjectURL(blob);
 
-            var a = document.createElement("a");
-            a.style = "display: none";
-            a.href = url;
-            a.download = filename;
-
-            document.body.appendChild(a);
-            a.click();
-
             window.URL.revokeObjectURL(url);
+
+            return url
         }
         function undo() {
             const data = signaturePad.toData();
@@ -112,7 +106,18 @@ export default {
         function dataURLToBlob(dataURL) {
             // Code taken from https://github.com/ebidel/filer.js
             var parts = dataURL.split(';base64,');
+            var response = {};
+            /* if (parts.length !== 3) {
+                return new Error('Invalid input string')
+            } */
+            console.log(parts)
             var contentType = parts[0].split(":")[1];
+            /* var dataObj = Buffer.from(parts[1], 'base64')
+            response.type = contentType
+            response.data = dataObj
+            response.prefix = parts[0]
+            return response; */
+
             var raw = window.atob(parts[1]);
             var rawLength = raw.length;
             var uInt8Array = new Uint8Array(rawLength);
@@ -127,9 +132,13 @@ export default {
         var saveButton = document.getElementById('save');
         saveButton.addEventListener('click', (event) => {
             var data = signaturePad.toDataURL()
-            //download(data, "chart.png");
-            this.storedimage.data = data
-            this.$emit('chartimage', data)
+            var buffer = Buffer.from(data, "base64")
+            var dataurl = dataURLToBlob(data);
+            var url = downloadURL(data, "chart.png")
+            console.log(url)
+            
+            this.storedimage.data = dataurl
+            this.$emit('chartimage', url)
         })
         document.getElementById('draw').addEventListener('click', () => {
             ctx.lineWidth = 1;

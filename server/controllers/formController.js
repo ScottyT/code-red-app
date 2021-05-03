@@ -1,9 +1,31 @@
 const Sketch = require('../models/sketchSchema');
 const Logging = require('../models/loggingSchema');
 const User = require('../models/userSchema');
+const chartModel = require('../models/chartSchema');
 const { validationResult } = require('express-validator');
-const { options } = require('../routes/api');
 
+const uploadChart = async (req, res) => {
+    const errors = validationResult(req)
+    const obj = new chartModel({
+        JobId: req.body.JobId,
+        teamMember: req.body.teamMember,
+        formType: req.body.sketchType,
+        ReportType: req.body.ReportType,
+        chart: {
+            data: req.body.chart.data,
+            contentType: 'image/png'
+        }
+    })
+    const chartReport = await chartModel.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
+    if (!errors.isEmpty() || chartReport !== null) {
+        return res.json(errors)
+    }
+    await obj.save().then(() => {
+        res.json({message: "Chart uploaded"})
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 const createSketch = async (req, res) => {
     const errors = validationResult(req)
     const sketch = new Sketch({
@@ -71,4 +93,4 @@ const updateLogs = async (req, res) => {
         res.json(err)
     });
 }
-module.exports = { createSketch, createLogs, updateLogs }
+module.exports = { createSketch, createLogs, updateLogs, uploadChart }

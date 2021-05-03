@@ -19,19 +19,21 @@
                     </ValidationProvider>
                 </div>
                 
-                <ValidationProvider class="form__form-group" vid="sketch" name="Chart" v-slot="{errors, ariaMsg}">
-                    <input type="hidden" v-model="chartSketch.data" />
+                <ValidationProvider class="form__form-group" vid="chart" name="Chart" v-slot="{errors, ariaMsg}">
+                    <input type="hidden" v-model="chartImg" />
                     <LazyChartPad ref="chartPad" @chartimage="getChart" />                       
                     <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
                 </ValidationProvider>
                 <v-btn class="button--normal" type="submit">Submit</v-btn>
-                          
+                <span class="progress">{{progress}}</span>
+                <span>{{uploadMessage}}</span>
             </form>            
         </ValidationObserver>
     </div>
 </template>
 <script>
 import {mapGetters} from 'vuex';
+import { uploadChart } from '~/server/controllers/formController';
 export default {
     data() {
         return {
@@ -39,11 +41,9 @@ export default {
             submittedMessage: "",
             errorMessage: "",
             selectedJobId: "",
-            chartSketch: {
-                isEmpty: true,
-                data: ""
-            },
-            bgimage: "https://images.prismic.io/wateremergencyservices-pwa/f4073fed-21fa-41f6-9bfe-4a37485a97cb_PsychrometricChartImage-1200x675.png?auto=compress,format"
+            chartImg: null,
+            progress: null,
+            uploadMessage: ""
         }
     },
     head() {
@@ -59,12 +59,17 @@ export default {
     },
     methods: {
         getChart(value) {
-            this.chartSketch.data = value
+            this.chartImg = value
+        },
+        encodeBase64(data) {
+            var buffObj = Buffer.from(data, "base64")
+            var base64data = buffObj.toString("base64")
+            console.log(base64data)
         },
         onSubmit() {
-            const data = this.$refs.chartPad.storedimage.data
+           //Todo: Convert this to something else that is smaller so form won't error
             this.submittedMessage = ""
-            const reports = this.getReports.filter((v) => {
+            /* const reports = this.getReports.filter((v) => {
                 return v.ReportType = "sketch-report"
             })
             const chartReps = reports.filter((v) => {
@@ -74,23 +79,28 @@ export default {
                 const jobids = reports.map((v) => {
                     return v.JobId
                 })
-            }         
+            } */
+            /* var buffObj = Buffer.from(this.chartImg.data, "base64")
+            var base64data = buffObj.toString("base64") */
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "sketch-report",
+                ReportType: "chart-report",
                 sketchType: "psychrometric-chart",
                 teamMember: this.getUser,
-                sketch: data
+                chart: {
+                    data: this.chartImg
+                }
             }
             if (this.$nuxt.isOffline) {
 
             }
             if (this.$nuxt.isOnline) {
-                this.$axios.$post("/api/sketch-report/new", post).then((res) => {
+                this.$axios.$post("/api/chart/upload", post).then((res) => {
+                    
                     if (res.errors) {
                         this.$refs.form.setErrors({
                             JobId: res.errors.find(obj => obj.param === 'JobId'),
-                            sketch: res.errors.find(obj => obj.param === 'sketch')
+                            chart: res.errors.find(obj => obj.param === 'chart')
                         })
                     }
                     this.submittedMessage = res.message
@@ -99,18 +109,32 @@ export default {
                     }, 2000)
                 })
             }
+        },
+        uploadChart(chart) {
+            var storageRef = this.$fire.storage.ref()
+            var uploadTask = storageRef.child(`${this.selectedJobId}/chart.png`).put(chart)
+            var jobIdRef = storageRef.child(this.selectedJobId);
+            uploadTask.on('state_changed', 
+            (snapshot) => {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                this.progress = progress
+                switch(snapshot.state) {
+                    case this.$fireModule.storage.TaskState.PAUSED:
+                        this.uploadMessage = "Upload is paused"
+                        break;
+                    case this.$fireModule.storage.TaskState.RUNNING:
+                        this.uploadMessage = "Upload is running"
+                        break;
+                }
+            }, (error) => {
+                console.log(error.message)
+            }, () => {
+                this.uploadMessage = "Upload is complete"
+            })
         }
     },
     mounted() {
-        
-        //this.$refs.chartPad.addImages(this.bgimage[0])
         this.$nextTick(() => {
-            
-            /* var signaturePad = new SignaturePad(document.getElementById('chart'), {
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: 'rgb(0, 0, 0)'
-            }); */
-
             this.authUser = this.$fire.auth.currentUser ? true : false
         })
     }

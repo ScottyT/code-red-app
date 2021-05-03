@@ -1,13 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const timestamps = require('mongoose-timestamp2');
 
-const sketchReport = mongoose.Schema({
+const chartSchema = mongoose.Schema({
     JobId: {
         type: String,
-        required: true
-    },
-    sketch: {
-        type: Object,
         required: true
     },
     chart: {
@@ -21,5 +17,5 @@ const sketchReport = mongoose.Schema({
     formType: String,
     ReportType: String
 });
-sketchReport.plugin(timestamps)
-module.exports = mongoose.model('SketchReports', sketchReport, 'sketch-reports')
+
+module.exports = mongoose.model('Chart', chartSchema)

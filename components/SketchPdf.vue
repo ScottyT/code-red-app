@@ -10,7 +10,8 @@
         <div class="pdf-item__inline">
           Job ID: {{report.JobId}}
         </div>
-        <div class="pdf-item__sketch-area" :style="'background-image:url('+report.sketch+')'"></div>
+        <div v-if="report.ReportType === 'sketch-report'" class="pdf-item__sketch-area" :style="'background-image:url('+report.sketch+')'"></div>
+        <div v-else></div>
       </section>
     </div>
 </template>

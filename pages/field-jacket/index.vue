@@ -5,56 +5,28 @@
                 Sketch Reports
             </h3>
             <LazyReports :reports="sketchReports" theme="light" />
-            <!-- <div class="block-group--grid">
-                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in sketchReports" :key="`item-${i}`">
-                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
-                        <p>{{item.JobId}}</p>
-                        <p>{{item.formType}}</p>
-                    </nuxt-link>
-                </div>
-            </div> -->
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Log Reports
             </h3>
             <LazyReports :reports="logReports" theme="light" />
-            <!-- <div class="block-group--grid">
-                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in logReports" :key="`logs-${i}`">
-                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.formType}/${item.JobId}`">
-                        <p>{{item.JobId}}</p>
-                        <p>{{item.formType}}</p>
-                    </nuxt-link>
-                </div>
-            </div> -->
+        </div>
+        <div class="block-group">
+            <h3 class="reports-wrapper__heading">Charts</h3>
+            <LazyReports :reports="chartData" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Dispatch and Rapid Response Reports
             </h3>
             <LazyReports :reports="defaultData" theme="light" />
-            <!-- <div class="block-group--grid">
-                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in defaultData" :key="`logs-${i}`">
-                    <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.JobId}`">
-                        <p>{{item.JobId}}</p>
-                        <p>{{item.ReportType}}</p>
-                    </nuxt-link>
-                </div>
-            </div> -->
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Daily Containment and Tech Reports
             </h3>
             <LazyReports :reports="conTechData" theme="light" />
-            <!-- <div class="block-group--grid">
-                <div class="reports-wrapper__data block-group__col" v-for="(item, i) in conTechData" :key="`logs-${i}`">
-                    <nuxt-link :to="`/field-jacket/${item.ReportType}-${item.CaseFileType}/${item.JobId}`">
-                        <p>{{item.JobId}}</p>
-                        <p>{{item.CaseFileType}}</p>
-                    </nuxt-link>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -95,6 +67,9 @@ export default {
     async asyncData({$axios, params}) {
         try {
             let reports = await $axios.$get("/api/reports");
+            let chartData = reports.filter((v) => {
+                return v.ReportType === 'chart-report'
+            })
             let sketchData = reports.filter((v) => {
                 return v.ReportType === 'sketch-report'
             })
@@ -114,7 +89,8 @@ export default {
                 sketchReports: sketchData,
                 logReports: logsData,
                 defaultData,
-                conTechData
+                conTechData,
+                chartData
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)

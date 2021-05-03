@@ -3,7 +3,15 @@
         <LazyBreadcrumbs page="field-jacket" :displayStrip="false" />
         <!-- <h1>{{formName}} for job {{jobId}}</h1> -->
 
-        
+        <span v-if="reportType === 'chart-report'">
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <v-btn @click="generateReport(0)">Download PDF</v-btn>
+        </span>
         <span v-if="reportType === 'dispatch'">
             <LazyReportDetails :report="report" />
         </span>
@@ -65,6 +73,7 @@ export default {
                 jobId,
                 formType,
                 reportType,
+                formName
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)

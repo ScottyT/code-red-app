@@ -47,6 +47,7 @@ export default {
                 data: '',
                 isEmpty: true
             },
+            sketchFormData: null,
             selectedJobId: "",
             submittedMessage: "",
             errorMessage: ""
@@ -73,6 +74,7 @@ export default {
             } = this.$refs.sketchRef.saveSignature();
             this.sketchData.data = data;
             this.sketchData.isEmpty = isEmpty
+
         },
         onBegin() {
             const {

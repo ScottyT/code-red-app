@@ -8,13 +8,24 @@ const AOB = require("../models/aobSchema");
 const CreditCard = require("../models/creditCardSchema");
 const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
+const chartModel = require("../models/chartSchema");
 const createUser = require('../controllers/authController');
-const { createSketch, createLogs, updateLogs } = require('../controllers/formController');
+const { createSketch, createLogs, updateLogs, uploadChart } = require('../controllers/formController');
 const router = express.Router();
-
 const { body, check, validationResult } = require('express-validator');
-router.use(express.json())
-router.use(express.urlencoded({extended: true}));
+const multer = require('multer');
+router.use(express.json({limit: "50MB"}))
+router.use(express.urlencoded({extended: true, limit: "50MB"}));
+
+//multer uploads
+var storage = multer({
+    /* destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    } */
+    dest: 'uploads'
+});
+var upload = multer({ storage: storage });
+
 router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
@@ -60,7 +71,8 @@ router.get('/reports', async (req, res) => {
     const creditCard = await CreditCard.find({});
     const sketches = await Sketch.find({});
     const logging = await Logging.find({});
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches, logging)
+    const charts = await chartModel.find({});
+    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches, logging, charts)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -71,6 +83,7 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
     const creditCard = await CreditCard.find({JobId: req.params.JobId})
     const aob = await AOB.findOne({JobId: req.params.JobId});
     const coc = await COC.findOne({JobId: req.params.JobId});
+    const chart = await chartModel.findOne({JobId: req.params.JobId});
     switch (req.params.ReportType) {
         case "dispatch":
             res.json(repDispatch)
@@ -92,6 +105,9 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
             break;
         case "coc":
             res.json(coc)
+            break;
+        case "chart-report":
+            res.json(chart)
     }
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
@@ -242,6 +258,25 @@ router.post("/sketch-report/new",
         })
     }),
     createSketch);
+router.post("/chart/upload", 
+    check('JobId').not().isEmpty().withMessage('Job ID is required')
+    .custom((value, {req}) => {       
+        return Sketch.findOne({JobId: value, formType: req.body.formType}).then(sketch => {
+            if (sketch) {
+                return Promise.reject('Job ID is already in use')
+            }
+        });
+    }),
+    check('chart').not().isEmpty().withMessage('Chart is required'),
+    check('teamMember').not().isEmpty().withMessage('Employee must be logged in')
+    .custom(value => {
+        return User.findOne({id: value.id}).then(user => {
+            if (!user) {
+                return Promise.reject('You are not authorized')
+            }
+        })
+    }),
+    uploadChart)
 router.post("/logs-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {
@@ -260,6 +295,25 @@ router.post("/logs-report/new",
     }),
     createLogs);
 router.post("/logs-report/:formType/:JobId/update", updateLogs);
+router.post("/upload", upload.single('img'), async (req, res) => {
+    const obj = {
+        name: req.body.name,
+        desc: req.body.desc,
+        img: {
+            data: req.body.img.data,
+            contentType: 'image/png'
+        }
+    }
+    await imageModel.create(obj, (err, item) => {
+        if (err) {
+            console.log(err)
+            res.json(err)
+        } else {
+            item.save()
+            res.json({message: "Image uploaded"})
+        }
+    })
+});
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),
     body('JobId')
