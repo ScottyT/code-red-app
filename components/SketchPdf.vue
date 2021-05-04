@@ -11,7 +11,10 @@
           Job ID: {{report.JobId}}
         </div>
         <div v-if="report.ReportType === 'sketch-report'" class="pdf-item__sketch-area" :style="'background-image:url('+report.sketch+')'"></div>
-        <div v-else></div>
+        <div class="chart-wrapper" v-else>
+            <img class="chart-wrapper__bg" :src="bgimage" />
+            <img class="chart-wrapper__bg" :src="report.chart" />
+        </div>
       </section>
     </div>
 </template>
@@ -19,6 +22,12 @@
 export default {
     name:"SketchPdf",
     props: ['formType', 'formName', 'reportType', 'report', 'company'],
+    data() {
+        return {
+            chartimg: null,
+            bgimage: "https://images.prismic.io/wateremergencyservices-pwa/812c9310-c970-489b-a441-0243ff518aa6_messageImage_1619619411880.jpg?auto=compress,format",
+        }
+    },
     computed: {
         htmlToPdfOptions(e) {
             return {
@@ -42,10 +51,24 @@ export default {
         }
     },
     methods: {
+        decodeBuffer(buf) {
+           /*  var typedArray = new Uint8Array(buf)
+            const stringChar = typedArray.reduce((data, byte) => {
+                return data + String.fromCharCode(byte)
+            }, '');
+            var base64string = btoa(stringChar);
+            return base64string */
+            var buffer = Buffer.from(buf.data)
+            var base64string = buffer.toString('base64')
+            return base64string
+        },
         generateReport(key) {
             //this.htmlToPdfOptions.filename = `coc-${this.report[key].JobId}`
             this.$refs["html2Pdf-" + key].generatePdf()
         },
+    },
+    created() {
+        //this.decodeBuffer(this.report.chart.data.data)
     }
 }
 </script>
@@ -71,5 +94,21 @@ export default {
 }
 .pdf-sig {
     
+}
+.chart-wrapper {
+    position:relative;
+    width:100%;
+    height:490px;
+    max-width:719px;
+    @include respond(tabletLarge) {
+        max-width:943px;
+        height:642px;
+    }
+    &__bg {
+        position:absolute;
+        top:0;
+        left:0;
+        object-fit:contain;
+    }
 }
 </style>

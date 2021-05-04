@@ -1,5 +1,6 @@
 <template>
   <!-- This will be used for storing forms saved in offline mode -->
+  <!-- Might refactor later -->
   <div>
     <span v-if="!authUser"><login-form /></span>
     <div class="profile" v-else>
@@ -7,52 +8,53 @@
         <h1 class="text-center">Saved Forms</h1>
         <h2 v-show="message">{{message}}</h2>
       </div>
-      <!-- <ul v-if="$store.state.indexDb.reports.length > 0">
-        <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
-          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
-        </li>
-      </ul> -->
       <ul class="profile__group">
         <h3>Dispatch and Rapid Response Reports</h3>
         <li v-for="(report, i) in defaultReports" :key="`default-reports-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Containment Reports</h3>
         <li v-for="(report, i) in containmentReps" :key="`containment-reps-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.CaseFileType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Credit Card Reports</h3>
         <li v-for="(report, i) in creditCardReps" :key="`credit-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Certificate of Completion Reports</h3>
         <li v-for="(report, i) in cocReports" :key="`coc-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>AOB Mitigation Contract</h3>
         <li v-for="(report, i) in aobReports" :key="`aob-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Sketch Reports</h3>
         <li v-for="(report, i) in sketchReports" :key="`sketch-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Chart Reports</h3>
+        <li v-for="(report, i) in chartReports" :key="`chart-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group block-group">
@@ -150,6 +152,11 @@
         }
         return concatlogs
       },
+      chartReports() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType === 'chart-report'
+        })
+      },
       isOnline() {
         return this.$nuxt.isOnline
       }
@@ -171,26 +178,13 @@
         
       })
     },
-    async asyncData({
-      $axios
-    }) {
-      try {
-        let data = await $axios.$get("/api/employees");
-        return {
-          employees: data
-        }
-      } catch (e) {
-        console.log("something happened:", e)
-      }
-    },
-    
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
         deleteReport: 'indexDb/deleteReport',
         fetchLogs: 'fetchLogs'
       }),
-      async submitForm(post, index) {
+      submitForm(post) {
          try {           
           this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
             if (res.errors) {
@@ -219,10 +213,9 @@
           })         
         } catch (e) {
           this.message = e
-        }
-        
+        }        
       },
-      async submitFiles(report, uploadarr, element) {
+      submitFiles(report, uploadarr, element) {
         const today = new Date()
         const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
         uploadarr.forEach((file) => {

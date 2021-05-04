@@ -1,5 +1,5 @@
 <template>
-  <LazyLoginForm v-if="!$fire.auth.currentUser" />
+  <LazyLoginForm v-if="!authUser" />
   <div class="sketch-forms pa-6" v-else>
     <LazyBreadcrumbs page="Sketches" />
     <h1>Sketch Forms</h1>
@@ -33,6 +33,11 @@ export default {
         ...mapGetters({
             isLoggedIn: 'isLoggedIn'
         })
+    },
+    mounted() {
+      this.$nextTick(() => {
+        this.authUser = this.$fire.auth.currentUser ? true : false
+      })
     }
 }
 </script>

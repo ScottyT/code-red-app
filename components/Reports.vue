@@ -39,6 +39,9 @@ export default {
           case "sketch-report":
             route = "sketch-report/"+item.formType
             break;
+          case "chart-report":
+            route = "chart-report/"+item.formType
+            break;
           default:
             route = item.ReportType
         }

@@ -6,10 +6,7 @@ const chartSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    chart: {
-        data: Buffer,
-        contentType: String
-    },
+    chart: String,
     teamMember: {
         type: Map,
         required: true
@@ -17,5 +14,5 @@ const chartSchema = mongoose.Schema({
     formType: String,
     ReportType: String
 });
-
+chartSchema.plugin(timestamps)
 module.exports = mongoose.model('Chart', chartSchema)

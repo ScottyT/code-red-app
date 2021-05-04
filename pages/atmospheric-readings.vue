@@ -348,7 +348,7 @@ export default {
                         setTimeout(() => {
                             this.submittedMessage = ""
                             this.errorMessage = ""
-                        }, 5000)
+                        }, 2000)
                     })
                 } else {
                     this.errorMessage = "Job ID of this report already exists"
@@ -373,8 +373,7 @@ export default {
         }
     },
     mounted() {
-        //this.checkStorage()
-        //this.mappingJobIds()
+        this.checkStorage()
         this.$nextTick(() => {
             this.authUser = this.$fire.auth.currentUser ? true : false
         })

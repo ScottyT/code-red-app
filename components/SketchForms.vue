@@ -84,10 +84,6 @@ export default {
         },
         onSubmit() {           
             this.submittedMessage = ""
-            const userNameObj = {
-                first: this.getUser.name.split(" ")[0],
-                last: this.getUser.name.split(" ")[1]
-            }
             const sketchReps = this.getReports.filter((v) => {
                 return v.ReportType === 'sketch-report'
             })
@@ -100,7 +96,7 @@ export default {
             // Todo: change teamMember to send all of employee data
             const post = {
                 JobId: this.selectedJobId,
-                teamMember: userNameObj,
+                teamMember: this.getUser,
                 sketch: this.sketchData.data,
                 ReportType: 'sketch-report',
                 sketchType: this.$route.params.uid

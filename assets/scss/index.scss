@@ -139,6 +139,7 @@ button {
   &--normal {
     max-width: 150px;
     background: $color-black;
+    border:1px solid $color-white;
     color: $color-white;
     font-size:.9em;
   }

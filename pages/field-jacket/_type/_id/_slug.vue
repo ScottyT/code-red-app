@@ -21,6 +21,16 @@
             <!-- <LazyLogsPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
             <v-btn @click="generateReport(0)">Download PDF</v-btn>
         </span>
+        <span v-if="reportType === 'chart-report'">
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <!-- <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
+            <v-btn @click="generateReport(0)">Download PDF</v-btn>
+        </span>
     </div>
 </template>
 <script>
@@ -51,6 +61,9 @@ export default {
                 break;
             case "quantity-inventory-logs":
                 formName = "Unit Quantity and Equipment Inventory"
+                break;
+            case "psychrometric-chart":
+                formName = "Psychrometric Chart"
                 break;
             default:
                 formName = "Sketch Form"
