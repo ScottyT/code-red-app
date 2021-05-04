@@ -20,7 +20,7 @@ export default {
     layout: "dashboard-layout",
     head() {
         return {
-            title: "Sketch -" + this.formType + '-' + this.jobId
+            title: "Report -" + this.formType + '-' + this.jobId
         }
     },
     data() {

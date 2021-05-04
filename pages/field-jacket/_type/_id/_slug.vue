@@ -35,6 +35,11 @@
 </template>
 <script>
 export default {
+    head() {
+        return {
+            title: this.formName + " Details"
+        }
+    },
     async middleware({store, redirect}) {
         if (store.state.user.role !== "admin") {
             return redirect("/")

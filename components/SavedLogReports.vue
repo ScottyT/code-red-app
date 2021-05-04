@@ -127,8 +127,8 @@
         </section>
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
-        
-        <v-btn class="button mt-4" @click="submitReport" >Submit</v-btn>
+        <!-- Only make submit button clickable on Day 7 -->
+        <!-- <v-btn class="button mt-4" @click="submitReport">Submit</v-btn> -->
         <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
         <h2 v-show="errorMessage !== ''">{{errorMessage}}</h2>
     </div>
@@ -144,8 +144,7 @@ export default {
             errorMessage: "",
             savedreport: {},
             alertDialog: false,
-            newreport: false,
-            //rep: {}
+            newreport: false
         }
     },
     computed: {
@@ -156,14 +155,6 @@ export default {
         showSubmit() {
             return this.$nuxt.isOnline && this.currentDate === this.savedreport.endDate
         },
-        /* savedreport() {
-            var logReports = this.getReports.filter((v) => {
-                return v.ReportType === 'logs-report'
-            })
-            return logReports.filter((v) => {
-                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
-            })
-        }, */
         currentDate() {
             var date = new Date().toISOString().substr(0, 10)
             return this.formatDate(date)

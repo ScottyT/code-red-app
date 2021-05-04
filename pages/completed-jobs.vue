@@ -9,7 +9,6 @@
             </vue-html2pdf>
             </client-only>
             <v-btn @click="generateReport(i)">Download PDF</v-btn>
-            <!-- <lazy-certificate-content :certificate="coc[i]" @domRendered="domRendered()" slot="pdf-content" /> -->
         </div>
         
     </div>
@@ -62,7 +61,6 @@ export default {
     },
     methods: {
         domRendered() {
-            console.log('dom rendered')
             this.contentRendered = true
         },
         generateReport(key) {

@@ -8,7 +8,6 @@
                     <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                 </vue-html2pdf>
             </client-only>
-            <!-- <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" /> -->
             <v-btn @click="generateReport(i)">Download PDF</v-btn> 
         </div>      
     </div>
@@ -44,10 +43,8 @@ export default {
     async asyncData({ $axios }) {
         try {
             let data = await $axios.$get("/api/aob-mitigation-contracts");
-            //let cardData = await $axios.$get(`/api/reports/credit-card/${contracts.JobId}`);
             return { 
-                contracts: data, 
-                //cards: cardData
+                contracts: data
             }
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)

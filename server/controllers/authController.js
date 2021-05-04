@@ -4,17 +4,18 @@ const createUser = async (req, res) => {
     const {
         email,
         password,
-        fname,
-        lname
+        name
     } = req.body;
 
-    const user = await admin.auth().createUser({
+    await admin.auth().createUser({
         email,
         password,
-        displayName: fname + ' ' + lname
-    });
-
-    return res.send(user);
+        displayName: name
+    }).then((user) => {
+        return res.send(user);
+    }).catch((error) => {
+        return res.json({error: error})
+    })
 }
 
 module.exports = createUser

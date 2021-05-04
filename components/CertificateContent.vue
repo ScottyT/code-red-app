@@ -244,7 +244,7 @@ export default {
         var listRef = storageRef.child(card)
         listRef.listAll().then((res) => {
           res.items.forEach((itemRef) => {
-            var itemPath = itemRef.location.path_;
+            var itemPath = itemRef.fullPath;
             storageRef.child(itemPath).getDownloadURL().then((url) => {
               var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
               var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
