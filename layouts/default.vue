@@ -38,10 +38,10 @@
         <li class="menu-items__item" v-show="isLoggedIn">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item" v-show="isLoggedIn">
+        <li class="menu-items__item" v-show="isLoggedIn && $store.state.user.role === 'admin'">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
-        <li class="menu-items__item" v-show="isLoggedIn">
+        <li class="menu-items__item" v-show="isLoggedIn && $store.state.user.role === 'admin'">
           <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
@@ -54,10 +54,10 @@
           <li class="menu-items__item" v-if="$fire.auth.currentUser">
             <nuxt-link to="/profile">View saved forms</nuxt-link>
           </li>
-          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
             <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
           </li>
-          <li class="menu-items__item" v-if="$fire.auth.currentUser">
+          <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
             <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
           </li>
         </ul>
