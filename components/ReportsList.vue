@@ -14,7 +14,8 @@
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="div">
         <div class="reports-list__report flip-list-item" v-for="(report, i) in sortedReports" :key="`report-type-${i}`">
-          <nuxt-link class="reports-list__report-link" :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`" v-if="page == 'reportsPage'">
+          <nuxt-link class="reports-list__report-link" v-if="page == 'reportsPage'"
+          :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span>{{report.CaseFileType}}</span>
@@ -42,7 +43,8 @@ export default {
     report: {},
     sortBy: 'JobId',
     sortDirection: 'info-bar__sort--asc',
-    reports: []
+    reports: [],
+    sketches: []
   }),
   computed: {
     sortedReports() {
@@ -57,6 +59,11 @@ export default {
     teamMemberName() {
       return this.reportslist.map((v) => {
         return v.teamMember.first + ' ' + v.teamMember.last
+      })
+    },
+    sketchReports() {
+      return this.reports.filter((v) => {
+        return v.ReportType === 'sketch-report'
       })
     }
   },

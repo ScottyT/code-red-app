@@ -10,14 +10,21 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    name: {
+    fname: {
+        type: String,
+        required: true
+    },
+    lname: {
         type: String,
         required: true
     },
     role: {
         type: String,
         required: true
-    }
+    },
+    savedreports: [
+        {type: mongoose.Schema.Types.ObjectId, ref: 'Logs'}
+    ]
 });
 userSchema.plugin(timestamps)
 module.exports = mongoose.model('Employee', userSchema)

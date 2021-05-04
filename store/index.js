@@ -7,7 +7,9 @@ export const state = () => ({
   employees: [],
   reports: [],
   creditCards:[],
-  jobids:[]
+  jobids:[],
+  logreports:[],
+  clonelogs: []
 })
 
 export const mutations = {
@@ -40,6 +42,21 @@ export const mutations = {
   },
   setJobIds: (state, payload) => {
     state.jobids = payload
+  },
+  setLogReports: (state, payload) => {
+    state.logreports = payload
+  },
+  setCloneLogs: (state, payload) => {
+    state.clonelogs = payload
+  },
+  deleteSavedRep: (state, payload) => {
+    for (var i = 0; i < state.clonelogs.length; i++) {
+      var obj = state.clonelogs[i];
+      if (payload._id === obj._id) {
+        state.clonelogs.splice(i, 1)
+        i--;
+      }
+    }
   }
 }
 
@@ -53,17 +70,12 @@ export const actions = {
       })
     }
     const employees = await $axios.$get("/api/employees")
-    const reports = await $axios.$get("/api/reports")
+    
     const creditcards = await $axios.$get("/api/credit-cards")
-    let newArr = reports.reduce((unique, o) => {
-      if (!unique.some(obj => obj.JobId === o.JobId && obj.ReportType === o.ReportType)) {
-        unique.push(o)
-      }
-      return unique
-    }, [])
+    
     commit('setEmployees', employees)
-    //commit('setReports', reports)
-    await dispatch('fetchReports')
+    
+    
     commit('setCreditCards', creditcards)
     commit('setUser', {
       email: null,
@@ -85,24 +97,48 @@ export const actions = {
             email: res.data.email,
             id: res.data.id,
             role: res.data.role,
-            name: res.data.name
+            name: res.data.fname + ' ' + res.data.lname
           })
-        })       
+        })
       } catch (e) {
         console.error(e)
       }
     }
   },
-  async fetchReports({ commit }) {
-    await this.$axios.$get("/api/reports").then((res) => {
-      commit('setReports', res)
-    }).catch((err) => {
-      commit('setError', err)
-    })
+  async fetchLogs({ commit, state }, authUser) {
+    if (authUser) {
+      await this.$axios.$get(`/api/employee/${state.user.email}`).then((res) => {
+        let copyArr = JSON.parse(JSON.stringify(res));
+        commit('setLogReports', res.savedreports)
+      }).catch((err) => {
+        commit('setError', err)
+      })
+    }   
+  },
+  async fetchReports({ commit, dispatch }, authUser) {
+    if (authUser) {
+      await authUser.getIdToken(true).then((idToken) => {
+        this.$axios.$get("/api/reports").then((res) => {
+          commit('setReports', res)
+          dispatch('mappingJobIds')
+        })
+      }).catch((err) => {
+        commit('setError', err)
+      })
+      /* await axios.get("https://code-red-lm5dxmp3ka-uc.a.run.app/api/reports", {
+        headers: {
+          'Authorization': `token ${authUser.getIdToken}`
+        }
+      }).then((res) => {
+        commit('setReports', res)
+      }).catch((err) => {
+        commit('setError', err)
+      }) */
+    }
   },
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
-      this.$router.push("/login")
+      this.$router.go()
       commit('setUser', {
         email: null,
         id: null,
@@ -121,8 +157,11 @@ export const actions = {
     })
   },
   mappingJobIds({commit, state}) {
-    const jobids = state.reports.map((v) => { return v.JobId })
+    const jobids = [...new Set(state.reports.map((v) => { return v.JobId }))]
     commit('setJobIds', jobids)
+  },
+  deleteSavedReport({commit}, item) {    
+    commit('deleteSavedRep', item)
   }
 }
 export const getters = {

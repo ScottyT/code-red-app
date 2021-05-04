@@ -7,8 +7,12 @@
             <p class="alert alert--error">{{errorMessage}}</p>
             <ValidationObserver ref="createUser" v-slot="{ passes }">
                 <form class="form" @submit.prevent="passes(onSubmit)">
-                    <ValidationProvider vid="name" name="Name" v-slot="{errors}" class="form__input--input-group-simple">
-                        <input v-model="name" type="text" placeholder="Name" class="form__input" />
+                    <ValidationProvider vid="fname" name="First name" v-slot="{errors}" class="form__input--input-group-simple">
+                        <input v-model="fname" type="text" placeholder="First name" class="form__input" />
+                        <span class="form__input--error">{{ errors.msg }}</span>
+                    </ValidationProvider>
+                    <ValidationProvider vid="lname" name="Last name" v-slot="{errors}" class="form__input--input-group-simple">
+                        <input v-model="lname" type="text" placeholder="Last name" class="form__input" />
                         <span class="form__input--error">{{ errors.msg }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="email" name="Email" v-slot="{errors}" class="form__input--input-group-simple">
@@ -43,7 +47,8 @@ export default {
     data() {
         return {
             errorMessage: '',
-            name: '',
+            fname: '',
+            lname: '',
             email: '',
             id: '',
             role: '',
@@ -60,13 +65,14 @@ export default {
     methods: {
         onSubmit() {
             const post = {
-                name: this.name,
+                fname: this.fname,
+                lname: this.lname,
                 email: this.email,
                 id: this.id,
                 role: this.role
             }
             this.$axios.$post("/api/auth/signup", {
-                name: this.name,
+                name: this.fname + " " + this.lname,
                 email: this.email,
                 password: this.password
             }).then((res) => {
@@ -75,7 +81,8 @@ export default {
             this.$axios.$post("/api/employee/new", post).then((res) => {
                 if (res.errors) {
                     this.$refs.createUser.setErrors({
-                        name: res.errors.find(obj => obj.param === 'name'),
+                        fname: res.errors.find(obj => obj.param === 'fname'),
+                        lname: res.errors.find(obj => obj.param === 'lname'),
                         email: res.errors.find(obj => obj.param === 'email'),
                         id: res.errors.find(obj => obj.param === 'id')
                     })

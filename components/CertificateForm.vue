@@ -410,7 +410,7 @@ export default {
         cardSubmitted: false
     }),
     computed: {
-        ...mapGetters(["isLoggedIn", "getUser", "getReports"]),
+        ...mapGetters(["getUser", "getReports"]),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -487,13 +487,11 @@ export default {
     },
     mounted() {
         this.checkStorage()
-        this.mappingJobIds()
     },
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',
-            checkStorage: 'indexDb/checkStorage',
-            mappingJobIds: 'mappingJobIds'
+            checkStorage: 'indexDb/checkStorage'
         }),
         selectedJob(option) {
             this.selectedJobId = option;

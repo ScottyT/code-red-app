@@ -6,7 +6,7 @@
         <ValidationObserver v-slot="{ handleSubmit }">
           <form ref="loginForm" class="form" method="post" @submit.prevent="handleSubmit(signIn)">
             <div class="form__form-group--block">
-              <ValidationProvider v-slot="{ errors }" name="email" rules="required|email" class="form__input--input-group-simple">
+              <ValidationProvider v-slot="{ errors }" name="Email" rules="required|email" class="form__input--input-group-simple">
                 <label for="email" class="form__label">Email</label>
                 <input type="text" class="form__input" name="email" id="email" v-model="email" />
                 <span class="form__input--error">{{errors[0]}}</span>
@@ -14,7 +14,7 @@
               <ValidationProvider v-slot="{ errors }" name="pass" rules="required" class="form__input--input-group-simple">
                 <label for="pass" class="form__label">Password</label>
                 <div class="form__input form__input--password-input">
-                  <input :type="passwordVisibility ? 'text' : 'password'" class="form-input" id="pass" name="pass" v-model="password" />
+                  <input :type="passwordVisibility ? 'text' : 'password'" class="form-input" id="pass" name="Password" v-model="password" />
                   <i :class="`form__input--icon mdi ${passwordVisibility ? 'mdi-eye-off' : 'mdi-eye'}`" @click="passwordVisibility = !passwordVisibility"></i>
                 </div>
                 <span class="form__input--error">{{errors[0]}}</span>
@@ -56,11 +56,10 @@ export default {
             this.submitting = true
             this.errorMessage = ""
             await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
-                this.submitting = false
-                /* this.$router.push("/") */
-                window.location = "/"
+                this.$router.go()
             }).catch(err => {
                 this.errorMessage = err.message
+                this.submitting = false
             })
         }
     }

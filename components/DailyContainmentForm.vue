@@ -378,13 +378,12 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
-      this.mappingJobIds()
+     // this.mappingJobIds()
     },
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage',
-        mappingJobIds: 'mappingJobIds'
+        checkStorage: 'indexDb/checkStorage'
       }),
       formatDate(dateReturned) {
         if (!dateReturned) return null
@@ -491,7 +490,6 @@
                 this.errorMessage = []
                 setTimeout(() => {
                   this.message = ""
-                  window.location = "/"
                 }, 2000)
               }).catch((err) => {
                 this.errorMessage.push(err)
@@ -502,7 +500,7 @@
             this.submitting = false
             this.errorMessage.push("Cannot have two containment reprots")
             return goTo(0)
-          }      
+          }  
         })
       }
     },

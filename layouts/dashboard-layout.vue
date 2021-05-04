@@ -57,7 +57,7 @@
       </template>
     </v-app-bar>
     <v-main>
-      <nuxt />
+      <nuxt class="pa-6" />
     </v-main>
     <v-footer dark :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -65,7 +65,7 @@
   </v-app>
 </template>
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 export default {
   data() {
     return {
@@ -97,6 +97,30 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Sketches',
+          to: '/sketches',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Atmospheric Readings',
+          to: '/atmospheric-readings',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/inventory-log',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Psychrometric Chart',
+          to: '/psychrometric-charting',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'
@@ -109,8 +133,9 @@ export default {
         },
         {
           icon: 'mdi-clipboard',
-          title: 'Reports',
-          to: '/reports'
+          title: 'Field Jacket',
+          to: '/field-jacket',
+          access: 'admin'
         },
         {
           icon: 'mdi-folder',
@@ -136,22 +161,18 @@ export default {
    // ...mapGetters(['getReports']),
   },
   methods: {
+    ...mapActions({
+      fetchReports: 'fetchReports',
+      fetchLogs: 'fetchLogs'
+    }),
     async signOut() {
       this.$store.dispatch("signout")
     }
   },
-  created() {
-    /* auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.user = user
-        this.$store.dispatch("fetchUser", user.email)
-        this.$store.dispatch("fetchEmployees")
-        
-      } else {
-        auth.signOut()
-        this.$router.push('/login')
-      }
-    }) */
+  mounted() {
+    this.$nextTick(() => {
+      this.fetchReports(this.$fire.auth.currentUser)
+    })
   }
 }
 </script>

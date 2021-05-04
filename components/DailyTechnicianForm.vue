@@ -664,23 +664,34 @@ export default {
                 verifySig: this.verifySig.data,
                 afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
                 notes: this.notes
-              }
-              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
-                  if (res.errors) {
-                    this.errorMessage = res.errors
-                    return goTo(0)
-                  }
-                  this.message = "Report submitted"
-                  this.errorMessage = []
+              };
+              if (this.$nuxt.isOffline) {
+                this.addReport(post).then(() => {
+                  this.message = "Report was saved successfully for submission later!"
                   this.submitted = true
                   this.submitting = false
-                    setTimeout(() => {
-                        this.message = ""
-                        window.location = "/"
-                    }, 2000)
-              }).catch((err) => {
-                  this.errorMessage = err
-              })
+                  setTimeout(() => {
+                    this.message = ""
+                  }, 2000)
+                })
+              } else {
+                  this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+                    if (res.errors) {
+                      this.errorMessage = res.errors
+                      return goTo(0)
+                    }
+                    this.message = "Report submitted"
+                    this.errorMessage = []
+                    this.submitted = true
+                    this.submitting = false
+                      setTimeout(() => {
+                          this.message = ""
+                          window.location = "/"
+                      }, 2000)
+                }).catch((err) => {
+                    this.errorMessage = err
+                })
+              }            
             } else {
               this.submitted = false
               this.submitting = false
@@ -723,7 +734,6 @@ export default {
         })
         this.createGeocoder();
         this.checkStorage();
-        this.mappingJobIds();
         
     },
     beforeDestroy() {

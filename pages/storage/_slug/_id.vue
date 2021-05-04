@@ -1,6 +1,6 @@
 <template>
   <div class="folder-contents-wrapper">
-    <breadcrumbs />
+    <breadcrumbs page="storage" />
     <folder-contents :path="`${repId}/${subfolder}`" />
   </div>
 </template>

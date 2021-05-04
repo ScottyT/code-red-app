@@ -462,6 +462,7 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
+      this.fetchReports()
     },
     computed: {
       ...mapGetters(['getUser']),
@@ -473,7 +474,8 @@
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage'
+        checkStorage: 'indexDb/checkStorage',
+        fetchReports: 'fetchReports'
       }),
       clear() {
         this.$refs.signaturePad.clearSignature();

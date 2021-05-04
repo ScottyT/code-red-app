@@ -1,5 +1,6 @@
 <template>
   <!-- This will be used for storing forms saved in offline mode -->
+  <!-- Might refactor later -->
   <div>
     <span v-if="!authUser"><login-form /></span>
     <div class="profile" v-else>
@@ -7,46 +8,65 @@
         <h1 class="text-center">Saved Forms</h1>
         <h2 v-show="message">{{message}}</h2>
       </div>
-      <!-- <ul v-if="$store.state.indexDb.reports.length > 0">
-        <li v-for="(report, i) in $store.state.indexDb.reports" :key="i">
-          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
-        </li>
-      </ul> -->
       <ul class="profile__group">
         <h3>Dispatch and Rapid Response Reports</h3>
         <li v-for="(report, i) in defaultReports" :key="`default-reports-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Containment Reports</h3>
         <li v-for="(report, i) in containmentReps" :key="`containment-reps-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.CaseFileType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Credit Card Reports</h3>
         <li v-for="(report, i) in creditCardReps" :key="`credit-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>Certificate of Completion Reports</h3>
         <li v-for="(report, i) in cocReports" :key="`coc-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group">
         <h3>AOB Mitigation Contract</h3>
-        <li v-for="(report, i) in aobReports" :key="`coc-${i}`">
+        <li v-for="(report, i) in aobReports" :key="`aob-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report, i)" class="button button--normal">Submit</button>
+            @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Sketch Reports</h3>
+        <li v-for="(report, i) in sketchReports" :key="`sketch-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group">
+        <h3>Chart Reports</h3>
+        <li v-for="(report, i) in chartReports" :key="`chart-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
+            @click="submitForm(report)" class="button button--normal">Submit</button>
+        </li>
+      </ul>
+      <ul class="profile__group block-group">
+        <h3>Logs</h3>
+        <div class="block-group--grid">
+          <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
+            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
+              <p>{{report.JobId}}</p>
+              <p>{{report.formType}}</p>
+            </nuxt-link>
+          </li>
+        </div>       
       </ul>
     </div>
   </div>
@@ -107,43 +127,70 @@
         return this.getSavedReports.filter((v) => {
           return v.ReportType == 'aob'
         })
+      },
+      sketchReports() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType == 'sketch-report'
+        })
+      },
+      logReports() {
+        var savedLogs = this.getSavedReports.filter((v) => {
+          return v.ReportType == 'logs-report'
+        })
+        var concatlogs = savedLogs.concat(this.$store.state.logreports)
+        let checkKeyPresenceInArray = key => this.$store.state.logreports.some(obj => Object.keys(obj).includes(key));
+        if (checkKeyPresenceInArray('_id') && this.$nuxt.isOnline) {
+          const result = Array.from(new Set(concatlogs.map(s => s._id)))
+            .map(id => {
+              return {
+                _id: id,
+                JobId: concatlogs.find(s => s._id === id).JobId,
+                formType: concatlogs.find(s => s._id === id).formType
+              }
+            });
+            return result
+        }
+        return concatlogs
+      },
+      chartReports() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType === 'chart-report'
+        })
+      },
+      isOnline() {
+        return this.$nuxt.isOnline
+      }
+    },
+    watch: {
+      isOnline(val) {
+        if (val) {
+          this.fetchLogs(this.$fire.auth.currentUser)
+        } else {
+          this.checkStorage()
+        }
       }
     },
     mounted() {
       this.checkStorage()
+      this.fetchLogs(this.$fire.auth.currentUser)
       this.$nextTick(() => {
         this.authUser = this.$fire.auth.currentUser ? true : false
+        
       })
     },
-    async asyncData({
-      $axios
-    }) {
-      try {
-        let data = await $axios.$get("/api/employees");
-        return {
-          employees: data
-        }
-      } catch (e) {
-        console.log("something happened:", e)
-      }
-    },
-    async asyncData({$axios}) {
-        try {
-            let data = await $axios.$get("/api/employees");
-            return { employees: data}
-        } catch (e) {
-            console.log("something happened:", e)
-        }
-    },
-    
     methods: {
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
-        deleteReport: 'indexDb/deleteReport'
+        deleteReport: 'indexDb/deleteReport',
+        fetchLogs: 'fetchLogs'
       }),
-      async submitForm(post, index) {
+      submitForm(post) {
          try {           
           this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
+            if (res.errors) {
+              this.message = "Something went wrong"
+              return;
+            }
             if (post.ReportType == 'rapid-response') {
               Object.keys(post).forEach(k => {
                 if (k == "photoId") {                 
@@ -162,13 +209,13 @@
               this.message = ""
             }, 2000)
             this.deleteReport(post)
-          })            
+            this.fetchReports()
+          })         
         } catch (e) {
           this.message = e
-        }
-        
+        }        
       },
-      async submitFiles(report, uploadarr, element) {
+      submitFiles(report, uploadarr, element) {
         const today = new Date()
         const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
         uploadarr.forEach((file) => {
@@ -231,6 +278,7 @@
     grid-column:1/4;
   }
   &__group {
+    margin-bottom:10px;
     li {
       padding-bottom:10px;
     }

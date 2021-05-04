@@ -64,7 +64,7 @@
       </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
-      <nuxt />
+      <nuxt class="mt-6 mb-6" />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -107,6 +107,30 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'Sketches',
+          to: '/sketches',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Atmospheric Readings',
+          to: '/atmospheric-readings',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/inventory-log',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Psychrometric Chart',
+          to: '/psychrometric-charting',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
           to: '/aob-contract-form',
           access: 'user'
@@ -119,8 +143,8 @@ export default {
         },
         {
           icon: 'mdi-clipboard',
-          title: 'Reports',
-          to: '/reports',
+          title: 'Field Jacket',
+          to: '/field-jacket',
           access: 'admin'
         },
         {
@@ -145,10 +169,21 @@ export default {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
     ...mapGetters(["getUser", "isLoggedIn"]),
+    isOnline() {
+      return this.$nuxt.isOnline
+    }
+  },
+  watch: {
+    isOnline(val) {
+      if (val) {
+        this.fetchReports(this.$fire.auth.currentUser)
+      }
+    }
   },
   methods: {
     ...mapActions({
-      fetchReports: 'fetchReports'
+      fetchReports: 'fetchReports',
+      fetchLogs: 'fetchLogs'
     }),
     async signOut() {
       this.$store.dispatch("signout")
@@ -156,7 +191,7 @@ export default {
   },
   mounted() {   
     this.$nextTick(() => {
-      this.fetchReports()
+      this.fetchReports(this.$fire.auth.currentUser)
     })
   }
 }
