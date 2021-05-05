@@ -1,7 +1,6 @@
 <template>
     <div>
-        <span v-if="!authUser"><LazyLoginForm /></span>
-        <LazySketchForms v-else :formname="formName" />
+        <FormsSketch :formname="formName" />
     </div>
 </template>
 <script>
@@ -9,11 +8,6 @@ export default {
     head() {
         return {
             title: "Sketch"
-        }
-    },
-    data() {
-        return {
-            authUser: false
         }
     },
     /* async middleware({store, redirect}) {
@@ -41,11 +35,6 @@ export default {
         } catch(e) {
 
         }
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser
-        })
     }
 }
 </script>

@@ -1,7 +1,6 @@
 <template>
   <div>
-    <span v-if="!authUser"><LazyLoginForm /></span>
-    <lazy-slices-block v-else :slices="slices" />
+    <lazy-slices-block :slices="slices" />
   </div>
 </template>
 <script>
@@ -36,11 +35,6 @@ export default {
     } else {
       error({ statusCode: 404, message: 'Page not found' })
     }
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.authUser = this.$fire.auth.currentUser ? true : false
-    })
-  },
+  }
 }
 </script>

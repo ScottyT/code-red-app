@@ -1,8 +1,6 @@
 <template>
   <div>
-    <span v-if="!authUser">
-      <LazyLoginForm /></span>
-    <LazyDailyTechnicianForm v-else />
+      <FormsDailyTechnician />
   </div>
 </template>
 <script>
@@ -15,18 +13,8 @@
         title: "Daily Technician Form"
       }
     },
-    data() {
-        return {
-            authUser: false
-        }
-    },
     computed: {
         ...mapGetters(["isLoggedIn"])
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser ? true : false
-        })
-    },
+    }
   }
 </script>

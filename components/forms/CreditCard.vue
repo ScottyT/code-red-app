@@ -182,7 +182,7 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
   export default {
-    name: "CreditCardForm",
+    name: "CreditCard",
     data: (vm) => ({
         currentStep:1,
         message: '',

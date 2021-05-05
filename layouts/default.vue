@@ -64,7 +64,8 @@
       </template>
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
-      <nuxt class="mt-6 mb-6" />
+      <span v-if="!user"><LazyFormsLogin /></span>
+      <nuxt class="mt-6 mb-6" v-else />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -158,7 +159,7 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Code Red Claims',
-      user: null
+      user: false,
     }
   },
   computed: {
@@ -191,6 +192,7 @@ export default {
   },
   mounted() {   
     this.$nextTick(() => {
+      this.user = this.$fire.auth.currentUser ? true : false
       this.fetchReports(this.$fire.auth.currentUser)
     })
   }

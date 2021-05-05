@@ -2,7 +2,7 @@
     <div class="chart-wrapper">
         <span>
             <img class="chart-wrapper__bgimage" :src="bgimage" />
-            <canvas id="chart" width=943 height=642></canvas>
+            <canvas ref="chart" id="chart" width=943 height=642></canvas>
             <!-- <canvas id="copy" width=943 height=642></canvas> -->
         </span>
         <div class="button-wrapper">
@@ -54,6 +54,7 @@ export default {
             storedImage = signaturePad.toDataURL()
         }
         function resizeCanvas() {
+            console.log("resize")
             var ratio =  Math.max(window.devicePixelRatio || 1, 1);
             // This part causes the canvas to be cleared
             canvas.width = canvas.offsetWidth * ratio;
@@ -132,7 +133,7 @@ export default {
     }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .chart-wrapper {
     display:flex;
     flex-direction: column;

@@ -1,13 +1,11 @@
 <template>
   <div class="folder-contents-wrapper">
-    <breadcrumbs page="storage" />
-    <folder-contents :path="`${repId}/${subfolder}`" />
+    <UiBreadcrumbs page="storage" />
+    <FolderContents :path="`${repId}/${subfolder}`" />
   </div>
 </template>
 <script>
-import FolderContents from '~/components/FolderContents.vue'
 export default {
-  components: { FolderContents },
   data: () => ({
     files: []
   }),

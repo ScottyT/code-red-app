@@ -1,7 +1,6 @@
 <template>
   <div class="storage-page">
-    <login-form v-if="!authUser" />
-    <reports-list :reportslist="reports" :sortoptions="sortOptions" page="storagePage" />
+    <LayoutReportsList :reportslist="reports" :sortoptions="sortOptions" page="storagePage" />
   </div>
 </template>
 <script>

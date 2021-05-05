@@ -206,7 +206,7 @@
               <div class="form__form-group">
                 <div class="form__input-wrapper">
                   <label class="form__label">Sign for Verification</label>
-                  <lazy-signature-pad-modal :sigData="verifySig" sigRef="verifySignaturePad" />
+                  <LazyUiSignaturePadModal :sigData="verifySig" sigRef="verifySignaturePad" />
                 </div>
               </div>
             </div>
@@ -223,7 +223,6 @@ import goTo from 'vuetify/es5/services/goto'
   } from 'vuex';
   import moment from 'moment';
 export default {
-    name: "DailyTechnicianForm",
     data: (vm) => ({
         jobId: null,
         date: new Date().toISOString().substr(0, 10),
@@ -581,8 +580,7 @@ export default {
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage',
-        mappingJobIds: 'mappingJobIds'
+        checkStorage: 'indexDb/checkStorage'
       }),
       formatDate(dateReturned) {
         if (!dateReturned) return null
@@ -729,12 +727,8 @@ export default {
       })
     },
     mounted() {
-      this.$nextTick(() => {
-          this.authUser = this.$fire.auth.currentUser ? true : false
-        })
-        this.createGeocoder();
-        this.checkStorage();
-        
+      this.createGeocoder();
+      this.checkStorage();        
     },
     beforeDestroy() {
       this.$nuxt.$off('location-updated')

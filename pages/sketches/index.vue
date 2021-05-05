@@ -1,7 +1,6 @@
 <template>
-  <LazyLoginForm v-if="!authUser" />
-  <div class="sketch-forms pa-6" v-else>
-    <LazyBreadcrumbs page="Sketches" />
+  <div class="sketch-forms pa-6">
+    <UiBreadcrumbs page="Sketches" />
     <h1>Sketch Forms</h1>
     <ul class="menu-items">
       <li v-for="form in sketchForms" :key="form.value">

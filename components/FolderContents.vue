@@ -50,17 +50,10 @@
   </div>
 </template>
 <script>
-import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import axios from 'axios'
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import Breadcrumbs from './Breadcrumbs.vue'
 export default {
-  components: {
-    Breadcrumbs,
-    ValidationProvider,
-    ValidationObserver
-  },
   name: "FolderContents",
   data: () => ({
     files: [],

@@ -4,29 +4,29 @@
             <h3 class="reports-wrapper__heading">
                 Sketch Reports
             </h3>
-            <LazyReports :reports="sketchReports" theme="light" />
+            <LayoutReports :reports="sketchReports" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Log Reports
             </h3>
-            <LazyReports :reports="logReports" theme="light" />
+            <LayoutReports :reports="logReports" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">Charts</h3>
-            <LazyReports :reports="chartData" theme="light" />
+            <LayoutReports :reports="chartData" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Dispatch and Rapid Response Reports
             </h3>
-            <LazyReports :reports="defaultData" theme="light" />
+            <LayoutReports :reports="defaultData" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Daily Containment and Tech Reports
             </h3>
-            <LazyReports :reports="conTechData" theme="light" />
+            <LayoutReports :reports="conTechData" theme="light" />
         </div>
     </div>
 </template>

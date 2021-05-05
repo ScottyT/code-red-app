@@ -767,7 +767,7 @@
               </ValidationProvider>
               <span>
                   <label class="form__label">Property Representative Signature:</label>
-                  <lazy-signature-pad-modal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
+                  <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
               </span>
               <span>
                   <ValidationProvider class="form__input--input-group" name="Representative of" rules="required" v-slot="{errors}">
@@ -836,12 +836,9 @@
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
           </div>
-          <!-- <div class="form__form-group ">
-            <VueSignaturePad class="form__input" width="100%" height="100%" id="sketch" ref="sketchPad" :options="{onBegin}" />
-          </div> -->
         </fieldset>
         <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-          <CreditCardForm ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
+          <LazyCreditCard ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
           :jobId="selectedJobId" :repPrint="repPrint" @submit="submitForm" @cardSubmit="cardSubmittedValue" />
         </div>
         <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Card'">Next</v-btn>
@@ -854,11 +851,7 @@
 import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
   export default {
-    name: "AOBContractForm",
     props: ['company', 'abbreviation'],
-    components: {
-      CreditCardForm: () => import('./CreditCardForm.vue')
-    },
     computed: {
         ...mapGetters(['getReports', 'getUser']),
         insuredPay1: {
@@ -1157,13 +1150,6 @@ import {mapGetters, mapActions} from 'vuex'
     },
     mounted() {
         this.checkStorage()
-        //this.mappingJobIds()
     }
   }
 </script>
-<style lang="scss">
-#sketchPad {
-  max-width:800px;
-  height:600px;
-}
-</style>

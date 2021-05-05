@@ -1,17 +1,17 @@
 <template>
     <div class="report-details-wrapper pa-6">
-        <LazyBreadcrumbs page="field-jacket" :displayStrip="false" />
+        <UiBreadcrumbs page="field-jacket" :displayStrip="false" />
         <!-- <h1>{{formName}} for job {{jobId}}</h1> -->
 
         
         <span v-if="reportType === 'dispatch'">
-            <LazyReportDetails :report="report" />
+            <LayoutReportDetails :report="report" />
         </span>
         <span v-if="reportType === 'rapid-response'">
-            <LazyResponseReportDetails :report="report" />
+            <LayoutResponseReportDetails :report="report" />
         </span>
         <span v-if="report.ReportType === 'case-file'">
-            <LazyCaseFileDetails :report="report" />
+            <LayoutCaseFileDetails :report="report" />
         </span>
     </div>
 </template>

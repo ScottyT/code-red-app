@@ -169,7 +169,7 @@
           <div class="form__form-group">
             <div class="form__input-wrapper">
               <label class="form__label">Sign for Verification</label>
-              <lazy-signature-pad-modal :sigData="verifySig" sigRef="verifySignaturePad" />
+              <LazyUiSignaturePadModal :sigData="verifySig" sigRef="verifySignaturePad" />
             </div>
           </div>
         </div>
@@ -186,7 +186,6 @@
   import goTo from 'vuetify/es5/services/goto'
   import moment from 'moment';
   export default {
-    name: "DailyContainmentForm",
     data: (vm) => ({
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -378,7 +377,6 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
-     // this.mappingJobIds()
     },
     methods: {
       ...mapActions({

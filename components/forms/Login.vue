@@ -31,7 +31,6 @@
 <script>
 import {mapGetters} from 'vuex';
 export default {
-    name: "LoginForm",
     data() {
         return {
             submitted: false,
@@ -43,6 +42,11 @@ export default {
             passwordVisibility: false,
             errorMessage: ""
         }
+    },
+    head() {
+      return {
+        title: "Login"
+      }
     },
     computed: {
         ...mapGetters(["getUser"]),

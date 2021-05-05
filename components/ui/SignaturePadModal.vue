@@ -57,9 +57,13 @@ export default {
       } = this.$refs[this.sigRef].saveSignature();
       this.sigData.isEmpty = isEmpty
       this.$nextTick(() => {
+        console.log(this.$refs)
         this.$refs[this.sigRef].resizeCanvas()
       })
     },
+  },
+  created() {
+
   }
 }
 </script>

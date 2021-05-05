@@ -2,7 +2,7 @@
   <div class="reports-list">
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
-        <autocomplete @clicked="displayResult" :items="reportslist" :placeholderText="'Search for reports...'" />
+        <UiAutocomplete @sendReportsToParent="reportsfetched" :items="reportslist" theme="light" />
       </div>
       <div class="info-bar__sort">
           <label class="info-bar__sort--label">Sort By:</label>
@@ -48,7 +48,7 @@ export default {
   }),
   computed: {
     sortedReports() {
-      return this.reportslist.sort((r1, r2) => {
+      return this.reports.sort((r1, r2) => {
         let modifier = 1
         if (this.sortDirection === 'info-bar__sort--desc') modifier = -1;
         if (r1[this.sortBy] < r2[this.sortBy]) return -1 * modifier;
@@ -57,13 +57,8 @@ export default {
       })
     },
     teamMemberName() {
-      return this.reportslist.map((v) => {
-        return v.teamMember.first + ' ' + v.teamMember.last
-      })
-    },
-    sketchReports() {
-      return this.reports.filter((v) => {
-        return v.ReportType === 'sketch-report'
+      return this.reports.map((v) => {
+        return v.teamMember.name
       })
     }
   },
@@ -71,10 +66,8 @@ export default {
     ...mapActions({
       sortReports: 'sortReports'
     }),
-    displayResult(value) {
-      this.report = this.reportslist.find(e => {
-        return e.JobId == value
-      })
+    reportsfetched(reports) {
+      this.reports = reports
     },
     sortValue(s) {
       if (s.value === this.sortBy) {
@@ -82,16 +75,19 @@ export default {
       }
       this.sortBy = s.value
     },
-    formattingTeamMember() {
+    /* formattingTeamMember() {
       this.sortedReports.forEach((v) => {
         if (v.teamMember) {
           v.teamMember = v.teamMember.first + ' ' + v.teamMember.last
         }       
       })
-    }
+    } */
+  },
+  created() {
+    this.reports = this.reportslist
   },
   mounted() {
-    this.formattingTeamMember()
+    //this.formattingTeamMember()
   }
 }
 </script>

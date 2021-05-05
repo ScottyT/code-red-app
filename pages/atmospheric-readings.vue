@@ -1,6 +1,5 @@
 <template>
-    <LazyLoginForm v-if="!authUser" />
-    <div class="form-wrapper" v-else>
+    <div class="form-wrapper">
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">ATMOSPHERIC READINGS</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
@@ -274,8 +273,7 @@ export default {
         initDateModal: false,
         endDateModal: false,
         notes: "",
-        submitted: false,
-        authUser: false
+        submitted: false
     }),
     head() {
         return {
@@ -374,9 +372,6 @@ export default {
     },
     mounted() {
         this.checkStorage()
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser ? true : false
-        })
     }
 }
 </script>

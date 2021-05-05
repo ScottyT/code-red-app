@@ -20,7 +20,6 @@
 </template>
 <script>
 export default {
-    name:"SketchPdf",
     props: ['formType', 'formName', 'reportType', 'report', 'company'],
     data() {
         return {

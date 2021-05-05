@@ -7,7 +7,7 @@ export const state = () => ({
   employees: [],
   reports: [],
   creditCards:[],
-  jobids:[],
+  jobids:null,
   logreports:[],
   clonelogs: []
 })
@@ -152,13 +152,12 @@ export const actions = {
       let modifier = 1
       if (sortDirection === 'info-bar__sort--desc') modifier = -1;
       if (r1[this.sortBy] < r2[this.sortBy]) return -1 * modifier;
-      if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;
-      
+      if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;     
     })
   },
   mappingJobIds({commit, state}) {
     const jobids = [...new Set(state.reports.map((v) => { return v.JobId }))]
-    commit('setJobIds', jobids)
+    commit('setJobIds', ...jobids)
   },
   deleteSavedReport({commit}, item) {    
     commit('deleteSavedRep', item)

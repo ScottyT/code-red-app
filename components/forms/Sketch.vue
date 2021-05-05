@@ -1,5 +1,5 @@
 <template>
-    <span><LazyBreadcrumbs page="Sketches" />
+    <span><UiBreadcrumbs page="Sketches" />
     <div class="form-wrapper">
         <h1>{{formname}}</h1>
         <h2>{{submittedMessage}}</h2>
@@ -39,7 +39,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
-    name: "SketchForms",
     props: ['formname'],
     data() {
         return {
@@ -133,6 +132,15 @@ export default {
     },
     mounted() {
         this.checkStorage()
+        this.$nextTick(() => {
+            this.$refs.sketchRef.resizeCanvas()
+        })
     }
 }
-</script>                                                                                                                                       
+</script>
+<style lang="scss">
+#sketchPad {
+  max-width:1200px;
+  height:600px;
+}
+</style>

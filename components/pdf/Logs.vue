@@ -122,7 +122,6 @@
 </template>
 <script>
 export default {
-    name: "LogsPdf",
     props: ['formType', 'formName', 'reportType', 'report', 'company'],
     data() {
         return {

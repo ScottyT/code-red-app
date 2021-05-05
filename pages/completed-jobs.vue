@@ -5,7 +5,7 @@
             <client-only>
             <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                         :show-layout="false" :ref="`html2Pdf-${i}`">
-                <lazy-certificate-content :certificate="item" company="Water Emergency Services Incorporated" abbreviation="WESI" @domRendered="domRendered()" slot="pdf-content" />
+                <PdfCertificateContent :certificate="item" company="Water Emergency Services Incorporated" abbreviation="WESI" @domRendered="domRendered()" slot="pdf-content" />
             </vue-html2pdf>
             </client-only>
             <v-btn @click="generateReport(i)">Download PDF</v-btn>

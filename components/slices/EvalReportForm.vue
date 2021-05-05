@@ -247,7 +247,7 @@
             <div class="form__input--input-group">
               <label class="form__label">Team Member Signature</label>
               <div class="form__input-wrapper">
-                <lazy-signature-pad-modal :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
+                <LazyUiSignaturePadModal :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
               </div>
             </div>          
           </div>
@@ -435,6 +435,7 @@
     },
     created() {
       this.$nuxt.$on('location-updated', (event) => {
+        console.log('created')
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
         const accessToken = process.env.mapboxKey
@@ -462,7 +463,6 @@
     mounted() {
       this.createGeocoder()
       this.checkStorage()
-      this.fetchReports()
     },
     computed: {
       ...mapGetters(['getUser']),
@@ -474,8 +474,7 @@
     methods: {
       ...mapActions({
         addReport: 'indexDb/addReport',
-        checkStorage: 'indexDb/checkStorage',
-        fetchReports: 'fetchReports'
+        checkStorage: 'indexDb/checkStorage'
       }),
       clear() {
         this.$refs.signaturePad.clearSignature();

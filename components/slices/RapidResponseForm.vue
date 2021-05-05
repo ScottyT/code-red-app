@@ -373,13 +373,13 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>            
-              <lazy-signature-pad-modal :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />          
+              <LazyUiSignaturePadModal :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />         
             </div>
           </div>
           <div class="form__form-group">
             <div class="form__input-wrapper">
               <label class="form__label">Team Member (Signature)</label>
-              <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
+              <LazyUiSignaturePadModal :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
             </div>
           </div>
         </div>
@@ -708,7 +708,6 @@
     },
     mounted() {
       this.createGeocoder()
-      this.fetchReports()
       this.checkStorage()
     },
     created() {
@@ -748,8 +747,7 @@
       ...mapActions({
         addReport: 'indexDb/addReport',
         checkStorage: 'indexDb/checkStorage',
-        resetForm: 'indexDb/resetReport',
-        fetchReports: 'fetchReports'
+        resetForm: 'indexDb/resetReport'
       }),
       
       submitForm() {
@@ -757,10 +755,6 @@
         const evaluationLogs = []
         const user = this.getUser
         const reports = this.getReports.map((v) => { return v.JobId });
-        const userNameObj = {
-          first: user.name.split(" ")[0],
-          last: user.name.split(" ")[1]
-        }
         let scrollTo = 0
         evaluationLogs.push({label: 'Team Arrival at Property', value: this.arrivalFormatted}, {label: 'Evaluation Report Start Time', value: this.evalStartFormatted}, {label: 'Evaluation Report End Time', value: this.evalEndFormatted}, {label: 'Time of Contract Signing', value: this.contractFormatted}, {label: 'Time of Denail of Services', value: this.dosformatted}, {label: 'Team Departure of Property', value: this.departureTimeFormatted});
         this.$refs.form.validate().then(success => {
@@ -796,9 +790,8 @@
               customerSig: this.cusSignature.data,
               PicturesTypes: this.selectedPictures,
               id: user.id,
-              uid: user.uid,
               signDate: this.signDate,
-              teamMember: userNameObj,
+              teamMember: this.getUser,
               photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
               timeIntrusion: this.timeIntrusionFormatted,

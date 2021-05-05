@@ -1,6 +1,5 @@
 <template>
-    <LazyLoginForm v-if="!authUser" />
-    <div class="form-wrapper" v-else>
+    <div class="form-wrapper">
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">Psychrometric Charting</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
@@ -21,7 +20,7 @@
                 
                 <ValidationProvider class="form__form-group" vid="chart" name="Chart" v-slot="{errors, ariaMsg}">
                     <input type="hidden" v-model="chartImg" />
-                    <LazyChartPad ref="chartPad" @chartimage="getChart" />                       
+                    <LazyUiChartPad ref="chartPad" @chartimage="getChart" />                       
                     <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
                 </ValidationProvider>
                 <v-btn class="button--normal" type="submit">Submit</v-btn>
@@ -117,6 +116,7 @@ export default {
         }
     },
     mounted() {
+        console.log(this.$refs)
         this.$nextTick(() => {
             this.authUser = this.$fire.auth.currentUser ? true : false
         })

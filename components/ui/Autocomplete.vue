@@ -2,7 +2,7 @@
     <div class="autocomplete" :class="{ 'is-focused': inputFocused === true }">
         <label class="autocomplete__placeholder" for="searchbox">{{placeholderText}}</label>
         <input class="autocomplete__input" :class="theme === 'light' ? 'autocomplete__input--light' : 'autocomplete__input--dark'" 
-            ref="searchText" @change="sendReportsToParent" placeholder="Search..." type="text" v-model="search" />      
+            ref="searchText" @change="sendReportsToParent" placeholder="Search..." type="text" v-model="search" />    
     </div>
 </template>
 <script>
@@ -33,20 +33,12 @@ export default {
         }
     },
     computed: {
-        filteredItems() {
-           
+        filteredItems() {          
            return this.items.filter((x) => {
                return x.JobId.indexOf(this.search) >= 0;
            })
         }
     },
-    /* watch: {
-        search(val) {           
-            this.items.filter((item) => {
-                return item.JobId.indexOf(this.search) >= 0
-            })
-        }
-    }, */
     methods: {
         sendReportsToParent() {
             this.$emit('sendReportsToParent', this.filteredItems)

@@ -220,7 +220,7 @@
                             <span>
                                 <div class="form__input--input-group">
                                     <label for="repSign" class="form__label">Representative (Sign)</label>
-                                    <lazy-signature-pad-modal :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
+                                    <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
                                 </div>
                                 <div class="form__input--input-group">
                                     <label for="dateRepSign" class="form__label">Date</label>
@@ -240,7 +240,7 @@
                             <span>
                                 <div class="form__input--input-group">
                                     <label for="teamSign" class="form__label">Team Member (Sign)</label>
-                                    <lazy-signature-pad-modal :sigData="teamMemberSig" sigRef="teamMemberSigPad" name="Team Member Signature" />
+                                    <LazyUiSignaturePadModal :sigData="teamMemberSig" sigRef="teamMemberSigPad" name="Team Member Signature" />
                                 </div>
                                 <div class="form__input--input-group">
                                     <label for="dateTeamSign" class="form__label">Date</label>
@@ -297,7 +297,7 @@
                         </div>
                     </fieldset>
                     <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-                        <CreditCardForm ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+                        <LazyCreditCard ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
                             @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                     </div>
                     <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Card' && existingCreditCard == 'No')">Next</v-btn>
@@ -310,11 +310,7 @@
 import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
 export default {
-    name:"CertificateForm",
     props: ['company', 'abbreviation'],
-    components: {
-        CreditCardForm: () => import('./CreditCardForm.vue')
-    },
     data: (vm) => ({
         currentStep:1,
         message: '',

@@ -2,8 +2,7 @@
   <!-- This will be used for storing forms saved in offline mode -->
   <!-- Might refactor later -->
   <div>
-    <span v-if="!authUser"><login-form /></span>
-    <div class="profile" v-else>
+    <div class="profile">
       <div class="profile__title">
         <h1 class="text-center">Saved Forms</h1>
         <h2 v-show="message">{{message}}</h2>
@@ -89,8 +88,7 @@
         savedReports: [],
         message: "",
         employees: [],
-        filesUploading: [],
-        authUser: false
+        filesUploading: []
       }
     },
     computed: {
@@ -173,10 +171,6 @@
     mounted() {
       this.checkStorage()
       this.fetchLogs(this.$fire.auth.currentUser)
-      this.$nextTick(() => {
-        this.authUser = this.$fire.auth.currentUser ? true : false
-        
-      })
     },
     methods: {
       ...mapActions({

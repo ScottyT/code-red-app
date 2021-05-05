@@ -5,7 +5,7 @@
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="9000" :manual-pagination="true"
                     :show-layout="false" :ref="`aobhtml2pdf-${i}`">
-                    <lazy-aob-contract-content @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
+                    <PdfAobContract @domRendered="domRendered()" slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                 </vue-html2pdf>
             </client-only>
             <v-btn @click="generateReport(i)">Download PDF</v-btn> 

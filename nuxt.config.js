@@ -76,7 +76,13 @@ export default {
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
    */
-  components: true,
+  components: [
+    {path: '~/components/forms/', prefix: 'forms'},
+    {path: '~/components/ui/', prefix: 'ui'},
+    {path: '~/components/pdf/', prefix: 'pdf'},
+    {path: '~/components/templates/', prefix: 'layout'},
+    '~/components'
+  ],
   /*
    ** Nuxt.js dev-modules
    */

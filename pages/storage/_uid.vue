@@ -1,14 +1,12 @@
 <template>
   <div class="folder-contents-wrapper">
-    <breadcrumbs page="storage" />
-    <folder-contents :path="this.$route.params.uid" />
+    <UiBreadcrumbs page="storage" />
+    <FolderContents :path="this.$route.params.uid" />
   </div>
 </template>
 <script>
 import {mapGetters} from 'vuex'
-import FolderContents from '~/components/FolderContents.vue'
 export default {
-  components: { FolderContents },
   data: () => ({
     folders: [],
     subfolders: []

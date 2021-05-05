@@ -1,10 +1,6 @@
 <template>
-  <div>  
-    <span v-if="!authUser">
-      <LazyLoginForm />
-    </span>
-    
-    <lazy-slices-block v-else :slices="slices" />
+  <div>    
+    <lazy-slices-block :slices="slices" />
     <v-flex xs12 sm8 md6>
       <div class="text-center"></div>
     </v-flex>
@@ -45,11 +41,6 @@ export default {
     /* ...mapActions({
       fetchReports: 'fetchReports'
     }) */
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.authUser = this.$fire.auth.currentUser ? true : false
-    })
   },
   data() {
     return {

@@ -1,7 +1,6 @@
 <template>
     <div>
-        <span v-if="!authUser"><LazyLoginForm /></span>
-        <LazyCertificateForm v-else company="Water Emergency Services Incorporated" abbreviation="WESI" />
+        <FormsCertificate company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </div>
 </template>
 <script>
@@ -12,18 +11,8 @@ export default {
             title: "Certificate of Completion"
         }
     },
-    data() {
-        return {
-            authUser: false
-        }
-    },
     computed: {
         ...mapGetters(["isLoggedIn"])
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser ? true : false
-        })
     }
 }
 </script>

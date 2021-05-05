@@ -1,7 +1,6 @@
 <template>
     <div>
-        <span v-if="!authUser"><LazyLoginForm /></span>
-        <LazyAOBContractForm v-else company="Water Emergency Services Incorporated" abbreviation="WESI" />
+        <FormsAOBContract company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </div>
 </template>
 <script>
@@ -11,16 +10,6 @@ export default {
         return {
             title: "AOB & Mitigation Contract"
         }
-    },
-    data() {
-        return {
-            authUser: false
-        }
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.authUser = this.$fire.auth.currentUser ? true : false
-        })
     },
     computed: {
         ...mapGetters(["isLoggedIn"])
