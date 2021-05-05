@@ -18,9 +18,7 @@
     </div>
 </template>
 <script>
-import Autocomplete from './Autocomplete.vue'
   export default {
-    components: { Autocomplete },
     name: "ReportsDash",
     props: ['reports', 'employees', 'shadowArr'],
     data: () => ({

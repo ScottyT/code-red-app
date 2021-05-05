@@ -1,6 +1,6 @@
 <template>
   <div class="block-group">
-    <LazyAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
+    <autocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
       <div class="reports-wrapper__data block-group__col" v-for="(item, i) in fetchreports" :key="`item-${i}`">
         <nuxt-link :to="`/field-jacket/${routeSwitching(item)}/${item.JobId}`">

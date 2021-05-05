@@ -2,7 +2,7 @@
   <div class="reports-list">
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
-        <lazy-autocomplete @clicked="displayResult" :items="reportslist" :placeholderText="'Search for reports...'" />
+        <autocomplete @clicked="displayResult" :items="reportslist" :placeholderText="'Search for reports...'" />
       </div>
       <div class="info-bar__sort">
           <label class="info-bar__sort--label">Sort By:</label>

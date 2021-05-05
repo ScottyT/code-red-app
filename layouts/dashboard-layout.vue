@@ -164,7 +164,7 @@ export default {
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser", "getEmployees"]),
+    ...mapGetters(["getUser", "getEmployees", "isLoggedIn"]),
    // ...mapGetters(['getReports']),
   },
   methods: {
