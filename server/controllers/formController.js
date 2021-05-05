@@ -185,11 +185,7 @@ const createAOB = async (req, res) => {
     })
 }
 const createDispatch = async (req, res) => {
-    const errorFormatter = ({ msg, param, value, nestedErrors }) => {
-        // Build your resulting errors however you want! String, object, whatever - it works!
-        return `${param}: ${msg}`;
-    };
-    const result = validationResult(req).formatWith(errorFormatter);       
+    const errors = validationResult(req);       
     const dispatch = new Dispatch({
         ArrivalContactName: req.body.ArrivalContactName,
         JobId: req.body.JobId,
@@ -211,8 +207,8 @@ const createDispatch = async (req, res) => {
         teamMemberSig: req.body.teamMemberSig,
         signDateTime: req.body.signDate
     });
-    if (!result.isEmpty()) {
-        return res.json({ errors: result.array() })
+    if (!errors.isEmpty()) {
+        return res.json(errors)
     }
     await dispatch.save().then(() => {
         res.json({message: "Report submitted"})
@@ -221,11 +217,7 @@ const createDispatch = async (req, res) => {
     })
 }
 const createRapidResponse = async (req, res) => {
-    const errorFormatter = ({ msg, param, value, nestedErrors }) => {
-        // Build your resulting errors however you want! String, object, whatever - it works!
-        return `${param}: ${msg}`;
-    };
-    const result = validationResult(req).formatWith(errorFormatter);
+    const errors = validationResult(req);
     const rapid = new RapidResponse({
         JobId: req.body.JobId,
         DateOfLoss: req.body.DateOfLoss,
@@ -253,10 +245,12 @@ const createRapidResponse = async (req, res) => {
         intrusion: req.body.intrusionInfo,
         preliminaryDetermination: req.body.selectedPreliminary,
         moistureInspection: req.body.selectedInspection,
-        preRestorationEval: req.body.preRestorationEval
+        preRestorationEval: req.body.preRestorationEval,
+        teamMemberSig: req.body.teamMemberSig,
+        customerSig: req.body.customerSig
     })
-    if (!result.isEmpty()) {
-        return res.json({ errors: result.array() })
+    if (!errors.isEmpty()) {
+        return res.json(errors)
     }
     await rapid.save().then(() => {
         res.json({message: "Report submitted"})
@@ -294,10 +288,7 @@ const createCreditCard = async (req, res) => {
     })
 }
 const createCaseFile = async (req, res) => {
-    const errorFormatter = ({ msg, param, value, nestedErrors }) => {
-        return `${param}: ${msg}`;
-    };
-    const result = validationResult(req).formatWith(errorFormatter);
+    const errors = validationResult(req);
     const caseFile = new CaseFile({
         JobId: req.body.JobId,
         date: req.body.date,
@@ -323,8 +314,8 @@ const createCaseFile = async (req, res) => {
         teamMember: req.body.teamMember,
         CaseFileType: req.body.CaseFileType
     });
-    if (!result.isEmpty()) {
-        return res.json({ errors: result.array() })
+    if (!errors.isEmpty()) {
+        return res.json(errors)
     }
     await caseFile.save().then(() => {
         res.json({message: "Report submitted"})

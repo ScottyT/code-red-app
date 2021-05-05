@@ -2,23 +2,25 @@
   <div class="form-wrapper form-wrapper__case-file">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
-    <ValidationObserver ref="form" v-slot="{errors}">
+    <ValidationObserver ref="form" v-slot="{passes}">
       <h2>{{message}}</h2>
-      <ul>
-        <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error[0]}}</li>
-      </ul>
-      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
-      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
+      <v-dialog width="400px" v-model="errorDialog">
+        <div class="modal__error">
+          <div v-for="(error, i) in errorArr" :key="`error-${i}`">
+            <h2 class="form__input--error">{{ error.msg }}</h2>
+          </div>
+        </div>
+      </v-dialog>
+      <form ref="form" class="form" @submit.prevent="passes(submitForm)" v-if="!submitted">
         <div class="form__form-group">
-          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id"
-                              class="form__input--input-group">
+          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
             <input type="hidden" v-model="selectedJobId" />
             <label class="form__label">Job ID Number</label>
             <select class="form__select" v-model="selectedJobId">
               <option disabled value="">Please select a Job ID</option>
               <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
             </select>
-            <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+            <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
             <label class="form__label">Team Lead ID #</label>
@@ -169,7 +171,7 @@
           <div class="form__form-group">
             <div class="form__input-wrapper">
               <label class="form__label">Sign for Verification</label>
-              <LazyUiSignaturePadModal :sigData="verifySig" sigRef="verifySignaturePad" />
+              <LazyUiSignaturePadModal inputId="verifySig" :sigData="verifySig" sigRef="verifySignaturePad" />
             </div>
           </div>
         </div>
@@ -349,7 +351,9 @@
       },
       submitting: false,
       submitted: false,
-      selectedJobId: ""
+      selectedJobId: "",
+      errorDialog: false,
+      errorArr: []
     }),
     watch: {
       date(val) {
@@ -424,10 +428,6 @@
         this.message = ''
         this.submitting = true
         const user = this.getUser;
-        const userNameObj = {
-          first: user.name.split(" ")[0],
-          last: user.name.split(" ")[1]
-        }
         const reports = this.$store.state.reports.filter((v) => {
             return v.CaseFileType === 'containment'
           })
@@ -443,14 +443,7 @@
           {label: 'End Time', value: this.evalEnd},
           {label: 'Total Time', value: this.duration}
         ]
-        this.$refs.form.validate().then(success => {
-          if (!success) {
-            this.submitting = false
-            this.submitted = false
-            return goTo(0)
-          }
-          if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
-            const post = {
+        const post = {
               JobId: this.selectedJobId,
               id: user.id,
               date: this.dateFormatted,
@@ -464,22 +457,38 @@
               verifySig: this.verifySig.data,
               ReportType: 'case-file-report',
               CaseFileType: 'containment',
-              teamMember: userNameObj,
+              teamMember: this.getUser,
               afterHoursWork: 'No'
             };
+            
             if (this.$nuxt.isOffline) {
-              this.addReport(post).then(() => {
-                this.message = "Report was saved successfully for submission later!"
-                this.submitted = true
+              if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
+                this.addReport(post).then(() => {
+                  this.message = "Report was saved successfully for submission later!"
+                  this.submitted = true
+                  this.submitting = false
+                  setTimeout(() => {
+                    this.message = ""
+                  }, 2000)
+                })
+              } else {
+                this.submitted = false
                 this.submitting = false
-                setTimeout(() => {
-                  this.message = ""
-                }, 2000)
-              })
-            } else {
+                this.errorArr.push("Cannot have two containment reprots")
+                return goTo(0)
+              }             
+            }
+            if (this.$nuxt.isOnline) {
               this.$axios.$post("/api/case-file-report/new", post).then((res) => {
                 if (res.errors) {
-                  this.errorMessage = res.errors
+                  res.errors.forEach(error => {
+                    this.errorArr.push(error)
+                  })
+                  this.errorDialog = true
+                  this.$refs.form.setErrors({
+                    JobId: res.errors.find(obj => obj.param === 'JobId'),
+                    verifySig: res.errors.find(obj => obj.param === 'verifySig')
+                  })
                   return goTo(0)
                 }
                 this.message = res.message
@@ -489,17 +498,8 @@
                 setTimeout(() => {
                   this.message = ""
                 }, 2000)
-              }).catch((err) => {
-                this.errorMessage.push(err)
               })
             }
-          } else {
-            this.submitted = false
-            this.submitting = false
-            this.errorMessage.push("Cannot have two containment reprots")
-            return goTo(0)
-          }  
-        })
       }
     },
     created() {

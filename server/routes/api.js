@@ -292,6 +292,8 @@ router.post("/logs-report/new",
 router.post("/logs-report/:formType/:JobId/update", updateLogs);
 router.post("/dispatch/new",
     check('ReportType').not().isEmpty().withMessage('Report type is required'),
+    body('emailAddress').isEmail().normalizeEmail().withMessage('Email needs to be formatted correctly'),
+    body('teamMemberSig').not().isEmpty().withMessage('Signature is required'),
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => {
@@ -311,6 +313,8 @@ router.post("/rapid-response/new",
                 }
             })
         }),
+    body('teamMemberSig').not().isEmpty().withMessage('Team member signature is required'),
+    body('cusSignature').not().isEmpty().withMessage('Customer signature is required'),
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => {
@@ -322,7 +326,15 @@ router.post("/rapid-response/new",
     }),
     createRapidResponse)
 router.post("/case-file-report/new",
-    check('JobId').not().isEmpty().withMessage('Job ID is required'),
+    check('JobId').not().isEmpty().withMessage('Job ID is required')
+    .custom((value, {req}) => {
+        return CaseFile.findOne({JobId: value, CaseFileType: req.body.CaseFileType}).then(casefile => {
+            if (casefile) {
+                return Promise.reject('Job ID is already in use')
+            }
+        })
+    }),
+    body('verifySig').not().isEmpty().withMessage('Signature is required'),
     check('id').not().isEmpty().withMessage('Team Lead ID is required'),
     createCaseFile)
 router.post("/coc/new",

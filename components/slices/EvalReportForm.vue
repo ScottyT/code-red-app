@@ -3,17 +3,17 @@
   <div class="form-wrapper form-wrapper__dispatch-form">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Dispatch Service Evaluation Report</h2>
-    <ValidationObserver ref="form" v-slot="{errors}">
+    <ValidationObserver ref="form" v-slot="{passes}">
       <v-dialog width="400px" v-model="errorDialog">
         <div class="modal__error">
-          <div v-for="(error, i) in errors" :key="`error-${i}`">
-            <h2 class="form__input--error">{{ error[0] }}</h2>
+          <div v-for="(error, i) in errorArr" :key="`error-${i}`">
+            <h2 class="form__input--error">{{ error.msg }}</h2>
           </div>
         </div>
       </v-dialog>
       <h2>{{ message }}</h2>
-      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
-      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
+      <p class="alert alert--error">{{errorMessage}}</p>
+      <form class="form" @submit.prevent="passes(submitForm)" v-if="!submitted">
         <div class="form__form-group">
           <!-- <ValidationProvider
             v-slot="{ errors }"
@@ -24,10 +24,10 @@
             <input v-model="timeOfCall" class="form__input" type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>-->
-          <ValidationProvider ref="jobIdField" vid="JobId" rules="required" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input--input-group">
+          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input--input-group">
             <label class="form__label">Job ID Number</label>
             <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
-            <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+            <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
             <label for="timeOfCall" class="form__label">Time of Call</label>
@@ -78,11 +78,11 @@
             <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label" for="phone">Phone Number</label>
             <input id="phone" v-model="phone" name="Phone" class="form__input" type="phone" @input="acceptNumber" />
-            <ValidationProvider v-slot="{ errors }" name="Email" rules="email">
+            <ValidationProvider v-slot="{ errors }" rules="email" name="Email" vid="email">
               <label for="email" class="form__label">Email Address</label>
               <br />
-              <input id="email" v-model="email" type="email" class="form__input" name="Email" />
-              <span class="form__input--error">{{ errors[0] }}</span>
+              <input id="email" v-model="email" type="text" class="form__input" name="Email" />
+              <span class="form__input--error">{{ errors.msg }}</span>
             </ValidationProvider>
           </div>
           <div class="form__form-group--right-side">
@@ -247,12 +247,12 @@
             <div class="form__input--input-group">
               <label class="form__label">Team Member Signature</label>
               <div class="form__input-wrapper">
-                <LazyUiSignaturePadModal :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
+                <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
               </div>
             </div>          
           </div>
         </div>
-        <div class="form__button-wrapper"><button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
+        <button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button>
       </form>
     </ValidationObserver>
   </div>
@@ -272,7 +272,7 @@
     data: (vm) => ({
       id: "",
       name: "",
-      jobId: null,
+      jobId: "",
       timeOfCall: new Date().toTimeString().substr(0, 5),
       timeFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
       timeOfDay: '',
@@ -372,7 +372,7 @@
       appointmentTime: '',
       notes: '',
       message: '',
-      errorMessage:[],
+      errorMessage:"",
       submitted: false,
       submitting: false,
       sourceIntrusion: "",
@@ -402,7 +402,8 @@
       },
       signDateTime: new Date().toLocaleString(),
       sigDialog: false,
-      errorDialog: false
+      errorDialog: false,
+      errorArr: []
     }),
     watch: {
       date(val) {
@@ -430,12 +431,11 @@
         this.timeIntBeganFormatted = this.formatTime(val)
       },
       timeIntEnd(val) {
-        this.timeIntrusionEnd = this.formatTime(val)
+        this.timeIntEndFormatted = this.formatTime(val)
       }
     },
     created() {
       this.$nuxt.$on('location-updated', (event) => {
-        console.log('created')
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
         const geocode = this.$refs.geocoder
         const accessToken = process.env.mapboxKey
@@ -511,101 +511,82 @@
       submitForm() {
         this.message = ""
         const user = this.getUser
-        const reports = this.getReports.map((v) => {
+        var dispatchRep = this.getReports.filter((v) => {
+          return v.ReportType === 'dispatch'
+        })
+        const reports = dispatchRep.map((v) => {
           return v.JobId
         })
-        const userNameObj = {
-          first: user.name.split(" ")[0],
-          last: user.name.split(" ")[1]
-        }
-        this.$refs.form.validate().then(success => {
-          if (!success) {
-            this.errorDialog = true
-            this.submitting = false
-            this.submitted = false
-            return goTo(0)
-          }
-            const post = {
-              JobId: this.jobId,
-              callerName: this.callerName,
-              ArrivalContactName: this.arrivalContactName,
-              phoneNumber: this.phone,
-              emailAddress: this.email,
-              location: this.location,
-              timeFormatted: this.timeFormatted,
-              dateFormatted: this.dateFormatted,
-              appointmentDate: this.appointmentDateFormatted,
-              appointmentTime: this.appointmentTimeFormatted,
-              callTimeUpdate: this.callTimeFormatted,
-              textTimeUpdate: this.textEtaTimeFormatted,
-              propertyChkList: this.selectedCheckboxes,
-              summary: this.notes,
-              ReportType: 'dispatch',
-              teamMember: userNameObj,
-              id: user.id,
-              teamMemberSig: this.teamMemberSig.data,
-              signDate: this.signDateTime
-            };
-          if (!reports.includes(this.jobId)) {
-            
-            if (this.$nuxt.isOffline) {
-              this.addReport(post).then(() => {
-                this.message = "Report was saved successfully for submission later!"
-                this.jobId = ""
-                this.callerName = ""
-                this.email = ""
-                this.location = {
-                  address: null,
-                  city: null,
-                  cityStateZip: null,
-                }
-                this.phone = ""
-                this.notes = ""
-                this.selectedCheckboxes = []
-                this.$refs.jobIdField.value = ""
-                this.submitted = true
-                setTimeout(() => {
-                  this.message = ""
-                  this.$router.push("/")
-                }, 2000)
+        const post = {
+          JobId: this.jobId,
+          callerName: this.callerName,
+          ArrivalContactName: this.arrivalContactName,
+          phoneNumber: this.phone,
+          emailAddress: this.email,
+          location: this.location,
+          timeFormatted: this.timeFormatted,
+          dateFormatted: this.dateFormatted,
+          appointmentDate: this.appointmentDateFormatted,
+          appointmentTime: this.appointmentTimeFormatted,
+          callTimeUpdate: this.callTimeFormatted,
+          textTimeUpdate: this.textEtaTimeFormatted,
+          propertyChkList: this.selectedCheckboxes,
+          summary: this.notes,
+          ReportType: 'dispatch',
+          teamMember: this.getUser,
+          id: user.id,
+          teamMemberSig: this.teamMemberSig.data,
+          signDate: this.signDateTime
+        };
+        if (this.$nuxt.isOnline) {
+          this.$axios.$post("/api/dispatch/new", post).then((res) => {
+            if (res.errors) {
+              this.errorDialog = true
+              res.errors.forEach(error => {
+                this.errorArr.push(error)
               })
+              this.$refs.form.setErrors({
+                JobId: res.errors.find(obj => obj.param === 'JobId'),
+                email: res.errors.find(obj => obj.param === 'emailAddress'),
+                teamMemberSig: res.errors.find(obj => obj.param === 'teamMemberSig')
+              })
+              return goTo(0)
             }
+            this.message = res.message
+            this.submitted = true
+            setTimeout(() => {
+              this.message = ""
+              window.location = "/"
+            }, 2000)
+          })
+        }
+        if (this.$nuxt.isOffline) {
+          if (!reports.includes(this.jobId)) {
+            this.addReport(post).then(() => {
+              this.message = "Report was saved successfully for submission later!"
+              this.jobId = ""
+              this.callerName = ""
+              this.email = ""
+              this.location = {
+                address: null,
+                city: null,
+                cityStateZip: null,
+              }
+              this.phone = ""
+              this.notes = ""
+              this.selectedCheckboxes = []
+              this.$refs.jobIdField.value = ""
+              this.submitted = true
+              setTimeout(() => {
+                this.message = ""
+                this.$router.push("/")
+              }, 2000)
+            })
           } else {
             this.errorMessage.push("Duplicate Job Id's can't exsit")
             return goTo(0)
           }
-          if(this.$nuxt.isOnline) {
-              this.$axios.$post("/api/dispatch/new", post).then((res) => {
-                if (res.errors) {
-                  this.errorMessage = res.errors
-                  return goTo(0)
-                }
-                this.message = res.message
-                this.errorMessage = []
-                this.submitted = true
-                setTimeout(() => {
-                  this.message = ""
-                  window.location = "/"
-                }, 2000)
-                this.jobId = ""
-                this.callerName = ""
-                this.email = ""
-                this.location = {
-                  address: null,
-                  city: null,
-                  cityStateZip: null,
-                }
-                this.phone = ""
-                this.notes = ""
-                this.selectedCheckboxes = []
-                this.$refs.jobIdField.value = ""
-              }).catch((err) => {
-                this.errorMessage.push(err)
-              })
-            }
-          
-        })
-        
+        }
       },
       formatDate(dateReturned) {
         if (!dateReturned) return null

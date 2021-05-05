@@ -35,7 +35,8 @@ const responseReport = mongoose.Schema({
     intrusion: Array,
     preliminaryDetermination: Array,
     moistureInspection: Array,
-    preRestorationEval: Object
+    preRestorationEval: Object,
+    teamMemberSig: String
 })
 responseReport.plugin(timestamps);
 module.exports = mongoose.model('RapidResponse', responseReport, 'rapid-response-reports');

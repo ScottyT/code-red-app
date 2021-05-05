@@ -117,7 +117,7 @@ export default {
             if (this.$nuxt.isOnline) {
                 this.$axios.$post(`/api/sketch-report/new`, post).then((res) => {
                     if (res.errors) {
-                        this.$refs.form.setErrors({                       
+                        this.$refs.form.setErrors({
                             JobId: res.errors.find(obj => obj.param === 'JobId'),
                             sketch: res.errors.find(obj => obj.param === 'sketch'),
                         })

@@ -11,7 +11,6 @@
         </div>
       </v-dialog>
       <h2 class="alert alert--success">{{ successMessage }}</h2>
-      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
       <form v-if="!submitted" class="form" enctype="multipart/form-data" @submit.prevent="submitForm">
         <div class="form__form-group">
           <ValidationProvider name="Team lead id" rules="required|numeric"
@@ -373,13 +372,13 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>            
-              <LazyUiSignaturePadModal :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />         
+              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />         
             </div>
           </div>
           <div class="form__form-group">
             <div class="form__input-wrapper">
               <label class="form__label">Team Member (Signature)</label>
-              <LazyUiSignaturePadModal :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
+              <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
             </div>
           </div>
         </div>
@@ -754,7 +753,10 @@
         this.successMessage = ""
         const evaluationLogs = []
         const user = this.getUser
-        const reports = this.getReports.map((v) => { return v.JobId });
+        var rapidRep = this.getReports.filter((v) => {
+          return v.ReportType === 'rapid-response'
+        })
+        const reports = rapidRep.map((v) => { return v.JobId });
         let scrollTo = 0
         evaluationLogs.push({label: 'Team Arrival at Property', value: this.arrivalFormatted}, {label: 'Evaluation Report Start Time', value: this.evalStartFormatted}, {label: 'Evaluation Report End Time', value: this.evalEndFormatted}, {label: 'Time of Contract Signing', value: this.contractFormatted}, {label: 'Time of Denail of Services', value: this.dosformatted}, {label: 'Team Departure of Property', value: this.departureTimeFormatted});
         this.$refs.form.validate().then(success => {
@@ -798,7 +800,8 @@
               intrusionInfo: this.intrusionSection,
               selectedPreliminary: this.selectedPreliminary,
               selectedInspection: this.selectedInspection,
-              preRestorationEval: this.preRestoreEval
+              preRestorationEval: this.preRestoreEval,
+              teamMemberSig: this.teamMemberSig.data
             };
             if (this.$nuxt.isOffline) {
               const tempPost = {...post}
@@ -815,7 +818,12 @@
             } else {
               this.$axios.$post("/api/rapid-response/new", post).then((res) => {
                 if (res.errors) {
+                  this.errorDialog = true
                   this.errorMessage = res.errors
+                  this.$refs.form.setErrors({
+                    teamMemberSig: res.errors.find(obj => obj.param === 'teamMemberSig'),
+                    cusSignature: res.errors.find(obj => obj.param === 'cusSignature')
+                  })
                   return goTo(scrollTo)
                 }
                 this.successMessage = res.message
