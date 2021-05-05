@@ -70,7 +70,6 @@ export default {
     },
     '~/plugins/vee-validate.js',
     '~/plugins/signature.js',
-    '~/plugins/axios.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' }
   ],
   /*
@@ -277,7 +276,6 @@ export default {
     extractCSS: false,
     optimization: {
       minimize: true,
-
       splitChunks: {
         cacheGroups: {
           styles: {
@@ -289,6 +287,20 @@ export default {
         },
       },
       namedChunks: true,
+    },
+    babel: {
+      presets({ envName }) {
+        const envTargets = {
+          client: { browsers: ["last 2 versions"], ie: 11},
+          server: { node: "current" }
+        }
+        return [
+          ["@nuxt/babel-preset-app", {
+            loose: true,
+            targets: envTargets[envName]
+          }]
+        ]
+      }
     },
     extend(config, ctx) {
       config.resolve.alias['vue'] = 'vue/dist/vue.common'
