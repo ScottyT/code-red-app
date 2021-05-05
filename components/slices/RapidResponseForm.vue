@@ -968,7 +968,6 @@
         uploadarr.forEach((file) => {
           var storageRef = this.$fire.storage.ref()
           var field = element.getAttribute('name')
-          console.log("field:", field)
           switch (field) {
             case "Job files":
               var uploadRef = storageRef.child(`${this.jobId}/${date}/${file.name}`)
