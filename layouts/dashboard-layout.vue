@@ -35,13 +35,13 @@
           <a @click="signOut">{{$fire.auth.currentUser ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser">
+        <li class="menu-items__item" v-if="user">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
+        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
-        <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
+        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
           <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
@@ -64,7 +64,8 @@
       </template>
     </v-app-bar>
     <v-main>
-      <nuxt class="pa-6" />
+      <span v-if="!user"><LazyFormsLogin /></span>
+      <nuxt class="pa-6" v-else />
     </v-main>
     <v-footer dark :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -154,17 +155,34 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Code Red Claims',
-      user: null
+      user: false
     }
   },
   computed: {
     appTheme() {
-      return this.$vuetify.theme.dark = false
+      switch (this.user) {
+        case true:
+          return this.$vuetify.theme.dark = false         
+        case false:
+          return this.$vuetify.theme.dark = true
+        default:
+          return this.$vuetify.theme.dark = false    
+      }
     },
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser", "getEmployees", "isLoggedIn"])
+    ...mapGetters(["getUser", "getEmployees", "isLoggedIn"]),
+    isOnline() {
+      return this.$nuxt.isOnline
+    }
+  },
+  watch: {
+    isOnline(val) {
+      if (val) {
+        this.fetchReports(this.$fire.auth.currentUser)
+      }
+    }
   },
   methods: {
     ...mapActions({
@@ -176,8 +194,10 @@ export default {
     }
   },
   mounted() {
+    this.fetchReports(this.$fire.auth.currentUser)
     this.$nextTick(() => {
-      this.fetchReports(this.$fire.auth.currentUser)
+      this.user = this.$fire.auth.currentUser ? true : false
+      
     })
   }
 }

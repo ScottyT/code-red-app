@@ -4,13 +4,16 @@
         <h2 class="text-center">Daily Technician Case File Report</h2>
         <ValidationObserver ref="form" v-slot="{ errors }">
           <h2>{{message}}</h2>
-          <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error[0]}}</h3>
-          <ul>
-            <li class="alert alert--error" v-for="(error, i) in errors" :key="`client-errors-${i}`">{{error[0]}}</li>
-          </ul>
+          <v-dialog width="400px" v-model="errorDialog">
+            <div class="modal__error">
+              <div v-for="(error, i) in errors" :key="`error-${i}`">
+                <h2 class="form__input--error">{{ error[0] }}</h2>
+              </div>
+            </div>
+          </v-dialog>
           <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
             <div class="form__form-group">
-              <ValidationProvider rules="required" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
+              <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
                 <input type="hidden" v-model="selectedJobId" />
                 <label class="form__label">Job ID Number</label>
                 <select class="form__select" v-model="selectedJobId">
@@ -554,7 +557,7 @@ export default {
         },
         workCompletedAfterHours: false,
         selectedJobId: "",
-        authUser: false
+        errorDialog: false
     }),
     
     watch: {
@@ -614,12 +617,8 @@ export default {
         })
         geocoder.setTypes('address').addTo('.form__geocoder')
       },
-      async submitForm() {
+      submitForm() {
           this.message = ''
-          const userNameObj = {
-            first: this.getUser.name.split(" ")[0],
-            last: this.getUser.name.split(" ")[1]
-        }
           const reports = this.$store.state.reports.filter((v) => {
             return v.CaseFileType === 'technician'
           })
@@ -635,35 +634,36 @@ export default {
             {label: 'End Time', value: this.evalEnd},
             {label: 'Total Time', value: this.duration}
           ]
+          const post = {
+            JobId: this.selectedJobId,
+            date: this.dateFormatted,
+            location: this.location,
+            contentCleaningInspection: this.selectedContentCleaning,
+            waterRestorationInspection: this.selectedWaterRestoration,
+            waterRemediationAssesment: this.selectedWaterRemediation,
+            overviewScopeOfWork: this.selectedOverviewScope,
+            specializedExpert: this.selectedExpert,
+            scopeOfWork: this.selectedScope,
+            projectWorkPlans: this.selectedWorkPlans,
+            notes: this.notes,
+            evaluationLogs: evaluationLogs,
+            id: this.getUser.id,
+            ReportType: 'case-file-report',
+            CaseFileType: 'technician',
+            teamMember: this.getUser,
+            verifySig: this.verifySig.data,
+            afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
+            notes: this.notes
+          };
           this.$refs.form.validate().then(success => {
             if (!success) {
               this.submitting = false;
               this.submitted = false;
+              this.errorDialog = true
               return goTo(0)
             }
-            if (!jobids.includes(this.selectedJobId) && casefile.includes('technician')) {
-              const post = {
-                JobId: this.selectedJobId,
-                date: this.dateFormatted,
-                location: this.location,
-                contentCleaningInspection: this.selectedContentCleaning,
-                waterRestorationInspection: this.selectedWaterRestoration,
-                waterRemediationAssesment: this.selectedWaterRemediation,
-                overviewScopeOfWork: this.selectedOverviewScope,
-                specializedExpert: this.selectedExpert,
-                scopeOfWork: this.selectedScope,
-                projectWorkPlans: this.selectedWorkPlans,
-                notes: this.notes,
-                evaluationLogs: evaluationLogs,
-                id: this.getUser.id,
-                ReportType: 'case-file-report',
-                CaseFileType: 'technician',
-                teamMember: userNameObj,
-                verifySig: this.verifySig.data,
-                afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
-                notes: this.notes
-              };
-              if (this.$nuxt.isOffline) {
+            if (this.$nuxt.isOffline) {
+              if (!jobids.includes(this.selectedJobId) && casefile.includes('technician')) {
                 this.addReport(post).then(() => {
                   this.message = "Report was saved successfully for submission later!"
                   this.submitted = true
@@ -673,28 +673,34 @@ export default {
                   }, 2000)
                 })
               } else {
-                  this.$axios.$post("/api/case-file-report/new", post).then((res) => {
-                    if (res.errors) {
-                      this.errorMessage = res.errors
-                      return goTo(0)
-                    }
-                    this.message = "Report submitted"
-                    this.errorMessage = []
-                    this.submitted = true
-                    this.submitting = false
-                      setTimeout(() => {
-                          this.message = ""
-                          window.location = "/"
-                      }, 2000)
-                }).catch((err) => {
-                    this.errorMessage = err
+                this.submitted = false
+                this.submitting = false
+                this.errorDialog = true
+                this.$refs.form.setErrors({
+                  JobId: ['Cannot have two technician reprots']
                 })
-              }            
-            } else {
-              this.submitted = false
-              this.submitting = false
-              this.errorMessage.push("Cannot have two technician reprots")
-              return goTo(0)
+                return goTo(0)
+              }
+            }
+            if (this.$nuxt.isOnline) {
+              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+                if (res.errors) {
+                  this.errorDialog = true
+                  this.submitting = false
+                  this.$refs.form.setErrors({
+                    JobId: res.errors.filter(obj => obj.param === 'JobId').map(e => e.msg),
+                    verifySig: res.errors.filter(obj => obj.param === 'verifySig').map(e => e.msg)
+                  })
+                  return goTo(0)
+                }
+                this.message = "Report submitted"
+                this.submitted = true
+                this.submitting = false
+                setTimeout(() => {
+                  this.message = ""
+                  window.location = "/"
+                }, 2000)
+              })
             }
           })
           

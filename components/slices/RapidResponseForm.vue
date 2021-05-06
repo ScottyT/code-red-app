@@ -756,6 +756,7 @@
         var rapidRep = this.getReports.filter((v) => {
           return v.ReportType === 'rapid-response'
         })
+        this.submitting = true
         const reports = rapidRep.map((v) => { return v.JobId });
         let scrollTo = 0
         evaluationLogs.push({label: 'Team Arrival at Property', value: this.arrivalFormatted}, {label: 'Evaluation Report Start Time', value: this.evalStartFormatted}, {label: 'Evaluation Report End Time', value: this.evalEndFormatted}, {label: 'Time of Contract Signing', value: this.contractFormatted}, {label: 'Time of Denail of Services', value: this.dosformatted}, {label: 'Team Departure of Property', value: this.departureTimeFormatted});
@@ -809,37 +810,36 @@
               tempPost.jobFiles =this.uploadedFiles
               this.addReport(tempPost).then(() => {
                 this.successMessage = "Report was saved successfully for submission later!"
-                this.submitted = true
+                this.submitting = false
                 setTimeout(() => {
                     this.successMessage = ""
-                    this.errorMessage = []
                 }, 2000)
               })
             } else {
               this.$axios.$post("/api/rapid-response/new", post).then((res) => {
                 if (res.errors) {
                   this.errorDialog = true
-                  this.errorMessage = res.errors
+                  this.submitting = false
                   this.$refs.form.setErrors({
-                    teamMemberSig: res.errors.find(obj => obj.param === 'teamMemberSig'),
-                    cusSignature: res.errors.find(obj => obj.param === 'cusSignature')
+                    teamMemberSig: res.errors.filter(obj => obj.param === 'teamMemberSig').map(v => v.msg),
+                    cusSignature: res.errors.filter(obj => obj.param === 'cusSignature').map(v => v.msg)
                   })
                   return goTo(scrollTo)
                 }
                 this.successMessage = res.message
-                this.submitted = true
+                this.submitting = false
                 setTimeout(() => {
                     this.successMessage = ""
                     window.location = "/"
                 }, 2000)
-              }).catch((err) => {
-                this.errorMessage = err
-              }) 
+              })
             }
           } else {
-            this.submitted = false
             this.submitting = false
-            this.errorMessage.push("Duplicate Job ID can't exist")
+            this.errorDialog = true
+            this.$refs.form.setErrors({
+              JobId: ["Duplicate Job ID can't exist"]
+            })
             return goTo(0)
           }
         })

@@ -2,16 +2,16 @@
   <div class="form-wrapper form-wrapper__case-file">
     <h1 class="text-center">Water Emergency Services Incorporated</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
-    <ValidationObserver ref="form" v-slot="{passes}">
+    <ValidationObserver ref="form" v-slot="{ errors}">
       <h2>{{message}}</h2>
       <v-dialog width="400px" v-model="errorDialog">
         <div class="modal__error">
-          <div v-for="(error, i) in errorArr" :key="`error-${i}`">
-            <h2 class="form__input--error">{{ error.msg }}</h2>
+          <div v-for="(error, i) in errors" :key="`error-${i}`">
+            <h2 class="form__input--error">{{ error[0] }}</h2>
           </div>
         </div>
       </v-dialog>
-      <form ref="form" class="form" @submit.prevent="passes(submitForm)" v-if="!submitted">
+      <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <div class="form__form-group">
           <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
             <input type="hidden" v-model="selectedJobId" />
@@ -20,7 +20,7 @@
               <option disabled value="">Please select a Job ID</option>
               <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
             </select>
-            <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
+            <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
           </ValidationProvider>
           <div class="form__input--input-group">
             <label class="form__label">Team Lead ID #</label>
@@ -198,7 +198,6 @@
         cityStateZip: null
       },
       message: '',
-      errorMessage: [],
       tmpRepairSection: [{
         subheading: "Temporary Repairs",
         sublist: [{
@@ -353,7 +352,6 @@
       submitted: false,
       selectedJobId: "",
       errorDialog: false,
-      errorArr: []
     }),
     watch: {
       date(val) {
@@ -424,82 +422,101 @@
         const [month, day, year] = date.split('/')
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
       },
-      async submitForm() {
+      submitForm() {
         this.message = ''
         this.submitting = true
         const user = this.getUser;
         const reports = this.$store.state.reports.filter((v) => {
-            return v.CaseFileType === 'containment'
-          })
-          const jobids = reports.map((v) => {
-            return v.JobId
-          })
-          const casefile = reports.map((v) => {
-            return v.CaseFileType
-          })
-        const evaluationLogs= [
-          {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
-          {label: 'Start Time', value: this.evalStart},
-          {label: 'End Time', value: this.evalEnd},
-          {label: 'Total Time', value: this.duration}
+          return v.CaseFileType === 'containment'
+        })
+        const jobids = reports.map((v) => {
+          return v.JobId
+        })
+        const casefile = reports.map((v) => {
+          return v.CaseFileType
+        })
+        const evaluationLogs = [{
+            label: 'Dispatch to Property',
+            value: this.dispatchPropertyFormatted
+          },
+          {
+            label: 'Start Time',
+            value: this.evalStart
+          },
+          {
+            label: 'End Time',
+            value: this.evalEnd
+          },
+          {
+            label: 'Total Time',
+            value: this.duration
+          }
         ]
         const post = {
-              JobId: this.selectedJobId,
-              id: user.id,
-              date: this.dateFormatted,
-              location: this.location,
-              selectedTMPRepairs: this.selectedTMPRepairs,
-              selectedContent: this.selectedContent,
-              selectedStructualCleaning: this.selectedStructualCleaning,
-              selectedStructualDrying: this.selectedStructualDrying,
-              selectedStructualCleaning: this.selectedStructualCleaning,
-              evaluationLogs: evaluationLogs,
-              verifySig: this.verifySig.data,
-              ReportType: 'case-file-report',
-              CaseFileType: 'containment',
-              teamMember: this.getUser,
-              afterHoursWork: 'No'
-            };
-            
-            if (this.$nuxt.isOffline) {
-              if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
-                this.addReport(post).then(() => {
-                  this.message = "Report was saved successfully for submission later!"
-                  this.submitted = true
-                  this.submitting = false
-                  setTimeout(() => {
-                    this.message = ""
-                  }, 2000)
-                })
-              } else {
-                this.submitted = false
-                this.submitting = false
-                this.errorArr.push("Cannot have two containment reprots")
-                return goTo(0)
-              }             
-            }
-            if (this.$nuxt.isOnline) {
-              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
-                if (res.errors) {
-                  res.errors.forEach(error => {
-                    this.errorArr.push(error)
-                  })
-                  this.errorDialog = true
-                  this.$refs.form.setErrors({
-                    JobId: res.errors.find(obj => obj.param === 'JobId'),
-                    verifySig: res.errors.find(obj => obj.param === 'verifySig')
-                  })
-                  return goTo(0)
-                }
-                this.message = res.message
+          JobId: this.selectedJobId,
+          id: user.id,
+          date: this.dateFormatted,
+          location: this.location,
+          selectedTMPRepairs: this.selectedTMPRepairs,
+          selectedContent: this.selectedContent,
+          selectedStructualCleaning: this.selectedStructualCleaning,
+          selectedStructualDrying: this.selectedStructualDrying,
+          selectedStructualCleaning: this.selectedStructualCleaning,
+          evaluationLogs: evaluationLogs,
+          verifySig: this.verifySig.data,
+          ReportType: 'case-file-report',
+          CaseFileType: 'containment',
+          teamMember: this.getUser,
+          afterHoursWork: 'No'
+        };
+        this.$refs.form.validate().then(success => {
+          if (!success) {
+            this.submitting = false
+            this.submitted = false
+            this.errorDialog = true
+            return goTo(0)
+          }
+          if (this.$nuxt.isOffline) {
+            if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
+              this.addReport(post).then(() => {
+                this.message = "Report was saved successfully for submission later!"
                 this.submitted = true
                 this.submitting = false
-                this.errorMessage = []
                 setTimeout(() => {
                   this.message = ""
                 }, 2000)
               })
+            } else {
+              this.submitted = false
+              this.submitting = false
+              this.errorDialog = true
+              this.$refs.form.setErrors({
+                JobId: ['Cannot have two containment reprots']
+              })
+              
+              return goTo(0)
             }
+          }
+          if (this.$nuxt.isOnline) {
+            this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+              if (res.errors) {
+                this.errorDialog = true
+                this.submitting = false
+                this.$refs.form.setErrors({
+                  JobId: res.errors.filter(obj => obj.param === 'JobId').map(e => e.msg),
+                  verifySig: res.errors.filter(obj => obj.param === 'verifySig').map(e => e.msg)
+                })
+                return goTo(0)
+              }
+              this.message = res.message
+              this.submitted = true
+              this.submitting = false
+              setTimeout(() => {
+                this.message = ""
+              }, 2000)
+            })
+          }
+        })
       }
     },
     created() {

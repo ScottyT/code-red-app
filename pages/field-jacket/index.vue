@@ -4,7 +4,7 @@
             <h3 class="reports-wrapper__heading">
                 Sketch Reports
             </h3>
-            <LayoutReports :reports="sketchReports" theme="light" />
+            <LazyLayoutReports :reports="sketchReports" theme="light" />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
@@ -31,7 +31,7 @@
     </div>
 </template>
 <script>
-import {mapActions} from 'vuex';
+import {mapActions, mapGetters} from 'vuex';
 export default {
     name: "FieldJacket",
     layout: "dashboard-layout",
@@ -47,24 +47,7 @@ export default {
             reports:[]
         }
     },
-    computed: {
-        isOnline() {
-            return this.$nuxt.isOnline
-        }
-    },
-    watch: {
-        isOnline(val) {
-            if (val) {
-                this.fetchReports(this.$fire.auth.currentUser)
-            }
-        }
-    },
-    async middleware({store, redirect}) {
-        if (store.state.user.role !== "admin") {
-            return redirect("/")
-        }
-    },
-    async asyncData({$axios, params}) {
+    async asyncData({$axios, store, params}) {
         try {
             let reports = await $axios.$get("/api/reports");
             let chartData = reports.filter((v) => {
@@ -83,8 +66,6 @@ export default {
                 return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
             })
             
-
-            let data = sketchData.concat(logsData)
             return {
                 sketchReports: sketchData,
                 logReports: logsData,

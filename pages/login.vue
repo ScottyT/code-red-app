@@ -1,5 +1,5 @@
 <template>
-    <LazyLoginForm />
+    <LazyFormsLogin />
 </template>
 <script>
 import {mapGetters} from 'vuex';

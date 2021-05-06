@@ -25,7 +25,7 @@
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span v-show="report.CaseFileType">{{report.CaseFileType}}</span>
-            <p>{{report.teamMember}}</p>
+            <p>{{report.teamMember.name}}</p>
           </nuxt-link>
         </div>
       </transition-group>
@@ -51,8 +51,12 @@ export default {
       return this.reports.sort((r1, r2) => {
         let modifier = 1
         if (this.sortDirection === 'info-bar__sort--desc') modifier = -1;
-        if (r1[this.sortBy] < r2[this.sortBy]) return -1 * modifier;
-        if (r1[this.sortBy] > r2[this.sortBy]) return 1 * modifier;
+        console.log(r1[this.sortBy])
+        if (r1[this.sortBy] < r2[this.sortBy] && typeof r1[this.sortBy] === 'string') return -1 * modifier;
+        if (r1[this.sortBy] > r2[this.sortBy] && typeof r1[this.sortBy] === 'string') return 1 * modifier;
+
+        if (r1[this.sortBy] < r2[this.sortBy] && typeof r1[this.sortBy] === 'object') return -1 * modifier;
+        if (r1[this.sortBy] < r2[this.sortBy] && typeof r1[this.sortBy] === 'object') return -1 * modifier;
         return 0;
       })
     },

@@ -2,17 +2,17 @@
     <div class="form-wrapper">
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
         <h2 class="text-center">ATMOSPHERIC READINGS</h2>
-        <ValidationObserver ref="form" v-slot="{passes}">
-            <!-- <v-dialog width="400px" v-model="errorDialog">
+        <ValidationObserver ref="form" v-slot="{errors}">
+            <v-dialog width="400px" v-model="errorDialog">
                 <div class="modal__error">
                     <div v-for="(error, i) in errors" :key="`error-${i}`">
                         <h2 class="form__input--error">{{ error[0] }}</h2>
                     </div>
                 </div>
-            </v-dialog> -->
+            </v-dialog>
             <p class="font-weight-bold">{{submittedMessage}}</p>
             <h3 class="alert alert--error">{{errorMessage}}</h3>
-            <form ref="form" class="form" @submit.prevent="passes(onSubmit)" v-if="!submitted">
+            <form ref="form" class="form" @submit.prevent="onSubmit" v-if="!submitted">
                 <div class="form__form-group">
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
@@ -21,7 +21,7 @@
                             <option disabled value="">Please select a Job ID</option>
                             <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
-                        <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
+                        <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input--input-group">
                         <label id="initDate" class="form__label">Initial Starting Date:</label>
@@ -264,6 +264,7 @@ export default {
         errorDialog: false,
         submittedMessage: "",
         submitting: false,
+        submitted: false,
         errorMessage: "",
         selectedJobId: "",
         initDate: new Date().toISOString().substr(0, 10),
@@ -272,19 +273,13 @@ export default {
         endDateFormatted: vm.formatDate(vm.addDays(new Date(), 7).toISOString().substr(0, 10)),
         initDateModal: false,
         endDateModal: false,
-        notes: "",
-        submitted: false
+        notes: ""
     }),
     head() {
         return {
             title: "Atmospheric Readings"
         }
     },
-    /* async middleware({$fire, redirect}) {
-        if ($fire.auth.currentUser === null) {
-            return redirect("/")
-        }
-    }, */
     watch: {
         initDate(val) {
             this.initDateFormatted = this.formatDate(val)
@@ -299,7 +294,6 @@ export default {
     },
     methods: {
         ...mapActions({
-            mappingJobIds: 'mappingJobIds',
             addReport: 'indexDb/addReport',
             checkStorage: 'indexDb/checkStorage',
         }),
@@ -321,7 +315,7 @@ export default {
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.ReportType === 'atmospheric-readings'
+                return v.formType === 'atmospheric-readings'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
@@ -337,37 +331,49 @@ export default {
                 notes: this.notes,
                 teamMember: this.getUser
             };
-            if (this.$nuxt.isOffline)  {
-                if (!jobids.includes(this.selectedJobId)) {
-                    this.addReport(post).then(() => {
-                        this.submittedMessage = "Form was successfully saved"
-                        this.errorMessage = ""
-                        this.submitted = true
-                        setTimeout(() => {
-                            this.submittedMessage = ""
-                            this.errorMessage = ""
-                        }, 2000)
-                    })
-                } else {
-                    this.errorMessage = "Job ID of this report already exists"
+            this.$refs.form.validate().then(success => {
+                if (!success) {
+                    this.submitting = false
+                    this.errorDialog = true
                     return goTo(0)
                 }
-            } 
-            if (this.$nuxt.isOnline) {
-                this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
-                    if (res.errors) {
+                if (this.$nuxt.isOffline)  {
+                    if (!jobids.includes(this.selectedJobId)) {
+                        this.addReport(post).then(() => {
+                            this.submittedMessage = "Form was successfully saved"
+                            this.errorMessage = ""
+                            this.submitting = false
+                            this.submitted = true
+                            setTimeout(() => {
+                                this.submittedMessage = ""
+                                this.errorMessage = ""
+                            }, 2000)
+                        })
+                    } else {
                         this.$refs.form.setErrors({
-                            JobId: res.errors.find(obj => obj.param === 'JobId')
+                            JobId: ['Job ID of this report already exists']
                         })
                         return goTo(0)
                     }
-                    this.submittedMessage = res.message
-                    this.submitted = true
-                    setTimeout(() => {
-                        window.location = "/"
-                    }, 2000)
-                })
-            }
+                } 
+                if (this.$nuxt.isOnline) {
+                    this.$axios.$post(`/api/logs-report/new`, post).then((res) => {
+                        if (res.errors) {
+                            this.errorDialog = true
+                            this.submitting = false
+                            this.$refs.form.setErrors({
+                                JobId: res.errors.filter(obj => obj.param === 'JobId').map(v => v.msg)
+                            })
+                            return goTo(0)
+                        }
+                        this.submittedMessage = res.message
+                        this.submitting = false
+                        setTimeout(() => {
+                            window.location = "/"
+                        }, 2000)
+                    })
+                }
+            })
         }
     },
     mounted() {

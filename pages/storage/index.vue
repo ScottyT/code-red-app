@@ -27,15 +27,6 @@
       ],
       reports: []
     }),
-    async middleware({
-      store,
-      redirect,
-      route
-    }) {
-      if (store.state.user.role !== "admin") {    
-        return redirect("/")
-      }
-    },
     async asyncData({ $axios }) {
       try {
         let data = await $axios.$get("/api/reports");
@@ -54,11 +45,6 @@
           return report.ReportType == "rapid-response"
         })
       }
-    },
-    mounted() {
-      this.$nextTick(() => {
-        this.authUser = this.$fire.auth.currentUser ? true : false
-      })
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <ValidationProvider v-slot="{ errors }" :vid="inputId" :name="name" class="form__input--input-group" :class="{modalOpen: sigDialog}">
+  <ValidationProvider v-slot="{ errors }" :vid="inputId" rules="required" :name="name" class="form__input--input-group" :class="{modalOpen: sigDialog}">
     <input type="hidden" v-model="sigData.data" />
     <v-dialog v-model="sigDialog" width="700">
       <template v-slot:activator="{ on, attrs }">
@@ -11,7 +11,7 @@
         <button type="button" :disabled="sigData.isEmpty" @click="save" :class="`button ${sigData.isEmpty ? 'button--disabled' : ''}`">{{ sigData.data !== '' ? 'Signed' : 'Sign' }}</button>
       </div>
     </v-dialog>
-    <span class="form__input--error">{{ errors.msg }}</span>
+    <span class="form__input--error">{{ errors[0] }}</span>
   </ValidationProvider>
 </template>
 <script>

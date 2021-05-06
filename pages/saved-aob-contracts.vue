@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div v-if="contracts.length <= 0">
+        <h2>There are no AOB Contracts</h2>
+    </div>
+    <span v-else>
         <div class="contracts-list-item" v-for="(item, i) in contracts" :key="`contract-${i}`">
             <p>AOB & Mitigation Contract Job ID: {{item.JobId}}</p>
             <client-only>
@@ -9,8 +12,8 @@
                 </vue-html2pdf>
             </client-only>
             <v-btn @click="generateReport(i)">Download PDF</v-btn> 
-        </div>      
-    </div>
+        </div>
+    </span>
 </template>
 <script>
 export default {
