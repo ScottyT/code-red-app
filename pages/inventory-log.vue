@@ -27,7 +27,7 @@
                         <input type="hidden" v-model="initDate" />
                         <v-dialog ref="initDateDialog" v-model="initDateModal" :return-value.sync="initDate" persistent width="400px">
                             <template v-slot:activator="{on, attrs}">
-                                <input id="initDate" v-model="initDateFormatted" v-bind="attrs" class="form__input" v-on="on" @blur="initDate = parseDate(initDateFormatted)" />
+                                <input id="initDate" v-model="initDateFormatted" readonly v-bind="attrs" class="form__input" v-on="on" @blur="initDate = parseDate(initDateFormatted)" />
                             </template>
                             <v-date-picker v-model="initDate" scrollable>
                                 <v-spacer></v-spacer>
@@ -42,7 +42,7 @@
                         <input type="hidden" v-model="endDate" />
                         <v-dialog ref="endDateDialog" v-model="endDateModal" :return-value.sync="endDate" persistent width="400px">
                             <template v-slot:activator="{on, attrs}">
-                                <input id="enddate" v-model="endDateFormatted" v-bind="attrs" class="form__input" v-on="on"  />
+                                <input id="enddate" v-model="endDateFormatted" readonly v-bind="attrs" class="form__input" v-on="on"  />
                             </template>
                             <v-date-picker v-model="endDate" scrollable :min="initDate">
                                 <v-spacer></v-spacer>
@@ -608,7 +608,6 @@ export default {
         }
     },
     mounted() {
-        this.mappingJobIds()
         this.$nextTick(() => {
             this.authUser = this.$fire.auth.currentUser ? true : false
         })

@@ -117,7 +117,6 @@ export default {
         initialize: {
           onAuthStateChangedAction: 'onAuthStateChangedAction',
         },
-
       },
       storage: true,
     },
@@ -143,10 +142,11 @@ export default {
       lang: 'en',
     },
     meta: {
-      mobileAppIOS: true,
       description: 'An app that the field teams fill out.',
       author: 'Scott Tucker',
       viewport: 'width=device-width, initial-scale=1',
+      name: 'Code Red Claims',
+      theme_color: '#2a73ae'
     },
     workbox: {
       importScripts: ['/firebase-auth-sw.js'],

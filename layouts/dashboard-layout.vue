@@ -2,7 +2,7 @@
   <v-app :dark="appTheme">
     <v-navigation-drawer dark v-model="drawer" :mini-variant="miniVariant" clipped open app width="300">
       <v-list>
-        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
+        <v-list-item v-for="(item, i) in fitleredNavItems" :key="i" :to="item.to" router exact>
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -157,7 +157,8 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Code Red Claims',
-      user: false
+      user: false,
+      fitleredNavItems: []
     }
   },
   computed: {
@@ -191,6 +192,11 @@ export default {
       fetchReports: 'fetchReports',
       fetchLogs: 'fetchLogs'
     }),
+    itemsArr() {
+       this.filteredNavItems = this.items.filter((v) => {
+        return v.access === this.getUser.role
+      })
+    },
     async signOut() {
       this.$store.dispatch("signout")
     }
@@ -198,6 +204,7 @@ export default {
   mounted() {
     this.fetchReports(this.$fire.auth.currentUser)
     this.$nextTick(() => {
+      this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       
     })

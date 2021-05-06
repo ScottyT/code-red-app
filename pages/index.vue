@@ -15,11 +15,6 @@ export default {
   computed: {
     ...mapGetters(["getUser", "isLoggedIn"])
   },
-  /* async middleware({$fire, redirect}) {
-    if ($fire.auth.currentUser === null) {
-      return redirect("/login")
-    }
-  }, */
   async asyncData({ $prismic, error, $axios }) {
     try {
       const document = (await $prismic.api.getSingle('home')).data
@@ -37,11 +32,6 @@ export default {
     }
   },
   
-  methods: {
-    /* ...mapActions({
-      fetchReports: 'fetchReports'
-    }) */
-  },
   data() {
     return {
       authUser: null,
