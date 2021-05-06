@@ -8,10 +8,10 @@
             <div class="form__form-group--block">
               <ValidationProvider v-slot="{ errors }" name="Email" rules="required|email" class="form__input--input-group-simple">
                 <label for="email" class="form__label">Email</label>
-                <input type="text" class="form__input" name="email" id="email" v-model="email" />
+                <input type="email" class="form__input" name="email" id="email" v-model="email" />
                 <span class="form__input--error">{{errors[0]}}</span>
               </ValidationProvider>
-              <ValidationProvider v-slot="{ errors }" name="pass" rules="required" class="form__input--input-group-simple">
+              <ValidationProvider v-slot="{ errors }" name="Password" rules="required" class="form__input--input-group-simple">
                 <label for="pass" class="form__label">Password</label>
                 <div class="form__input form__input--password-input">
                   <input :type="passwordVisibility ? 'text' : 'password'" class="form-input" id="pass" name="Password" v-model="password" />

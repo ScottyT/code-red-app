@@ -749,8 +749,9 @@ button {
 }
 
 input[type='file'] {
-  position: absolute;
-  top: -500px;
+  /* position: absolute;
+  display:none;
+  top: -500px; */
 }
 
 .folder-contents-wrapper {

@@ -29,19 +29,19 @@
         </span>
       </button> -->
 
-      <v-toolbar-title v-text="title" />
+      <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
       <ul class="menu-items" v-if="!$vuetify.breakpoint.sm">
         <li class="menu-items__item">
           <a @click="signOut">{{isLoggedIn ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item" v-show="isLoggedIn">
+        <li class="menu-items__item" v-if="user">
           <nuxt-link to="/profile">View saved forms</nuxt-link>
         </li>
-        <li class="menu-items__item" v-show="isLoggedIn && $store.state.user.role === 'admin'">
+        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
           <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
         </li>
-        <li class="menu-items__item" v-show="isLoggedIn && $store.state.user.role === 'admin'">
+        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
           <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>

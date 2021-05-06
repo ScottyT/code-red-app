@@ -62,8 +62,8 @@
             <ValidationProvider  ref="idprovider" v-slot="{ validate, errors }" name="Photo ID" rules="required|image" class="form__input--upload-group">
               <label class="form__label">Photo ID</label>
               <input type="hidden" v-model="idImage" @click="validate" />
-              <span class="button--normal button" @click="$refs.idfile.click()">Add Photo ID</span>
-              <input type="file" name="idfile" accept="image/*" ref="idfile" capture="user" @change="filesChange" />
+              <!-- <span class="button--normal button" @click="$refs.idfile.click()">Add Photo ID</span> -->
+              <input type="file" name="idfile" accept="image/*" ref="idfile" @change="filesChange" />
               <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`idimage`" /></div>
               <span class="form__input--error">{{ errors[0] }}</span>
               <v-btn @click="submitFiles(idImage, $refs.photoid)" v-if="idImage.length > 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
@@ -128,7 +128,7 @@
                   <v-icon class="file-listing__remove-file" @click="removeFile(key, file)" tag="i" large>mdi-close-circle</v-icon>
                 </div>
               </div>
-              <input type="file" name="files" ref="files" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf" capture="user" @change="filesChange" multiple />
+              <input type="file" name="files" ref="files" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf" @change="filesChange" multiple />
               <v-btn @click="submitFiles(uploadedFiles, $refs.jobfiles)" v-if="uploadedFiles.length > 0 && errors.length <= 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
               <span class="form__input--error">{{ errors[0] }}</span>
               <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
