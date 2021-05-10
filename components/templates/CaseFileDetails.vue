@@ -1,31 +1,32 @@
 <template>
     <div class="report-details">
+        <section class="pdf-content" slot="pdf-content">
         <div class="report-details__section">
             <div class="report-details__data">
-                <h2>Job ID:</h2>
+                <h3>Job ID:</h3>
                 <span>{{report.JobId}}</span>
             </div>
             <div class="report-details__data">
-                <h2>Team Lead ID #:</h2>
+                <h3>Team Lead ID #:</h3>
                 <span>{{report.id}}</span>
             </div>
             <div class="report-details__data">
-                <h2>Date:</h2>
+                <h3>Date:</h3>
                 <span>{{report.date}}</span>
             </div>
             <div class="report-details__data">
-                <h2>Address:</h2>
+                <h3>Address:</h3>
                 <span class="report-details__data-field">{{report.location.address}}</span>
             </div>
             <div class="report-details__data">
-                <h2>City, State, Zip:</h2>
+                <h3>City, State, Zip:</h3>
                 <span class="report-details__data-field">{{report.location.cityStateZip}}</span>
             </div>
         </div>
         <div class="report-details__section--case-file">
             <div class="report-details__data" v-if="report && report.contentCleaningInspection.length > 0">
                 <!-- content cleaning section -->
-                <h2>{{report.contentCleaningInspection[0].group}}</h2>
+                <h3>{{report.contentCleaningInspection[0].group}}</h3>
                 <ul>                   
                     <li v-for="(item, i) in report.contentCleaningInspection" :key="`cleaning-${i}`">
                         {{item.label}}
@@ -34,7 +35,7 @@
             </div>
             <div class="report-details__data" v-if="report && report.selectedTmpRepairs.length > 0">
                 <!-- tmp repairs -->
-                <h2>TMP Repairs</h2>
+                <h3>TMP Repairs</h3>
                 <ul>
                     <li v-for="(item, i) in report.selectedTmpRepairs" :key="`tmp-repairs-${i}`">
                         {{item}}
@@ -178,7 +179,7 @@
                 </ul>
             </div>
             <div class="report-details__data">
-                <h2>Customer Signiture:</h2>
+                <h3>Customer Signiture:</h3>
                     <div v-if="signiture !== ''">
                     <div class="report-details__data--cusSig" :style="'background-image:url('+signiture+')'"></div>
                 </div>
@@ -188,6 +189,7 @@
                 <span>{{report.afterHoursWork}}</span>
             </div>
         </div>
+        </section>
     </div>
 </template>
 <script>
@@ -201,7 +203,8 @@ export default {
                 return this.report.verifySign
             }
             return ""
-      },
+        },
+        
     },
     methods: {
         groupBy(list, keyGetter) {

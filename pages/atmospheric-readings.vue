@@ -6,7 +6,7 @@
             <v-dialog width="400px" v-model="errorDialog">
                 <div class="modal__error">
                     <div v-for="(error, i) in errors" :key="`error-${i}`">
-                        <h2 class="form__input--error">{{ error[0] }}</h2>
+                        <h3 class="form__input--error">{{ error[0] }}</h3>
                     </div>
                 </div>
             </v-dialog>

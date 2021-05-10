@@ -1,6 +1,8 @@
 <template>
   <div class="storage-page">
-    <LayoutReportsList :reportslist="reports" :sortoptions="sortOptions" page="storagePage" />
+    <button class="button--normal" type="button" @click="$fetch">Refresh</button>
+    <p v-if="$fetchState.pending">Fetching reports...</p>
+    <LayoutReportsList :reportslist="reports" :sortoptions="sortOptions" page="storagePage" v-else />
   </div>
 </template>
 <script>
@@ -27,6 +29,10 @@
       ],
       reports: []
     }),
+    async fetch() {
+      this.reports = await this.$axios.$get("/api/reports")
+    },
+    fetchOnServer: false,
     async asyncData({ $axios }) {
       /* var data = await $axios.$get("/api/reports");
         var dataFilters = data.filter((v) => {
@@ -46,7 +52,7 @@
     computed: {
       ...mapGetters(["getReports", "isLoggedIn"]),
       filteredRep() {
-        return this.getReports.filter((report) => {
+        return this.reports.filter((report) => {
           return report.ReportType == "rapid-response"
         })
       }

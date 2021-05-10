@@ -60,7 +60,11 @@ export default {
             var buffer = Buffer.from(buf.data)
             var base64string = buffer.toString('base64')
             return base64string
-        }
+        },
+        generateReport(key) {
+            //this.htmlToPdfOptions.filename = `coc-${this.report[key].JobId}`
+            this.$refs["html2Pdf-" + key].generatePdf()
+        },
     },
     created() {
         //this.decodeBuffer(this.report.chart.data.data)

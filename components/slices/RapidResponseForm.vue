@@ -6,7 +6,7 @@
       <v-dialog width="400px" v-model="errorDialog">
         <div class="modal__error">
           <div v-for="(error, i) in errors" :key="`error-${i}`">
-            <h2 class="form__input--error">{{ error[0] }}</h2>
+            <h3 class="form__input--error">{{ error[0] }}</h3>
           </div>
         </div>
       </v-dialog>
@@ -30,6 +30,19 @@
                 <v-btn text color="#fff" @click="dolModal = false">Cancel</v-btn>
                 <v-btn text color="#fff" @click="$refs.dolDialog.save(dateOfLoss)">OK</v-btn>
               </v-date-picker>
+            </v-dialog>
+          </div>
+          <div class="form__input--input-group">
+            <label for="timeOfDispatch" class="form__label">Time of Dispatch</label>
+            <v-dialog ref="todDialog" v-model="todModal" :return-value.sync="timeOfDispatch" persistent width="400px">
+              <template v-slot:activator="{ on, attrs }">
+                <input id="timeOfDispatch" v-model="timeOfDispatchFormatted" v-bind="attrs" class="form__input" v-on="on" readonly />
+              </template>
+              <v-time-picker v-model="timeOfDispatch" scrollable full-width format="ampm">
+                <v-spacer></v-spacer>
+                <v-btn text color="#fff" @click="todModal = false">Cancel</v-btn>
+                <v-btn text color="#fff" @click="$refs.todDialog.save(timeOfDispatch)">OK</v-btn>
+              </v-time-picker>
             </v-dialog>
           </div>
           <div class="form__input--input-group">
@@ -142,7 +155,9 @@
                 <input type="checkbox" :id="`loss-${i+1}`" v-model="selectedTypes" :value="type.text" />
                 <label :for="`loss-${i+1}`">{{type.text}}</label>
               </div>
-            </div>
+            </div>           
+          </div>
+          <div class="form__form-group form__section">
             <div class="form__input-wrapper">
               <div class="form__input--input-group">
                 <label for="dateOfIntrusion" class="form__label">Date of Intrusion</label>
@@ -179,6 +194,15 @@
                 <input :type="intrusion.type" :id="intrusion.label" v-model="intrusion.value" class="form__input" />
               </div>
             </div>
+            <div class="form__input--input-group">
+              <div class="form__form-group">
+                <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
+                  <label class="form__label" for="initial1">Initial:</label>
+                  <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" />
+                  <span class="form__input--error">{{ errors[0] }}</span>
+                </ValidationProvider>
+              </div>
+            </div>
           </div>
           <div class="form__form-group--left-side form__section">
             <h3>Preliminary Determination</h3>
@@ -188,6 +212,11 @@
                 <label :for="item">{{item}}</label>
               </div>
             </div>
+            <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
+              <label class="form__label" for="initial2">Initial:</label>
+              <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
           </div>
           <div class="form__form-group--right-side form__section">
             <h3>Inital Moisture Inspection</h3>
@@ -197,6 +226,37 @@
                 <label :for="item">{{item}}</label>
               </div>
             </div>
+            <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
+              <label class="form__label" for="initial3">Initial:</label>
+              <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
+          <div class="form__form-group form__form-group--info-box form__section">
+            <label class="form__label">Initial Moisture Map</label>
+            <p>An initial moisture inspection should be conducted to identify the full extent of water intrusion, including the
+                identification of affected assemblies, building materials, and the edge of water mitigation. Normally, this process
+                begins at the source of the water intrusion. The initial inspection process should continue in all directions from the
+                source of water intrusion until the restorer identifies and documents the extent of migration. The extent of the
+                moisture migration should be documented using one or more appropriate methods including at a minimum a
+                moisture map. (i.e., a diagram of the structure indicating the areas affected by migrating water). IICRC S500 Pg 179</p>
+            <div class="map-wrapper">
+              <div class="map-wrapper__map">
+                <div class="map-wrapper__map--row" v-for="n in 37" :key="n">
+                  <div class="map-wrapper__map--col" v-for="n in 20" :key="n"></div>
+                </div>
+              </div>
+              <VueSignaturePad width="100%" height="962px" ref="map" class="map-wrapper__canvas" :options="{ onBegin, minWidth: 1.5, maxWidth:3.5 }" />
+              <div>
+                <button type="button" class="button--normal" @click="saveMap">Save</button>
+                <button type="button" class="button--normal" @click="undoMap">Undo</button>
+              </div>
+            </div>
+            <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
+              <label class="form__label" for="initial4">Initial:</label>
+              <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
           </div>
           <div class="form__form-group form__form-group--info-box form__section">
             <h3>Pre-Restoration Evaluation</h3>
@@ -249,6 +309,12 @@
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
               <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" @input="acceptNumber" />
             </span>
+            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input--input-group">
+              <label for="adjusterEmail" class="form__label">Adjuster Email</label>
+              <input type="text" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
+              <br />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
           </div>
           <div class="form__form-group--block form__section">
             <h3>Evaluation Logs</h3>
@@ -404,6 +470,8 @@
       submitting: false,
       submitted: false,
       jobId: null,
+      timeOfDispatch: new Date().toTimeString().substr(0, 5),
+      timeOfDispatchFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
       dateOfLoss: new Date().toISOString().substr(0, 10),
       dolFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       dateOfEval: new Date().toISOString().substr(0, 10),
@@ -428,6 +496,7 @@
         denialOfServices: false,
         departureTime: false
       },
+      todModal: false,
       dolModal: false,
       doeModal: false,
       contactName: '',
@@ -622,12 +691,9 @@
       ],
       selectedSteps: [],
       picturesCheck:[
-        { id: 23, text: 'Street View', checked: false },
-        { id: 24, text: 'Address View', checked: false },
-        { id: 25, text: 'Exterior Damages', checked: false},
-        { id: 26, text: 'Interior Damages', checked: false},
-        { id: 27, text: 'Full Room', checked: false},
-        { id: 28, text: 'Personal Property', checked: false}
+        { id: 23, text: 'Arrival Photo of Entrance', checked: false },
+        { id: 24, text: 'Address Photo of Property', checked: false },
+        { id: 25, text: 'Site Specific Safety', checked: false}
       ],
       selectedPictures:[],
       insuranceCompany: '',
@@ -671,9 +737,20 @@
         data: '',
         isEmpty: true
       },
-      signDateTime: new Date().toLocaleString()
+      signDateTime: new Date().toLocaleString(),
+      initial1:"",
+      initial2:"",
+      initial3:"",
+      initial4:"",
+      moistureMap: {
+        data: "",
+        isEmpty: true
+      }
     }),
     watch: {
+      timeOfDispatch(val) {
+        this.timeOfDispatchFormatted = this.formatTime(val)
+      },
       dateOfLoss(val) {
         this.dolFormatted = this.formatDate(this.dateOfLoss)
       },
@@ -748,7 +825,19 @@
         checkStorage: 'indexDb/checkStorage',
         resetForm: 'indexDb/resetReport'
       }),
-      
+      undoMap() {
+        this.$refs.map.undoSignature()
+      },
+      saveMap() {
+        const { isEmpty, data } = this.$refs.map.saveSignature()
+        this.moistureMap.data = data
+        this.moistureMap.isEmpty = isEmpty
+      },
+      onBegin() {
+        this.$nextTick(() => {
+          this.$refs.map.resizeCanvas()
+        })
+      },
       submitForm() {
         this.successMessage = ""
         const evaluationLogs = []
@@ -793,7 +882,14 @@
               customerSig: this.cusSignature.data,
               PicturesTypes: this.selectedPictures,
               id: user.id,
-              signDate: this.signDate,
+              initials: {
+                initial1: this.initial1,
+                initial2: this.initial2,
+                initial3: this.initial3,
+                initial4: this.initial4
+              },
+              moistureMap: this.moistureMap.data,
+              signDateTime: this.signDateTime,
               teamMember: this.getUser,
               photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
@@ -828,6 +924,7 @@
                 }
                 this.successMessage = res.message
                 this.submitting = false
+                this.submitted = true
                 setTimeout(() => {
                     this.successMessage = ""
                     window.location = "/"
@@ -1027,5 +1124,39 @@
 <style lang="scss">
   .signature-area {
     max-width: 700px;
+  }
+  .map-wrapper {
+    position:relative;
+    width:100%;
+    max-width:1016px;
+    margin:auto;
+    &__canvas {
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      height:0;
+      max-width:1016px;
+    }
+    &__map {
+      border-left:1px solid $color-black;
+      border-right:1px solid $color-black;
+      
+      &--row {
+        height:26px;
+        border-top:1px solid $color-black;
+        display:flex;
+        flex-direction:row;
+        &:not(:first-child) {
+          border-top:0px solid $color-black;
+          border-bottom:0;
+        }
+      }
+      &--col {
+        width:63px;
+        border:1px solid $color-black;
+        height:100%;
+      }
+    }
   }
 </style>

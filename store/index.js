@@ -125,15 +125,6 @@ export const actions = {
       }).catch((err) => {
         commit('setError', err)
       })
-      /* await axios.get("https://code-red-lm5dxmp3ka-uc.a.run.app/api/reports", {
-        headers: {
-          'Authorization': `token ${authUser.getIdToken}`
-        }
-      }).then((res) => {
-        commit('setReports', res)
-      }).catch((err) => {
-        commit('setError', err)
-      }) */
     }
   },
   async signout({ commit }) {

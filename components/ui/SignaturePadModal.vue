@@ -43,7 +43,7 @@ export default {
     clear() {
       this.$refs[this.sigRef].clearSignature();
       this.sigData.isEmpty = true
-      this.sigData.data = null
+      this.sigData.data = ""
     },
     save() {
       const {

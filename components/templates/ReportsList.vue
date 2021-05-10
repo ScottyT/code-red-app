@@ -1,5 +1,6 @@
 <template>
   <div class="reports-list">
+    
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
         <UiAutocomplete @sendReportsToParent="reportsfetched" :items="reportslist" theme="light" />
@@ -13,23 +14,16 @@
     </div>
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="div">
-        <div class="reports-list__report flip-list-item" v-for="(report, i) in sortedReports" :key="`report-type-${i}`">
-          <nuxt-link class="reports-list__report-link" v-if="page == 'reportsPage'"
-          :to="`/reports/${[report.ReportType == 'case-file' ? report.ReportType +'-'+ report.CaseFileType : report.ReportType]}/${report.JobId}`">
-            <h3>{{report.JobId}}</h3>
-            <p>{{report.ReportType}}</p>
-            <span>{{report.CaseFileType}}</span>
-            <p>{{report.teamMember}}</p>
-          </nuxt-link>
+        <div class="reports-list__report flip-list-item" v-for="(report, i) in reports" :key="`report-type-${i}`">
           <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
             <h3>{{report.JobId}}</h3>
             <p>{{report.ReportType}}</p>
             <span v-show="report.CaseFileType">{{report.CaseFileType}}</span>
-            <p>{{report.teamMember.name}}</p>
+            <!-- <p>{{report.teamMember.name}}</p> -->
           </nuxt-link>
         </div>
       </transition-group>
-      <p v-if="reportslist.length <= 0">No reports found</p>
+      <!-- <p v-if="reportslist.length <= 0">No reports found</p> -->
     </div>
   </div>
 </template>
@@ -46,12 +40,12 @@ export default {
     reports: [],
     sketches: []
   }),
+  
   computed: {
     sortedReports() {
       return this.reports.sort((r1, r2) => {
         let modifier = 1
         if (this.sortDirection === 'info-bar__sort--desc') modifier = -1;
-        console.log(r1[this.sortBy])
         if (r1[this.sortBy] < r2[this.sortBy] && typeof r1[this.sortBy] === 'string') return -1 * modifier;
         if (r1[this.sortBy] > r2[this.sortBy] && typeof r1[this.sortBy] === 'string') return 1 * modifier;
 
@@ -68,7 +62,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      sortReports: 'sortReports'
+      sortReports: 'sortReports',
+      fetchReports: 'fetchReports'
     }),
     reportsfetched(reports) {
       this.reports = reports
@@ -124,13 +119,10 @@ export default {
 }
 
 .reports-list {
-  // display: flex;
-  // flex-wrap: wrap;
-  // justify-content: space-between;
-  //display:grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   column-gap: 40px;
   grid-area: reports;
+  padding:40px 0;
 
   &--search-list {
     //display:grid;

@@ -2,7 +2,7 @@
   <div class="block-group">
     <UiAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
-      <div class="reports-wrapper__data block-group__col" v-for="(item, i) in fetchreports" :key="`item-${i}`">
+      <div class="reports-wrapper__data block-group__col" v-for="(item, i) in reportslist" :key="`item-${i}`">
         <nuxt-link :to="`/field-jacket/${routeSwitching(item)}/${item.JobId}`">
           <p>{{item.JobId}}</p>
           <p v-show="item.formType !== ''">{{item.formType}}</p>
@@ -10,7 +10,7 @@
           <p>{{item.ReportType}}</p>
         </nuxt-link>
       </div>
-      <p v-if="fetchreports.length === 0">No reports to show</p>
+      <!-- <p v-if="fetchreports.length === 0">No reports to show</p> -->
     </div>
   </div>
 </template>
@@ -18,19 +18,14 @@
 export default {
     name: "Reports",
     props: ['reports', 'theme'],
-    data() {
-        return {
-            fetchreports: []
-        }
-    },
-    computed: {
-      
-    },
+    data: () => ({
+      reportslist: []
+    }),
     methods: {
       routeSwitching(item) {
         var route = ""
         switch (item.ReportType) {
-          case "case-file":
+          case "case-file-report":
             route = "case-file-" + item.CaseFileType
             break;
           case "logs-report":
@@ -48,11 +43,12 @@ export default {
         return route
       },
       reportsFetched(reports) {
-        this.fetchreports = reports
+        this.reportslist = reports
       }
     },
+    
     created() {
-        this.fetchreports = this.reports
+      this.reportslist = this.reports
     }
 }
 </script>

@@ -218,14 +218,15 @@ export default {
     if (typeof window === 'undefined') return
     window.removeEventListener('resize', this.onResize, { passive: true })
   },
-  mounted() {
-    
+  mounted() { 
     this.onResize()
     window.addEventListener('resize', this.onResize, { passive: true })
+    
     this.$nextTick(() => {
+      //this.fetchReports(this.$fire.auth.currentUser)
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
-      //this.fetchReports(this.$fire.auth.currentUser)
+      
     })
   }
 }

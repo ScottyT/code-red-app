@@ -1,32 +1,38 @@
 <template>
     <div class="pa-6 reports-wrapper">
+        <button class="button--normal" type="button" @click="$fetch">Refresh</button>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Sketch Reports
             </h3>
-            <LazyLayoutReports :reports="sketchReports" theme="light" />
+            <p v-if="$fetchState.pending">Fetching reports...</p>
+            <LayoutReports :reports="sketchReports" theme="light" v-else />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Log Reports
             </h3>
-            <LayoutReports :reports="logReports" theme="light" />
+            <p v-if="$fetchState.pending">Fetching reports...</p>
+            <LayoutReports :reports="logReports" theme="light" v-else />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">Charts</h3>
-            <LayoutReports :reports="chartData" theme="light" />
+            <p v-if="$fetchState.pending">Fetching reports...</p>
+            <LayoutReports :reports="chartData" theme="light" v-else />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Dispatch and Rapid Response Reports
             </h3>
-            <LayoutReports :reports="defaultData" theme="light" />
+            <p v-if="$fetchState.pending">Fetching reports...</p>
+            <LayoutReports :reports="defaultData" theme="light" v-else />
         </div>
         <div class="block-group">
             <h3 class="reports-wrapper__heading">
                 Daily Containment and Tech Reports
             </h3>
-            <LayoutReports :reports="conTechData" theme="light" />
+            <p v-if="$fetchState.pending">Fetching reports...</p>
+            <LayoutReports :reports="caseFileData" theme="light" v-else />
         </div>
     </div>
 </template>
@@ -40,14 +46,15 @@ export default {
             title: "Field Jacket"
         }
     },
-    data() {
-        return {
-            sketchReports:[],
-            logReports:[],
-            reports:[]
-        }
-    },
-    async asyncData({$axios, store, params}) {
+    data: () => ({
+        sketchReports:[],
+        logReports:[],
+        chartData: [],
+        defaultData: [],
+        caseFileData: [],
+        reports:[]
+    }),
+    /* async asyncData({$axios, store, params}) {
         try {
             let reports = await $axios.$get("/api/reports");
             let chartData = reports.filter((v) => {
@@ -76,6 +83,27 @@ export default {
         } catch (e) {
             console.error("SOMETHING WENT WRONG: " + e)
         }
+    }, */
+    async fetch() {
+        this.reports = await this.$axios.$get("/api/reports");
+        this.sketchReports = this.reports.filter((v) => {
+            return v.ReportType === 'sketch-report'
+        })
+        this.logReports = this.reports.filter((v) => {
+            return v.ReportType === 'logs-report'
+        })
+        this.chartData = this.reports.filter((v) => {
+            return v.ReportType === 'chart-report'
+        })
+        this.defaultData = this.reports.filter((v) => {
+            return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
+        })
+        this.caseFileData = this.reports.filter((v) => {
+            return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
+        })
+    },
+    computed: {
+        
     },
     methods: {
         ...mapActions({

@@ -129,6 +129,7 @@
   </section>
 </template>
 <script>
+import { storage } from '~/server/firebase-service';
   export default {
     name: 'ResponseReportDetails',
     props: ['report', 'notPdf'],
@@ -149,7 +150,8 @@
         EvaluationLogs: [],
         InsuranceCompany: '',
         PolicyNumber: '',
-        PropertyOwner: ''
+        PropertyOwner: '',
+        //jobFiles: []
       },
       repData: null
     }),
@@ -167,16 +169,37 @@
           return this.report.customerSig
         }
         return ""
-      },
-      pictures() {
-        var picArr = this.report && this.report.Pictures ? this.report.Pictures : null;
-        if (picArr !== null) {
-          return this.report.Pictures
-        }
-        return []
       }
     },
     methods: {
+      pictures(report) {
+        var storageRef = this.$fire.storage.ref()
+        var listRef = storageRef.child(report)
+        listRef.listAll().then((res) => {
+          var folderPath = ""
+          res.prefixes.forEach((folderRef) => {
+            folderPath = folderRef
+            /* folderRef.listAll().then((res) => {
+              res.items.forEach((itemRef) => {
+                var itemPath = itemRef.fullPath
+                storageRef.child(itemPath).getDownloadURL().then((url) => {
+                  var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
+                  var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
+                  const fileObj = {
+                    jobid: report,
+                    name: fileName,
+                    url: url,
+                    type: fileType
+                  }
+                  this.jobFiles.push(fileObj)
+                }).catch((err) => {
+                  console.error(err)
+                })
+              })
+            }) */
+          })
+        })
+      },
       startEditing() {
         this.isEditing = !this.isEditing;
         const address = this.report && this.report.location ? this.report.location.address : null
@@ -212,6 +235,7 @@
     },
     created() {
       this.repData = this.report
+      //this.pictures(this.repData.JobId)
     }
   }
 </script>

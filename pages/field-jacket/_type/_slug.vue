@@ -24,13 +24,14 @@
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
             <LayoutResponseReportDetails :notPdf="true" :report="report" />
         </span>
-        <span v-if="report.ReportType === 'case-file'">
+        <span v-if="report.ReportType === 'case-file-report'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
                     <LayoutCaseFileDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
             <LayoutCaseFileDetails :notPdf="true" :report="report" />
         </span>
     </div>
@@ -40,7 +41,7 @@ export default {
     layout: "dashboard-layout",
     head() {
         return {
-            title: "Report -" + this.formType + '-' + this.jobId
+            title: "Report -" + this.reportType + '-' + this.jobId
         }
     },
     data() {

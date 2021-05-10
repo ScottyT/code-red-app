@@ -838,7 +838,7 @@
           </div>
         </fieldset>
         <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-          <LazyCreditCard ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
+          <LazyFormsCreditCard ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
           :jobId="selectedJobId" :repPrint="repPrint" @submit="submitForm" @cardSubmit="cardSubmittedValue" />
         </div>
         <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Card'">Next</v-btn>
