@@ -193,7 +193,7 @@
 <script>
 export default {
     name: "CaseFileDetails",
-    props: ['report'],
+    props: ['report', 'notPdf'],
     computed: {
         signiture() {
             var sig = this.report && this.report.verifySign ? this.report.verifySign : null;

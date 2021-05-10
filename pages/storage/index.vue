@@ -28,15 +28,20 @@
       reports: []
     }),
     async asyncData({ $axios }) {
-      try {
-        let data = await $axios.$get("/api/reports");
-        let dataFilters = data.filter((v) => {
+      /* var data = await $axios.$get("/api/reports");
+        var dataFilters = data.filter((v) => {
+          return v.ReportType !== 'credit-card'
+        })
+        return { reports: dataFilters } */
+      /* try {
+        var data = await $axios.$get("/api/reports");
+        var dataFilters = data.filter((v) => {
           return v.ReportType !== 'credit-card'
         })
         return { reports: dataFilters }
       } catch (e) {
         console.error("SOMETHING WENT WRONG: " + e)
-      }
+      } */
     },
     computed: {
       ...mapGetters(["getReports", "isLoggedIn"]),

@@ -77,7 +77,7 @@ export const actions = {
     
     
     commit('setCreditCards', creditcards)
-    commit('setUser', {
+    commit('SET_USER', {
       email: null,
       id: null,
       role: null,

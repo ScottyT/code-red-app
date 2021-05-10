@@ -2,7 +2,7 @@
 <section class="pdf-content">
   <div class="report-details report-details__response-report">
     <h1 v-if="message">{{message}}</h1>
-    <v-btn @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
+    <v-btn v-if="notPdf" @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
     <v-btn v-show="isEditing" @click="updateReport" dark>Update</v-btn>
     <div class="report-details__section">
       <div class="report-details__data">
@@ -131,7 +131,7 @@
 <script>
   export default {
     name: 'ResponseReportDetails',
-    props: ['report'],
+    props: ['report', 'notPdf'],
     data: (vm) => ({
       message: '',
       stepsArrLength: '',

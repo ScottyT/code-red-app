@@ -41,11 +41,11 @@ export default {
       },
     ],
   },
-  /* server: {
+  server: {
     port: 3000, // default: 3000
     host: '0.0.0.0', // default: localhost,
     timing: false
-  }, */
+  },
   loading: {
     color: '#2a73ae',
   },
@@ -164,7 +164,7 @@ export default {
             },
           },
         },
-        {
+        /* {
           urlPattern: "https://code-red-app.web.app/*",
           handler: 'networkFirst',
           method: 'GET',
@@ -172,9 +172,9 @@ export default {
             cacheableResponse: { statuses: [0, 200] }
           },
 
-        },
+        }, */
         {
-          urlPatter: "http://localhost:3000/*",
+          urlPatter: "http://localhost:8080/api/*",
           handler: 'networkFirst',
           method: 'GET',
           strategyOptions: {

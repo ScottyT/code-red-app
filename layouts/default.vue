@@ -1,15 +1,18 @@
 <template>
   <v-app :dark="appTheme">
-    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" clipped open app width="300">
+    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" clipped open app :width="$vuetify.breakpoint.width < 768 ? 300 : 400">
+      <button v-if="$vuetify.breakpoint.width < 1200" type="button" class="button__icon" icon @click.stop="drawer = !drawer">
+        <v-icon :size="$vuetify.breakpoint.width < 991 ? 60 : 36">mdi-chevron-left</v-icon>
+      </button>
       <v-list class="nav-list">
-        <v-list-item class="nav-list-item" v-for="(item, i) in filteredNavItems" :key="i" :to="item.to" router exact>
+        <nuxt-link class="nav-list-item" exact v-for="(item, i) in filteredNavItems" :key="i" :to="item.to">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
-          <v-list-item-content>
+          <div class="nav-list-item__content">
             <p class="nav-list-item__title">{{item.title}}</p>
-          </v-list-item-content>
-        </v-list-item>
+          </div>
+        </nuxt-link>
       </v-list>
       <v-list v-show="isLoggedIn && getUser.role === 'admin'">
         <v-list-item router exact to="/profile/create">
@@ -19,46 +22,45 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="true" fixed app class="header-navigation">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <!-- <button type="button" aria-label="Toggle navigation" class="header-navigation__navbar-toggler">
-        <span aria-hidden>
-          <span class="header-navigation__toggler--top header-navigation__toggler"></span>
-          <span class="header-navigation__toggler--middle header-navigation__toggler"></span>
-          <span class="header-navigation__toggler--bottom header-navigation__toggler"></span>
+    <v-app-bar :clipped-left="true" fixed app extension-height="60" height="80" class="header-navigation">
+      <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
+        <span>
+          <i class="button__icon-content button__icon-content--top"></i>
+          <i class="button__icon-content button__icon-content--middle"></i>
+          <i class="button__icon-content button__icon-content--bottom"></i>
         </span>
-      </button> -->
+      </button>
 
       <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
-      <ul class="menu-items" v-if="!$vuetify.breakpoint.sm">
+      <ul class="menu-items" v-if="!isMobile">
         <li class="menu-items__item">
           <a @click="signOut">{{isLoggedIn ? "Logout" : "Login"}}</a>
         </li>
         <span>{{getUser ? getUser.name : null}}</span>
         <li class="menu-items__item" v-if="user">
-          <nuxt-link to="/profile">View saved forms</nuxt-link>
+          <nuxt-link to="/profile">Saved forms</nuxt-link>
         </li>
         <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+          <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
         </li>
         <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
+          <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
         </li>
       </ul>
-      <template v-slot:extension v-if="$vuetify.breakpoint.sm">
+      <template v-slot:extension v-if="isMobile">
         <ul class="menu-items__extended-menu menu-items">
           <li class="menu-items__item">
             <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
           </li>
           <span>{{getUser ? getUser.name : null}}</span>
-          <li class="menu-items__item" v-if="$fire.auth.currentUser">
-            <nuxt-link to="/profile">View saved forms</nuxt-link>
+          <li class="menu-items__item" v-if="user">
+            <nuxt-link to="/profile">Saved forms</nuxt-link>
           </li>
-          <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
-            <nuxt-link to="/completed-jobs">View certificates of completion</nuxt-link>
+          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
+            <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
           </li>
-          <li class="menu-items__item" v-if="$fire.auth.currentUser && $store.state.user.role === 'admin'">
-            <nuxt-link to="/saved-aob-contracts">View AOB & Mitigation Contracts</nuxt-link>
+          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
+            <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
           </li>
         </ul>
       </template>
@@ -160,7 +162,8 @@ export default {
       rightDrawer: false,
       title: 'Code Red Claims',
       user: false,
-      filteredNavItems: []
+      filteredNavItems: [],
+      isMobile: false
     }
   },
   computed: {  
@@ -188,20 +191,38 @@ export default {
       fetchLogs: 'fetchLogs'
     }),
     itemsArr() {
-       this.filteredNavItems = this.items.filter((v) => {
-        return v.access === this.getUser.role
+      const filtered = (role) => this.items.filter((v) => {
+        return v.access === role
       })
+      switch (this.getUser.role) {
+        case "user":
+          this.filteredNavItems = filtered("user")
+          break;
+        case "admin":
+          this.filteredNavItems = this.items
+      }
     },
     async signOut() {
       this.$store.dispatch("signout")
+    },
+    onResize() {
+      setTimeout(() => {
+        this.isMobile = window.innerWidth < 1200
+      }, 100)     
     }
   },
   mounted() {
+    this.onResize()
+    window.addEventListener('resize', this.onResize, { passive: true })
     this.$nextTick(() => {
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       this.fetchReports(this.$fire.auth.currentUser)
     })
+  },
+  beforeDestroy() {
+    if (typeof window === 'undefined') return
+    window.removeEventListener('resize', this.onResize, { passive: true })
   }
 }
 </script>

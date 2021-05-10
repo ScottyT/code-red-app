@@ -5,13 +5,33 @@
 
         
         <span v-if="reportType === 'dispatch'">
-            <LayoutReportDetails :report="report" />
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <LayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
+            <LayoutReportDetails :notPdf="true" :report="report" />
         </span>
         <span v-if="reportType === 'rapid-response'">
-            <LayoutResponseReportDetails :report="report" />
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <LayoutResponseReportDetails :notPdf="false" :report="report" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
+            <LayoutResponseReportDetails :notPdf="true" :report="report" />
         </span>
         <span v-if="report.ReportType === 'case-file'">
-            <LayoutCaseFileDetails :report="report" />
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <LayoutCaseFileDetails :notPdf="false" :report="report" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <LayoutCaseFileDetails :notPdf="true" :report="report" />
         </span>
     </div>
 </template>
@@ -29,17 +49,17 @@ export default {
             contentRendered: false
         }
     },
-    async middleware({store, redirect}) {
+    /* async middleware({store, redirect}) {
         if (store.state.user.role !== "admin") {
             return redirect("/")
         }
-    },
+    }, */
     async asyncData({$axios, params}) {
         try {
             var formName = ""
             var formType = params.id;
             var reportType = params.type;
-            var jobId = params.uid;
+            var jobId = params.slug;
             let data = await $axios.$get(`/api/reports/${params.type}/${params.slug}`);
             switch (formType) {
                 case "moisture-sketch":
@@ -75,7 +95,7 @@ export default {
         htmlToPdfOptions(e) {
             return {
                 margin:[20, 10, 20, 10],
-                filename: `${this.reportType}-${this.formType}-${this.jobId}`,
+                filename: `${this.reportType}-${this.jobId}`,
                 image: {
                     type: "jpeg",
                     quality: 0.98

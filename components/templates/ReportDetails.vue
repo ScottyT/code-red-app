@@ -1,9 +1,9 @@
 <template>
   <div class="report-details report-details__dispatch-report">
     <h1 v-if="message">{{message}}</h1>
-    <v-btn @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
+    <v-btn v-if="notPdf" @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
     <v-btn v-show="isEditing" @click="updateReport" dark>Update</v-btn>
-    <section class="pdf-content">
+    <section class="pdf-content" slot="pdf-content">
     <div class="report-details__section">
       <div class="report-details__data">
         <h3>Team Lead ID #:</h3>
@@ -123,7 +123,7 @@
 
   export default {
     name: 'ReportDetails',
-    props: ['report'],
+    props: ['report', 'notPdf'],
     data: (vm) => ({
       message: '',
       updatedReport: {
@@ -160,6 +160,26 @@
       newCreatedAt() {
         const timestamp = new Date(this.report.createdAt)
         return timestamp
+      },
+      htmlToPdfOptions(e) {
+        return {
+          margin: [10, 10, 20, 10],
+          filename: `${this.report.ReportType}-${this.report.JobId}`,
+          image: {
+            type: "jpeg",
+            quality: 0.98
+          },
+          html2canvas: {
+            scale: 2,
+            useCORS: true
+          },
+          jsPDF: {
+            unit: 'px',
+            format: 'letter',
+            orientation: 'portrait',
+            hotfixes: ['px_scaling']
+          }
+        }
       }
     },
     mounted() {
@@ -170,6 +190,9 @@
       })
     },
     methods: {
+      generateReport(key) {
+        this.$refs["html2pdf-"+key].generatePdf()
+      },
       startEditing() {
         this.isEditing = !this.isEditing;
         const address = this.report && this.report.location ? this.report.location.address : null
