@@ -72,9 +72,10 @@
       <h2>Photographs</h2>
 
       <span v-show="pictures.length > 0">
-        <div class="report-details__file-listing" v-for="(picture, i) in pictures" :key="i">
+        <div class="report-details__file-listing" v-for="(picture, i) in jobFiles" :key="i">
           <a :href="picture.url" target="_blank">
-            <img class="report-details__file-listing--image" v-if="picture.type === '.jpg' || picture.type === '.png' || picture.type === '.gif'" :src="picture.url" :alt="`image-${i}`" />
+            <img class="report-details__file-listing--image" v-if="picture.type === '.jpg' || picture.type === '.png' 
+              || picture.type === '.gif' || picture.type === '.jpeg'" :src="picture.url" :alt="`image-${i}`" />
             <p v-else>{{picture.name}}</p>
           </a>
         </div>
@@ -150,9 +151,9 @@ import { storage } from '~/server/firebase-service';
         EvaluationLogs: [],
         InsuranceCompany: '',
         PolicyNumber: '',
-        PropertyOwner: '',
-        //jobFiles: []
+        PropertyOwner: ''
       },
+      jobFiles: [],
       repData: null
     }),
     computed: {
@@ -179,7 +180,7 @@ import { storage } from '~/server/firebase-service';
           var folderPath = ""
           res.prefixes.forEach((folderRef) => {
             folderPath = folderRef
-            /* folderRef.listAll().then((res) => {
+            folderRef.listAll().then((res) => {
               res.items.forEach((itemRef) => {
                 var itemPath = itemRef.fullPath
                 storageRef.child(itemPath).getDownloadURL().then((url) => {
@@ -196,7 +197,7 @@ import { storage } from '~/server/firebase-service';
                   console.error(err)
                 })
               })
-            }) */
+            })
           })
         })
       },
@@ -235,7 +236,7 @@ import { storage } from '~/server/firebase-service';
     },
     created() {
       this.repData = this.report
-      //this.pictures(this.repData.JobId)
+      this.pictures(this.repData.JobId)
     }
   }
 </script>

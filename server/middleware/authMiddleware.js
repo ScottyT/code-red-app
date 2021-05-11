@@ -1,4 +1,4 @@
-const admin = require('../firebase-service');
+/* const admin = require('../firebase-service');
 
 const getAuthToken = (req, res, next) => {
       if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -28,4 +28,4 @@ const checkIfAuthenticated = (req, res, next) => {
     });
 };
 
-module.exports = { getAuthToken, checkIfAuthenticated }
+module.exports = { getAuthToken, checkIfAuthenticated } */

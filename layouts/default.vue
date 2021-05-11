@@ -14,13 +14,13 @@
           </div>
         </nuxt-link>
       </v-list>
-      <v-list v-show="isLoggedIn && getUser.role === 'admin'">
+      <!-- <v-list v-show="isLoggedIn && getUser.role === 'admin'">
         <v-list-item router exact to="/profile/create">
           <v-list-item-content>
             Create Employee
           </v-list-item-content>
         </v-list-item>
-      </v-list>
+      </v-list> -->
     </v-navigation-drawer>
     <v-app-bar :clipped-left="true" fixed app extension-height="60" height="80" class="header-navigation">
       <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
@@ -118,6 +118,12 @@ export default {
           icon: 'mdi-form-select',
           title: 'Atmospheric Readings',
           to: '/atmospheric-readings',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'Moisture Readings',
+          to: '/moisture-readings',
           access: 'user'
         },
         {

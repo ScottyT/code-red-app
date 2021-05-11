@@ -7,59 +7,70 @@
         <h1 class="text-center">Saved Forms</h1>
         <h2 v-show="message">{{message}}</h2>
       </div>
-      <ul class="profile__group" v-if="defaultReports.length <= 0">
+      <ul class="profile__group" v-if="defaultReports.length > 0">
         <h3>Dispatch and Rapid Response Reports</h3>
         <li v-for="(report, i) in defaultReports" :key="`default-reports-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="containmentReps.length <= 0">
+      <ul class="profile__group" v-if="containmentReps.length > 0">
         <h3>Containment Reports</h3>
         <li v-for="(report, i) in containmentReps" :key="`containment-reps-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.CaseFileType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="creditCardReps.length <= 0">
+      <ul class="profile__group" v-if="creditCardReps.length > 0">
         <h3>Credit Card Reports</h3>
         <li v-for="(report, i) in creditCardReps" :key="`credit-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="cocReports.length <= 0">
+      <ul class="profile__group" v-if="cocReports.length > 0">
         <h3>Certificate of Completion Reports</h3>
         <li v-for="(report, i) in cocReports" :key="`coc-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="aobReports.length <= 0">
+      <ul class="profile__group" v-if="aobReports.length > 0">
         <h3>AOB Mitigation Contract</h3>
         <li v-for="(report, i) in aobReports" :key="`aob-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="sketchReports.length <= 0">
+      <ul class="profile__group" v-if="sketchReports.length > 0">
         <h3>Sketch Reports</h3>
         <li v-for="(report, i) in sketchReports" :key="`sketch-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="chartReports.length <= 0">
+      <ul class="profile__group" v-if="chartReports.length > 0">
         <h3>Chart Reports</h3>
         <li v-for="(report, i) in chartReports" :key="`chart-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
             @click="submitForm(report)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group block-group" v-if="logReports.length <= 0">
+      <ul class="profile__group block-group" v-if="logReports.length > 0">
         <h3>Logs</h3>
         <div class="block-group--grid">
           <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
+            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
+              <p>{{report.JobId}}</p>
+              <p>{{report.formType}}</p>
+            </nuxt-link>
+          </li>
+        </div>       
+      </ul>
+      <ul class="profile__group block-group" v-if="moistureMaps.length > 0">
+        <h3>Moisture Maps</h3>
+        <div class="block-group--grid">
+          <li v-for="(report, i) in moistureMaps" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
             <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
               <p>{{report.JobId}}</p>
               <p>{{report.formType}}</p>
@@ -153,6 +164,11 @@
       chartReports() {
         return this.getSavedReports.filter((v) => {
           return v.ReportType === 'chart-report'
+        })
+      },
+      moistureMaps() {
+        return this.getSavedReports.filter((v) => {
+          return v.ReportType === 'moisture-map'
         })
       },
       isOnline() {

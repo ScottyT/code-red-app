@@ -5,6 +5,7 @@
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
             <h2 v-show="updateMessage !== ''">{{updateMessage}}</h2>
+            
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
                     <label>Job ID: </label>

@@ -1,4 +1,4 @@
-const admin = require('../firebase-service');
+/* const admin = require('../firebase-service');
 
 const createUser = async (req, res) => {
     const {
@@ -18,4 +18,4 @@ const createUser = async (req, res) => {
     })
 }
 
-module.exports = createUser
+module.exports = createUser */

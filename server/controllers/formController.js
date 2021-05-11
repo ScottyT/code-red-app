@@ -8,8 +8,35 @@ const RapidResponse = require("../models/rapidReportSchema");
 const CaseFile = require("../models/caseFileSchema");
 const CreditCard = require("../models/creditCardSchema");
 const chartModel = require('../models/chartSchema');
+const moistureModel = require('../models/moistureMapSchema');
 const { validationResult } = require('express-validator');
 
+const createMoistureMap = async (req, res) => {
+    const errors = validationResult(req)
+    const moisture = new moistureModel({
+        JobId: req.body.JobId,
+        ReportType: req.body.ReportType,
+        formType: req.body.formType,
+        initialEvalDate: req.body.initialEvalDate,
+        location: req.body.location,
+        areaSub1: req.body.areaSub1,
+        areaSub2: req.body.areaSub2,
+        areaSub3: req.body.areaSub3,
+        baselineReadings: req.body.baseLineReadings,
+        readingsRow: req.body.readingsRow,
+        notes: req.body.notes,
+        teamMember: req.body.teamMember
+    })
+    const moistureMap = await moisture.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
+    if (!errors.isEmpty() || moistureMap !== null) {
+        return res.json(errors)
+    }
+    await moisture.save().then(() => {
+        res.json({message: "Form submitted"})
+    }).catch((err) => {
+        res.json(err)
+    })
+}
 const uploadChart = async (req, res) => {
     const errors = validationResult(req)
     const obj = new chartModel({
@@ -51,21 +78,38 @@ const createSketch = async (req, res) => {
 }
 const createLogs = async (req, res) => {
     const errors = validationResult(req)
-    
-    const logs = new Logging({
-        JobId: req.body.JobId,
-        ReportType: req.body.ReportType,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        formType: req.body.formType,
-        readingsLog: req.body.readingsLog,
-        lossClassification: req.body.lossClassification,
-        quantityData: req.body.quantityData,
-        checkData: req.body.checkData,
-        categoryData: req.body.categoryData,
-        notes: req.body.notes,
-        teamMember: req.body.teamMember
-    });
+    var logs
+    if (req.body.formType === 'moisture-map') {
+        logs = new Logging({
+            JobId: req.body.JobId,
+            ReportType: req.body.ReportType,
+            formType: req.body.formType,
+            initialEvalDate: req.body.initialEvalDate,
+            location: req.body.location,
+            areaSub1: req.body.areaSub1,
+            areaSub2: req.body.areaSub2,
+            areaSub3: req.body.areaSub3,
+            baselineReadings: req.body.baseLineReadings,
+            readingsRow: req.body.readingsRow,
+            notes: req.body.notes,
+            teamMember: req.body.teamMember
+        })
+    } else {
+        logs = new Logging({
+            JobId: req.body.JobId,
+            ReportType: req.body.ReportType,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
+            formType: req.body.formType,
+            readingsLog: req.body.readingsLog,
+            lossClassification: req.body.lossClassification,
+            quantityData: req.body.quantityData,
+            checkData: req.body.checkData,
+            categoryData: req.body.categoryData,
+            notes: req.body.notes,
+            teamMember: req.body.teamMember
+        })
+    }
     //const logs = new Logging(req.body)
     const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).populate('user').exec()
     
@@ -89,6 +133,7 @@ const updateLogs = async (req, res) => {
     logsReport.quantityData = req.body.quantityData
     logsReport.checkData = req.body.checkData
     logsReport.categoryData = req.body.categoryData
+    logsReport.readingsRow = req.body.readingsRow
     await logsReport.save().then(savedDoc => {
         savedDoc === logsReport;
         res.json({message: "Report updated"})
@@ -323,7 +368,8 @@ const createCaseFile = async (req, res) => {
         res.json(err)
     })
 }
-module.exports = { 
+module.exports = {
+    createMoistureMap,
     createSketch, 
     createLogs, 
     updateLogs, 

@@ -3,8 +3,6 @@
 */
 html {
   font-size: 1em;
-
-  
 }
 body {
   font-size:14px;
@@ -33,7 +31,7 @@ h2 {
   font-size: 2.074em;
 }
 h3 {
-  font-size:1.728em;
+  font-size:1.628em;
 }
 
 .v-btn {
@@ -49,7 +47,7 @@ h3 {
   min-height:48px;
   padding:0 16px;
   @include respond(tabletLarge) {
-    min-height:54px;
+    min-height:52px;
   }
   &__content {
     align-items:center;
@@ -339,8 +337,7 @@ button {
 
       @include respond(tabletLargeMax) {
         display: block;
-        max-width: 260px;
-        width: 100%;
+        //width: 100%;
       }
     }
 
@@ -433,7 +430,10 @@ button {
       }
     }
     &--cols {
-      padding:7px;
+      @include respond(tabletLarge) {
+        padding:7px;
+      }
+      padding:3px;
       border-color:black;
       border-top:2px solid;
       border-bottom:1px solid;

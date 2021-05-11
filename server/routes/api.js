@@ -9,14 +9,15 @@ const CreditCard = require("../models/creditCardSchema");
 const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
-const createUser = require("../controllers/authController");
-const { createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
+const moistureModel = require('../models/moistureMapSchema');
+//const createUser = require("../controllers/authController");
+const { createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
 
-router.post("/auth/signup", createUser);
+//router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
     check('fname').not().isEmpty().withMessage("First name is required"),
@@ -234,6 +235,17 @@ router.get('/chart-report/:formType/:JobId', (req, res) => {
         }
     })
 })
+router.post("/moisture-map/new",
+    check('JobId').not().isEmpty().withMessage('Job ID is required')
+    .custom((value, {req}) => {
+        return moistureModel.findOne({JobId: value, formType: req.body.formType}).then(moisture => {
+            if (moisture) {
+                return Promise.reject('Job ID is already in use')
+            }
+        })
+    },
+    check('notes').not().isEmpty().withMessage('Notes is required')
+    ), createMoistureMap)
 router.post("/sketch-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {       

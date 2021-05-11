@@ -1,7 +1,7 @@
 <template>
     <div class="form-wrapper">
         <h1 class="text-center">Water Emergency Services Incorporated</h1>
-        <h2 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h2>
+        <h3 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h3>
         <ValidationObserver ref="form" v-slot="{errors}">
             <p class="font-weight-bold">{{submittedMessage}}</p>
             <v-dialog width="400px" v-model="errorDialog">
@@ -23,7 +23,7 @@
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input--input-group">
-                        <label id="initDate" class="form__label">Initial Starting Date:</label>
+                        <label for="initDate" class="form__label">Initial Starting Date:</label>
                         <input type="hidden" v-model="initDate" />
                         <v-dialog ref="initDateDialog" v-model="initDateModal" :return-value.sync="initDate" persistent width="400px">
                             <template v-slot:activator="{on, attrs}">
@@ -38,7 +38,7 @@
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input--input-group">
-                        <label id="enddate" class="form__label">End Date:</label>
+                        <label for="enddate" class="form__label">End Date:</label>
                         <input type="hidden" v-model="endDate" />
                         <v-dialog ref="endDateDialog" v-model="endDateModal" :return-value.sync="endDate" persistent width="400px">
                             <template v-slot:activator="{on, attrs}">

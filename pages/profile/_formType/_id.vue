@@ -26,6 +26,9 @@ export default {
                 case "quantity-inventory-logs":
                     formName = "Unit Quantity and Equipment Inventory"
                     break;
+                case "moisture-map":
+                    formName = "Moisture Readings Map Readings"
+                    break;
                 default:
                     formName = "Sketch Form"
             }

@@ -23,7 +23,14 @@ const logging = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Employee'
-    }
+    },
+    initialEvalDate: String,
+    location: Map,
+    areaSub1: String,
+    areaSub2: String,
+    areaSub3: String,
+    baselineReadings: String,
+    readingsRow: Array
 });
 logging.plugin(timestamps);
 module.exports = mongoose.model('Logs', logging);
