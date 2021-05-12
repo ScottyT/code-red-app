@@ -67,7 +67,7 @@
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <span v-if="!user"><LazyFormsLogin /></span>
-      <nuxt class="mt-6 mb-6" v-else />
+      <nuxt class="mt-6 mb-6 mx-auto px-5" v-else />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>

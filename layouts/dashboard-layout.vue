@@ -67,7 +67,7 @@
     </v-app-bar>
     <v-main>
       <span v-if="!user"><LazyFormsLogin /></span>
-      <nuxt class="pa-6" v-else />
+      <nuxt class="px-5 mx-auto mt-6 mb-6" v-else />
     </v-main>
     <v-footer dark :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>

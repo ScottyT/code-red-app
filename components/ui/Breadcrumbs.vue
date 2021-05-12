@@ -53,6 +53,7 @@ export default {
 .breadcrumb-wrapper {
   display: grid;
   grid-template-columns: 200px 1fr;
+  margin-bottom:30px;
 
   &__back {
     padding-right: 20px;

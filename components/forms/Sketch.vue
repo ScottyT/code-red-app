@@ -154,6 +154,7 @@ export default {
         }
     },
     mounted() {
+        window.addEventListener("resize", this.$refs.sketchRef.resizeCanvas())
         this.checkStorage()
         this.$nextTick(() => {
             this.$refs.sketchRef.resizeCanvas()

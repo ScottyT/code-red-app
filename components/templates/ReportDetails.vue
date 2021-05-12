@@ -38,15 +38,15 @@
       <span v-if="!isEditing"
         class="report-details__data-field">{{report && report.location ? report.location.cityStateZip : null}}</span>
 
-      <h2 class="report-details__data-label">Phone Number:</h2>
+      <h3 class="report-details__data-label">Phone Number:</h3>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.phoneNumber" @input="acceptNumber" />
       <span v-if="!isEditing" class="report-details__data-field">{{report.phoneNumber}}</span>
 
-      <h2 class="report-details__data-label">Email Address:</h2>
+      <h3 class="report-details__data-label">Email Address:</h3>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.emailAddress" />
       <span v-if="!isEditing" class="report-details__data-field">{{report.emailAddress}}</span>
       <div class="report-details__checklist">
-        <h2 class="report-details__data-label">Property Checklist</h2>
+        <h3 class="report-details__data-label">Property Checklist</h3>
         <ul>
           <li v-for="item in report.propertyChkList" :key="item.id">{{item}}</li>
         </ul>

@@ -106,7 +106,7 @@ a {
   height: 100%;
 
   li {
-    padding:10px 0;
+    padding:10px 6px;
   }
 
   &__item {
@@ -643,18 +643,18 @@ button {
   color: $color-black;
 }
 
-.reports-detail-wrapper {
-  padding: 45px 4vw;
+.report-details-wrapper {
+  max-width:1200px;
 }
 
 .report-details {
-  max-width:1200px;
+  max-width:800px;
   width:100%;
   margin:auto;
   color:$color-black;
   &__section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap:wrap;
     border-bottom: 1px solid $dark-primary-1;
     padding: 20px 0;
     column-gap: 2vw;
@@ -675,15 +675,10 @@ button {
     }
 
     &--pictures {
-      display: block;
-
-      span {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
-        row-gap: 40px;
-        column-gap: 40px;
-      }
+      display: flex;
+      flex-wrap:wrap;
+      row-gap: 30px;
+      column-gap: 30px;
     }
   }
 
@@ -702,7 +697,10 @@ button {
   }
 
   &__file-listing {
-    height: 300px;
+    width:300px;
+    a {
+      display:block;
+    }
   }
 
   &__data-field {
@@ -715,6 +713,7 @@ button {
 
   &__data-label {
     font-size:1.2em;
+    font-weight:bold;
   }
 
   &__checklist {

@@ -1,13 +1,10 @@
 <template>
-    <div class="report-details-wrapper pa-6">
-        <UiBreadcrumbs page="field-jacket" :displayStrip="false" />
-        <!-- <h1>{{formName}} for job {{jobId}}</h1> -->
-
-        
+    <div class="report-details-wrapper">
+        <UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <LayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
@@ -16,9 +13,10 @@
         </span>
         <span v-if="reportType === 'rapid-response'">
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
-                    <LayoutResponseReportDetails :notPdf="false" :report="report" slot="pdf-content" />
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="800px" :html-to-pdf-options="htmlToPdfOptions" @startPagination="startPagination()" @hasPaginated="hasPaginated()" 
+                :paginate-elements-by-height="1200" @beforeDownload="beforeDownload($event)" :manual-pagination="false"
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf0">
+                    <LazyLayoutResponseReportDetails company="Water Emergency Services Incorporated" formName="Rapid Response Report" :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
@@ -27,7 +25,7 @@
         <span v-if="report.ReportType === 'case-file-report'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                    :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <LayoutCaseFileDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
@@ -37,6 +35,7 @@
     </div>
 </template>
 <script>
+import VueHtml2pdf from 'vue-html2pdf'
 export default {
     layout: "dashboard-layout",
     head() {
@@ -49,6 +48,9 @@ export default {
             report: {},
             contentRendered: false
         }
+    },
+    components: {
+        VueHtml2pdf
     },
     /* async middleware({store, redirect}) {
         if (store.state.user.role !== "admin") {
@@ -93,7 +95,7 @@ export default {
         }
     },
     computed: {
-        htmlToPdfOptions(e) {
+        htmlToPdfOptions() {
             return {
                 margin:[20, 10, 20, 10],
                 filename: `${this.reportType}-${this.jobId}`,
@@ -104,7 +106,8 @@ export default {
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
-                    width:800
+                    logging: true,
+                    removeContainer: true
                 },
                 jsPDF: {
                     unit: 'px',
@@ -116,10 +119,23 @@ export default {
         }
     },
     methods: {
-        generateReport(key) {
+        async generateReport(key) {
             //this.htmlToPdfOptions.filename = `coc-${this.report[key].JobId}`
-            this.$refs["html2Pdf-" + key].generatePdf()
+            this.$refs.html2Pdf0.generatePdf()
         },
+        async beforeDownload({ html2pdf, options, pdfContent }) {
+            await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
+                const totalPages = pdf.internal.getNumberOfPages()
+                pdf.addPage()
+                console.log(pdf)
+            })
+        },
+        startPagination() {
+            console.log("PDF has started pagination")
+        },
+        hasPaginated() {
+            console.log("PDF has been paginated")
+        }
     }
 }
 </script>

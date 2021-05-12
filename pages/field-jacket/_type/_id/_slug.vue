@@ -70,6 +70,9 @@ export default {
             case "psychrometric-chart":
                 formName = "Psychrometric Chart"
                 break;
+            case "moisture-map":
+                formName = "Moisture Readings Map Readings"
+                break;
             default:
                 formName = "Sketch Form"
         }

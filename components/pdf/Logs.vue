@@ -11,18 +11,83 @@
                     <label>Job ID: </label>
                     <span>{{report.JobId}}</span>
                 </div>
-                <div class="pdf-item__inline">
+                <div class="pdf-item__inline" v-if="report.formType === 'moisture-map'">
+                    <label>Initial Eval Date: </label>
+                    <span>{{report.initialEvalDate}}</span>
+                </div>
+                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
                     <label>Initial Start Date: </label>
                     <span>{{report.startDate}}</span>
                 </div>
-                <div class="pdf-item__inline">
+                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
                     <label>End Date: </label>
                     <span>{{report.endDate}}</span>
+                </div>
+                <div class="pdf-item__inline address-box" v-if="report.hasOwnProperty('location')">
+                    <div class="pdf-item__data">
+                        <label>Address:</label>
+                        <span>{{report.location.address}}</span>
+                    </div>
+                    <div class="pdf-item__data">
+                        <label>City, State, Zip:</label>
+                        <span>{{report.location.cityStateZip}}</span>
+                    </div>
                 </div>
             </div>
             <div class="pdf-item__row" v-if="report.notes !== undefined">
                 <label>Notes: </label>
                 <div class="pdf-item__textbox">{{report.notes}}</div>
+            </div>
+            <div class="pdf-item__table moisture-data" v-if="report.formType === 'moisture-map'">
+                <div class="pdf-item__table moisture-data--rows">
+                    <div class="pdf-item__table moisture-data--cols">
+                        <div>DATE:</div>
+                    </div>                   
+                    <div class="pdf-item__table moisture-data--cols" v-for="n in areaCols" :key="n">
+                        <label class="form__label">Area {{n}}</label>
+                    </div>
+                </div>
+                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in report.readingsRow" :key="`row-${i}`">
+                    <div class="moisture-data--cols">
+                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>%
+                    </div>
+                    <div class="moisture-data--cols">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>%
+                    </div>
+                </div>
             </div>
             <div class="pdf-item__table inventory-logs" v-if="report.formType === 'quantity-inventory-logs'">
                 <div class="pdf-item__table pdf-item__table--rows">
@@ -69,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table logs-pdf" v-else>
+            <div class="pdf-item__table logs-pdf" v-if="report.formType === 'atmospheric-readings'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -130,7 +195,8 @@ export default {
             updateMessage: '',
             newdata: {},
             updated: false,
-            errorMessage: ""
+            errorMessage: "",
+            areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
         }
     },
     async fetch() {
@@ -241,9 +307,25 @@ export default {
         &--data-heading {
             text-align:center;
         }
+        &.moisture-data {
+            background:$color-white;
+            color:$color-black;
+            
+            &--rows {
+                grid-template-columns:130px repeat(12, 1fr);
+            }
+        }
     }
 }
 .pdf-sig {
     
+}
+.number-input {
+    display:inline-block;
+    
+    width:36px;
+    input[type=text] {
+        padding:2px 4px;
+    }
 }
 </style>
