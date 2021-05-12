@@ -10,7 +10,7 @@
           <p>{{item.ReportType}}</p>
         </nuxt-link>
       </div>
-      <!-- <p v-if="fetchreports.length === 0">No reports to show</p> -->
+      <p v-if="reportslist.length === 0">No reports to show</p>
     </div>
   </div>
 </template>

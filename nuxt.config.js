@@ -53,7 +53,8 @@ export default {
     { path: "/api", handler: "~/server/index.js" }
   ],
   env: {
-    mapboxKey: process.env.MAPBOX_API_KEY
+    mapboxKey: process.env.MAPBOX_API_KEY,
+    serverUrl: process.env.NODE_ENV !== 'production' ? 'http://localhost:8080' : process.env.SERVER_URL
   },
   /*
    ** Global CSS
@@ -104,10 +105,10 @@ export default {
   firebase: {
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: "code-red-app.firebaseapp.com",
-      databaseURL: "https://code-red-app.firebaseio.com",
-      projectId: "code-red-app",
-      storageBucket: "code-red-app.appspot.com",
+      authDomain: process.env.AUTH_DOMAIN,
+      databaseURL: process.env.DATABASE_URL,
+      projectId: process.env.PROJECT_ID,
+      storageBucket: process.env.STORAGE_BUCKET,
       messagingSenderId: process.env.MESSAGING_SENDER_ID,
       appId: process.env.APP_ID
     },

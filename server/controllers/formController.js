@@ -9,6 +9,7 @@ const CaseFile = require("../models/caseFileSchema");
 const CreditCard = require("../models/creditCardSchema");
 const chartModel = require('../models/chartSchema');
 const moistureModel = require('../models/moistureMapSchema');
+const User = require('../models/userSchema');
 const { validationResult } = require('express-validator');
 
 const createMoistureMap = async (req, res) => {
@@ -35,6 +36,22 @@ const createMoistureMap = async (req, res) => {
         res.json({message: "Form submitted"})
     }).catch((err) => {
         res.json(err)
+    })
+}
+const createEmployee = async (req, res) => {
+    const result = validationResult(req);
+    const employee = new User(req.body)
+    const reports = new Logging({
+        JobId: "2222"
+    });
+    if (!result.isEmpty()) {
+        return res.json(result)
+    }
+    employee.savedreports.push(reports)
+    await employee.save().then(() => {
+        res.json({message: "Created new employee"})
+    }).catch((err) => {
+        res.json({errors: err})
     })
 }
 const uploadChart = async (req, res) => {
@@ -369,6 +386,7 @@ const createCaseFile = async (req, res) => {
     })
 }
 module.exports = {
+    createEmployee,
     createMoistureMap,
     createSketch, 
     createLogs, 

@@ -54,36 +54,6 @@ export default {
         caseFileData: [],
         reports:[]
     }),
-    /* async asyncData({$axios, store, params}) {
-        try {
-            let reports = await $axios.$get("/api/reports");
-            let chartData = reports.filter((v) => {
-                return v.ReportType === 'chart-report'
-            })
-            let sketchData = reports.filter((v) => {
-                return v.ReportType === 'sketch-report'
-            })
-            let logsData = reports.filter((v) => {
-                return v.ReportType === 'logs-report'
-            })
-            let defaultData = reports.filter((v) => {
-                return v.ReportType == 'dispatch' || v.ReportType == 'rapid-response'
-            })
-            let conTechData = reports.filter((v) => {
-                return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
-            })
-            
-            return {
-                sketchReports: sketchData,
-                logReports: logsData,
-                defaultData,
-                conTechData,
-                chartData
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
-    }, */
     async fetch() {
         this.reports = await this.$axios.$get("/api/reports");
         this.sketchReports = this.reports.filter((v) => {

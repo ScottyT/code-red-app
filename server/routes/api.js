@@ -10,14 +10,14 @@ const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
 const moistureModel = require('../models/moistureMapSchema');
-//const createUser = require("../controllers/authController");
-const { createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
+const createUser = require("../controllers/authController");
+const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
 
-//router.post("/auth/signup", createUser);
+router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
     check('fname').not().isEmpty().withMessage("First name is required"),
@@ -30,23 +30,7 @@ router.post("/employee/new",
             }
         });
     }),
-    check('role').not().isEmpty().withMessage('Role is required'),
-async (req, res) => {
-    const result = validationResult(req);
-    const employee = new User(req.body)
-    const reports = new Logging({
-        JobId: "2222"
-    });
-    if (!result.isEmpty()) {
-        return res.json(result)
-    }
-    employee.savedreports.push(reports)
-    await employee.save().then(() => {
-        res.json({message: "Created new employee"})
-    }).catch((err) => {
-        res.json({errors: err})
-    })
-})
+    check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
@@ -140,6 +124,7 @@ router.get('/employee/:email', (req, res) => {
         } else if (employee) {
             res.status(200).json(employee)
         } else {
+            User.create()
             res.status(400).send('Item not found')
         }
     })
