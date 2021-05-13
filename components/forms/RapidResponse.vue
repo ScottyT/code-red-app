@@ -458,8 +458,8 @@
   import goTo from 'vuetify/es5/services/goto'
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
   export default {
-    name: 'RapidResponseForm',
-    props: ['slice'],
+    name: 'RapidResponse',
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
       errorDialog: false,
       sigDialog: false,

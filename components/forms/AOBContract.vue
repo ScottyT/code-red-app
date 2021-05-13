@@ -98,7 +98,7 @@
             <div class="form__form-group form__form-group--row">
                 <div class="form__input--input-group">
                     <label class="form__label">Signature</label>
-                    <lazy-signature-pad-modal :sigData="cusSign" sigRef="customerSig" name="Signature" />
+                    <LazyUiSignaturePadModal :sigData="cusSign" sigRef="customerSig" name="Signature" />
                 </div>
                 <div class="form__input--input-group">
                     <label for="cusSignDate" class="form__label">Date:</label>

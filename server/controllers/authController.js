@@ -12,10 +12,16 @@ const createUser = async (req, res) => {
         password,
         displayName: name
     }).then((user) => {
-        return res.send(user);
+        return res.json(user);
     }).catch((error) => {
-        return res.json({error: error})
+        return res.json({error: error.message})
+    })
+}
+const getEmployee = async (req, res) => {
+    const email = req.body.email
+    await admin.auth().getUserByEmail(email).then((userRecord) => {
+        return res.json(userRecord.email)
     })
 }
 
-module.exports = createUser
+module.exports = { createUser, getEmployee }

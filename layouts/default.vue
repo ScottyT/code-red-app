@@ -87,7 +87,7 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
-          to: '/',
+          to: '/dispatch-report',
           access: 'user'
         },
         {

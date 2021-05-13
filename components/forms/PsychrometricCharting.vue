@@ -1,6 +1,6 @@
 <template>
     <div class="form-wrapper">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h1 class="text-center">{{company}}</h1>
         <h2 class="text-center">Psychrometric Charting</h2>
         <ValidationObserver ref="form" v-slot="{passes}">
             <p class="font-weight-bold">{{submittedMessage}}</p>
@@ -33,6 +33,7 @@
 <script>
 import {mapGetters, mapActions} from 'vuex';
 export default {
+    name: "PsychrometricCharting",
     data() {
         return {
             authUser:false,
@@ -45,6 +46,7 @@ export default {
             submitted: false
         }
     },
+    props: ["company", "abbreviation"],
     head() {
         return {
             title: "Psychrometric Charting"

@@ -1,7 +1,7 @@
 <!-- eslint-disable -->
 <template>
   <div class="form-wrapper form-wrapper__dispatch-form">
-    <h1 class="text-center">Water Emergency Services Incorporated</h1>
+    <h1 class="text-center">{{company}}</h1>
     <h2 class="text-center">Dispatch Service Evaluation Report</h2>
     <ValidationObserver ref="form" v-slot="{errors}">
       <v-dialog width="400px" v-model="errorDialog">
@@ -267,8 +267,8 @@
   import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
   import goTo from 'vuetify/es5/services/goto'
   export default {
-    name: 'EvalReportForm',
-    props: ['slice'],
+    name: 'DispatchReport',
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
       id: "",
       name: "",

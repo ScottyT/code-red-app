@@ -1,6 +1,6 @@
 <template>
     <div class="form-wrapper">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h1 class="text-center">{{company}}</h1>
         <h3 class="text-center">ATMOSPHERIC READINGS</h3>
         <ValidationObserver ref="form" v-slot="{errors}">
             <v-dialog width="400px" v-model="errorDialog">
@@ -112,6 +112,7 @@
 import {mapActions, mapGetters} from 'vuex';
 import goTo from 'vuetify/es5/services/goto'
 export default {
+    name: "AtmosphericReadings",
     data: (vm) => ({
         readingsArr:[           
             {text: "Affected Temperature", day: [
@@ -275,6 +276,7 @@ export default {
         endDateModal: false,
         notes: ""
     }),
+    props: ['company', 'abbreviation'],
     head() {
         return {
             title: "Atmospheric Readings"

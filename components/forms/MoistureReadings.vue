@@ -1,7 +1,7 @@
 <template>
     <div class="form-wrapper">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
-        <h3 class="text-center">ATMOSPHERIC READINGS</h3>
+        <h1 class="text-center">{{company}}</h1>
+        <h3 class="text-center">MOISTURE READING MAP READINGS</h3>
         <ValidationObserver ref="form" v-slot="{ errors }">
             <v-dialog width="400px" v-model="errorDialog">
                 <div class="modal__error">
@@ -160,8 +160,8 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
-import moment from 'moment';
 export default {
+    name: "MoistureReadings",
     data: (vm) => ({
         errorDialog: false,
         uploading:false,
@@ -205,6 +205,7 @@ export default {
         filesUpload: [],
         notes: ''
     }),
+    props:['company', 'abbreviation'],
     head() {
         return {
             title: "Moisture Readings"

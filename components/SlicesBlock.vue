@@ -1,28 +1,40 @@
 <template>
   <v-layout column justify-center class="section-wrapper">
-    <section v-for="(slice, index) in slices" :key="index">
-      <template v-if="slice.slice_type === 'bighero'">
-        <BigHero :slice="slice" />
-      </template>
-      <template v-else-if="slice.slice_type === 'evalreportform'">
-        <EvalReportForm :slice="slice" />
-      </template>
-      <template v-else-if="slice.slice_type === 'rapidresponseform'">
-        <RapidResponseForm :slice="slice" />
-      </template>
-    </section>
+    <template v-if="slice === 'dispatch-report'">
+      <LazyFormsDispatchReport :slice="slice" :company="company" />
+    </template>
+    <template v-if="slice === 'rapid-response-form'">
+      <LazyFormsRapidResponse :slice="slice" :company="company" />
+    </template>
+    <template v-if="slice === 'daily-containment-report'">
+      <LazyFormsDailyContainment :company="company" />
+    </template>
+    <template v-if="slice === 'daily-technician-report'">
+      <LazyFormsDailyTechnician :company="company" />
+    </template>
+    <template v-if="slice === 'atmospheric-readings'">
+      <LazyFormsAtmosphericReadings :company="company" />
+    </template>
+    <template v-if="slice === 'inventory-log'">
+      <LazyFormsInventoryLog :company="company" />
+    </template>
+    <template v-if="slice === 'moisture-readings'">
+      <LazyFormsMoistureReadings :company="company" />
+    </template>
+    <template v-if="slice === 'psychrometric-charting'">
+      <LazyFormsPsychrometricCharting :company="company" />
+    </template>
+    <template v-if="slice === 'aob-contract-form'">
+      <LazyFormsAOBContract :company="company" abbreviation="WESI" />
+    </template>
+    <template v-if="slice === 'certificate-of-completion'">
+      <LazyFormsCertificate :company="company" abbreviation="WESI" />
+    </template>
   </v-layout>
 </template>
 <script>
 export default {
   name: 'SlicesBlock',
-  components: {
-    BigHero: () => import('./slices/BigHero.vue'),
-    EvalReportForm: () => import('./slices/EvalReportForm.vue'),
-    RapidResponseForm: () => import('./slices/RapidResponseForm.vue'),
-  },
-  props: {
-    slices: Array,
-  },
+  props: ['slice', 'company', 'abbreviation']
 }
 </script>

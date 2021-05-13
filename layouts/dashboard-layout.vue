@@ -86,7 +86,7 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
-          to: '/',
+          to: '/dispatch-report',
         },
         {
           icon: 'mdi-chart-bubble',
@@ -185,13 +185,6 @@ export default {
     ...mapGetters(["getUser", "getEmployees", "isLoggedIn"]),
     isOnline() {
       return this.$nuxt.isOnline
-    }
-  },
-  watch: {
-    isOnline(val) {
-      if (val) {
-        this.fetchReports(this.$fire.auth.currentUser)
-      }
     }
   },
   methods: {

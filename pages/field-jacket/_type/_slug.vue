@@ -38,6 +38,9 @@
 import VueHtml2pdf from 'vue-html2pdf'
 export default {
     layout: "dashboard-layout",
+    validate({ params }) {
+        return /^\d+$/.test(params.slug)
+    },
     head() {
         return {
             title: "Report -" + this.reportType + '-' + this.jobId

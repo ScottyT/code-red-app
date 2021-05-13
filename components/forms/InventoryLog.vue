@@ -1,6 +1,6 @@
 <template>
     <div class="form-wrapper">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h1 class="text-center">{{company}}</h1>
         <h3 class="text-center">UNIT QUANTITY AND EQUIPMENT INVENTORY</h3>
         <ValidationObserver ref="form" v-slot="{errors}">
             <p class="font-weight-bold">{{submittedMessage}}</p>
@@ -120,6 +120,7 @@
 import {mapGetters, mapActions} from 'vuex';
 import goTo from 'vuetify/es5/services/goto'
 export default {
+    name: "InventoryLog",
     data: (vm) => ({
         submittedMessage: "",
         submitting: false,
@@ -498,6 +499,7 @@ export default {
             ]}
         ]
     }),
+    props: ['company', 'abbreviation'],
     head() {
         return {
             title: "Unit Quantity and Equipment Inventory"

@@ -10,7 +10,7 @@ const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
 const moistureModel = require('../models/moistureMapSchema');
-const createUser = require("../controllers/authController");
+const { getEmployee, createUser } = require("../controllers/authController");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
@@ -19,7 +19,14 @@ router.use(express.urlencoded({extended: true, limit: "50MB"}));
 
 router.post("/auth/signup", createUser);
 router.post("/employee/new",
-    check('email', 'Email is required').isEmail().withMessage('Email must be valid'),
+    check('email', 'Email is required').isEmail().withMessage('Email must be valid')
+    .custom(value => {
+        return User.findOne({email: value}).then(user => {
+            if (user) {
+                return Promise.reject('Email already in use');
+            }
+        })
+    }),
     check('fname').not().isEmpty().withMessage("First name is required"),
     check('lname').not().isEmpty().withMessage("Last name is required"),
     check('id').not().isEmpty().withMessage("ID is required")
@@ -31,6 +38,7 @@ router.post("/employee/new",
         });
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
+
 router.get('/reports', async (req, res) => {
     const dispatch = await Dispatch.find({});
     const rapidresponse = await RapidResponse.find({});
@@ -124,7 +132,7 @@ router.get('/employee/:email', (req, res) => {
         } else if (employee) {
             res.status(200).json(employee)
         } else {
-            User.create()
+            
             res.status(400).send('Item not found')
         }
     })

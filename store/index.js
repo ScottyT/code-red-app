@@ -84,8 +84,9 @@ export const actions = {
     })
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
+    console.log(authUser)
     if (!authUser) {
-      //await dispatch('signout')
+      await dispatch('cleanupAction')
       return
     }
     
@@ -103,6 +104,9 @@ export const actions = {
         console.error(e)
       }
     }
+  },
+  async cleanupAction({commit}) {
+    console.log("cleanupaction")
   },
   async fetchLogs({ commit, state }, authUser) {
     if (authUser) {

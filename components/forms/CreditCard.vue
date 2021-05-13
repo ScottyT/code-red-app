@@ -153,7 +153,7 @@
           <span>
             <div class="form__input--input-group">
               <label for="cusSig" class="form__label">Customer Signature:</label>
-              <lazy-signature-pad-modal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
+              <LazyUiSignaturePadModal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
             </div>
             <div class="form__input--input-group">
               <label for="dateCusSign" class="form__label">Date</label>

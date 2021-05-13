@@ -1,9 +1,9 @@
 <template>
     <div class="pa-6 report-details-wrapper" v-if="$nuxt.isOnline">
-        <LazySavedLogReports :formName="formName" :formType="formType" company="Water Emergency Services Incorporated" :report="logreport" />
+        <LazySavedLogReports :formName="formName" :formType="formType" :company="company" :report="logreport" />
     </div>
     <div class="pa-6 report-details-wrapper" v-else>
-        <LazySavedLogReports :formName="formName" :formType="formType" company="Water Emergency Services Incorporated" :report="report" />
+        <LazySavedLogReports :formName="formName" :formType="formType" :company="company" :report="report" />
     </div>
 </template>
 <script>
@@ -46,7 +46,8 @@ export default {
             reports: [],
             clonedreports: [],
             report: {},
-            logreport: {}
+            logreport: {},
+            company: "Water Emergency Services Incorporated"
         }
     },
     computed: {

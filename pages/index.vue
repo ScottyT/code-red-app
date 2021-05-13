@@ -1,6 +1,6 @@
 <template>
-  <div>    
-    <lazy-slices-block :slices="slices" />
+  <div class="page-block--home">  
+    <h1>Welcome to the Code Red App!</h1>
     <v-flex xs12 sm8 md6>
       <div class="text-center"></div>
     </v-flex>
@@ -15,21 +15,8 @@ export default {
   computed: {
     ...mapGetters(["getUser", "isLoggedIn"])
   },
-  async asyncData({ $prismic, error, $axios }) {
-    try {
-      const document = (await $prismic.api.getSingle('home')).data
-      
-      if (document) {
-        return {
-          title: document.title,
-          slices: document.body
-        }
-      } else {
-        error({ statusCode: 404, message: 'Page not found' })
-      }
-    } catch (e) {
-      console.error("SOMETHING WENT WRONG: " + e)
-    }
+  async asyncData({ error, $axios }) {
+    
   },
   
   data() {
@@ -53,3 +40,11 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.page-block {
+  /* &--home {
+    background:$color-white;
+    color:$color-black;
+  } */
+}
+</style>

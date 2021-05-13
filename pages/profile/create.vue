@@ -2,7 +2,9 @@
     <div class="form-wrapper create-user">
         <div class="create-user__box">
             <h1>Create User</h1>
-            <p>{{submittedMessage}}</p>
+            <div v-for="(message, i) in submittedMessage" :key="i">
+                <p class="font-weight-bold">{{message}}</p>
+            </div>
             <p>{{successMessage}}</p>
             <p class="alert alert--error">{{errorMessage}}</p>
             <ValidationObserver ref="createUser" v-slot="{ passes }">
@@ -38,6 +40,7 @@
     </div>
 </template>
 <script>
+import {mapGetters} from 'vuex';
 export default {
     head() {
         return {
@@ -52,7 +55,7 @@ export default {
             email: '',
             id: '',
             role: '',
-            submittedMessage: '',
+            submittedMessage: [],
             password: '',
             successMessage: ''
         }
@@ -62,8 +65,25 @@ export default {
             return redirect('/login')
         }
     }, */
+    computed: {
+        ...mapGetters(['getUser'])
+    },
     methods: {
-        onSubmit() {
+        async signupUser() {
+            return await this.$axios.$post("/api/auth/signup", {
+                name: this.fname + " " + this.lname,
+                email: this.email,
+                password: this.password
+            }).then((res) => {
+                if (res.error) {
+                    this.errorMessage = res.error
+                    return false;
+                }
+                this.submittedMessage.push(`Successfully registered ${res.displayName}`)
+                return true
+            })
+        },
+        async onSubmit() {
             const post = {
                 fname: this.fname,
                 lname: this.lname,
@@ -71,26 +91,21 @@ export default {
                 id: this.id,
                 role: this.role
             }
-            this.$axios.$post("/api/auth/signup", {
-                name: this.fname + " " + this.lname,
-                email: this.email,
-                password: this.password
-            }).then((res) => {
-                this.successMessage = `Successfully created employee ${res.displayName}`
-            })
-            this.$axios.$post("/api/employee/new", post).then((res) => {
-                if (res.errors) {
-                    this.$refs.createUser.setErrors({
-                        fname: res.errors.find(obj => obj.param === 'fname'),
-                        lname: res.errors.find(obj => obj.param === 'lname'),
-                        email: res.errors.find(obj => obj.param === 'email'),
-                        id: res.errors.find(obj => obj.param === 'id')
-                    })
-                    
-                    return;
-                }
-                this.submittedMessage = res.message
-            })
+            var userSignedUp = await this.signupUser()
+            if (userSignedUp) {
+                this.$axios.$post("/api/employee/new", post).then((res) => {                
+                    if (res.errors) {
+                        this.$refs.createUser.setErrors({
+                            fname: res.errors.find(obj => obj.param === 'fname'),
+                            lname: res.errors.find(obj => obj.param === 'lname'),
+                            email: res.errors.find(obj => obj.param === 'email'),
+                            id: res.errors.find(obj => obj.param === 'id')
+                        })
+                        return;
+                    }
+                    this.submittedMessage.push("Successfully added new user to database")
+                })
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ const CaseFile = require("../models/caseFileSchema");
 const CreditCard = require("../models/creditCardSchema");
 const chartModel = require('../models/chartSchema');
 const moistureModel = require('../models/moistureMapSchema');
-const User = require('../models/userSchema');
 const { validationResult } = require('express-validator');
 
 const createMoistureMap = async (req, res) => {
@@ -133,15 +132,13 @@ const createLogs = async (req, res) => {
     if (!errors.isEmpty() || logsReport !== null) {
         return res.json(errors)
     }
-    
-    await logs.save().then(() => {
+    const employee = await User.findOne({email: req.body.teamMember.email});
+    employee.savedreports.push(logs)
+    await Promise.all([logs.save(), employee.save()]).then(() => {
         res.json({message: "Form submitted"})
     }).catch((err) => {
         res.json(err)
     })
-    const employee = await User.findOne({email: req.body.teamMember.email});
-    employee.savedreports.push(logs)
-    await employee.save()
 }
 const updateLogs = async (req, res) => {
     const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()

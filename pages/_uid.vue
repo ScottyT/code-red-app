@@ -1,6 +1,6 @@
 <template>
   <div>
-    <lazy-slices-block :slices="slices" />
+    <lazy-slices-block :slice="formType" :company="company" />
   </div>
 </template>
 <script>
@@ -9,7 +9,10 @@ export default {
   name: 'Page',
   data() {
     return {
-      authUser: false
+      authUser: false,
+      // These would be different per company
+      company: "Water Emergency Services Incorporated",
+      abbreviation: "WESI"
     }
   },
   head() {
@@ -20,20 +23,34 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn'])
   },
-  /* async middleware({$fire, redirect}) {
-    if (!authUser) {
-      return redirect("/login")
+  async asyncData({ error, params }) {
+    var formType = params.uid
+    var title = ""
+    switch (formType) {
+      case "dispatch-report":
+        title = "Dispatch"
+        break;
+      case "rapid-response-form":
+        title = "Rapid Response"
+        break;
+      case "daily-containment-report":
+        title = "Daily Containment Report"
+        break;
+      case "daily-technician-report":
+        title = "Daily Technician Report"
+        break;
+      case "aob-contract-form":
+        title = "AOB & Mitigation Contract"
+        break;
+      case "certificate-of-completion":
+        title = "Certificate of Completion"
+        break;
+      default:
+        title = "Report Form"
     }
-  }, */
-  async asyncData({ $prismic, error, params }) {
-    const document = (await $prismic.api.getByUID('page', params.uid)).data
-    if (document) {
-      return {
-        slices: document.body,
-        title: document.page_title[0].text,
-      }
-    } else {
-      error({ statusCode: 404, message: 'Page not found' })
+    return {
+      formType,
+      title
     }
   }
 }
