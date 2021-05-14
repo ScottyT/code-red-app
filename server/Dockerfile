@@ -1,6 +1,6 @@
 FROM node:12-slim
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/server
 
 COPY package*.json ./
 RUN npm install --only=production
