@@ -319,7 +319,7 @@ router.post("/rapid-response/new",
             })
         }),
     body('teamMemberSig').not().isEmpty().withMessage('Team member signature is required'),
-    body('cusSignature').not().isEmpty().withMessage('Customer signature is required'),
+    body('customerSig').not().isEmpty().withMessage('Customer signature is required'),
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => {

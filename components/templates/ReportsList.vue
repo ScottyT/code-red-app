@@ -15,10 +15,8 @@
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="div">
         <div class="reports-list__report flip-list-item" v-for="(report, i) in reports" :key="`report-type-${i}`">
-          <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
-            <h3>{{report.JobId}}</h3>
-            <p>{{report.ReportType}}</p>
-            <span v-show="report.CaseFileType">{{report.CaseFileType}}</span>
+          <nuxt-link class="reports-list__report-link" :to="`/storage/${report}`" v-if="page == 'storagePage'">
+            <h3>{{report}}</h3>
             <!-- <p>{{report.teamMember.name}}</p> -->
           </nuxt-link>
         </div>
@@ -31,7 +29,7 @@
 import {mapActions} from 'vuex';
 export default {
   name: "ReportsList",
-  props: ['reportslist', 'sortoptions', 'page'],
+  props: ['reportslist','sortoptions', 'page'],
   data: () => ({
     search: null,
     report: {},
@@ -65,6 +63,7 @@ export default {
       sortReports: 'sortReports',
       fetchReports: 'fetchReports'
     }),
+    
     reportsfetched(reports) {
       this.reports = reports
     },

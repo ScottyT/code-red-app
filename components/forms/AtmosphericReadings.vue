@@ -316,6 +316,7 @@ export default {
         },
         onSubmit() {
             this.submittedMessage = ""
+            this.submitting = true
             const reports = this.getReports.filter((v) => {
                 return v.formType === 'atmospheric-readings'
             })

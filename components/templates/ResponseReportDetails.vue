@@ -73,7 +73,27 @@
     </div>
     <div class="report-details report-details__response-report">
     <div class="report-details__section">
-      <div class="report-details__section--pictures" v-show="pictures.length > 0">
+      <label class="form__label">Initial Moisture Map</label>
+      <p>An initial moisture inspection should be conducted to identify the full extent of water intrusion,
+        including the
+        identification of affected assemblies, building materials, and the edge of water mitigation. Normally,
+        this process
+        begins at the source of the water intrusion. The initial inspection process should continue in all
+        directions from the
+        source of water intrusion until the restorer identifies and documents the extent of migration. The extent
+        of the
+        moisture migration should be documented using one or more appropriate methods including at a minimum a
+        moisture map. (i.e., a diagram of the structure indicating the areas affected by migrating water). IICRC
+        S500 Pg 179</p>
+      <div class="map-wrapper">
+        <div class="map-wrapper__map">
+          <div class="map-wrapper__map--row" v-for="n in 37" :key="n">
+            <div class="map-wrapper__map--col" v-for="n in 20" :key="n"></div>
+          </div>
+        </div>
+        <img id="moisture-map-image" :src="report.moistureMap" />
+      </div>
+      <!-- <div class="report-details__section--pictures" v-show="pictures.length > 0">
         <h3>Photographs</h3>
         <div class="report-details__file-listing" v-for="(picture, i) in jobFiles" :key="i">
           <a :href="picture.url" target="_blank">
@@ -82,7 +102,7 @@
             <p v-else>{{picture.name}}</p>
           </a>       
         </div>
-      </div>
+      </div> -->
     </div>
     </div>
     
@@ -102,6 +122,21 @@
         <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.PolicyNumber" />
         <span v-if="!isEditing">{{report.PolicyNumber}}</span>
       </div>
+      <div class="report-details__data">
+        <h3>Adjuster Name:</h3>
+        <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.adjusterName" />
+        <span v-if="!isEditing">{{report.adjusterName}}</span>
+      </div>
+      <div class="report-details__data">
+        <h3>Adjuster Phone:</h3>
+        <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.adjusterPhone" />
+        <span v-if="!isEditing">{{report.adjusterPhone}}</span>
+      </div>
+      <div class="report-details__data">
+        <h3>Adjuster Email:</h3>
+        <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.adjusterEmail" />
+        <span v-if="!isEditing">{{report.adjusterEmail}}</span>
+      </div>
     </div>
     <div class="report-details__section">
       <div class="report-details__checklist">
@@ -111,6 +146,14 @@
             <label class="form__label">{{ evalLog && evalLog.label ? evalLog.label : null}}</label>
             <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.EvaluationLogs[i].value" />
             <span v-if="!isEditing">{{ evalLog && evalLog.value ? evalLog.value : null}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="report-details__checklist">
+        <h3>Document Verification</h3>
+        <ul>
+          <li v-for="(docVerify, i) in report.documentVerification" :key="`doc-${i}`">
+            {{docVerify}}
           </li>
         </ul>
       </div>
@@ -127,7 +170,17 @@
         </div>
       </div>
       <div class="report-details__data">
-        <h3>Date:</h3>
+        <h3>Sign Date:</h3>
+        <span>{{report.cusSignDate}}</span>
+      </div>
+      <div class="report-details__data">
+        <h3>Team Member Signiture:</h3>
+        <div v-if="report.teamMemberSig !== ''">
+          <div class="report-details__data--cusSig" :style="'background-image:url('+report.teamMemberSig+')'"></div>
+        </div>
+      </div>
+      <div class="report-details__data">
+        <h3>Sign Date:</h3>
         <span>{{report.signDate}}</span>
       </div>
     </div>
@@ -152,6 +205,9 @@
         PhoneNumber: '',
         EmailAddress: '',
         ClaimNumber: '',
+        adjusterName: '',
+        adjusterEmail: '',
+        adjusterPhone: '',
         EvaluationLogs: [],
         InsuranceCompany: '',
         PolicyNumber: '',
@@ -244,3 +300,48 @@
     }
   }
 </script>
+<style lang="scss">
+#moisture-map-image {
+  position:absolute;
+  top:0;
+  left:0;
+}
+.map-wrapper {
+    position:relative;
+    width:100%;
+    max-width:1016px;
+    margin:auto;
+    
+    &__canvas {
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      height:0;
+      max-width:1016px;
+      
+    }
+    &__map {
+      border-left:1px solid $color-black;
+      border-right:1px solid $color-black;
+      height:100%;
+      
+      &--row {
+        height:19px;
+        border-top:1px solid $color-black;
+        display:flex;
+        flex-direction:row;
+        
+        &:not(:first-child) {
+          border-top:0px solid $color-black;
+          border-bottom:0;
+        }
+      }
+      &--col {
+        flex:1 0 auto;
+        border:1px solid $color-black;
+        height:100%;
+      }
+    }
+  }
+</style>

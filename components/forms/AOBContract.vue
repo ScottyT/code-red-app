@@ -755,7 +755,7 @@
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
           <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
-          <div class="form__form-group form__form-group--inline form__form-group--column">
+          <div class="form__form-group form__form-group--inline">
               <span>
                   <label class="form__label">Driver's License #:</label>
                   <input type="text" readonly v-model="driversLicense" class="form__input form__input--input-group" />

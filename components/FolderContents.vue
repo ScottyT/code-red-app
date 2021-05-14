@@ -74,7 +74,7 @@ export default {
       var listRef = storageRef.child(this.path)
       listRef.listAll().then((res) => {
         res.prefixes.forEach((folderRef) => {
-          var folderPath = folderRef.location.path_
+          var folderPath = folderRef.fullPath
           var subfolder = folderPath.substring(folderPath.lastIndexOf('/') + 1, folderPath.length)
           const folderObj = {
             path: folderPath,
@@ -83,7 +83,7 @@ export default {
           this.subfolders.push(folderObj)
         })
         res.items.forEach((itemRef) => {
-          var itemPath = itemRef.location.path_;
+          var itemPath = itemRef.fullPath
           storageRef.child(itemPath).getMetadata().then((metadata) => {
             this.metaFile.push(metadata)
           }).catch(err => {

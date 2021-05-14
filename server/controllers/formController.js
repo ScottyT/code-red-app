@@ -290,6 +290,7 @@ const createRapidResponse = async (req, res) => {
         DateOfEvaluation: req.body.DateOfEvaluation,
         EmailAddress: req.body.EmailAddress,
         EvaluationLogs: req.body.EvaluationLogs,
+        documentVerification: req.body.documentVerification,
         PhoneNumber: req.body.PhoneNumber,
         PictureTypes: req.body.PictureTypes,
         ReportType: req.body.ReportType,
@@ -297,16 +298,22 @@ const createRapidResponse = async (req, res) => {
         TypeOfLoss: req.body.TypeOfLoss,
         cusFirstName: req.body.cusFirstName,
         cusLastName: req.body.cusLastName,
+        moistureMap: req.body.moistureMap,
         id: req.body.id,
         location: req.body.location,
         signDate: req.body.signDate,
+        cusSignDate: req.body.cusSignDate,
         teamMember: req.body.teamMember,
         intrusion: req.body.intrusionInfo,
         preliminaryDetermination: req.body.selectedPreliminary,
         moistureInspection: req.body.selectedInspection,
         preRestorationEval: req.body.preRestorationEval,
         teamMemberSig: req.body.teamMemberSig,
-        customerSig: req.body.customerSig
+        customerSig: req.body.customerSig,
+        initial1: req.body.initial1,
+        initial2: req.body.initial2,
+        initial3: req.body.initial3,
+        initial4: req.body.initial4
     })
     if (!errors.isEmpty()) {
         return res.json(errors)

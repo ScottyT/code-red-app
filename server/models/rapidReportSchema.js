@@ -11,6 +11,7 @@ const responseReport = mongoose.Schema({
     DateOfEvaluation: String,
     EmailAddress: String,
     EvaluationLogs: Array,
+    documentVerification: Array,
     InsuranceCompany: String,
     PhoneNumber: String,
     PictureTypes: Array,
@@ -25,6 +26,8 @@ const responseReport = mongoose.Schema({
     cusFirstName: String,
     cusLastName: String,
     customerSig: String,
+    cusSignDate: String,
+    moistureMap: String,
     id: {
         type: String,
         required: [true, 'Team lead id is required']

@@ -516,10 +516,6 @@ button {
     &--right-side {
       width: 50%;
       padding: 0 10px;
-
-      @include respond(tabletLargeMax) {
-        width: 90%;
-      }
     }
 
     &--right-side {
@@ -530,10 +526,6 @@ button {
       margin-bottom: 10px;
     }
 
-    /* @media only screen and (max-width: 991px) {
-      flex-direction: column;
-    } */
-
     & > input {
       margin-top: 6px;
       margin-bottom: 12px;
@@ -541,9 +533,9 @@ button {
 
     &--inline {
       display:inline-flex;
+      flex-direction:row;
       & > span {
-        display: inline-flex;
-        padding:5px 0;
+        padding:5px 8px;
         flex-wrap:wrap;
       }
     }

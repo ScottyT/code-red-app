@@ -124,7 +124,7 @@
             </ValidationProvider>
           </div>
           <div class="form__form-group--right-side form__section">
-            <h3>Inital Response, Inspection, and Preliminary Determination</h3>
+            <h4>Inital Response, Inspection, and Preliminary Determination</h4>
             <div class="form__checkbox-wrapper--long">
               <div class="form__input--checkboxes" v-for="item in picturesCheck" :key="item.id">
                 <input type="checkbox" :id="item.id" v-model="selectedPictures" :value="item.text" />
@@ -246,9 +246,9 @@
                   <div class="map-wrapper__map--col" v-for="n in 20" :key="n"></div>
                 </div>
               </div>
-              <VueSignaturePad width="100%" height="962px" ref="map" class="map-wrapper__canvas" :options="{ onBegin, minWidth: 1.5, maxWidth:3.5 }" />
+              <VueSignaturePad width="100%" height="703px" ref="map" class="map-wrapper__canvas" :options="{ onBegin, minWidth: 1.5, maxWidth:3.5 }" />
               <div>
-                <button type="button" class="button--normal" @click="saveMap">Save</button>
+                <button type="button" class="button--normal" @click="saveMap">{{ moistureMap.data !== '' ? 'Saved' : 'Save' }}</button>
                 <button type="button" class="button--normal" @click="undoMap">Undo</button>
               </div>
             </div>
@@ -307,7 +307,7 @@
             </span>
             <span class="form__input--input-group">
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
-              <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" @input="acceptNumber" />
+              <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" v-mask="'(###) ###-####'" />
             </span>
             <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input--input-group">
               <label for="adjusterEmail" class="form__label">Adjuster Email</label>
@@ -438,7 +438,12 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>            
-              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />         
+              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />
+              <ValidationProvider v-slot="{ errors }" name="Customer sign date" rules="required" class="form__input--input-group">
+                <label class="form__label">Date:</label>
+                <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
             </div>
           </div>
           <div class="form__form-group">
@@ -737,7 +742,8 @@
         data: '',
         isEmpty: true
       },
-      signDateTime: new Date().toLocaleString(),
+      signDate: new Date().toLocaleString(),
+      cusSignDate: "",
       initial1:"",
       initial2:"",
       initial3:"",
@@ -848,7 +854,7 @@
         this.submitting = true
         const reports = rapidRep.map((v) => { return v.JobId });
         let scrollTo = 0
-        evaluationLogs.push({label: 'Team Arrival at Property', value: this.arrivalFormatted}, {label: 'Evaluation Report Start Time', value: this.evalStartFormatted}, {label: 'Evaluation Report End Time', value: this.evalEndFormatted}, {label: 'Time of Contract Signing', value: this.contractFormatted}, {label: 'Time of Denail of Services', value: this.dosformatted}, {label: 'Team Departure of Property', value: this.departureTimeFormatted});
+        evaluationLogs.push({label: 'Team Arrival at Property', value: this.arrivalFormatted}, {label: 'Evaluation Report Start Time', value: this.evalStartFormatted}, {label: 'Evaluation Report End Time', value: this.evalEndFormatted}, {label: 'Time of Contract Signing', value: this.contractFormatted});
         this.$refs.form.validate().then(success => {
           if (!success) {
             this.errorDialog = true
@@ -877,10 +883,11 @@
               adjusterEmail: this.adjusterEmail,
               adjusterPhone: this.adjusterPhone,
               EvaluationLogs: evaluationLogs,
+              documentVerification: this.selectedVerification,
               cusFirstName: this.customerName.first,
               cusLastName: this.customerName.last,
               customerSig: this.cusSignature.data,
-              PicturesTypes: this.selectedPictures,
+              PictureTypes: this.selectedPictures,
               id: user.id,
               initials: {
                 initial1: this.initial1,
@@ -889,7 +896,8 @@
                 initial4: this.initial4
               },
               moistureMap: this.moistureMap.data,
-              signDateTime: this.signDateTime,
+              signDate: this.signDate,
+              cusSignDate: this.cusSignDate,
               teamMember: this.getUser,
               photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
@@ -1130,6 +1138,7 @@
     width:100%;
     max-width:1016px;
     margin:auto;
+    
     &__canvas {
       position:absolute;
       width:100%;
@@ -1137,23 +1146,26 @@
       top:0;
       height:0;
       max-width:1016px;
+      
     }
     &__map {
       border-left:1px solid $color-black;
       border-right:1px solid $color-black;
+      height:100%;
       
       &--row {
-        height:26px;
+        height:19px;
         border-top:1px solid $color-black;
         display:flex;
         flex-direction:row;
+        
         &:not(:first-child) {
           border-top:0px solid $color-black;
           border-bottom:0;
         }
       }
       &--col {
-        width:63px;
+        flex:1 0 auto;
         border:1px solid $color-black;
         height:100%;
       }

@@ -63,42 +63,42 @@
         <span>{{report.appointmentDate}}</span>
       </div>
       <div class="report-details__data">
-        <h3>15-Minute Update Call Time:</h3>
-        <span v-if="!isEditing">{{report.fifteenUpdate}}</span>
-        <span v-if="isEditing">
+        <h3>15-Minute ETA Verification Call Time:</h3>
+        <span v-if="!isEditing">{{report.callTimeUpdate}}</span>
+        <!-- <span v-if="isEditing">
           <v-dialog ref="fifteenminupdate" v-model="fifteenModal" :return-value.sync="fifteenCallUpdate" persistent
             width="400px">
             <template v-slot:activator="{ on, attrs }">
-              <input id="15MinUpdate" v-model="fifteenUpdateFormatted" class="form__input" readonly v-bind="attrs"
+              <input id="15MinUpdate" v-model="updatedReport.fifteenUpdateFormatted" class="form__input" readonly v-bind="attrs"
                 v-on="on" />
               <span class="button" @click="fifteenCallUpdate = ''">clear</span>
             </template>
             <v-time-picker v-if="fifteenModal" v-model="fifteenCallUpdate" full-width format="ampm">
               <v-spacer></v-spacer>
-              <v-btn text color="#fff" @click="fifteenModal = false">Cancel</v-btn>
-              <v-btn text color="#fff" @click="$refs.fifteenminupdate.save(fifteenCallUpdate)">OK</v-btn>
+              <v-btn text color="#000" @click="fifteenModal = false">Cancel</v-btn>
+              <v-btn text color="#000" @click="$refs.fifteenminupdate.save(fifteenUpdateFormatted)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
-        </span>
+        </span> -->
       </div>
       <div class="report-details__data">
-        <h3>90-Minute Service Call Time:</h3>
-        <span v-if="!isEditing">{{report.ninetyUpdate}}</span>
-        <span v-if="isEditing">
+        <h3>Text ETA Verification Time:</h3>
+        <span v-if="!isEditing">{{report.textTimeUpdated}}</span>
+        <!-- <span v-if="isEditing">
           <v-dialog ref="ninetyminupdate" v-model="ninetyModal" :return-value.sync="ninetyCallUpdate" persistent
             width="400px">
             <template v-slot:activator="{ on, attrs }">
-              <input id="90minupdate" v-model="ninetyUpdateFormatted" class="form__input" readonly v-bind="attrs"
+              <input id="90minupdate" v-model="updatedReport.ninetyUpdateFormatted" class="form__input" readonly v-bind="attrs"
                 v-on="on" />
               <span class="button" @click="ninetyCallUpdate = ''">clear</span>
             </template>
             <v-time-picker v-if="ninetyModal" v-model="ninetyCallUpdate" full-width format="ampm">
               <v-spacer></v-spacer>
-              <v-btn text color="#fff" @click="ninetyModal = false">Cancel</v-btn>
-              <v-btn text color="#fff" @click="$refs.ninetyminupdate.save(ninetyCallUpdate)">OK</v-btn>
+              <v-btn text color="#000" @click="ninetyModal = false">Cancel</v-btn>
+              <v-btn text color="#000" @click="$refs.ninetyminupdate.save(ninetyCallUpdate)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
-        </span>
+        </span> -->
       </div>
     </div>
     <div class="report-details__section">
@@ -136,24 +136,22 @@
         phoneNumber: '',
         emailAddress: '',
         summary: '',
-        fifteenUpdate: '',//vm.formatTime(new Date().toTimeString().substr(0, 5)),
-        ninetyUpdate: ''//vm.formatTime(new Date().toTimeString().substr(0, 5))
       },
-      fifteenModal: false,
-      ninetyModal: false,
-      fifteenCallUpdate: null,
-      ninetyCallUpdate: null,
-      ninetyUpdateFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
-      fifteenUpdateFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
+      callTimeModal: false,
+      textTimeModal: false,
+      callTime: null,
+      textEtaTime: null,
+      
+      
       isEditing: false,
       repData: null
     }),
     watch: {
       fifteenCallUpdate(val) {
-        this.fifteenUpdateFormatted = this.formatTime(this.fifteenCallUpdate)
+        this.updatedReport.fifteenUpdateFormatted = this.formatTime(this.fifteenCallUpdate)
       },
       ninetyCallUpdate(val) {
-        this.ninetyUpdateFormatted = this.formatTime(this.ninetyCallUpdate)
+        this.updatedReport.ninetyUpdateFormatted = this.formatTime(this.ninetyCallUpdate)
       }
     },
     computed: {

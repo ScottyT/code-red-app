@@ -2,7 +2,7 @@
   <div class="storage-page">
     <button class="button--normal" type="button" @click="$fetch">Refresh</button>
     <p v-if="$fetchState.pending">Fetching reports...</p>
-    <LayoutReportsList :reportslist="reports" :sortoptions="sortOptions" page="storagePage" v-else />
+    <LayoutReportsList :reportslist="storage" :sortoptions="sortOptions" page="storagePage" v-else />
   </div>
 </template>
 <script>
@@ -27,12 +27,10 @@
           text: 'Employee'
         }
       ],
-      reports: []
+      reports: [],
+      list: [],
+      storage: []
     }),
-    async fetch() {
-      this.reports = await this.$axios.$get("/api/reports")
-    },
-    fetchOnServer: false,
     async asyncData({ $axios }) {
       /* var data = await $axios.$get("/api/reports");
         var dataFilters = data.filter((v) => {
@@ -52,10 +50,26 @@
     computed: {
       ...mapGetters(["getReports", "isLoggedIn"]),
       filteredRep() {
-        return this.reports.filter((report) => {
-          return report.ReportType == "rapid-response"
+        return this.reports.filter((obj1) => {
+          return !this.storage.some((obj2) => {
+            return obj1.JobId === obj2
+          })
         })
       }
+    },
+    methods: {
+      storageItems() {
+        var storageRef = this.$fire.storage.ref()
+        storageRef.listAll().then((res) => {
+          res.prefixes.forEach((folderRef) => {
+            this.storage.push(folderRef.name)
+          })
+        })
+        
+      },
+    },
+    mounted() {
+      this.storageItems()
     }
   }
 </script>

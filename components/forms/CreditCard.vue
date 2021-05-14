@@ -29,7 +29,7 @@
           </ValidationProvider>
           <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input--input-group">
             <label for="cardholderemail" class="form__label">Cardholder Email</label>
-            <input id="cardholderemail" type="text" class="form__input" v-model="cardholderInfo.email" />
+            <input id="cardholderemail" type="email" class="form__input" v-model="cardholderInfo.email" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
@@ -130,9 +130,9 @@
             <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required|length:3" v-slot="{errors}" name="CVC number" class="form__input--input-group">
+          <ValidationProvider rules="required|length:3|numeric" v-slot="{errors}" name="CVC number" class="form__input--input-group">
             <label for="cvc" class="form__label">CVC Number:</label>
-            <input type="text" id="cvc" v-model="cvcNum" class="form__input" />
+            <input type="number" id="cvc" v-model="cvcNum" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group">
@@ -219,7 +219,7 @@ import {mapActions, mapGetters} from 'vuex';
         cusSigDate: new Date().toISOString().substr(0, 10),
         cusSigDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         isSubmitted: false,
-        submitText: 'Submit Credit Card',
+        submitText: 'Submit Card',
         cardDownloadUrls:[],
         cardImages: [],
         frontCardImage: [],
