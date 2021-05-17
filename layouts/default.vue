@@ -87,25 +87,25 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
-          to: '/dispatch-report',
+          to: '/forms/dispatch-report',
           access: 'user'
         },
         {
           icon: 'mdi-chart-bubble',
           title: 'Rapid Response Report',
-          to: '/rapid-response-form',
+          to: '/forms/rapid-response-form',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Daily Containment Case File Report',
-          to: '/daily-containment-report',
+          to: '/forms/daily-containment-report',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Daily Technician Case File Report',
-          to: '/daily-technician-report',
+          to: '/forms/daily-technician-report',
           access: 'user'
         },
         {
@@ -117,37 +117,37 @@ export default {
         {
           icon: 'mdi-form-select',
           title: 'Atmospheric Readings',
-          to: '/atmospheric-readings',
+          to: '/forms/atmospheric-readings',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Moisture Readings',
-          to: '/moisture-readings',
+          to: '/forms/moisture-readings',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Unit Quantity and Equipment Inventory',
-          to: '/inventory-log',
+          to: '/forms/inventory-log',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Psychrometric Chart',
-          to: '/psychrometric-charting',
+          to: '/forms/psychrometric-charting',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'AOB & Mitigation Contract',
-          to: '/aob-contract-form',
+          to: '/forms/aob-contract-form',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
           title: 'Certificate of Completion',
-          to: '/certificate-of-completion',
+          to: '/forms/certificate-of-completion',
           access: 'user'
         },
         {
@@ -197,16 +197,20 @@ export default {
       fetchLogs: 'fetchLogs'
     }),
     itemsArr() {
-      const filtered = (role) => this.items.filter((v) => {
+      if (user) {
+        const filtered = (role) => this.items.filter((v) => {
         return v.access === role
-      })
-      switch (this.getUser.role) {
-        case "user":
-          this.filteredNavItems = filtered("user")
-          break;
-        case "admin":
-          this.filteredNavItems = this.items
-      }
+        })
+        switch (this.getUser.role) {
+          case "user":
+            this.filteredNavItems = filtered("user")
+            break;
+          case "admin":
+            this.filteredNavItems = this.items
+        }
+      } else {
+        return;
+      }     
     },
     async signOut() {
       this.$store.dispatch("signout")

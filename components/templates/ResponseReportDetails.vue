@@ -52,23 +52,64 @@
         </ul>
       </div>
     </div>    
+    
     <div class="report-details__section">
       <div class="report-details__checklist">
-        <h3>Communicate steps to Headquarters:</h3>
+        <h3>Inital Response, Inspection, and Preliminary Determination</h3>
         <ul>
-          <li v-for="item in report.Steps" :key="item.id">{{item}}</li>
+          <li v-for="item in report.PictureTypes" :key="item.id">
+            {{item}}
+          </li>
         </ul>
       </div>
     </div>
     <div class="report-details__section">
       <div class="report-details__checklist">
-        <h3>Picture Categories</h3>
+        <h3>Source of Water Intrusion</h3>
         <ul>
-          <li v-for="item in report.PicturesTypes" :key="item.id">
+          <li v-for="item in report.sourceWaterIntrusion" :key="item.id">
             {{item}}
           </li>
         </ul>
       </div>
+    </div>
+    <div class="report-details__section">
+      <div class="report-details__data" v-for="(item, i) in report.intrusion" :key="`intrusion-${i}`">
+        <label class="form__label">{{item.label}}</label>
+        <span>{{item.value}}</span>
+      </div>
+    </div>
+    <div class="report-details__data">
+      <label class="form__label">Initial:</label>
+      <span>{{report.initial2}}</span>
+    </div>
+    <div class="report-details__section">
+      <div class="report-details__checklist">
+        <h3>Preliminary Determination</h3>
+        <ul>
+          <li v-for="(item, i) in report.preliminaryDetermination" :key="`prelim-${i}`">
+            {{item}}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="report-details__data">
+      <label class="form__label">Initial:</label>
+      <span>{{report.initial1}}</span>
+    </div>
+    <div class="report-details__section">
+      <div class="report-details__checklist">
+        <h3>Initial Moisture Inspection</h3>
+        <ul>
+          <li v-for="(item, i) in report.moistureInspection" :key="`moisture-${i}`">
+            {{item}}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="report-details__data">
+      <label class="form__label">Initial:</label>
+      <span>{{report.initial3}}</span>
     </div>
     </div>
     <div class="report-details report-details__response-report">
@@ -104,8 +145,35 @@
         </div>
       </div> -->
     </div>
+    <div class="report-details__data">
+      <label class="form__label">Initial:</label>
+      <span>{{report.initial4}}</span>
     </div>
-    
+    </div>
+    <div class="report-details report-details__response-report">
+      <div class="report-details__section">
+        <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('emergencyResAct')">
+          <label class="form__label">Emergency Response Actions Identified:</label>
+          <span>{{report.preRestorationEval.emergencyResAct}}</span>
+        </div>
+        <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('buildingMatRestore')">
+          <label class="form__label">Building Material Restorability:</label>
+          <span>{{report.preRestorationEval.buildingMatRestore}}</span>
+        </div>
+        <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('contentEval')">
+          <label class="form__label">Content Evaluation:</label>
+          <span>{{report.preRestorationEval.contentEval}}</span>
+        </div>
+        <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('hvacEval')">
+          <label class="form__label">HVAC Evaluation:</label>
+          <span>{{report.preRestorationEval.hvacEval}}</span>
+        </div>
+        <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('substructure')">
+          <label class="form__label">Substructure & Unfinished Spaces:</label>
+          <span>{{report.preRestorationEval.substructure}}</span>
+        </div>
+      </div>
+    </div>
     <div class="report-details__section">
       <div class="report-details__data">
         <h3>Insurance Company:</h3>
@@ -136,6 +204,14 @@
         <h3>Adjuster Email:</h3>
         <input type="text" class="form__input" v-if="isEditing" v-model="updatedReport.adjusterEmail" />
         <span v-if="!isEditing">{{report.adjusterEmail}}</span>
+      </div>
+    </div>
+    <div class="report-details__section">
+      <div class="report-details__checklist">
+        <h3>Develop Initial Project Work Plan & Communicate to Headquarters:</h3>
+        <ul>
+          <li v-for="item in report.Steps" :key="item.id">{{item}}</li>
+        </ul>
       </div>
     </div>
     <div class="report-details__section">
@@ -305,12 +381,19 @@
   position:absolute;
   top:0;
   left:0;
+  object-fit:contain;
+}
+.form__label {
+  font-weight: bold;
 }
 .map-wrapper {
     position:relative;
     width:100%;
-    max-width:1016px;
+    max-width:660px;
     margin:auto;
+    /* @include respond(tabletLarge) {
+      max-width:768px;
+    } */
     
     &__canvas {
       position:absolute;
@@ -318,7 +401,6 @@
       height:100%;
       top:0;
       height:0;
-      max-width:1016px;
       
     }
     &__map {

@@ -1,8 +1,6 @@
 <template>
   <div class="storage-page">
-    <button class="button--normal" type="button" @click="$fetch">Refresh</button>
-    <p v-if="$fetchState.pending">Fetching reports...</p>
-    <LayoutReportsList :reportslist="storage" :sortoptions="sortOptions" page="storagePage" v-else />
+    <LayoutReportsList :reportslist="storage" :sortoptions="sortOptions" page="storagePage" />
   </div>
 </template>
 <script>

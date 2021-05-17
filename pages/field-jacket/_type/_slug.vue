@@ -127,7 +127,6 @@ export default {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
                 const totalPages = pdf.internal.getNumberOfPages()
                 pdf.addPage()
-                console.log(pdf)
             })
         },
         startPagination() {

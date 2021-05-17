@@ -146,7 +146,7 @@
               <span class="form__input--error">{{ errors[0] }}</span>
               <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
             </ValidationProvider>
-            <span class="button__add-files button" @click="addFiles()">Add Files</span>           
+            <span class="button__add-files button mt-4" @click="addFiles()">Add Files</span>           
             <br />
             <span>{{ uploadSuccess }}</span>
             <h3>Source of Water Intrusion</h3>
@@ -874,7 +874,7 @@
               EmailAddress: this.emailAddress,
               ReportType: 'rapid-response',
               Pictures: this.filesUploading,
-              TypesOfLoss: this.selectedTypes,
+              sourceWaterIntrusion: this.selectedTypes,
               Steps: this.selectedSteps,
               InsuranceCompany: this.insuranceCompany,
               ClaimNumber: this.claimNumber,
@@ -1136,7 +1136,7 @@
   .map-wrapper {
     position:relative;
     width:100%;
-    max-width:1016px;
+    max-width:660px;
     margin:auto;
     
     &__canvas {
@@ -1145,7 +1145,6 @@
       height:100%;
       top:0;
       height:0;
-      max-width:1016px;
       
     }
     &__map {

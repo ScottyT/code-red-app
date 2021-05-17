@@ -22,7 +22,7 @@ const responseReport = mongoose.Schema({
     PropertyOwner: String,
     ReportType: String,
     Steps: Array,
-    TypeOfLoss: Array,
+    sourceWaterIntrusion: Array,
     cusFirstName: String,
     cusLastName: String,
     customerSig: String,
@@ -36,10 +36,16 @@ const responseReport = mongoose.Schema({
     signDate: String,
     teamMember: Map,
     intrusion: Array,
+    dateIntrusion: String,
+    timeIntrusion: String,
     preliminaryDetermination: Array,
     moistureInspection: Array,
     preRestorationEval: Object,
-    teamMemberSig: String
+    teamMemberSig: String,
+    initial1: String,
+    initial2: String,
+    initial3: String,
+    initial4: String
 })
 responseReport.plugin(timestamps);
 module.exports = mongoose.model('RapidResponse', responseReport, 'rapid-response-reports');

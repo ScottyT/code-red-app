@@ -84,7 +84,6 @@ export const actions = {
     })
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
-    console.log(authUser)
     if (!authUser) {
       await dispatch('cleanupAction')
       return
@@ -110,9 +109,9 @@ export const actions = {
   },
   async fetchLogs({ commit, state }, authUser) {
     if (authUser) {
-      await this.$axios.$get(`/api/employee/${state.user.email}`).then((res) => {
+      await this.$axios.$get(`/api/employee/${state.user.email}/savedreports`).then((res) => {
         let copyArr = JSON.parse(JSON.stringify(res));
-        commit('setLogReports', res.savedreports)
+        commit('setLogReports', res)
       }).catch((err) => {
         commit('setError', err)
       })

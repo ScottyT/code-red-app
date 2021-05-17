@@ -40,16 +40,14 @@ router.post("/employee/new",
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
 router.get('/reports', async (req, res) => {
-    const dispatch = await Dispatch.find({});
-    const rapidresponse = await RapidResponse.find({});
-    const caseFile = await CaseFile.find({});
-    const certificate = await COC.find({});
-    const aobContract = await AOB.find({});
-    const creditCard = await CreditCard.find({});
-    const sketches = await Sketch.find({});
-    const logging = await Logging.find({});
-    const charts = await chartModel.find({});
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, aobContract, creditCard, sketches, logging, charts)
+    const dispatch = await Dispatch.find({}).lean();
+    const rapidresponse = await RapidResponse.find({}).lean();
+    const caseFile = await CaseFile.find({}).lean();
+    const certificate = await COC.find({}).lean();
+    const sketches = await Sketch.find({}).lean();
+    const logging = await Logging.find({}).lean();
+    const charts = await chartModel.find({}).lean();
+    const results = dispatch.concat(rapidresponse, caseFile, certificate, sketches, logging, charts)
     res.json(results)
 })
 router.get('/reports/:ReportType/:JobId', async (req, res) => {
@@ -118,15 +116,14 @@ router.post("/report/:ReportType/:JobId/update", async (req, res) => {
 router.get('/employees', (req, res) => {
     User.find({}, (err, employees) => {
         if (err) {
-            console.log(`RETRIEVE error: ${err}`);
             res.status(500).send('Error');
         } else if (employees) {
             res.status(200).json(employees)
         }
-    })
+    }).lean()
 })
 router.get('/employee/:email', (req, res) => {
-    User.findOne({email: req.params.email}).populate('savedreports').exec((err, employee) => {
+    User.findOne({email: req.params.email}).exec((err, employee) => {
         if (err) {
             res.status(500).send('Error')
         } else if (employee) {
@@ -137,6 +134,15 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
+router.get('/employee/:email/savedreports', async (req, res) => {
+    const emp = await User.findOne({email: req.params.email}).select({email: req.params.email}).lean()
+    if (emp) {
+        const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email)
+        res.json(logreports)
+    } else {
+        res.json({error: "User does not exist"})
+    }
+})
 router.post("/employee/:email/:formType/:JobId/update", updateLogs)
 //router.delete("/employee:email/:formType/:JobId/delete", )
 router.get('/certificates', (req, res) => {
@@ -146,7 +152,7 @@ router.get('/certificates', (req, res) => {
         } else {
             res.status(200).json(coc)
         }
-    })
+    }).lean()
 })
 router.get('/aob-mitigation-contracts', (req, res) => {
     AOB.find({}, (err, aob) => {

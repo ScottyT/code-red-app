@@ -81,7 +81,7 @@
             <ValidationProvider v-slot="{ errors }" rules="email" name="Email" vid="email">
               <label for="email" class="form__label">Email Address</label>
               <br />
-              <input id="email" v-model="email" type="text" class="form__input" name="Email" />
+              <input id="email" v-model="email" type="email" class="form__input" name="Email" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -550,6 +550,7 @@
             this.$axios.$post("/api/dispatch/new", post).then((res) => {
               if (res.errors) {
                 this.errorDialog = true
+                this.submitting = false
                 this.$refs.form.setErrors({
                   JobId: res.errors.filter(obj => obj.param === 'JobId').map(v => v.msg),
                   email: res.errors.filter(obj => obj.param === 'emailAddress').map(v => v.msg),

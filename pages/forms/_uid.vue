@@ -1,6 +1,6 @@
 <template>
   <div>
-    <lazy-slices-block :slice="formType" :company="company" />
+    <SlicesBlock :slice="formType" :company="company" />
   </div>
 </template>
 <script>
@@ -22,6 +22,11 @@ export default {
   },
   computed: {
     ...mapGetters(['isLoggedIn'])
+  },
+  async middleware({redirect, store}) {
+    if (store.state.user.email == null) {
+      return redirect("/")
+    }
   },
   async asyncData({ error, params }) {
     var formType = params.uid

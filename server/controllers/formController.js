@@ -40,13 +40,13 @@ const createMoistureMap = async (req, res) => {
 const createEmployee = async (req, res) => {
     const result = validationResult(req);
     const employee = new User(req.body)
-    const reports = new Logging({
+    /* const reports = new Logging({
         JobId: "2222"
-    });
+    }); */
     if (!result.isEmpty()) {
         return res.json(result)
     }
-    employee.savedreports.push(reports)
+    /* employee.savedreports.push(reports) */
     await employee.save().then(() => {
         res.json({message: "Created new employee"})
     }).catch((err) => {
@@ -127,14 +127,14 @@ const createLogs = async (req, res) => {
         })
     }
     //const logs = new Logging(req.body)
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).populate('user').exec()
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
     
     if (!errors.isEmpty() || logsReport !== null) {
         return res.json(errors)
     }
-    const employee = await User.findOne({email: req.body.teamMember.email});
-    employee.savedreports.push(logs)
-    await Promise.all([logs.save(), employee.save()]).then(() => {
+    /* const employee = await User.findOne({email: req.body.teamMember.email});
+    employee.savedreports.push(logs) */
+    await logs.save().then(() => {
         res.json({message: "Form submitted"})
     }).catch((err) => {
         res.json(err)
@@ -295,7 +295,7 @@ const createRapidResponse = async (req, res) => {
         PictureTypes: req.body.PictureTypes,
         ReportType: req.body.ReportType,
         Steps: req.body.Steps,
-        TypeOfLoss: req.body.TypeOfLoss,
+        sourceWaterIntrusion: req.body.sourceWaterIntrusion,
         cusFirstName: req.body.cusFirstName,
         cusLastName: req.body.cusLastName,
         moistureMap: req.body.moistureMap,
@@ -305,15 +305,17 @@ const createRapidResponse = async (req, res) => {
         cusSignDate: req.body.cusSignDate,
         teamMember: req.body.teamMember,
         intrusion: req.body.intrusionInfo,
+        dateIntrusion: req.body.dateIntrusion,
+        timeIntrusion: req.body.timeIntrusion,
         preliminaryDetermination: req.body.selectedPreliminary,
         moistureInspection: req.body.selectedInspection,
         preRestorationEval: req.body.preRestorationEval,
         teamMemberSig: req.body.teamMemberSig,
         customerSig: req.body.customerSig,
-        initial1: req.body.initial1,
-        initial2: req.body.initial2,
-        initial3: req.body.initial3,
-        initial4: req.body.initial4
+        initial1: req.body.initial.initial1,
+        initial2: req.body.initial.initial2,
+        initial3: req.body.initial.initial3,
+        initial4: req.body.initial.initial4
     })
     if (!errors.isEmpty()) {
         return res.json(errors)

@@ -592,7 +592,7 @@
               </span>
             <span>
               <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” End Date:</label>
-              <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="400px">
+              <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="500px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)" readonly />
                 </template>
@@ -613,7 +613,7 @@
               <div class="form__form-group--inline">
                 <label for="insuredDay1" class="form__label">Day (1) Date:</label>
                 <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal"
-                          :return-value.sync="insuredPayment.day1Date" persistent width="400px">
+                          :return-value.sync="insuredPayment.day1Date" persistent width="500px">
                   <template v-slot:activator="{ on, attrs }">
                     <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" readonly class="form__input form__input--short" v-on="on" 
                         @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)" />
@@ -636,7 +636,7 @@
               <div class="form__form-group--inline">
                 <label for="insuredDay5" class="form__label">Day (5) Date:</label>
                 <v-dialog ref="insuredPayDay5" v-model="insuredPayment.day5Modal"
-                          :return-value.sync="insuredPayment.day5Date" persistent width="400px">
+                          :return-value.sync="insuredPayment.day5Date" persistent width="500px">
                   <template v-slot:activator="{ on, attrs }">
                     <input id="insuredDay5" v-model="insuredPayment.day5DateFormatted" v-bind="attrs" readonly
                           class="form__input form__input--short" v-on="on" @blur="insuredPayment.day5Date = parseDate(insuredPayment.day5DateFormatted)" />
@@ -655,7 +655,7 @@
             <span>
               <label for="NonInsuredEndDate" class="form__label">Non-Insured or Still Pending Coverage: Agreed “Term” End Date:</label>
               <v-dialog ref="dialognoninsuredEndDate" v-model="nonInsuredPayment.endDateModal"
-                        :return-value.sync="nonInsuredPayment.endDate" persistent width="400px">
+                        :return-value.sync="nonInsuredPayment.endDate" persistent width="500px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs"
                         class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.endDate = parseDate(nonInsuredPayment.endDateFormatted)" />
@@ -672,7 +672,7 @@
               <label for="NonInsuredDay1Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 1) =
                 $750.00 Day (1) Date:</label>
               <v-dialog ref="nonInsuredDay1" v-model="nonInsuredPayment.day1Modal"
-                        :return-value.sync="nonInsuredPayment.day1Date" persistent width="400px">
+                        :return-value.sync="nonInsuredPayment.day1Date" persistent width="500px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs"
                         class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day1Date = parseDate(nonInsuredPayment.day1DateFormatted)" />
@@ -688,7 +688,7 @@
               <label for="NonInsuredDay5Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 2) =
                 $750.00 Day (5) Date:</label>
               <v-dialog ref="nonInsuredDay5" v-model="nonInsuredPayment.day5Modal"
-                        :return-value.sync="nonInsuredPayment.day5Date" persistent width="400px">
+                        :return-value.sync="nonInsuredPayment.day5Date" persistent width="500px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs"
                         class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day5Date = parseDate(nonInsuredPayment.day5DateFormatted)" />
@@ -749,7 +749,7 @@
           <div class="form__form-group form__form-group--inline">
               <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
                   <label class="form__label">Minimum believed Square Foot as defined above:</label>
-                  <input type="text" v-model="sqft" class="form__input" />
+                  <input type="number" v-model="sqft" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
           </div>
@@ -777,7 +777,7 @@
                   </ValidationProvider>
                   <div class="form__input--input-group">
                       <label for="repOfDate" class="form__label">Date:</label>
-                      <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="400px">
+                      <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
                         <template v-slot:activator="{ on, attrs }">
                           <input id="repOfDate" v-model="repDateFormatted" v-bind="attrs"
                                 class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(repDateFormatted)" />
@@ -799,7 +799,7 @@
               <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input--input-group">
                   <label for="witnesslabel" class="form__label">Witness date:</label>
                   <input type="hidden" v-model="witnessDate" />
-                  <v-dialog ref="dialogWitnessDate" v-model="witnessDateModal" :return-value.sync="witnessDate" persistent width="400px">
+                  <v-dialog ref="dialogWitnessDate" v-model="witnessDateModal" :return-value.sync="witnessDate" persistent width="500px">
                     <template v-slot:activator="{ on, attrs }">
                       <input id="witnesslabel" v-model="witnessDateFormatted" v-bind="attrs"
                             class="form__input form__input--short" readonly v-on="on" @blur="witnessDate = parseDate(witnessDateFormatted)" />
@@ -815,14 +815,14 @@
               </span>
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
-              <ValidationProvider class="form__input--input-group" rules="numeric" v-slot="{errors}">
+              <ValidationProvider class="form__input--input-group" rules="numeric" name="Number of rooms" v-slot="{errors}">
                   <label for="numberOfRooms" class="form__label">Number of Rooms:</label>
                   <input id="numberOfRooms" type="text" class="form__input" v-model="numberOfRooms" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider class="form__input--input-group" rules="numeric" v-slot="{errors}">
+              <ValidationProvider class="form__input--input-group" rules="numeric" name="Number of floors" v-slot="{errors}">
                   <label for="numberOfFloors" class="form__label">Number of Floors:</label>
-                  <input type="text" id="numberOfFloors" class="form__input" v-model="numberOfFloors" />
+                  <input type="number" id="numberOfFloors" class="form__input" v-model="numberOfFloors" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <ValidationProvider name="Payment option" rules="required" v-slot="{errors}" class="form__input--input-group">

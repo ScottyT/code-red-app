@@ -28,7 +28,7 @@
     </div>
     <div class="folder-contents__content" v-for="(item, i) in files" :key="i">
       <input type="checkbox" @change="selectedFiles" v-if="editing" :id="`delete-${i}`" :value="item" v-model="filesToDelete" class="folder-contents__content--checkbox" />
-      <a :href="item.url" target="_blank" v-if="item.type === '.jpg' || item.type === '.png' || item.type === '.gif'">
+      <a :href="item.url" target="_blank" v-if="item.type === '.jpg' || item.type === '.jpeg' || item.type === '.png' || item.type === '.gif'">
         <img class="folder-contents__content--image" :src="item.url" />
       </a>
       <p v-if="item.type === '.jpg' || item.type === '.png' || item.type === '.gif'">{{item.name}}</p>

@@ -21,7 +21,7 @@
               </ValidationProvider>
             </div>
             <div class="submit-btn">
-              <v-btn type="submit" :dark="matchUrl ? true : false">{{ submitting ? 'Logging In' : 'Login' }}</v-btn>
+              <v-btn type="submit" class="button--normal" :dark="matchUrl ? true : false">{{ submitting ? 'Logging In' : 'Login' }}</v-btn>
             </div>
           </form>
         </ValidationObserver>
