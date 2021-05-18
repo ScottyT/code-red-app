@@ -511,7 +511,6 @@
       submitForm() {
         this.message = ""
         const user = this.getUser
-        this.submitting = true
         var dispatchRep = this.getReports.filter((v) => {
           return v.ReportType === 'dispatch'
         })
@@ -571,18 +570,7 @@
             if (!reports.includes(this.jobId)) {
               this.addReport(post).then(() => {
                 this.message = "Report was saved successfully for submission later!"
-                this.jobId = ""
-                this.callerName = ""
-                this.email = ""
-                this.location = {
-                  address: null,
-                  city: null,
-                  cityStateZip: null,
-                }
-                this.phone = ""
-                this.notes = ""
-                this.selectedCheckboxes = []
-                this.$refs.jobIdField.value = ""
+                
                 this.submitted = true
                 this.submitting = false
                 setTimeout(() => {

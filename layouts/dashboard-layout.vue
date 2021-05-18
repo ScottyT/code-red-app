@@ -22,7 +22,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar dark :clipped-left="true" fixed app extension-height="60" class="header-navigation">
+    <v-app-bar dark :clipped-left="true" fixed app extension-height="60" height="80" class="header-navigation">
       <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
         <span>
           <i class="button__icon-content button__icon-content--top"></i>

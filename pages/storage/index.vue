@@ -53,14 +53,14 @@
             return obj1.JobId === obj2
           })
         })
-      }
+      },
     },
     methods: {
       storageItems() {
         var storageRef = this.$fire.storage.ref()
         storageRef.listAll().then((res) => {
           res.prefixes.forEach((folderRef) => {
-            this.storage.push(folderRef.name)
+            this.storage.push({"JobId": folderRef.name})
           })
         })
         

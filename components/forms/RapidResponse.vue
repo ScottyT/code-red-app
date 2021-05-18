@@ -138,7 +138,10 @@
                 <div v-for="(file, key) in uploadedFiles" class="file-listing" :key="`jobfiles-${key}`">
                   <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" v-if="file.type == 'image/png' || file.type == 'image/jpeg' || file.type == 'image/gif'" />
                   <p v-else>{{file.name}}</p>
-                  <v-icon class="file-listing__remove-file" @click="removeFile(key, file)" tag="i" large>mdi-close-circle</v-icon>
+                  <span class="file-listing__remove-file" @click="removeFile(key, file)" tag="i">
+                    <span class="file-listing__remove-file--leg1 file-listing__remove-file--leg"></span>
+                    <span class="file-listing__remove-file--leg2 file-listing__remove-file--leg"></span>
+                  </span>
                 </div>
               </div>
               <input type="file" name="files" ref="files" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf" @change="filesChange" multiple />
@@ -311,7 +314,7 @@
             </span>
             <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input--input-group">
               <label for="adjusterEmail" class="form__label">Adjuster Email</label>
-              <input type="text" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
+              <input type="email" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
               <br />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
@@ -873,7 +876,6 @@
               PhoneNumber: this.phoneNumber,
               EmailAddress: this.emailAddress,
               ReportType: 'rapid-response',
-              Pictures: this.filesUploading,
               sourceWaterIntrusion: this.selectedTypes,
               Steps: this.selectedSteps,
               InsuranceCompany: this.insuranceCompany,
@@ -899,7 +901,6 @@
               signDate: this.signDate,
               cusSignDate: this.cusSignDate,
               teamMember: this.getUser,
-              photoId: this.idImage,
               dateIntrusion: this.dateIntrusionFormatted,
               timeIntrusion: this.timeIntrusionFormatted,
               intrusionInfo: this.intrusionSection,
@@ -915,6 +916,7 @@
               this.addReport(tempPost).then(() => {
                 this.successMessage = "Report was saved successfully for submission later!"
                 this.submitting = false
+                this.submitted = true
                 setTimeout(() => {
                     this.successMessage = ""
                 }, 2000)

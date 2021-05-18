@@ -58,23 +58,24 @@
                             <span>
                                 <label for="InsuredDeductible" class="form__label">Insured Deductible:</label>
                                 <span class="form__input--currency">$<input type="text" id="InsuredDeductible" class="form__input form__input--short" v-model="deductible" @keypress="currencyFormat" /></span>
-                            </span>                        
-                            <v-spacer></v-spacer>
+                            </span>
                             <span>
                                 <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” of Service Minimum End Date:</label>
-                                <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate"
-                                    persistent width="400px">
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
-                                            v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)
-                                        " />
-                                    </template>
-                                    <v-date-picker v-model="insuredEndDate" scrollable>
-                                        <v-spacer></v-spacer>
-                                        <v-btn text color="#fff" @click="insuredEndDateModal = false">Cancel</v-btn>
-                                        <v-btn text color="#fff" @click="$refs.dialogEndDate.save(insuredEndDate)">OK</v-btn>
-                                    </v-date-picker>
-                                </v-dialog>
+                                <div class="form__form-group--inline">
+                                    <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate"
+                                        persistent width="500px">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" readonly
+                                                v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)
+                                            " />
+                                        </template>
+                                        <v-date-picker v-model="insuredEndDate" scrollable>
+                                            <v-spacer></v-spacer>
+                                            <v-btn text color="#fff" @click="insuredEndDateModal = false">Cancel</v-btn>
+                                            <v-btn text color="#fff" @click="$refs.dialogEndDate.save(insuredEndDate)">OK</v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                </div>
                             </span>
                             <span>
                                 <div>
@@ -319,26 +320,26 @@ export default {
         subjectProperty: '',
         deductible: null,
         insuredEndDateModal: false,
-        insuredEndDate: null,
+        insuredEndDate: new Date().toISOString().substr(0, 10),
         insuredEndDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         insuredPayment: {
             day1Modal: false,
             day5Modal: false,
             firstStep: null,
-            day1Date: null,
+            day1Date: new Date().toISOString().substr(0, 10),
             day1DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day5Date: null,
+            day5Date: new Date().toISOString().substr(0, 10),
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10))
         },
         nonInsuredPayment: {
             endDateModal: false,
             day1Modal: false,
             day5Modal: false,
-            endDate: null,
+            endDate: new Date().toISOString().substr(0, 10),
             endDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day1Date: null,
+            day1Date: new Date().toISOString().substr(0, 10),
             day1DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-            day5Date: null,
+            day5Date: new Date().toISOString().substr(0, 10),
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         },
         ratings: [
@@ -400,7 +401,6 @@ export default {
         paymentOptions: ["Cash", "Card", "Thrive"],
         paymentOption: "",
         errorDialog: false,
-        authUser: false,
         existingCreditCard: "",
         cardToUse: "",
         cardSubmitted: false

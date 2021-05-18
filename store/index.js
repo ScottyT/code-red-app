@@ -85,7 +85,8 @@ export const actions = {
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
     if (!authUser) {
-      await dispatch('cleanupAction')
+      //await dispatch('signout')
+      console.log('no user')
       return
     }
     

@@ -75,7 +75,7 @@
                             <label class="form__label">{{row.text}}</label>
                         </div>
                         <div class="form__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                            <input type="number" class="form__input" v-model="col.value" />
+                            <input type="number" :tabindex="j" class="form__input" v-model="col.value" />
                         </div>
                     </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in checkBoxArr" :key="`checkbox-row-${i}`">
@@ -99,7 +99,7 @@
                             <label class="form__label">{{row.text}}</label>
                         </div>
                         <div class="form__table--cols" v-for="(col, j) in row.day" :key="`col-on-site-${j}`">
-                            <input type="number" class="form__input" v-model="col.value" />
+                            <input type="number" :tabindex="j" class="form__input" v-model="col.value" />
                         </div>
                     </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in catArr" :key="`row-cat-${i}`">
@@ -107,7 +107,7 @@
                             <label class="form__label">{{row.text}}</label>
                         </div>
                         <div class="form__table--cols" v-for="(col, j) in row.day" :key="`col-cat-${j}`">
-                            <input type="text" class="form__input" v-model="col.value" />
+                            <input type="text" :tabindex="j" class="form__input" v-model="col.value" />
                         </div>
                     </div>
                 </div>

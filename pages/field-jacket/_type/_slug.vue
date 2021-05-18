@@ -14,7 +14,7 @@
         <span v-if="reportType === 'rapid-response'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="800px" :html-to-pdf-options="htmlToPdfOptions" @startPagination="startPagination()" @hasPaginated="hasPaginated()" 
-                :paginate-elements-by-height="1200" @beforeDownload="beforeDownload($event)" :manual-pagination="false"
+                :paginate-elements-by-height="1500" @beforeDownload="beforeDownload($event)" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <LazyLayoutResponseReportDetails company="Water Emergency Services Incorporated" formName="Rapid Response Report" :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>

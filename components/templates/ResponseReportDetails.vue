@@ -1,12 +1,13 @@
 <template>
 <section class="pdf-content">
-    <div class="report-details report-details__response-report">
+  <div class="report-details report-details__response-report">
     <h1 v-if="message">{{message}}</h1>
     <h1 class="text-center">{{company}}</h1>
     <h2 class="text-center">{{formName}}</h2>
     <v-btn v-if="notPdf" @click="startEditing" dark>{{ isEditing ? "Editing" : "Edit"}}</v-btn>
     <v-btn v-show="isEditing" @click="updateReport" dark>Update</v-btn>
     <div class="report-details__section">
+      
       <div class="report-details__data">
         <h3>Team Lead ID #:</h3>
         <span>{{report.id}}</span>
@@ -45,12 +46,6 @@
       <div class="report-details__data-label">Email Address:</div>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.EmailAddress" />
       <span v-if="!isEditing" class="report-details__data-field">{{report.EmailAddress}}</span>
-      <div class="report-details__checklist">
-        <div class="report-details__data-label">Type of loss:</div>
-        <ul>
-          <li v-for="item in report.TypesOfLoss" :key="item.id">{{item}}</li>
-        </ul>
-      </div>
     </div>    
     
     <div class="report-details__section">
@@ -93,6 +88,8 @@
         </ul>
       </div>
     </div>
+  </div>
+  <div class="report-details report-details__response-report">
     <div class="report-details__data">
       <label class="form__label">Initial:</label>
       <span>{{report.initial1}}</span>
@@ -111,8 +108,7 @@
       <label class="form__label">Initial:</label>
       <span>{{report.initial3}}</span>
     </div>
-    </div>
-    <div class="report-details report-details__response-report">
+    
     <div class="report-details__section">
       <label class="form__label">Initial Moisture Map</label>
       <p>An initial moisture inspection should be conducted to identify the full extent of water intrusion,
@@ -173,7 +169,7 @@
           <span>{{report.preRestorationEval.substructure}}</span>
         </div>
       </div>
-    </div>
+    
     <div class="report-details__section">
       <div class="report-details__data">
         <h3>Insurance Company:</h3>
@@ -260,7 +256,7 @@
         <span>{{report.signDate}}</span>
       </div>
     </div>
-    
+    </div>
   </section>
 </template>
 <script>

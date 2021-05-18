@@ -189,9 +189,11 @@
                     </div>
                 </div>
             </div>
-            <button class="button--normal" type="button" @click="addRow">Add row</button>
+            <button v-if="report.formType === 'moisture-map'" class="button--normal" type="button" @click="addRow">Add row</button>
         </section>
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
+        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="report.formType === 'moisture-map'">Upload job files</v-btn>
+        <p v-if="uploadMessage !== ''">{{uploadMessage}}</p>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
         <!-- Only make submit button clickable on Day 7 -->
         <!-- <v-btn class="button mt-4" @click="submitReport">Submit</v-btn> -->
@@ -206,6 +208,8 @@ export default {
     props: ['formName', 'formType','report', 'reportType', 'company'],
     data() {
         return {
+            uploadMessage: "",
+            filesUploading: [],
             updateMessage: "",
             errorMessage: "",
             savedreport: {},
@@ -253,6 +257,57 @@ export default {
             deleteRep: 'indexDb/deleteReport',
             checkStorage: 'indexDb/checkStorage'
         }),
+        submitFiles(report, uploadarr, element) {
+            const today = new Date()
+            const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
+            uploadarr.forEach((file) => {
+                var storageRef = this.$fire.storage.ref()
+                
+                switch (element) {
+                case "Job files":
+                    var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
+                    var uploadTask = uploadRef.put(file)
+                    break;
+                case "Card Images":
+                    var uploadRef = storageRef.child(`${report.cardNumber}/${file.name}`)
+                    var uploadTask = uploadRef.put(file)
+                default:
+                    var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
+                    var uploadTask = uploadRef.put(file)
+                }
+
+                uploadTask.on('state_changed',
+                (snapshot) => {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    if (progress < 100) {
+                    this.message = "Files uploading"
+                    }
+                    if(progress == 100) {
+                    uploadarr = []
+                    }
+                },
+                (error) => {
+                    console.log(error.message)
+                },
+                () => {
+                    uploadRef.getDownloadURL().then((url) => {
+                    var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
+                    var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
+                    const fileObj = {
+                        name: fileName,
+                        url: url,
+                        type: fileType
+                    }
+                    this.filesUploading.push(fileObj)
+                    this.uploadMessage = "Files uploaded"
+                    setTimeout(() => {
+                        this.message = ""
+                    }, 2000)
+                    })
+                }
+                )
+            })
+        },
         addRow() {
             this.report.readingsRow.push({
                 date: '',

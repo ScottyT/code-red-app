@@ -9,9 +9,9 @@
       <p>Please complete all fields. You may cancel this authorization at any time by contacting us. This
         authorization will remain in effect until cancelled.</p>
         <form ref="cardForm" @submit.prevent="submitCard">
-      <fieldset v-if="currentStep === 1" class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
+      <fieldset v-if="currentStep === 1" class="form__form-group form__form-group--info-box form__form-group--column">
         <h3 class="form__label">Cardholder Name* (as shown on card)</h3>
-        <span>
+        <div class="d-flex flex-wrap">
           <ValidationProvider rules="required" v-slot="{errors}" name="First name" class="form__input--input-group">
             <label for="firstname" class="form__label">First name</label>
             <input id="firstname" type="text" class="form__input" v-model="cardholderInfo.first" />
@@ -42,7 +42,7 @@
             <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-        </span>
+        </div>
         <div class="form__form-group">
           <h3 class="form__label">Debit/Credit Card</h3>
           <ValidationProvider name="Card type" class="form__input--input-group form__form-group" rules="required" v-slot="{errors}">

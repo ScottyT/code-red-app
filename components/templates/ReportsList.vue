@@ -5,23 +5,21 @@
       <div class="info-bar__search-wrapper">
         <UiAutocomplete @sendReportsToParent="reportsfetched" :items="reportslist" theme="light" />
       </div>
-      <div class="info-bar__sort">
+      <!-- <div class="info-bar__sort">
           <label class="info-bar__sort--label">Sort By:</label>
           <a v-for="option in sortoptions" :key="option.value" @click="sortValue(option)" :class="[sortBy === option.value ? sortDirection : '']">
             {{option.text}}
           </a>
-        </div>
+        </div> -->
     </div>
     <div class="reports-list__reports">
       <transition-group class="reports-list__reports-wrapper" name="flip-list" tag="div">
         <div class="reports-list__report flip-list-item" v-for="(report, i) in reports" :key="`report-type-${i}`">
-          <nuxt-link class="reports-list__report-link" :to="`/storage/${report}`" v-if="page == 'storagePage'">
-            <h3>{{report}}</h3>
-            <!-- <p>{{report.teamMember.name}}</p> -->
+          <nuxt-link class="reports-list__report-link" :to="`/storage/${report.JobId}`" v-if="page == 'storagePage'">
+            <h3>{{report.JobId}}</h3>
           </nuxt-link>
         </div>
       </transition-group>
-      <!-- <p v-if="reportslist.length <= 0">No reports found</p> -->
     </div>
   </div>
 </template>

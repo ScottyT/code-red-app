@@ -31,6 +31,9 @@
             <!-- <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
             <v-btn @click="generateReport(0)">Download PDF</v-btn>
         </span>
+        <span v-if="reportType === 'moisture-map'">
+            <LazySavedLogReports :formName="formName" :formType="formType" :report="data" company="Water Emergency Services Incorporated" />
+        </span>
     </div>
 </template>
 <script>

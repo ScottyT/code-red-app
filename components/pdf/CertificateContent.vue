@@ -1,5 +1,5 @@
 <template>
-  <section slot="pdf-content">
+  <section slot="pdf-content" class="pdf-content">
         <div class="text-center pdf-first-section">
             <div class="report-details__company-logo">
               <img
@@ -371,5 +371,9 @@ export default {
     &.sig-row {
         height:400px;
     }
+}
+.pdf-content {
+  max-width:800px;
+  width:100%;
 }
 </style>

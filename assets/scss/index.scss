@@ -161,7 +161,7 @@ a {
 button {
   cursor: pointer;
   padding: 6px 12px;
-  border: 1px solid $color-black;
+  border: 1px solid $color-white;
   color: $color-white !important;
   background-color: $color-black;
   text-align: center;
@@ -541,7 +541,7 @@ button {
       display:inline-flex;
       flex-direction:row;
       & > span {
-        padding:5px 8px;
+        margin:5px;
         flex-wrap:wrap;
       }
     }
@@ -646,15 +646,19 @@ button {
 }
 
 .report-details {
-  max-width:800px;
+  max-width:750px;
   width:100%;
   margin:auto;
   color:$color-black;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  flex-direction:column;
   &__section {
     display: flex;
     flex-wrap:wrap;
     border-bottom: 1px solid $dark-primary-1;
-    padding: 20px 0;
+    padding: 12px 0;
     column-gap: 2vw;
 
     &--case-file {
@@ -667,9 +671,7 @@ button {
     }
 
     &--contact-group {
-      display: grid;
-      grid-template-columns: 250px 1fr 1fr;
-      row-gap: 10px;
+      flex-direction:column;
     }
 
     &--pictures {
@@ -715,10 +717,19 @@ button {
   }
 
   &__checklist {
-    grid-column: 3;
-    grid-row: 1/6 span;
     display: flex;
     flex-direction: column;
+    width:650px;
+
+    & > ul {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      padding:0!important;
+    }
+    li {
+      padding:4px;
+    }
   }
 
   &__data {
@@ -799,14 +810,27 @@ button {
 
   &__remove-file {
     position: absolute;
-    color: red !important;
+    background-color: red;
     cursor: pointer;
-    top: 0px;
-    width: 29px;
-    height: 27px;
-    left: -32px;
-    background-color: $color-white;
+    top: -5px;
+    width: 22px;
+    height:21px;
+    right: 11px;
     border-radius: 50%;
+    &--leg {
+      background-color:$color-white;
+      top:9px;
+      width:17px;
+      height:2px;
+      position:absolute;
+      left:3px;
+    }
+    &--leg1 {     
+      transform:rotate(45deg);     
+    }
+    &--leg2 {
+      transform:rotate(-45deg);
+    }
   }
 
   img {

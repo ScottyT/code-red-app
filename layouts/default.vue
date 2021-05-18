@@ -197,9 +197,9 @@ export default {
       fetchLogs: 'fetchLogs'
     }),
     itemsArr() {
-      if (user) {
+      if (this.$fire.auth.currentUser) {
         const filtered = (role) => this.items.filter((v) => {
-        return v.access === role
+          return v.access === role
         })
         switch (this.getUser.role) {
           case "user":
@@ -208,9 +208,7 @@ export default {
           case "admin":
             this.filteredNavItems = this.items
         }
-      } else {
-        return;
-      }     
+      }
     },
     async signOut() {
       this.$store.dispatch("signout")

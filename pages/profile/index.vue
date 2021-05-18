@@ -59,23 +59,19 @@
       <ul class="profile__group block-group" v-if="logReports.length > 0">
         <h3>Logs</h3>
         <div class="block-group--grid">
-          <li v-for="(report, i) in logReports" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
-            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
-              <p>{{report.JobId}}</p>
-              <p>{{report.formType}}</p>
-            </nuxt-link>
-          </li>
-        </div>       
-      </ul>
-      <ul class="profile__group block-group" v-if="moistureMaps.length > 0">
-        <h3>Moisture Maps</h3>
-        <div class="block-group--grid">
-          <li v-for="(report, i) in moistureMaps" :key="`logs-${i}`" class="reports-wrapper__data block-group__col" :class="!report.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
-            <nuxt-link :to="`/profile/${report.formType}/${report.JobId}`" :class="{ disabled: !report.hasOwnProperty('key') && $nuxt.isOffline }">
-              <p>{{report.JobId}}</p>
-              <p>{{report.formType}}</p>
-            </nuxt-link>
-          </li>
+          <v-data-iterator :items="logReports" :items-per-page.sync="itemsPerPage" :page.sync="currentPage" :search="search">
+            <template v-slot:header>
+              <v-text-field v-model="search" clearable prepend-inner-icon="mdi-magnify"></v-text-field>
+            </template>
+            <template v-slot:default="props">
+              <li v-for="(item, i) in props.items" :key="`logreports-${i}`" class="reports-wrapper__data block-group__col" :class="!item.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
+                <nuxt-link :to="`/profile/${item.formType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
+                  <p>{{item.JobId}}</p>
+                  <p>{{item.formType}}</p>
+                </nuxt-link>
+              </li>
+            </template>
+          </v-data-iterator>
         </div>       
       </ul>
     </div>
@@ -99,7 +95,10 @@
         savedReports: [],
         message: "",
         employees: [],
-        filesUploading: []
+        filesUploading: [],
+        currentPage: 1,
+        itemsPerPage: 5,
+        search: ''
       }
     },
     computed: {
@@ -194,8 +193,20 @@
         deleteReport: 'indexDb/deleteReport',
         fetchLogs: 'fetchLogs'
       }),
+      async pageChangeHandler(value) {
+        switch (value) {
+          case 'next':
+            this.currentPage += 1
+            break
+          case 'previous':
+            this.currentPage -= 1
+            break
+          default:
+            this.currentPage = value
+        }
+      },
       submitForm(post) {
-         try {           
+        this.message = ""  
           this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
             if (res.errors) {
               this.message = "Something went wrong"
@@ -220,10 +231,10 @@
             }, 2000)
             this.deleteReport(post)
             this.fetchReports()
-          })         
-        } catch (e) {
-          this.message = e
-        }        
+            return
+          }).catch((err) => {
+            this.message = "Must be online to submit report"
+          })
       },
       submitFiles(report, uploadarr, element) {
         const today = new Date()

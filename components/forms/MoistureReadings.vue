@@ -25,7 +25,7 @@
                     <ValidationProvider vid="evalDate" name="Initial date of evaluation" rules="required" v-slot="{errors, ariaMsg}" class="form__input--input-group">
                         <label class="form__label" for="evalDate">Initial Date of Evaluation</label>
                         <input type="hidden" v-model="initialEvalDate" />
-                        <v-dialog ref="initEvalDateDialog" v-model="initEvalDateModal" :return-value.sync="initialEvalDate" persistent width="400px">
+                        <v-dialog ref="initEvalDateDialog" v-model="initEvalDateModal" :return-value.sync="initialEvalDate" persistent width="500px">
                             <template v-slot:activator="{on, attrs}">
                                 <input id="evalDate" v-model="initialEvalDateFormatted" v-bind="attrs" class="form__input" v-on="on"
                                     @blur="initialEvalDate = parseDate(initialEvalDateFormatted)" />
@@ -139,7 +139,10 @@
                         <div class="file-listing-wrapper">
                             <div v-for="(file, key) in uploadedFiles" class="file-listing" :key="`jobfiles-${key}`">
                                 <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" />
-                                <v-icon class="file-listing__remove-file" @click="removeFile(key, file)" tag="i" large>mdi-close-circle</v-icon>
+                                <span class="file-listing__remove-file" @click="removeFile(key, file)" tag="i">
+                                    <span class="file-listing__remove-file--leg1 file-listing__remove-file--leg"></span>
+                                    <span class="file-listing__remove-file--leg2 file-listing__remove-file--leg"></span>
+                                </span>
                             </div>
                         </div>
                         <span class="form__input--error">{{ errors[0] }}</span>
@@ -152,7 +155,7 @@
                         <span class="button__add-files button" @click="addFiles()">Add Files</span>
                     </ValidationProvider>
                 </div>
-                <button type="submit" class="button button--normal">{{ submitting ? 'Submitting' : 'Submit' }}</button>
+                <button type="submit" class="button button--normal" :disabled="disabled">{{ submitting ? 'Submitting' : 'Submit' }}</button>
             </form>
         </ValidationObserver>
     </div>
@@ -203,7 +206,8 @@ export default {
         ],
         uploadProgress: "",
         filesUpload: [],
-        notes: ''
+        notes: '',
+        disabled: false
     }),
     props:['company', 'abbreviation'],
     head() {
@@ -345,6 +349,7 @@ export default {
                 var uploadTask = uploadRef.put(file)
                 uploadTask.on('state_changed', (snapshot) => {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    this.disabled = true
                     this.uploadProgress = progress
                     if (progress == 100) {
                         uploadarr = []
@@ -363,6 +368,7 @@ export default {
                         }
                         this.filesUpload.push(fileObj)
                     })
+                    this.disabled = false
                 })
             })
         },
@@ -446,6 +452,10 @@ export default {
     }
     input[type=text] {
         margin-bottom:0;
+        @include respond(tabletLargeMax) {
+            font-size:.9em;
+            padding:2px 4px;
+        }
     }
     .number-input {
         display:inline-block;

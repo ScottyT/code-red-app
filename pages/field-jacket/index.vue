@@ -63,6 +63,7 @@ export default {
         this.logReports = this.reports.filter((v) => {
             return v.ReportType === 'logs-report'
         })
+        
         this.chartData = this.reports.filter((v) => {
             return v.ReportType === 'chart-report'
         })
@@ -78,8 +79,12 @@ export default {
     },
     methods: {
         ...mapActions({
-            fetchReports: 'fetchReports'
+            fetchReports: 'fetchReports',
+            checkStorage: 'indexDb/checkStorage',
         })
+    },
+    mounted() {
+        this.checkStorage()
     }
 }
 </script>

@@ -312,10 +312,10 @@ const createRapidResponse = async (req, res) => {
         preRestorationEval: req.body.preRestorationEval,
         teamMemberSig: req.body.teamMemberSig,
         customerSig: req.body.customerSig,
-        initial1: req.body.initial.initial1,
-        initial2: req.body.initial.initial2,
-        initial3: req.body.initial.initial3,
-        initial4: req.body.initial.initial4
+        initial1: req.body.initials.initial1,
+        initial2: req.body.initials.initial2,
+        initial3: req.body.initials.initial3,
+        initial4: req.body.initials.initial4
     })
     if (!errors.isEmpty()) {
         return res.json(errors)

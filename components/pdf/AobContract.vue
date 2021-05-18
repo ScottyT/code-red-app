@@ -868,6 +868,7 @@ export default {
         margin-top:10px;
     }
     .pdf-detail {
+        margin-top:20px;
         &:not(:last-child) {
           margin-bottom: 10px;
         }

@@ -92,7 +92,7 @@ export default {
             this.submittedMessage = ""
             this.submitting = true
             const sketchReps = this.getReports.filter((v) => {
-                return v.ReportType === 'sketch-report'
+                return v.formType === this.$route.params.uid
             })
             const sketchRepsIds = sketchReps.map((v) => {
                 return v.JobId
@@ -114,7 +114,7 @@ export default {
                     return;
                 }
                 if (this.$nuxt.isOffline) {
-                    if (!sketchRepsIds.includes(this.selectedJobId) && sketchTypes.includes(this.$route.params.uid)) {
+                    if (!sketchRepsIds.includes(this.selectedJobId)) {
                         this.addReport(post).then(() => {
                             this.submittedMessage = "Form was saved successfully"
                             this.submitting = false

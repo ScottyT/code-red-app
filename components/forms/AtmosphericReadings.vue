@@ -76,7 +76,7 @@
                             <div>{{row.text}}</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, j) in row.day" :key="`col-${j}`">
-                            <input type="text" v-model="item.value" class="form__input" />
+                            <input type="text" :tabindex="j" v-model="item.value" class="form__input" />
                         </div>
                     </div>
                     <div class="form__table form__table--rows">
@@ -92,7 +92,7 @@
                             <div>{{row.text}}</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, j) in row.day" :key="`col-${j}`">
-                            <input type="number" v-model="item.value" class="form__input" />
+                            <input type="number" :tabindex="j" v-model="item.value" class="form__input" />
                         </div>
                     </div>
                 </div>
