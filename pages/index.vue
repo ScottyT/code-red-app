@@ -1,6 +1,7 @@
 <template>
   <div class="page-block--home">  
     <h1>Welcome to the Code Red App!</h1>
+    <UiBigHero label="Code Red" />
     <v-flex xs12 sm8 md6>
       <div class="text-center"></div>
     </v-flex>
