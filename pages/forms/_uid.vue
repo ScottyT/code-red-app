@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="px-5 mt-6 mb-6">
     <SlicesBlock :slice="formType" :company="company" />
   </div>
 </template>

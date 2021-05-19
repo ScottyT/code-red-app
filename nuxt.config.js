@@ -162,15 +162,15 @@ export default {
             },
           },
         },
-        /* {
-          urlPattern: "https://code-red-app.web.app/*",
+        {
+          urlPattern: "https://code-red-app-313517.web.app/*",
           handler: 'networkFirst',
           method: 'GET',
           strategyOptions: {
             cacheableResponse: { statuses: [0, 200] }
           },
 
-        }, */
+        },
         {
           urlPatter: "http://localhost:8080/api/*",
           handler: 'networkFirst',
@@ -181,7 +181,7 @@ export default {
         },
         {
           urlPattern:
-            'https://firebasestorage.googleapis.com/v0/b/code-red-app.appspot.com/o/.*',
+            'https://firebasestorage.googleapis.com/v0/b/code-red-app-313517.appspot.com/o/.*',
           handler: 'cacheFirst',
           method: 'GET',
           strategyOptions: {

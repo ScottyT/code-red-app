@@ -67,7 +67,7 @@
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <span v-if="!user"><LazyFormsLogin /></span>
-      <nuxt class="mt-6 mb-6 mx-auto px-5" v-else />
+      <nuxt class="mx-auto" v-else />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -221,11 +221,13 @@ export default {
   },
   mounted() {
     this.onResize()
+    this.fetchLogs(this.$fire.auth.currentUser)
     window.addEventListener('resize', this.onResize, { passive: true })
     this.$nextTick(() => {
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       this.fetchReports(this.$fire.auth.currentUser)
+      
     })
   },
   beforeDestroy() {

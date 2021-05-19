@@ -2,12 +2,12 @@
     <div class="autocomplete" :class="{ 'is-focused': inputFocused === true }">
         <label class="autocomplete__placeholder" for="searchbox">{{placeholderText}}</label>
         <input class="autocomplete__input" :class="theme === 'light' ? 'autocomplete__input--light' : 'autocomplete__input--dark'" 
-            ref="searchText" @change="sendReportsToParent" placeholder="Search..." type="text" v-model="search" />    
+            ref="searchText" placeholder="Search..." type="text" v-model="search" />    
     </div>
 </template>
 <script>
+import { ref, reactive, onServerPrefetch, computed, watch, toRefs, onMounted } from '@vue/composition-api'
 export default {
-    name: 'autocomplete',
     props: {
         items: {
             type: Array,
@@ -22,26 +22,22 @@ export default {
             default: 'dark'
         }
     },
-    data() {
+    setup(props, context) {
+        const { items } = toRefs(props)
+        const search = ref('')
+        const reportsMatchingSearch = computed(() => {
+            return items.value.filter(
+                item => item.JobId.indexOf(search.value) >= 0
+            )
+        })
+        const sendReportsToParent = () => {
+            context.emit('sendReportsToParent', reportsMatchingSearch)
+        }
+        watch(reportsMatchingSearch, sendReportsToParent)
         return {
-            inputFocused: false,
-            search:'',
-            results:[],
-            isOpen:false,
-            isLoading: false,
-            arrowCounter: -1
-        }
-    },
-    computed: {
-        filteredItems() {          
-           return this.items.filter((x) => {
-               return x.JobId.indexOf(this.search) >= 0;
-           })
-        }
-    },
-    methods: {
-        sendReportsToParent() {
-            this.$emit('sendReportsToParent', this.filteredItems)
+            reports: items.value,
+            search,
+            reportsMatchingSearch
         }
     },
     mounted() {

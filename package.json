@@ -27,7 +27,7 @@
     "moment": "^2.29.1",
     "mongodb": "^3.6.4",
     "mongoose": "^5.11.17",
-    "nuxt": "^2.15.5",
+    "nuxt": "^2.15.6",
     "signature_pad": "^3.0.0-beta.4",
     "v-mask": "^2.2.4",
     "vee-validate": "^3.4.5",

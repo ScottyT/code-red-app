@@ -130,6 +130,13 @@ export const actions = {
       })
     }
   },
+  /* async fetchUserReports({ commit, dispatch}, authUser) {
+    if (authUser) {
+      await authUser.getIdToken(true).then((idToken) => {
+        this.$axios.$get(`/api/employee/`)
+      })
+    }
+  }, */
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
       this.$router.go()

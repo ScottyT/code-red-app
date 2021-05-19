@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mt-6 mb-6 px-5">
         <FormsSketch :formname="formName" />
     </div>
 </template>

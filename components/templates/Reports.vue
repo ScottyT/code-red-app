@@ -43,7 +43,7 @@ export default {
         return route
       },
       reportsFetched(reports) {
-        this.reportslist = reports
+        this.reportslist = reports.value
       }
     },
     

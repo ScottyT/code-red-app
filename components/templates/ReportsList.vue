@@ -63,7 +63,7 @@ export default {
     }),
     
     reportsfetched(reports) {
-      this.reports = reports
+      this.reports = reports.value
     },
     sortValue(s) {
       if (s.value === this.sortBy) {

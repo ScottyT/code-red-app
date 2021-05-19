@@ -23,8 +23,12 @@ img {
   object-fit: cover;
 }
 
-h1 {
+h1, .h1 {
   font-size: 2.488em;
+
+  &--extra-large {
+    font-size: 4em;
+  }
 }
 
 h2 {
