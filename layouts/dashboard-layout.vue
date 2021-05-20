@@ -33,37 +33,9 @@
 
       <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
       <ul class="menu-items" v-if="!isMobile">
-        <li class="menu-items__item">
-          <a @click="signOut">{{$fire.auth.currentUser ? "Logout" : "Login"}}</a>
-        </li>
-        <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item" v-if="user">
-          <nuxt-link to="/profile">Saved forms</nuxt-link>
-        </li>
-        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
-        </li>
-        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
-        </li>
+        
       </ul>
-      <template v-slot:extension v-if="isMobile">
-        <ul class="menu-items__extended-menu menu-items">
-          <li class="menu-items__item">
-            <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
-          </li>
-          <span>{{getUser ? getUser.name : null}}</span>
-          <li class="menu-items__item" v-if="user">
-            <nuxt-link to="/profile">Saved forms</nuxt-link>
-          </li>
-          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-            <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
-          </li>
-          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-            <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
-          </li>
-        </ul>
-      </template>
+      
     </v-app-bar>
     <v-main>
       <span v-if="!user"><LazyFormsLogin /></span>

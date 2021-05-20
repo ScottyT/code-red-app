@@ -1,6 +1,8 @@
 $color-white: #fff;
 $dark-primary-1: #2a73ae;
+$color-grey:#c1c1c1;
 $color-black: #181818;
+$color-red: #b10e0e;
 
 @mixin respond($breakpoint) {
   @if $breakpoint==mobileSmall {

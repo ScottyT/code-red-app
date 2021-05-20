@@ -69,10 +69,10 @@ h3 {
 }
 
 .header-navigation {
-  /* .v-toolbar__content {
-    display:grid;
-    grid-template-columns:56px 15% 1fr;
-  } */
+  .v-toolbar__content {
+    justify-content:space-between;
+    z-index:3;
+  }
 }
 // content block styles
 .block-group-wrapper {
@@ -94,6 +94,14 @@ h3 {
 // end
 ul {
   list-style: none;
+}
+
+.text {
+  &--subtitle {
+    font-size:.9em;
+    color:$color-grey;
+    word-break: break-word;
+  }
 }
 
 a {

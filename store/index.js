@@ -8,8 +8,7 @@ export const state = () => ({
   reports: [],
   creditCards:[],
   jobids:null,
-  logreports:[],
-  clonelogs: []
+  logreports:[]
 })
 
 export const mutations = {
@@ -44,9 +43,6 @@ export const mutations = {
   },
   setLogReports: (state, payload) => {
     state.logreports = payload
-  },
-  setCloneLogs: (state, payload) => {
-    state.clonelogs = payload
   },
   deleteSavedRep: (state, payload) => {
     for (var i = 0; i < state.clonelogs.length; i++) {
@@ -139,7 +135,7 @@ export const actions = {
   }, */
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
-      this.$router.go()
+      window.location.href = "/"
       commit('setUser', {
         email: null,
         id: null,
