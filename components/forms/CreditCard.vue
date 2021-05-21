@@ -173,9 +173,11 @@
           </span>
         </div>
       </fieldset>
-      <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
-      <v-btn type="submit" :class="[backCardValue !== '' ? 'button button--normal':'button--disabled']" @click="submit" 
-        v-if="(cardDownloadUrls.length > 1 && $nuxt.isOnline) || (backCardValue && $nuxt.isOffline)">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
+      <div class="mb-3">
+        <v-btn type="button" @click="goToStep(currentStep - 1)">Previous</v-btn>
+        <v-btn type="submit" :class="[backCardValue !== '' ? 'button button--normal':'button--disabled']" @click="submit" 
+          v-if="(cardDownloadUrls.length > 1 && $nuxt.isOnline) || (backCardValue && $nuxt.isOffline)">{{ currentStep === 2 ? submitText : 'Next' }}</v-btn>
+      </div>    
       </form>
     </ValidationObserver>
 </template>

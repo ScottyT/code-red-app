@@ -10,13 +10,33 @@ const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
 const moistureModel = require('../models/moistureMapSchema');
+const imageModel = require("../models/imageSchema");
+const multer = require('multer');
 const { getEmployee, createUser } = require("../controllers/authController");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
+const fs = require('fs');
+const path = require('path');
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname + '/uploads/'))
+    },
+});
+var upload = multer({ storage: storage })
 
+/* router.get('/', (req, res) => {
+    imageModel.find({}, (err, items) => {
+        if (err) {
+            console.log(err)
+            res.status(500).send('An error occured', err);
+        } else {
+            res.json(items)
+        }
+    })
+}) */
 router.post("/auth/signup", createUser);
 router.post("/employee/new",
     check('email', 'Email is required').isEmail().withMessage('Email must be valid')
@@ -231,6 +251,24 @@ router.get('/chart-report/:formType/:JobId', (req, res) => {
             res.status(200).json(chart)
         } else {
             res.status(200).json({error: "Item no found", status: 404})
+        }
+    })
+})
+router.post('/avatar/new', upload.single('avatar'), (req, res, next) => {
+    var obj = {
+        name: req.body.name,
+        img: {
+            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            contentType: req.body.contentType
+        },
+        teamMember: req.body.teamMember
+    }
+    imageModel.create(obj, (err, item) => {
+        if (err) {
+            console.log(err);
+        } else {
+            item.save()
+            res.json(item)
         }
     })
 })

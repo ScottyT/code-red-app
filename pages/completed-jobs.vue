@@ -1,18 +1,17 @@
 <template>
-    
     <span v-if="coc.length <= 0"><h2>There are no completed jobs</h2></span>
-        <span v-else>
-            <div class="coc-list-item" v-for="(item, i) in coc" :key="`coc-${i}`">
-                <p>Certificate for job {{item.JobId}}</p>
-                <client-only>
+    <div class="px-5 mt-5" v-else>
+        <div class="coc-list-item" v-for="(item, i) in coc" :key="`coc-${i}`">
+            <p>Certificate for job {{item.JobId}}</p>
+            <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                             :show-layout="false" :preview-modal="true" :ref="`html2Pdf-${i}`">
                     <PdfCertificateContent :certificate="item" company="Water Emergency Services Incorporated" abbreviation="WESI" @domRendered="domRendered()" slot="pdf-content" />
                 </vue-html2pdf>
-                </client-only>
-                <v-btn @click="generateReport(i)">Download PDF</v-btn>
-            </div>
-        </span>
+            </client-only>
+            <v-btn @click="generateReport(i)">Download PDF</v-btn>
+        </div>
+    </div>
 </template>
 <script>
 export default {

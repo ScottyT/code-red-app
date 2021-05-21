@@ -201,7 +201,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
                   <label class="form__label" for="initial1">Initial:</label>
-                  <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" />
+                  <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -217,7 +217,7 @@
             </div>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
               <label class="form__label" for="initial2">Initial:</label>
-              <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" />
+              <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -231,7 +231,7 @@
             </div>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
               <label class="form__label" for="initial3">Initial:</label>
-              <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" />
+              <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -257,7 +257,7 @@
             </div>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
               <label class="form__label" for="initial4">Initial:</label>
-              <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" />
+              <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>

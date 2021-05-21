@@ -1,12 +1,12 @@
 <template>
     <div class="profile-menu" v-click-outside="onClickOutside">
         <div class="profile-menu__dropdown-trigger" @click="() => hidden = !hidden" >
-            <span class="text text-right">{{name}}</span>
+            <span class="text text-right">{{user.fname + ' ' + user.lname}}</span>
             <span class="profile-menu__pfp">
                 <img src="https://images.prismic.io/coderedanalytics/1f5e1349-6b9f-45e8-b457-58857c039593_CR+3D+Transparent+cropped.png?auto=compress,format" />
             </span>
             <i :class="`mdi-triangle mdi profile-menu__arrow ${hidden ? '' : 'open'}`"></i>
-            <span class="text text--subtitle text-right">{{email}}</span>
+            <span class="text text--subtitle text-right">{{user.email}}</span>
         </div>
         <div :class="`profile-menu__dropdown-menu ${hidden ? 'hide' : 'show'}`">
             <span class="text text--subtitle text-uppercase">My stuff</span>
@@ -14,7 +14,7 @@
                 <v-icon>mdi-apps</v-icon>
                 <p>Saved reports</p>
             </nuxt-link>
-            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/${email}`">
+            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/${user.email}`">
                 <v-icon>mdi-contacts</v-icon>
                 <p>Profile</p>
             </nuxt-link>
@@ -35,10 +35,13 @@
     </div>
 </template>
 <script>
-import { computed, ref } from '@vue/composition-api'
+import { computed, ref, onMounted } from '@vue/composition-api'
+import useReports from '@/composable/reports'
 export default {
     setup(props, { root }) {
-        const user = computed(() => root.$store.getters.getUser)
+        console.log(root)
+        const { user, fetchUser } = useReports();
+        const userEmail = root.context.$fire.auth.currentUser.email
         const auth = () => {
             root.$store.dispatch('signout')
         }
@@ -46,10 +49,9 @@ export default {
         const onClickOutside = () => {
             hidden.value = true
         }
+        onMounted(() => fetchUser(userEmail));
         return {
             user,
-            name: user.value.name,
-            email: user.value.email,
             hidden,
             auth,
             onClickOutside

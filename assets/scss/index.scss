@@ -97,6 +97,7 @@ ul {
 }
 
 .text {
+  font-size:inherit;
   &--subtitle {
     font-size:.9em;
     color:$color-grey;
@@ -179,6 +180,10 @@ button {
   text-align: center;
   display: inline-block; 
   font-size: 0.8em;
+
+  &--round {
+    border-radius:15px;
+  }
 
   &--disabled {
     background-color: #c1c1c1ad!important;

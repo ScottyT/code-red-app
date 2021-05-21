@@ -47,7 +47,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
                   <label for="initial1">Initial:</label>
-                  <input id="initial1" type="text" v-model="initial1" class="form__input" />
+                  <input id="initial1" type="text" v-model="initial1" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -134,7 +134,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
                   <label class="form__label" for="initial2">Initial:</label>
-                  <input id="initial2" type="text" v-model="initial2" class="form__input" />
+                  <input id="initial2" type="text" v-model="initial2" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -156,7 +156,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
                   <label class="form__label" for="initial3">Initial:</label>
-                  <input id="initial3" type="text" v-model="initial3" class="form__input" />
+                  <input id="initial3" type="text" v-model="initial3" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -214,7 +214,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
                   <label class="form__label" for="initial4">Initial:</label>
-                  <input id="initial4" type="text" v-model="initial4" class="form__input" />
+                  <input id="initial4" type="text" v-model="initial4" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -338,7 +338,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial5" name="Initial">
                   <label class="form__label" for="initial5">Initial:</label>
-                  <input id="initial5" type="text" v-model="initial5" class="form__input" />
+                  <input id="initial5" type="text" v-model="initial5" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -508,7 +508,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial6" name="Initial">
                   <label class="form__label" for="initial6">Initial:</label>
-                  <input id="initial6" type="text" v-model="initial6" class="form__input" />
+                  <input id="initial6" type="text" v-model="initial6" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -530,7 +530,7 @@
               <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial7" name="Initial7">
                   <label class="form__label" for="initial7">Initial:</label>
-                  <input id="initial7" type="text" v-model="initial7" class="form__input" />
+                  <input id="initial7" type="text" v-model="initial7" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -577,7 +577,7 @@
             <div class="form__form-group">
                 <ValidationProvider rules="required" v-slot="{errors}" vid="initial8" name="Initial">
                   <label class="form__label" for="initial8">Initial:</label>
-                  <input id="initial8" type="text" v-model="initial8" class="form__input" />
+                  <input id="initial8" type="text" v-model="initial8" class="form__input" v-uppercase />
                   <span class="form__input--error">{{ errors[0] }}</span>
                 </ValidationProvider>
               </div>
@@ -864,10 +864,8 @@
               </ValidationProvider>
           </div>
         </fieldset>
-        <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-          <LazyFormsCreditCard ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
+        <LazyFormsCreditCard v-if="currentStep >= 2 && paymentOption == 'Card'" ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
           :jobId="selectedJobId" :repPrint="repPrint" @submit="submitForm" @cardSubmit="cardSubmittedValue" />
-        </div>
         <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Card'">Next</v-btn>
         <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Card' ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
       </form>
@@ -880,48 +878,51 @@ import {mapGetters, mapActions} from 'vuex'
   export default {
     props: ['company', 'abbreviation'],
     computed: {
-        ...mapGetters(['getReports', 'getUser']),
-        insuredPay1: {
-            get() {
-                let pay = this.deductible * .50
-                if (pay) { return pay }
-                else { return 500.00 }
-            },
-            set(value) {
-                this.insuredPayment.firstStep = value
-            }
+      ...mapGetters(['getReports', 'getUser']),
+      insuredPay1: {
+        get() {
+          let pay = this.deductible * .50
+          if (pay) {
+            return pay
+          } else {
+            return 500.00
+          }
         },
-        insuredPay2() {
-            return this.deductible * .50
-        },
-        insuredDay1() {
-            return this.insuredPayment.day1Date;
-        },
-        insuredDay5() {
-            return this.insuredPayment.day5Date
-        },
-        nonInsuredEndDate() {
-            return this.nonInsuredPayment.endDate;
-        },
-        nonInsuredDay1() {
-            return this.nonInsuredPayment.day1Date;
-        },
-        nonInsuredDay5() {
-            return this.nonInsuredPayment.day5Date;
-        },
-        aobContracts() {
-          return this.getReports.filter((v) => {
-            return v.ReportType === "aob"
-          })
-        },
-        cardNumbers() {
-            var cards = this.getReports.filter((v) => {
-                return v.ReportType === "credit-card"
-            })
-            return cards.map((v) => {
-                return v.cardNumber
-            })
+        set(value) {
+          this.insuredPayment.firstStep = value
         }
+      },
+      insuredPay2() {
+        return this.deductible * .50
+      },
+      insuredDay1() {
+        return this.insuredPayment.day1Date;
+      },
+      insuredDay5() {
+        return this.insuredPayment.day5Date
+      },
+      nonInsuredEndDate() {
+        return this.nonInsuredPayment.endDate;
+      },
+      nonInsuredDay1() {
+        return this.nonInsuredPayment.day1Date;
+      },
+      nonInsuredDay5() {
+        return this.nonInsuredPayment.day5Date;
+      },
+      aobContracts() {
+        return this.getReports.filter((v) => {
+          return v.ReportType === "aob"
+        })
+      },
+      cardNumbers() {
+        var cards = this.getReports.filter((v) => {
+          return v.ReportType === "credit-card"
+        })
+        return cards.map((v) => {
+          return v.cardNumber
+        })
+      }
     },
     data: (vm) => ({
       message: '',

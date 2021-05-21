@@ -297,10 +297,8 @@
                             </ValidationProvider>
                         </div>
                     </fieldset>
-                    <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-                        <LazyFormsCreditCard ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
-                            @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
-                    </div>
+                    <LazyFormsCreditCard v-if="currentStep >= 2 && paymentOption == 'Card'" ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+                        @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                     <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Card' && existingCreditCard == 'No')">Next</v-btn>
                     <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>

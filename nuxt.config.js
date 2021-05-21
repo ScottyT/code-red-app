@@ -73,7 +73,8 @@ export default {
     '~/plugins/signature.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' },
     '~/plugins/mask.js',
-    '~/plugins/composition-api.js'
+    '~/plugins/composition-api.js',
+    '~/plugins/directives.js'
   ],
   /*
    ** Auto import components
@@ -260,7 +261,7 @@ export default {
       dark: true,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
+          primary: colors.red.darken2,
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
