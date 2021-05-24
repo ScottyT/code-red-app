@@ -1,6 +1,6 @@
 <template>
     <div class="form-wrapper form-wrapper__case-file">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h1 class="text-center">{{company}}</h1>
         <h2 class="text-center">Daily Technician Case File Report</h2>
         <ValidationObserver ref="form" v-slot="{ errors }">
           <h2>{{message}}</h2>
@@ -43,7 +43,7 @@
               <input v-model="location.cityStateZip" name="CityStateZip" type="text"
                      class="form__input form__input--long" />
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>1) CONTENT CLEANING TECHNICIAN INSPECTION</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in contentCleaningInspection" :key="`content-cleaning-${i}`">
@@ -57,7 +57,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>2) WATER RESTORATION TECHNICIAN INSPECTION</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in waterRestorationInspection" :key="`water-restoration-${i}`">
@@ -71,7 +71,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>3) WATER REMEDIATION TECHNICIAN ASSESSMENT</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in waterRemediationAssesment" :key="`water-remdiation-${i}`">
@@ -85,7 +85,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>4) OVERVIEW OF SCOPE OF WORK</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in overviewScopeOfWork" :key="`scope-${i}`">
@@ -99,7 +99,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>5) SPECIALIZED EXPERT</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in specializedExpert" :key="`expert-${i}`">
@@ -113,7 +113,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>6) SCOPE OF WORK</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in scopeOfWork" :key="`scope2-${i}`">
@@ -127,7 +127,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>7) PROJECT WORK PLANS</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in projectWorkPlans" :key="`work-plans-${i}`">
@@ -226,6 +226,7 @@ import goTo from 'vuetify/es5/services/goto'
   } from 'vuex';
   import moment from 'moment';
 export default {
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
         jobId: null,
         date: new Date().toISOString().substr(0, 10),

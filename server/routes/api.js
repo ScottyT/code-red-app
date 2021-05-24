@@ -250,7 +250,18 @@ router.get('/chart-report/:formType/:JobId', (req, res) => {
         } else if (chart) {
             res.status(200).json(chart)
         } else {
-            res.status(200).json({error: "Item no found", status: 404})
+            res.status(200).json({error: "Item not found", status: 404})
+        }
+    })
+})
+router.get('/employee/:email/avatar', (req, res) => {
+    imageModel.findOne({teamMember: req.params.email}, (err, avi) => {
+        if (err) {
+            res.status(500).send('Server Error')
+        } else if (avi) {
+            res.status(200).json(avi)
+        } else {
+            res.status(200).json({error: "Item not found", status: 404})
         }
     })
 })

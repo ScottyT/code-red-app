@@ -198,6 +198,7 @@ button {
     border:1px solid $color-white;
     color: $color-white;
     font-size:.9em;
+    margin-right:7px;
   }
 
   &__icon {
@@ -244,6 +245,7 @@ button {
 
 .form-wrapper {
   max-width: 80rem;
+  width:100%;
   margin: 0 auto;
   background-color: $color-white;
   color: #333;
@@ -404,6 +406,9 @@ button {
     &--checkboxes {
       padding-bottom: 15px;
       padding-right: 20px;
+      max-width:224px;
+      width:100%;
+      text-indent:-19px;
     }
 
     &--textbox {
@@ -503,7 +508,7 @@ button {
         input {
           //margin-bottom: 15px;
         }
-      }
+    }
 
     &--images-upload-section {
       justify-content: space-between;
@@ -569,14 +574,12 @@ button {
       }
     }
     &--listing {
+      flex-direction:column;
       & > li {
         list-style-type:lower-alpha;
       }
       ol > li {
         padding-bottom:15px;
-      }
-      h3 {
-        margin-left:-20px;
       }
     }
     &--listing-num {
@@ -589,9 +592,14 @@ button {
       }
     }
     &--sublisting {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+      grid-template-rows: repeat(auto-fill, minmax(34px, 1fr));
+
       li {
         list-style-type: none;
         padding-right:10px;
+        text-indent:-19px;
       }
     }
   }

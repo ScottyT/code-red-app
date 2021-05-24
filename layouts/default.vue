@@ -32,7 +32,7 @@
           </span>
         </button>
 
-        <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
+        <nuxt-link class="v-toolbar__title ml-4" to="/">{{title}}</nuxt-link>
       </div>
       
       <UiProfileDropdown v-if="user" />

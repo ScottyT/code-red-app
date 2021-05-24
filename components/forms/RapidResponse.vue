@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper form-wrapper__rapid-form">
-    <h1 class="text-center">Water Emergency Services Incorporated</h1>
+    <h1 class="text-center">{{company}}</h1>
     <h2 class="text-center">Rapid Response Evaluation Report</h2>
     <ValidationObserver ref="form" v-slot="{ errors }">
       <v-dialog width="400px" v-model="errorDialog">
@@ -125,12 +125,12 @@
           </div>
           <div class="form__form-group--right-side form__section">
             <h4>Inital Response, Inspection, and Preliminary Determination</h4>
-            <div class="form__checkbox-wrapper--long">
+            <ul class="form__checkbox-wrapper--long">
               <div class="form__input--checkboxes" v-for="item in picturesCheck" :key="item.id">
                 <input type="checkbox" :id="item.id" v-model="selectedPictures" :value="item.text" />
                 <label :for="item.id">{{item.text}}</label>
               </div>
-            </div>
+            </ul>
             
             <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" ref="jobimages" name="Photographs" v-slot="{ errors, validate }">
               <input type="hidden" v-model="uploadedFiles" @click="validate" />
@@ -151,14 +151,16 @@
             </ValidationProvider>
             <span class="button__add-files button mt-4" @click="addFiles()">Add Files</span>           
             <br />
-            <span>{{ uploadSuccess }}</span>
+            <span>{{ uploadSuccess }}</span>        
+          </div>
+          <div class="form__form-group--listing">
             <h3>Source of Water Intrusion</h3>
-            <div class="form__checkbox-wrapper--long">
+            <ul class="form__checkbox-wrapper--long">
               <div class="form__input--checkboxes" v-for="(type, i) in sourceOfIntrustion" :key="`loss-${i+1}`">
                 <input type="checkbox" :id="`loss-${i+1}`" v-model="selectedTypes" :value="type.text" />
                 <label :for="`loss-${i+1}`">{{type.text}}</label>
               </div>
-            </div>           
+            </ul>
           </div>
           <div class="form__form-group form__section">
             <div class="form__input-wrapper">
@@ -209,12 +211,12 @@
           </div>
           <div class="form__form-group--left-side form__section">
             <h3>Preliminary Determination</h3>
-            <div class="form__checkbox-wrapper--long form__checkbox-wrapper">
+            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
               <div class="form__input--checkboxes" v-for="item in preliminaryDetermination" :key="item">
                 <input type="checkbox" :id="item" v-model="selectedPreliminary" :value="item" />
                 <label :for="item">{{item}}</label>
               </div>
-            </div>
+            </ul>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
               <label class="form__label" for="initial2">Initial:</label>
               <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
@@ -223,12 +225,12 @@
           </div>
           <div class="form__form-group--right-side form__section">
             <h3>Inital Moisture Inspection</h3>
-            <div class="form__checkbox-wrapper--long form__checkbox-wrapper">
+            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
               <div class="form__input--checkboxes" v-for="item in moistureInspection" :key="item">
                 <input type="checkbox" :id="item" v-model="selectedInspection" :value="item" />
                 <label :for="item">{{item}}</label>
               </div>
-            </div>
+            </ul>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
               <label class="form__label" for="initial3">Initial:</label>
               <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
@@ -250,7 +252,7 @@
                 </div>
               </div>
               <VueSignaturePad width="100%" height="703px" ref="map" class="map-wrapper__canvas" :options="{ onBegin, minWidth: 1.5, maxWidth:3.5 }" />
-              <div>
+              <div class="pt-3 pb-3">
                 <button type="button" class="button--normal" @click="saveMap">{{ moistureMap.data !== '' ? 'Saved' : 'Save' }}</button>
                 <button type="button" class="button--normal" @click="undoMap">Undo</button>
               </div>
@@ -278,12 +280,12 @@
           </div>
           <div class="form__form-group form__section">
             <h3>Develop Initial Project Work Plan & Communicate to Headquarters</h3>
-            <div class="form__checkbox-wrapper--long form__checkbox-wrapper">
+            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
               <div class="form__input--checkboxes" v-for="(step, i) in steps" :key="`steps-${i+1}`">
                 <input type="checkbox" :id="`steps-${i+1}`" v-model="selectedSteps" :value="step.text" />
                 <label :for="`steps-${i+1}`">{{step.text}}</label>
               </div>
-            </div>
+            </ul>
           </div>
           <div class="form__form-group form__section">
             <ValidationProvider v-slot="{errors}" name="Insurance" rules="required" class="form__input--input-group">
@@ -425,10 +427,12 @@
           </div>
           <div class="form__section">
             <h3>Team Lead Document Verification</h3>
-            <div class="form__input--checkboxes" v-for="item in verificationCheckboxes" :key="`item${item.id+1}`">
-              <input type="checkbox" :id="`item${item.id+1}`" v-model="selectedVerification" :value="item.text" />
-              <label :for="`item${item.id+1}`">{{item.text}}</label>
-            </div>
+            <ul class="form__checkbox-wrapper--long">
+              <div class="form__input--checkboxes" v-for="item in verificationCheckboxes" :key="`item${item.id+1}`">
+                <input type="checkbox" :id="`item${item.id+1}`" v-model="selectedVerification" :value="item.text" />
+                <label :for="`item${item.id+1}`">{{item.text}}</label>
+              </div>
+            </ul>
           </div>
           <div class="form__form-group">
             <div class="form__input-wrapper">

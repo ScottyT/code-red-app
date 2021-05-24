@@ -35,6 +35,11 @@
 <script>
 export default {
   name: 'SlicesBlock',
-  props: ['slice', 'company', 'abbreviation']
+  props: ['slice', 'abbreviation'],
+  data() {
+    return {
+      company: ""
+    }
+  }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper form-wrapper__case-file">
-    <h1 class="text-center">Water Emergency Services Incorporated</h1>
+    <h1 class="text-center">{{company}}</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
     <ValidationObserver ref="form" v-slot="{ errors}">
       <h2>{{message}}</h2>
@@ -53,9 +53,9 @@
           <input v-model="location.cityStateZip" name="CityStateZip" type="text"
                  class="form__input form__input--long" />
         </div>
-        <div class="form__form-group form__section">         
-          <ol class="form__form-group--block form__form-group--listing" v-for="(item, i) in tmpRepairSection" :key="`item-${i}`">
-            <h3>1) TMP REPAIR</h3>
+        <div class="form__form-group--listing form__section form__form-group--info-box">
+          <h3>1) TMP REPAIR</h3>    
+          <ol class="form__form-group--block" v-for="(item, i) in tmpRepairSection" :key="`item-${i}`">
             <li>
               {{item.subheading}}
             </li>
@@ -67,9 +67,9 @@
             </ol>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>2) CONTENT</h3>
-          <ol class="form__form-group--listing">                
+          <ol class="">                
               <li v-for="(item, i) in contentSection" :key="`content-${i}`">                
                   <span>{{item.subheading}}</span>
                   <ol class="form__form-group form__form-group--sublisting">
@@ -81,7 +81,7 @@
               </li>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>3) STRUCTURAL DRYING</h3>
           <ol class="form__form-group--listing">
             <li v-for="(item, i) in structualDryingSection" :key="`structure-${i}`">
@@ -95,7 +95,7 @@
             </li>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>4) STRUCTURAL CLEANING</h3>
           <ol class="form__form-group--listing">
             <li v-for="(item, i) in structualCleaningSection" :key="`cleaning-${i}`">
@@ -188,6 +188,7 @@
   import goTo from 'vuetify/es5/services/goto'
   import moment from 'moment';
   export default {
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

@@ -7,7 +7,7 @@ const imageSchema = mongoose.Schema({
         data: Buffer,
         contentType: String
     },
-    teamMember: Object
+    teamMember: String
 });
 imageSchema.plugin(timestamps);
 module.exports = mongoose.model('Avatar', imageSchema);

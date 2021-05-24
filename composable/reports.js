@@ -1,7 +1,6 @@
 import { ref } from "@vue/composition-api";
 
-export default function useReports() {
-    let user = ref({})
+export default function useReports() {   
     let reports = ref([])
 
     function fetchReports() {
@@ -9,12 +8,5 @@ export default function useReports() {
             .then(res => res.json())
             .then(data => (reports.value = data))
     }
-
-    function fetchUser(userEmail) {
-        fetch(`${process.env.serverUrl}/api/employee/${userEmail}`)
-            .then(res => res.json())
-            .then(data => (user.value = data));
-    }
-
-    return { fetchUser, fetchReports, reports, user }
+    return { fetchReports, reports }
 }

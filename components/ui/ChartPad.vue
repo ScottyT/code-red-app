@@ -5,7 +5,7 @@
             <canvas ref="chart" id="chart" width=943 height=642></canvas>
             <!-- <canvas id="copy" width=943 height=642></canvas> -->
         </span>
-        <div class="button-wrapper">
+        <div class="buttons-wrapper">
             <v-btn class="button--normal" id="save">{{storedimage.data !== '' ? 'Saved' : 'Save'}}</v-btn>
             <v-btn class="button--normal" id="draw">Draw</v-btn>
             <v-btn class="button--normal" id="undo">Undo</v-btn>

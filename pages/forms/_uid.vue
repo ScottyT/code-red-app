@@ -1,6 +1,6 @@
 <template>
   <div class="px-5 mt-6 mb-6">
-    <SlicesBlock :slice="formType" :company="company" />
+    <SlicesBlock :slice="formType" :abbreviation="abbreviation" />
   </div>
 </template>
 <script>
@@ -11,7 +11,6 @@ export default {
     return {
       authUser: false,
       // These would be different per company
-      company: "Water Emergency Services Incorporated",
       abbreviation: "WESI"
     }
   },
