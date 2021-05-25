@@ -8,7 +8,8 @@ export const state = () => ({
   reports: [],
   creditCards:[],
   jobids:null,
-  logreports:[]
+  logreports:[],
+  avatarurl:{}
 })
 
 export const mutations = {
@@ -35,7 +36,8 @@ export const mutations = {
       name: authUser.name,
       email: authUser.email,
       id: authUser.id,
-      role: authUser.role
+      role: authUser.role,
+      //avatarUrl: authUser.avatarUrl
     }
   },
   setJobIds: (state, payload) => {
@@ -52,6 +54,9 @@ export const mutations = {
         i--;
       }
     }
+  },
+  setAvatar: (state, payload) => {
+    state.avatarurl = payload
   }
 }
 
@@ -70,31 +75,37 @@ export const actions = {
     
     commit('setEmployees', employees)
     
-    
     commit('setCreditCards', creditcards)
     commit('SET_USER', {
       email: null,
       id: null,
       role: null,
-      name: null
+      name: null,
+      //avatarUrl: null
     })
   },
   async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
     if (!authUser) {
       //await dispatch('signout')
-      console.log('no user')
       return
     }
-    
     if (authUser && authUser.getIdToken) {
       try {
         await axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`).then((res) => {
+          console.log(res)
           commit('SET_USER', {
             email: res.data.email,
             id: res.data.id,
             role: res.data.role,
-            name: res.data.fname + ' ' + res.data.lname
+            name: res.data.fname + ' ' + res.data.lname,
           })
+          if ('avatar' in res.data) {
+            let buff = Buffer.from(res.data.avatar.data).toString('base64')
+            let imageUrl = "data:"+res.data.avatar.contentType+";base64,"+buff
+            commit('setAvatar', {
+              image: imageUrl
+            })
+          }
         })
       } catch (e) {
         console.error(e)
@@ -126,23 +137,28 @@ export const actions = {
       })
     }
   },
-  /* async fetchUserReports({ commit, dispatch}, authUser) {
-    if (authUser) {
-      await authUser.getIdToken(true).then((idToken) => {
-        this.$axios.$get(`/api/employee/`)
-      })
-    }
-  }, */
   async signout({ commit }) {
     await this.$fire.auth.signOut().then(() => {
       window.location.href = "/"
-      commit('setUser', {
+      commit('SET_USER', {
         email: null,
         id: null,
         role: null,
-        name: null
+        name: null,
+        avatarUrl: null
       })
     })
+  },
+  async fetchAvatar({ commit }, user) {
+    console.log(user)
+    await axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`).then((res) => {
+      let buff = Buffer.from(user.avatar.data).toString('base64')
+      let imageUrl = "data:"+user.avatar.contentType+";base64,"+buff
+      commit('setAvatar', {
+        image: imageUrl
+      })
+    })
+    
   },
   sortReports({ commit, state }, sortDirection) {
     state.reports.sort((r1, r2) => {

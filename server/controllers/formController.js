@@ -40,9 +40,7 @@ const createMoistureMap = async (req, res) => {
 const createEmployee = async (req, res) => {
     const result = validationResult(req);
     const employee = new User(req.body)
-    /* const reports = new Logging({
-        JobId: "2222"
-    }); */
+    
     if (!result.isEmpty()) {
         return res.json(result)
     }

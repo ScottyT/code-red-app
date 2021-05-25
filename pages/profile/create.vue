@@ -89,7 +89,11 @@ export default {
                 lname: this.lname,
                 email: this.email,
                 id: this.id,
-                role: this.role
+                role: this.role,
+                avatar: {
+                    data: null,
+                    contentType: ""
+                }
             }
             var userSignedUp = await this.signupUser()
             if (userSignedUp) {

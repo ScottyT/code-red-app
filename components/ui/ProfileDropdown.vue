@@ -1,12 +1,12 @@
 <template>
     <div class="profile-menu" v-click-outside="onClickOutside">
         <div class="profile-menu__dropdown-trigger" @click="() => hidden = !hidden" >
-            <span class="text text-right">{{user.fname + ' ' + user.lname}}</span>
-            <span class="profile-menu__pfp" v-if="Object.keys(avatar).length === 0">
+            <span class="text text-right">{{user.name}}</span>
+            <span class="profile-menu__pfp" v-if="Object.keys(avatarurl).length === 0">
                 <img src="https://images.prismic.io/coderedanalytics/1f5e1349-6b9f-45e8-b457-58857c039593_CR+3D+Transparent+cropped.png?auto=compress,format" />               
             </span>
             <span class="profile-menu__pfp" v-else>
-                <img :src="`data:${avatar.contentType};base64,${avatar.img}`" />
+                <img :src="avatarurl.image" />
             </span>
             <i :class="`mdi-triangle mdi profile-menu__arrow ${hidden ? '' : 'open'}`"></i>
             <span class="text text--subtitle text-right">{{user.email}}</span>
@@ -39,13 +39,9 @@
 </template>
 <script>
 import { computed, ref, onMounted, watch } from '@vue/composition-api'
-import useUsers from '@/composable/users'
+import { useGetters, useActions, useState } from 'vuex-composition-helpers'
 export default {
     setup(props, { root }) {
-        console.log(root)
-        const { user, fetchUser, fetchAvatar, avatar } = useUsers();
-        const image = ref({})
-        const userEmail = root.context.$fire.auth.currentUser.email
         const auth = () => {
             root.$store.dispatch('signout')
         }
@@ -53,24 +49,21 @@ export default {
         const onClickOutside = () => {
             hidden.value = true
         }
-        const getUserAvatar = async () => {
-            image.value = await fetchAvatar(userEmail)
-        }
-        onMounted(() => fetchUser(userEmail));
-        onMounted(() => fetchAvatar(userEmail));
-        const imageUrl = computed(() => avatar.value.img)
-        /* let buff = Buffer.from(avatar.data.data)
-        let x = buff.toString() */
-        //console.log(x)
+        
+        const { user } = useGetters({
+            user: 'getUser'
+        })
+        const { avatarurl } = useState(['avatarurl'])
+        const { setAvatar } = useActions({
+            setAvatar: 'fetchAvatar'
+        })
+        setAvatar(user.value.email)
         return {
-            avatar,
             user,
+            avatarurl,
             hidden,
             auth,
-            onClickOutside,
-            getUserAvatar,
-            aviUrl: imageUrl.value
-            //src: imageSrc.value
+            onClickOutside
         }
     },
 }

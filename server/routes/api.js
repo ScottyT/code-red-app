@@ -265,23 +265,26 @@ router.get('/employee/:email/avatar', (req, res) => {
         }
     })
 })
-router.post('/avatar/new', upload.single('avatar'), (req, res, next) => {
-    var obj = {
-        name: req.body.name,
-        img: {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: req.body.contentType
-        },
-        teamMember: req.body.teamMember
+router.post('/avatar/new', upload.single('avatar'), (req, res) => {
+    var img = {
+        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        contentType: req.body.contentType
     }
-    imageModel.create(obj, (err, item) => {
-        if (err) {
-            console.log(err);
-        } else {
-            item.save()
-            res.json(item)
-        }
-    })
+    if (!req.file) {
+        return res.send({
+            success: false,
+            message: "Please include an avatar image"
+        })
+    } else {
+        User.findOneAndUpdate({email: req.body.teamMember}, {avatar: img}, (err, item) => {
+            if (err) {
+                console.log('CREATE error: ' + err);
+                res.status(500).send('Error')
+            } else {
+                res.json(item)
+            }
+        })
+    }
 })
 router.post("/moisture-map/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
