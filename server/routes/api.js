@@ -267,7 +267,7 @@ router.get('/employee/:email/avatar', (req, res) => {
 })
 router.post('/avatar/new', upload.single('avatar'), (req, res) => {
     var img = {
-        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        image: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
         contentType: req.body.contentType
     }
     if (!req.file) {

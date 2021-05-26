@@ -3,7 +3,7 @@
         <div class="profile-menu__dropdown-trigger" @click="() => hidden = !hidden" >
             <span class="text text-right">{{user.name}}</span>
             <span class="profile-menu__pfp" v-if="Object.keys(avatarurl).length === 0">
-                <img src="https://images.prismic.io/coderedanalytics/1f5e1349-6b9f-45e8-b457-58857c039593_CR+3D+Transparent+cropped.png?auto=compress,format" />               
+                <v-icon size="45">mdi-account-circle</v-icon>              
             </span>
             <span class="profile-menu__pfp" v-else>
                 <img :src="avatarurl.image" />
@@ -39,30 +39,27 @@
 </template>
 <script>
 import { computed, ref, onMounted, watch } from '@vue/composition-api'
-import { useGetters, useActions, useState } from 'vuex-composition-helpers'
+
 export default {
     setup(props, { root }) {
         const auth = () => {
-            root.$store.dispatch('signout')
+            root.$store.dispatch('users/signout')
         }
+        const fetchAvatar = () => { root.$store.dispatch('users/fetchAvatar') }
+        const avatarurl = computed(() => root.$store.getters['users/getAvatar'])
+        const user = computed(() => root.$store.getters['users/getUser'])
+    
         const hidden = ref(true)
         const onClickOutside = () => {
             hidden.value = true
-        }
-        
-        const { user } = useGetters({
-            user: 'getUser'
-        })
-        const { avatarurl } = useState(['avatarurl'])
-        const { setAvatar } = useActions({
-            setAvatar: 'fetchAvatar'
-        })
-        setAvatar(user.value.email)
+        }    
+        //fetchAvatar(user.email)
         return {
             user,
             avatarurl,
             hidden,
             auth,
+            fetchAvatar,
             onClickOutside
         }
     },

@@ -823,8 +823,8 @@
       })
     },
     computed: {
-      ...mapGetters(['getUser']),
-      ...mapGetters(['getReports']),
+      ...mapGetters({getUser: 'getUser'}),
+      ...mapGetters({getReports: 'getReports'}),
       ...mapState('indexDb', [
         'reports'
       ]),

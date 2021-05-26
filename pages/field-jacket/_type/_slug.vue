@@ -5,11 +5,11 @@
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
-                    <LayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
+                    <LazyLayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
-            <LayoutReportDetails :notPdf="true" :report="report" />
+            <LazyLayoutReportDetails :notPdf="true" :report="report" />
         </span>
         <span v-if="reportType === 'rapid-response'">
             <client-only>
@@ -20,17 +20,17 @@
                 </vue-html2pdf>
             </client-only>
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
-            <LayoutResponseReportDetails :notPdf="true" :report="report" />
+            <LazyLayoutResponseReportDetails :notPdf="true" :report="report" />
         </span>
         <span v-if="report.ReportType === 'case-file-report'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
-                    <LayoutCaseFileDetails :notPdf="false" :report="report" slot="pdf-content" />
+                    <LazyLayoutCaseFileDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
-            <LayoutCaseFileDetails :notPdf="true" :report="report" />
+            <LazyLayoutCaseFileDetails :notPdf="true" :report="report" />
         </span>
     </div>
 </template>
@@ -52,11 +52,11 @@ export default {
     components: {
         VueHtml2pdf
     },
-    /* async middleware({store, redirect}) {
-        if (store.state.user.role !== "admin") {
+    async middleware({store, redirect}) {
+        if (store.state.users.users.user.role !== "admin") {
             return redirect("/")
         }
-    }, */
+    },
     async asyncData({$axios, params}) {
         try {
             var formName = ""

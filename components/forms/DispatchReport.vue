@@ -465,8 +465,8 @@
       this.checkStorage()
     },
     computed: {
-      ...mapGetters(['getUser']),
-      ...mapGetters(['getReports']),
+      ...mapGetters({getUser: 'users/getUser'}),
+      ...mapGetters({getReports: 'reports/getReports'}),
       ...mapState('indexDb',[
         'reports'
       ])

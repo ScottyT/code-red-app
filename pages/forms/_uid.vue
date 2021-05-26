@@ -19,11 +19,9 @@ export default {
       title: this.title
     }
   },
-  computed: {
-    ...mapGetters(['isLoggedIn'])
-  },
+
   async middleware({redirect, store}) {
-    if (store.state.user.email == null) {
+    if (store.state.users.user.email == null) {
       return redirect("/")
     }
   },

@@ -4,7 +4,7 @@
             <h4 class="user-card__name"></h4>
             <p class="text">{{user.email}}</p>
             <form enctype="multipart/form-data" @submit.prevent="uploadFile">
-                <UiImageUpload v-model="avatar" :email="user.email" :maxSize="1024" uploadFieldName="avatar" class="user-card__actions">
+                <UiImageUpload v-model="avatar" :errorText="error" :email="user.email" :maxSize="1024" uploadFieldName="avatar" class="user-card__actions">
                 <template v-slot:activator>
                     <v-avatar size="150px" v-ripple v-if="Object.keys(avatar).length === 0 && Object.keys(avatarurl).length === 0" class="grey lighten-3 mb-3">
                         Click to add avatar
@@ -13,7 +13,7 @@
                         <img :src="avatar.imageUrl" />
                     </v-avatar>
                     <v-avatar size="150px" v-ripple v-else class="mb-3">
-                        <!-- <img :src="`data:${avatar.contentType};base64,${avatar.img}`" /> -->
+                        <!-- <img :src="`data:${avatar.contentType};base64,${avatar.img}`" />  -->
                         <img :src="avatarurl.image" />
                     </v-avatar>
                 </template>
@@ -31,23 +31,22 @@
 <script>
 import axios from 'axios';
 import useReports from '@/composable/reports'
-import useUsers from '@/composable/users'
 import { ref, computed, onMounted } from '@vue/composition-api'
-import { useGetters, useState } from 'vuex-composition-helpers'
+//import { createNamespacedHelpers } from '../../composable/store-composition.js'
+import { useGetters, useState } from 'vuex-composition-helpers/dist'
 export default {
     setup(props, {root}) {
         const userEmail = root.context.$fire.auth.currentUser.email
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
-        /* const { user } = useGetters({
-            user: 'getUser'
-        }) */
-        const { avatarurl } = useState(['avatarurl'])
+        const error = ref('')
+        //const { avatarurl } = useState(['avatarurl'])
+        const { user, avatarurl } = useGetters({user:'users/getUser', avatarurl: 'users/getAvatar'})
        // const { reports, fetchReports } = useReports();
-        const { user, fetchUser } = useUsers();
+        //const { user, fetchUser } = useUsers();
 
-        onMounted(() => fetchUser(userEmail));
+        //onMounted(() => fetchUser(userEmail));
         //onMounted(() => fetchReports());
 
         const savedAvatar = () => {
@@ -55,7 +54,7 @@ export default {
             saved.value = true
         }
         const uploadImage = (item) => {
-            root.$store.dispatch('fetchAvatar', item)
+            root.$store.dispatch('users/fetchAvatar', item)
             savedAvatar()
             avatar.value = {}
         }
@@ -66,7 +65,8 @@ export default {
             avatar,
             saving,
             saved,
-            user
+            user,
+            error
         }
     },
     methods: {
@@ -77,7 +77,7 @@ export default {
             axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {}).then((res) => {
                 this.uploadImage(res.data)
             }).catch((err) => {
-                console.log(err)
+                this.error = err
             })
         }
     }

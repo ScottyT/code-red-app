@@ -79,7 +79,7 @@ export default {
     },
     methods: {
         ...mapActions({
-            fetchReports: 'fetchReports',
+            fetchReports: 'reports/fetchReports',
             checkStorage: 'indexDb/checkStorage',
         })
     },

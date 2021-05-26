@@ -12,10 +12,6 @@ import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: 'Home',
-  computed: {
-    ...mapGetters(["getUser", "isLoggedIn"])
-  },
-  
   data() {
     return {
       reports: []

@@ -14,12 +14,12 @@ export default {
     redirect,
     route
   }) {
-    if (store.state.user.role !== "admin") {    
+    if (store.state.users.user.role !== "admin") {    
       return redirect("/")
     }
   },
   async asyncData({
-    params
+    params, $axios
   }) {
     const repId = params.slug
     const subfolder = params.id

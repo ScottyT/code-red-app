@@ -1,11 +1,11 @@
 import { set, values, del } from 'idb-keyval';
 
-export const state = () => ({
+const state = () => ({
     reports: [],
     error:"",
     success:""
 })
-export const mutations = {
+const mutations = {
     setReport: (state, payload) => {
         state.reports = payload
     },
@@ -28,7 +28,7 @@ export const mutations = {
         state.success = success
     }
 };
-export const actions = {
+const actions = {
     addReport({ commit, dispatch }, newReport) {        
         dispatch('saveReports', newReport)
     },
@@ -86,8 +86,15 @@ export const actions = {
             .catch((err) => commit("setError", err))
     }
 }
-export const getters = {
+const getters = {
     getSavedReports: (state) => {
         return state.reports
     }
+}
+export default {
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions
 }

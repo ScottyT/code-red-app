@@ -2,11 +2,11 @@
     <div class="autocomplete" :class="{ 'is-focused': inputFocused === true }">
         <label class="autocomplete__placeholder" for="searchbox">{{placeholderText}}</label>
         <input class="autocomplete__input" :class="theme === 'light' ? 'autocomplete__input--light' : 'autocomplete__input--dark'" 
-            ref="searchText" placeholder="Search..." type="text" v-model="search" />    
+            ref="searchText" placeholder="Search..." type="text" v-model="search" @focus="inputFocused = true" @blur="inputFocused = false" />    
     </div>
 </template>
 <script>
-import { ref, reactive, onServerPrefetch, computed, watch, toRefs, onMounted } from '@vue/composition-api'
+import { ref, reactive, computed, watch, toRefs, onMounted } from '@vue/composition-api'
 export default {
     props: {
         items: {
@@ -25,6 +25,7 @@ export default {
     setup(props, context) {
         const { items } = toRefs(props)
         const search = ref('')
+        const focused = ref(false)
         const reportsMatchingSearch = computed(() => {
             return items.value.filter(
                 item => item.JobId.indexOf(search.value) >= 0
@@ -37,7 +38,8 @@ export default {
         return {
             reports: items.value,
             search,
-            reportsMatchingSearch
+            reportsMatchingSearch,
+            inputFocused: focused.value
         }
     },
     mounted() {

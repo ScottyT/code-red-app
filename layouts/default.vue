@@ -154,7 +154,10 @@ export default {
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser", "isLoggedIn"]),
+    ...mapGetters({
+        getUser: "users/getUser", 
+        isLoggedIn: "users/isLoggedIn"
+      }),
     isOnline() {
       return this.$nuxt.isOnline
     }
@@ -168,8 +171,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchReports: 'fetchReports',
-      fetchLogs: 'fetchLogs'
+      fetchReports: 'reports/fetchReports',
+      fetchLogs: 'reports/fetchLogs'
     }),
     itemsArr() {
       if (this.$fire.auth.currentUser) {
@@ -186,7 +189,7 @@ export default {
       }
     },
     async signOut() {
-      this.$store.dispatch("signout")
+      this.$store.dispatch("users/signout")
     },
     onResize() {
       setTimeout(() => {

@@ -32,9 +32,9 @@
       </button>
 
       <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
-      <ul class="menu-items" v-if="!isMobile">
+      <!-- <ul class="menu-items" v-if="!isMobile">
         
-      </ul>
+      </ul> -->
       
     </v-app-bar>
     <v-main>
@@ -143,27 +143,20 @@ export default {
   },
   computed: {
     appTheme() {
-      switch (this.user) {
-        case true:
-          return this.$vuetify.theme.dark = false         
-        case false:
-          return this.$vuetify.theme.dark = true
-        default:
-          return this.$vuetify.theme.dark = false    
-      }
+      return this.$vuetify.theme.dark = false
     },
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser", "getEmployees", "isLoggedIn"]),
+    ...mapGetters({getUser:"users/getUser", getEmployees:"users/getEmployees", isLoggedIn:"users/isLoggedIn"}),
     isOnline() {
       return this.$nuxt.isOnline
     }
   },
   methods: {
     ...mapActions({
-      fetchReports: 'fetchReports',
-      fetchLogs: 'fetchLogs'
+      fetchReports: 'reports/fetchReports',
+      fetchLogs: 'reports/fetchLogs'
     }),
     itemsArr() {
       const filtered = (role) => this.items.filter((v) => {
@@ -183,7 +176,7 @@ export default {
       }, 100)     
     },
     async signOut() {
-      this.$store.dispatch("signout")
+      this.$store.dispatch("users/signout")
     },
   },
   beforeDestroy() {
@@ -195,7 +188,7 @@ export default {
     window.addEventListener('resize', this.onResize, { passive: true })
     
     this.$nextTick(() => {
-      //this.fetchReports(this.$fire.auth.currentUser)
+      this.fetchReports(this.$fire.auth.currentUser)
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       

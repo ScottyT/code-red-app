@@ -22,13 +22,13 @@ export default {
         value: Object,
         maxSize: Number,
         uploadFieldName: String,
-        email: String
+        email: String,
+        errorText: String
     },
     setup(props, { root, refs, emit }) {
-        const { maxSize, uploadFieldName, email } = toRefs(props)
+        const { maxSize, uploadFieldName, email, errorText } = toRefs(props)
         
         const errorDialog = ref(false)
-        const errorText = ref('')
         const launchFilePicker = () => {
             refs.file.click()
         }
@@ -58,8 +58,7 @@ export default {
         return {
             launchFilePicker,
             onFileChange,
-            errorDialog,
-            errorText
+            errorDialog
         }
     },
 }

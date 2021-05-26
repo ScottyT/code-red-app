@@ -46,7 +46,6 @@
       } */
     },
     computed: {
-      ...mapGetters(["getReports", "isLoggedIn"]),
       filteredRep() {
         return this.reports.filter((obj1) => {
           return !this.storage.some((obj2) => {

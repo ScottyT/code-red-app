@@ -44,7 +44,7 @@ export default {
         }
     },
     async middleware({store, redirect}) {
-        if (store.state.user.role !== "admin") {
+        if (store.state.users.user.role !== "admin") {
             return redirect("/")
         }
     },

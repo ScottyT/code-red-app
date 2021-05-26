@@ -27,7 +27,7 @@
 import {mapActions} from 'vuex';
 export default {
   name: "ReportsList",
-  props: ['reportslist','sortoptions', 'page'],
+  props: ['reportslist','sortoptions', 'page', "items"],
   data: () => ({
     search: null,
     report: {},

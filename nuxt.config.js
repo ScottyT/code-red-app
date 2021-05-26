@@ -118,7 +118,7 @@ export default {
       auth: { 
         ssr: true,
         initialize: {
-          onAuthStateChangedAction: 'onAuthStateChangedAction',
+          onAuthStateChangedAction: 'users/onAuthStateChangedAction',
         },
       },
       storage: true,
