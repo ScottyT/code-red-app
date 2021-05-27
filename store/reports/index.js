@@ -39,7 +39,7 @@ const mutations = {
 const actions = {
     async fetchLogs({ commit, state }, authUser) {
       if (authUser) {
-        await this.$axios.$get(`/api/employee/${authUser.email}/savedreports`).then((res) => {
+        await this.$axios.$get(`/api/employee/${authUser.email}/savedlogreports`).then((res) => {
           let copyArr = JSON.parse(JSON.stringify(res));
           commit('setLogReports', res)
         }).catch((err) => {
@@ -50,7 +50,7 @@ const actions = {
     async fetchReports({ commit, dispatch }, authUser) {
       if (authUser) {
         await authUser.getIdToken(true).then((idToken) => {
-          this.$axios.$get("/api/reports").then((res) => {
+          this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
             commit('setReports', res)
             dispatch('mappingJobIds')
           })

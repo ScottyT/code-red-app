@@ -11,41 +11,43 @@ const mutations = {
     setEmployees: (state, payload) => {
         state.employees = payload
     },
-    SET_USER: (state, authUser) => {
-        state.user = {
-            name: authUser.name,
-            email: authUser.email,
-            id: authUser.id,
-            role: authUser.role
-        }
+    SET_USER: (state, authuser) => {
+        state.user = authuser
     },
     setAvatar: (state, payload) => {
         state.avatarurl = payload
     }
 }
 const actions = {
-    async onAuthStateChangedAction({ commit, dispatch }, { authUser }) {
+    async onAuthStateChangedAction({ commit, dispatch }, { authUser, claims }) {
         if (!authUser) {
           //await dispatch('signout')
+          claims = null
           return
         }
-        if (authUser && authUser.getIdToken) {
-          try {
-                await axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`).then((res) => {
+        console.log("authuser: ", authUser)
+        console.log("claims:", claims)
+        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 commit('SET_USER', {
                     email: res.data.email,
                     id: res.data.id,
                     role: res.data.role,
                     name: res.data.fname + ' ' + res.data.lname,
+                    token: idToken
                 })
                 if ('avatar' in res.data) {
                     dispatch('settingAvatar', res.data.avatar)
                 }
-                })
+            })
+        })
+        /* if (authUser) {
+          try {
+                
             } catch (e) {
                 console.error(e)
             }
-        }
+        } */
     },
     async signout({ commit }) {
         await this.$fire.auth.signOut().then(() => {
@@ -55,7 +57,8 @@ const actions = {
                 id: null,
                 role: null,
                 name: null,
-                avatarUrl: null
+                avatarUrl: null,
+                token: null
             })
         })
     },

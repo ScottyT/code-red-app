@@ -56,7 +56,7 @@ export default {
         reports:[]
     }),
     async fetch() {
-        this.reports = await this.$axios.$get("/api/reports");
+        this.reports = await this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${this.user.token}`}});
         this.sketchReports = this.reports.filter((v) => {
             return v.ReportType === 'sketch-report'
         })
@@ -75,7 +75,9 @@ export default {
         })
     },
     computed: {
-        
+        ...mapGetters({
+            user: 'users/getUser'
+        })
     },
     methods: {
         ...mapActions({

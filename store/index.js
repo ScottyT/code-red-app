@@ -1,10 +1,10 @@
 export const actions = {
   async nuxtServerInit({ state, dispatch, commit }, { res, $axios, $fire }) {
     if ($fire.auth.currentUser) {
-      const {...authUser } = $fire.auth.currentUser
-      
+      const { allClaims: claims, idToken: token, ...authUser } = $fire.auth.currentUser
       await dispatch('users/onAuthStateChangedAction', {
-        authUser
+        authUser,
+        claims
       })
     }
     const employees = await $axios.$get("/api/employees")    
@@ -16,6 +16,7 @@ export const actions = {
       id: null,
       role: null,
       name: null,
+      token: null
     })
   },
 }

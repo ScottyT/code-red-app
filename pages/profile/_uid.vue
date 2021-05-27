@@ -26,29 +26,34 @@
             </form>
             
         </v-card>
+        <div>
+            <!-- <p v-if="$fetchState.pending">Fetching reports...</p> -->
+            <div>{{reports}}</div>
+        </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
-import useReports from '@/composable/reports'
-import { ref, computed, onMounted } from '@vue/composition-api'
-//import { createNamespacedHelpers } from '../../composable/store-composition.js'
-import { useGetters, useState } from 'vuex-composition-helpers/dist'
-export default {
+import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
+export default defineComponent({
     setup(props, {root}) {
-        const userEmail = root.context.$fire.auth.currentUser.email
+        const authUser = root.$fire.auth.currentUser
+        const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
-        //const { avatarurl } = useState(['avatarurl'])
-        const { user, avatarurl } = useGetters({user:'users/getUser', avatarurl: 'users/getAvatar'})
-       // const { reports, fetchReports } = useReports();
+        const reports = computed(() => store.state.reports.all)
+        const user = computed(() => store.getters['users/getUser'])
+        const avatarurl = computed(() => store.getters['users/getAvatar'])
+        async function fetchReports(user) { store.dispatch('reports/fetchReports', user)};
+        /* const { fetch, fetchState } = useFetch(async () => {
+            reports.value = await axios.get(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${user.value.token}`}})
+        }) */
         //const { user, fetchUser } = useUsers();
-
-        //onMounted(() => fetchUser(userEmail));
-        //onMounted(() => fetchReports());
-
+        /* fetch()
+        fetchState */
+        fetchReports(authUser)
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
@@ -59,6 +64,8 @@ export default {
             avatar.value = {}
         }
         return {
+            reports,
+            fetchReports,
             uploadImage,
             savedAvatar,
             avatarurl,
@@ -81,7 +88,7 @@ export default {
             })
         }
     }
-}
+})
 </script>
 <style lang="scss">
 .user-page {

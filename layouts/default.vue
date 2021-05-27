@@ -167,6 +167,12 @@ export default {
       if (val) {
         this.fetchReports(this.$fire.auth.currentUser)
       }
+    },
+    getUser(val) {
+      console.log(val)
+      if (Object.keys(val).length !== 0) {
+        this.itemsArr()
+      }
     }
   },
   methods: {
@@ -175,7 +181,7 @@ export default {
       fetchLogs: 'reports/fetchLogs'
     }),
     itemsArr() {
-      if (this.$fire.auth.currentUser) {
+      console.log("logged in")
         const filtered = (role) => this.items.filter((v) => {
           return v.access === role
         })
@@ -186,7 +192,6 @@ export default {
           case "admin":
             this.filteredNavItems = this.items
         }
-      }
     },
     async signOut() {
       this.$store.dispatch("users/signout")
@@ -199,7 +204,7 @@ export default {
   },
   mounted() {
     this.onResize()
-    this.fetchLogs(this.$fire.auth.currentUser)
+    //this.fetchLogs(this.$fire.auth.currentUser)
     window.addEventListener('resize', this.onResize, { passive: true })
     this.$nextTick(() => {
       this.itemsArr()

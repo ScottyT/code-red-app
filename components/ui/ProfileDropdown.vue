@@ -38,16 +38,17 @@
     </div>
 </template>
 <script>
-import { computed, ref, onMounted, watch } from '@vue/composition-api'
+import { computed, ref, onMounted, watch, defineComponent, useStore } from '@nuxtjs/composition-api'
 
-export default {
-    setup(props, { root }) {
+export default defineComponent ({
+    setup() {
+        const store = useStore()
         const auth = () => {
-            root.$store.dispatch('users/signout')
+            store.dispatch('users/signout')
         }
-        const fetchAvatar = () => { root.$store.dispatch('users/fetchAvatar') }
-        const avatarurl = computed(() => root.$store.getters['users/getAvatar'])
-        const user = computed(() => root.$store.getters['users/getUser'])
+        const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
+        const avatarurl = computed(() => store.getters['users/getAvatar'])
+        const user = computed(() => store.getters['users/getUser'])
     
         const hidden = ref(true)
         const onClickOutside = () => {
@@ -63,7 +64,7 @@ export default {
             onClickOutside
         }
     },
-}
+})
 </script>
 <style lang="scss" scoped>
 .profile-menu {

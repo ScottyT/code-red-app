@@ -65,6 +65,7 @@ export default {
    ** https://nuxtjs.org/guide/plugins
    */
   plugins: [
+    //'~/plugins/axios.js',
     {
       src: '~/plugins/mapbox.js',
       mode: 'client',
@@ -94,6 +95,7 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
+    '@nuxtjs/composition-api/module'
   ],
   /*
    ** Nuxt.js modules

@@ -13,6 +13,7 @@ const moistureModel = require('../models/moistureMapSchema');
 const imageModel = require("../models/imageSchema");
 const multer = require('multer');
 const { getEmployee, createUser } = require("../controllers/authController");
+const { checkIfAuthenticated } = require("../middleware/authMiddleware");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
@@ -38,7 +39,7 @@ var upload = multer({ storage: storage })
     })
 }) */
 router.post("/auth/signup", createUser);
-router.post("/employee/new",
+router.post("/employee/new", 
     check('email', 'Email is required').isEmail().withMessage('Email must be valid')
     .custom(value => {
         return User.findOne({email: value}).then(user => {
@@ -59,7 +60,7 @@ router.post("/employee/new",
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
-router.get('/reports', async (req, res) => {
+router.get('/reports', checkIfAuthenticated, async (req, res) => {
     const dispatch = await Dispatch.find({}).lean();
     const rapidresponse = await RapidResponse.find({}).lean();
     const caseFile = await CaseFile.find({}).lean();
@@ -142,7 +143,7 @@ router.get('/employees', (req, res) => {
         }
     }).lean()
 })
-router.get('/employee/:email', (req, res) => {
+router.get('/employee/:email', checkIfAuthenticated, (req, res) => {
     User.findOne({email: req.params.email}).exec((err, employee) => {
         if (err) {
             res.status(500).send('Error')
@@ -154,7 +155,10 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
-router.get('/employee/:email/savedreports', async (req, res) => {
+router.get('/employee/:email/reports', checkIfAuthenticated, async (req, res) => {
+    
+})
+router.get('/employee/:email/savedlogreports', async (req, res) => {
     const emp = await User.findOne({email: req.params.email}).select({email: req.params.email}).lean()
     if (emp) {
         const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email)
@@ -165,7 +169,7 @@ router.get('/employee/:email/savedreports', async (req, res) => {
 })
 router.post("/employee/:email/:formType/:JobId/update", updateLogs)
 //router.delete("/employee:email/:formType/:JobId/delete", )
-router.get('/certificates', (req, res) => {
+router.get('/certificates', checkIfAuthenticated, (req, res) => {
     COC.find({}, (err, coc) => {
         if (err) {
             res.status(500).send('Error')
