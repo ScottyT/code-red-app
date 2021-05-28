@@ -25,8 +25,6 @@ const actions = {
           claims = null
           return
         }
-        console.log("authuser: ", authUser)
-        console.log("claims:", claims)
         this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 commit('SET_USER', {
@@ -41,13 +39,6 @@ const actions = {
                 }
             })
         })
-        /* if (authUser) {
-          try {
-                
-            } catch (e) {
-                console.error(e)
-            }
-        } */
     },
     async signout({ commit }) {
         await this.$fire.auth.signOut().then(() => {

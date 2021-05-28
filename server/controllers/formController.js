@@ -9,6 +9,7 @@ const CaseFile = require("../models/caseFileSchema");
 const CreditCard = require("../models/creditCardSchema");
 const chartModel = require('../models/chartSchema');
 const moistureModel = require('../models/moistureMapSchema');
+const Report = require("../models/reportsSchema");
 const { validationResult } = require('express-validator');
 
 const createMoistureMap = async (req, res) => {
@@ -243,7 +244,7 @@ const createAOB = async (req, res) => {
 }
 const createDispatch = async (req, res) => {
     const errors = validationResult(req);       
-    const dispatch = new Dispatch({
+    const dispatch = new Report({
         ArrivalContactName: req.body.ArrivalContactName,
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,
@@ -258,11 +259,12 @@ const createDispatch = async (req, res) => {
         location: req.body.location,
         textTimeUpdate: req.body.textTimeUpdate,
         propertyChkList: req.body.propertyChkList,
+        intrusion: req.body.intrusion,
         summary: req.body.summary,
         teamMember: req.body.teamMember,
         timeFormatted: req.body.timeFormatted,
         teamMemberSig: req.body.teamMemberSig,
-        signDateTime: req.body.signDate
+        signDate: req.body.signDate
     });
     if (!errors.isEmpty()) {
         return res.json(errors)
@@ -286,10 +288,10 @@ const createRapidResponse = async (req, res) => {
         adjusterPhone: req.body.adjusterPhone,
         ContactName: req.body.ContactName,
         DateOfEvaluation: req.body.DateOfEvaluation,
-        EmailAddress: req.body.EmailAddress,
-        EvaluationLogs: req.body.EvaluationLogs,
+        emailAddress: req.body.EmailAddress,
+        evaluationLogs: req.body.evaluationLogs,
         documentVerification: req.body.documentVerification,
-        PhoneNumber: req.body.PhoneNumber,
+        phoneNumber: req.body.PhoneNumber,
         PictureTypes: req.body.PictureTypes,
         ReportType: req.body.ReportType,
         Steps: req.body.Steps,
@@ -378,7 +380,7 @@ const createCaseFile = async (req, res) => {
         evaluationLogs: req.body.evaluationLogs,
         verifySign: req.body.verifySig,
         teamMember: req.body.teamMember,
-        CaseFileType: req.body.CaseFileType
+        formType: req.body.formType
     });
     if (!errors.isEmpty()) {
         return res.json(errors)
@@ -395,7 +397,7 @@ module.exports = {
     createSketch, 
     createLogs, 
     updateLogs, 
-    uploadChart, 
+    uploadChart,
     createDispatch, 
     createRapidResponse, 
     createCOC, 

@@ -22,4 +22,4 @@ const sketchReport = mongoose.Schema({
     ReportType: String
 });
 sketchReport.plugin(timestamps)
-module.exports = mongoose.model('SketchReports', sketchReport, 'sketch-reports')
+module.exports = mongoose.model('SketchReports', sketchReport, 'reports')

@@ -11,6 +11,7 @@ const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
 const moistureModel = require('../models/moistureMapSchema');
 const imageModel = require("../models/imageSchema");
+const Report = require("../models/reportsSchema");
 const multer = require('multer');
 const { getEmployee, createUser } = require("../controllers/authController");
 const { checkIfAuthenticated } = require("../middleware/authMiddleware");
@@ -27,7 +28,7 @@ var storage = multer.diskStorage({
     },
 });
 var upload = multer({ storage: storage })
-
+const sizeof = require('object-sizeof');
 /* router.get('/', (req, res) => {
     imageModel.find({}, (err, items) => {
         if (err) {
@@ -60,8 +61,9 @@ router.post("/employee/new",
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
-router.get('/reports', checkIfAuthenticated, async (req, res) => {
-    const dispatch = await Dispatch.find({}).lean();
+router.get('/reports', async (req, res) => {
+    
+    /* const dispatch = await Dispatch.find({}).lean();
     const rapidresponse = await RapidResponse.find({}).lean();
     const caseFile = await CaseFile.find({}).lean();
     const certificate = await COC.find({}).lean();
@@ -69,10 +71,36 @@ router.get('/reports', checkIfAuthenticated, async (req, res) => {
     const logging = await Logging.find({}).lean();
     const charts = await chartModel.find({}).lean();
     const results = dispatch.concat(rapidresponse, caseFile, certificate, sketches, logging, charts)
-    res.json(results)
+    res.json(results) */
+    await Dispatch.find({}).lean().exec((err, reports) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(reports)
+        }
+    })
+    //const results = await reportsModel.find({})
 })
-router.get('/reports/:ReportType/:JobId', async (req, res) => {
-    const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
+router.get('/report/:ReportType', checkIfAuthenticated, async (req, res) => {
+    await Report.where('ReportType').equals(req.params.ReportType).lean().exec((err, report) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (report) {
+            res.status(200).json(report)
+        } else {
+            res.status(200).json({error: "No report found"})
+        }
+    })
+})
+router.get('/report/:ReportType/:JobId', async (req, res) => {
+    await Report.findOne({JobId: req.params.JobId, ReportType: req.params.ReportType}).lean().exec((err, report) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(report)
+        }
+    })
+    /* const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
     const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
     const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
     const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
@@ -104,7 +132,7 @@ router.get('/reports/:ReportType/:JobId', async (req, res) => {
             break;
         case "chart-report":
             res.json(chart)
-    }
+    } */
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
     switch (req.params.ReportType) {
@@ -161,7 +189,7 @@ router.get('/employee/:email/reports', checkIfAuthenticated, async (req, res) =>
 router.get('/employee/:email/savedlogreports', async (req, res) => {
     const emp = await User.findOne({email: req.params.email}).select({email: req.params.email}).lean()
     if (emp) {
-        const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email)
+        const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email).lean()
         res.json(logreports)
     } else {
         res.json({error: "User does not exist"})
@@ -364,7 +392,7 @@ router.post("/dispatch/new",
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => {
-        return Dispatch.findOne({JobId: value}).then(dispatch => {
+        return Report.findOne({JobId: value, ReportType: "dispatch"}).then(dispatch => {
             if (dispatch) {
                 return Promise.reject('Job id already in use');
             }
@@ -385,7 +413,7 @@ router.post("/rapid-response/new",
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => {
-            return RapidResponse.findOne({JobId: value}).then(report => {
+            return RapidResponse.findOne({JobId: value, ReportType: "rapid-response"}).then(report => {
                 if (report) {
                     return Promise.reject('Job id already in use');
                 }
@@ -395,7 +423,7 @@ router.post("/rapid-response/new",
 router.post("/case-file-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => {
-        return CaseFile.findOne({JobId: value, CaseFileType: req.body.CaseFileType}).then(casefile => {
+        return CaseFile.findOne({JobId: value, formType: req.body.formType}).then(casefile => {
             if (casefile) {
                 return Promise.reject('Job ID is already in use')
             }

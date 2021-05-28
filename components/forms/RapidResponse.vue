@@ -59,7 +59,7 @@
               </v-date-picker>
             </v-dialog>
           </div>
-          <ValidationProvider v-slot="{ errors }" name="Job ID" rules="required" class="form__input--input-group">
+          <ValidationProvider v-slot="{ errors }" vid="JobId" name="Job ID" rules="required" class="form__input--input-group">
             <label for="jobId" class="form__label">Job ID</label>
             <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
@@ -823,13 +823,13 @@
       })
     },
     computed: {
-      ...mapGetters({getUser: 'getUser'}),
-      ...mapGetters({getReports: 'getReports'}),
+      ...mapGetters({getUser: 'users/getUser'}),
+      ...mapGetters({getReports: 'reports/getReports'}),
       ...mapState('indexDb', [
         'reports'
       ]),
       id() {
-        return this.$store.state.user ? this.$store.state.user.id : null
+        return this.$store.state.users.user ? this.$store.state.users.user.id : null
       }
     },
     methods: {
@@ -877,8 +877,8 @@
               ContactName: this.contactName,
               PropertyOwner: this.propertyOwner,
               location: this.location,
-              PhoneNumber: this.phoneNumber,
-              EmailAddress: this.emailAddress,
+              phoneNumber: this.phoneNumber,
+              emailAddress: this.emailAddress,
               ReportType: 'rapid-response',
               sourceWaterIntrusion: this.selectedTypes,
               Steps: this.selectedSteps,
@@ -888,7 +888,7 @@
               adjusterName: this.adjusterName,
               adjusterEmail: this.adjusterEmail,
               adjusterPhone: this.adjusterPhone,
-              EvaluationLogs: evaluationLogs,
+              evaluationLogs: evaluationLogs,
               documentVerification: this.selectedVerification,
               cusFirstName: this.customerName.first,
               cusLastName: this.customerName.last,
@@ -931,6 +931,7 @@
                   this.errorDialog = true
                   this.submitting = false
                   this.$refs.form.setErrors({
+                    JobId: res.errors.filter(obj => obj.param === 'JobId').map(v => v.msg),
                     teamMemberSig: res.errors.filter(obj => obj.param === 'teamMemberSig').map(v => v.msg),
                     cusSignature: res.errors.filter(obj => obj.param === 'cusSignature').map(v => v.msg)
                   })

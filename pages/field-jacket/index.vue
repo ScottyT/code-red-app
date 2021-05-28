@@ -71,7 +71,7 @@ export default {
             return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
         })
         this.caseFileData = this.reports.filter((v) => {
-            return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
+            return v.formType == 'containment' || v.formType == 'technician'
         })
     },
     computed: {

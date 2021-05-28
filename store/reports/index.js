@@ -1,6 +1,7 @@
 const state = () => ({
     error: null,
     all: [],
+    report: {},
     creditCards:[],
     jobids:null,
     logreports: []
@@ -28,6 +29,9 @@ const mutations = {
     },      
     setReports: (state, payload) => {
         state.all = payload
+    },
+    setReport: (state, payload) => {
+      state.report = payload
     },
     setCreditCards: (state, payload) => {
         state.creditCards = payload
@@ -59,7 +63,18 @@ const actions = {
         })
       }
     },
-    
+    async fetchReport({ commit }, payload) {
+      if (payload.authUser) {
+        await payload.authUser.getIdToken(true).then((idToken) => {
+          this.$axios.$get(`/api/reports/${payload.ReportType}/${payload.formType}/${payload.JobId}`, 
+            {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+              commit('setReport', res)
+          })
+        }).catch((err) => {
+          commit('setError', err)
+        })
+      }
+    },
     sortReports({ commit, state }, sortDirection) {
       state.reports.sort((r1, r2) => {
         let modifier = 1

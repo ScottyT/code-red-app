@@ -18,7 +18,7 @@
                 <label class="form__label">Job ID Number</label>
                 <select class="form__select" v-model="selectedJobId">
                   <option disabled value="">Please select a Job ID</option>
-                  <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+                  <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                 </select>
                 <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
               </ValidationProvider>
@@ -573,7 +573,7 @@ export default {
         }
     },
     computed: {
-      ...mapGetters(["getUser"]),
+      ...mapGetters({getUser:"users/getUser", getReports:'reports/getReports'}),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -620,7 +620,7 @@ export default {
       },
       submitForm() {
           this.message = ''
-          const reports = this.$store.state.reports.filter((v) => {
+          const reports = this.getReports.filter((v) => {
             return v.CaseFileType === 'technician'
           })
           const jobids = reports.map((v) => {
@@ -650,7 +650,7 @@ export default {
             evaluationLogs: evaluationLogs,
             id: this.getUser.id,
             ReportType: 'case-file-report',
-            CaseFileType: 'technician',
+            formType: 'technician',
             teamMember: this.getUser,
             verifySig: this.verifySig.data,
             afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',

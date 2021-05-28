@@ -96,10 +96,6 @@
             <h3>Intrusion Logs</h3>
             <div class="form__input-wrapper">
               <div class="form__input--input-group">
-                <label for="sourceIntrusion" class="form__label">Source of Intrusion</label>
-                <input id="sourceIntrusion" type="text" class="form__input" />
-              </div>
-              <div class="form__input--input-group">
                 <label for="dateOfIntrusion" class="form__label">Date of Intrusion</label>
                 <v-dialog ref="dateIntrusionDialog" v-model="intrusionLogsDialog.dateIntrusion" persistent :return-value.sync="dateIntrusion" transition="scale-transition" max-width="320px">
                   <template v-slot:activator="{ on, attrs }">
@@ -145,21 +141,9 @@
                   </v-time-picker>
                 </v-dialog>
               </div>
-              <div class="form__input--input-group">
-                <label for="ageStructure" class="form__label">Age of Structure</label>
-                <input id="ageStructure" type="text" v-model="structureAge" class="form__input" />
-              </div>
-              <div class="form__input--input-group">
-                <label for="numberOfRooms" class="form__label">Number of Rooms</label>
-                <input type="number" id="numberOfRooms" class="form__input" v-model="numberRooms" />
-              </div>
-              <div class="form__input--input-group">
-                <label for="numberOfStories" class="form__label">Number of Stories</label>
-                <input type="number" id="numberOfStories" class="form__input" v-model="numberStories" />
-              </div>
-              <div class="form__input--input-group">
-                <label for="approxSquareFoot" class="form__label">Approx. Square Foot</label>
-                <input type="number" id="approxSquareFoot" class="form__input" v-model="approxSqFt" />
+              <div class="form__input--input-group" v-for="(intrusion, i) in intrusionSection" :key="`intrusion-${i}`">
+                <label :for="intrusion.label" class="form__label">{{intrusion.label}}</label>
+                <input :id="intrusion.label" :type="intrusion.type" v-model="intrusion.value" class="form__input" />
               </div>
             </div>
           </div>
@@ -377,25 +361,23 @@
       submitting: false,
       sourceIntrusion: "",
       intrusionLogsDialog: {
-        sourceIntrusion: false,
         dateIntrusion: false,
         timeIntBegan: false,
-        timeIntEnd: false,
-        structureAge: false,
-        numberRooms: false,
-        numberStories: false,
-        approxSqFt: false
+        timeIntEnd: false
       },
+      intrusionSection: [
+        { label: 'Source of Intrusion', value: '', type: 'text' },
+        { label: 'Age of Structure', value: '', type: 'number' },
+        { label: 'Approximate sqft', value: null, type: 'number' },
+        { label: 'Number of Rooms', value: null, type: 'number' },
+        { label: 'Number of Floors', value: null, type: 'number' }
+      ],
       dateIntrusion: new Date().toISOString().substr(0, 10),
       dateIntrusionFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
       timeIntBegan: null,
       timeIntBeganFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
       timeIntEnd: null,
       timeIntEndFormatted: vm.formatTime(new Date().toTimeString().substr(0, 5)),
-      structureAge: null,
-      numberRooms: null,
-      numberStories: null,
-      approxSqFt: null,
       teamMemberSig: {
         data: '',
         isEmpty: true
@@ -531,6 +513,7 @@
           callTimeUpdate: this.callTimeFormatted,
           textTimeUpdate: this.textEtaTimeFormatted,
           propertyChkList: this.selectedCheckboxes,
+          intrusion: this.intrusionSection,
           summary: this.notes,
           ReportType: 'dispatch',
           teamMember: this.getUser,

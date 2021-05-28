@@ -26,7 +26,7 @@ export default {
         var route = ""
         switch (item.ReportType) {
           case "case-file-report":
-            route = "case-file-" + item.CaseFileType
+            route = "case-file-" + item.formType
             break;
           case "logs-report":
             route = "logs-report/"+item.formType

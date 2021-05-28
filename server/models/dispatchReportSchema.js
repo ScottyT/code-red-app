@@ -21,6 +21,7 @@ const dispatchReport = mongoose.Schema({
     textTimeUpdate: String,
     phoneNumber: String,
     propertyChkList:Array,
+    intrusion: Array,
     summary: String,
     teamMember: Map,
     timeFormatted: String,
@@ -28,4 +29,4 @@ const dispatchReport = mongoose.Schema({
     signDate: String
 })
 dispatchReport.plugin(timestamps)
-module.exports = mongoose.model('Dispatch', dispatchReport, 'dispatch-reports')
+module.exports = mongoose.model('Dispatch', dispatchReport, 'reports')

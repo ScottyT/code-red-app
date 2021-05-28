@@ -53,6 +53,12 @@
       </div>
     </div>
     <div class="report-details__section">
+      <div class="report-details__data" v-for="(item, i) in report.intrusion" :key="`intrusion-${i}`">
+        <label class="form__label">{{item.label}}</label>
+        <span>{{item.value}}</span>
+      </div>
+    </div>
+    <div class="report-details__section">
       <div class="report-details__data">
         <h3>Appointment time set for:</h3>
         <span>{{report.appointmentTime}}</span>
@@ -120,7 +126,7 @@
   </div>
 </template>
 <script>
-
+import {mapGetters, mapActions} from 'vuex';
   export default {
     name: 'ReportDetails',
     props: ['report', 'notPdf'],
@@ -188,6 +194,9 @@
       })
     },
     methods: {
+      ...mapActions({
+        fetchReport: 'reports/fetchReport'
+      }),
       generateReport(key) {
         this.$refs["html2pdf-"+key].generatePdf()
       },
@@ -247,7 +256,19 @@
       },
     },
     created() {
+      /* var reportArgs = {
+        authUser: this.$fire.auth.currentUser,
+        ReportType: "dispatch",
+        formType: "",
+        JobId: this.$route.params.slug
+      } */
       this.repData = this.report
+      //this.fetchReport(reportArgs)
     }
   }
 </script>
+<style lang="scss" scoped>
+.form__label {
+  font-weight:bold;
+}
+</style>

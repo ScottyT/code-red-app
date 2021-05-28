@@ -3,7 +3,7 @@
         <UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1200" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <LazyLayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>
@@ -22,7 +22,7 @@
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
             <LazyLayoutResponseReportDetails :notPdf="true" :report="report" />
         </span>
-        <span v-if="report.ReportType === 'case-file-report'">
+        <span v-if="report.ReportType === 'case-file-containment' || report.ReportType === 'case-file-technician'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
@@ -53,7 +53,7 @@ export default {
         VueHtml2pdf
     },
     async middleware({store, redirect}) {
-        if (store.state.users.users.user.role !== "admin") {
+        if (store.state.users.user.role !== "admin") {
             return redirect("/")
         }
     },
@@ -63,7 +63,7 @@ export default {
             var formType = params.id;
             var reportType = params.type;
             var jobId = params.slug;
-            let data = await $axios.$get(`/api/reports/${params.type}/${params.slug}`);
+            let data = await $axios.$get(`/api/report/${params.type}/${params.slug}`);
             switch (formType) {
                 case "moisture-sketch":
                     formName = "Moisture Mapping Location and Sketch"
