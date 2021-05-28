@@ -53,6 +53,12 @@
       </div>
     </div>
     <div class="report-details__section">
+      <div class="report-details__data" v-for="(item, i) in report.intrusion" :key="`intrusion-${i}`">
+        <label class="form__label">{{item.label}}</label>
+        <span>{{item.value}}</span>
+      </div>
+    </div>
+    <div class="report-details__section">
       <div class="report-details__data">
         <h3>Appointment time set for:</h3>
         <span>{{report.appointmentTime}}</span>
@@ -251,3 +257,8 @@
     }
   }
 </script>
+<style lang="scss" scoped>
+.form__label {
+  font-weight:bold;
+}
+</style>

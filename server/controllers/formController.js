@@ -260,6 +260,7 @@ const createDispatch = async (req, res) => {
         location: req.body.location,
         textTimeUpdate: req.body.textTimeUpdate,
         propertyChkList: req.body.propertyChkList,
+        intrusion: req.body.intrusion,
         summary: req.body.summary,
         teamMember: req.body.teamMember,
         timeFormatted: req.body.timeFormatted,

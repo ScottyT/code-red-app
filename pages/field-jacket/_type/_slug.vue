@@ -3,7 +3,7 @@
         <UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1200" :manual-pagination="false"
                     :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <LayoutReportDetails :notPdf="false" :report="report" slot="pdf-content" />
                 </vue-html2pdf>

@@ -21,6 +21,7 @@ const dispatchReport = mongoose.Schema({
     textTimeUpdate: String,
     phoneNumber: String,
     propertyChkList:Array,
+    intrusion: Array,
     summary: String,
     teamMember: Map,
     timeFormatted: String,
