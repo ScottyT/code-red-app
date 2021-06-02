@@ -180,7 +180,6 @@ export default {
       fetchLogs: 'reports/fetchLogs'
     }),
     itemsArr() {
-      console.log("logged in")
         const filtered = (role) => this.items.filter((v) => {
           return v.access === role
         })
@@ -203,7 +202,6 @@ export default {
   },
   mounted() {
     this.onResize()
-    //this.fetchLogs(this.$fire.auth.currentUser)
     window.addEventListener('resize', this.onResize, { passive: true })
     this.$nextTick(() => {
       this.itemsArr()

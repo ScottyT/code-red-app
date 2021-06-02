@@ -65,7 +65,7 @@ router.post("/employee/new",
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
-router.get('/reports', async (req, res) => {
+router.get('/reports', checkIfAuthenticated, async (req, res) => {
     
     /* const dispatch = await Dispatch.find({}).lean();
     const rapidresponse = await RapidResponse.find({}).lean();
@@ -100,8 +100,10 @@ router.get('/report/:ReportType/:JobId', async (req, res) => {
     await Report.findOne({JobId: req.params.JobId, ReportType: req.params.ReportType}).lean().exec((err, report) => {
         if (err) {
             res.status(500).send('Error')
-        } else {
+        } else if (report) {
             res.status(200).json(report)
+        } else {
+            res.status(200).json({error: "No report found"})
         }
     })
 })
@@ -206,15 +208,7 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
-router.get('/sketch', (req, res) => {
-    Sketch.find({}, (err, sketch) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(sketch)
-        }
-    })
-})
+
 router.get('/sketch-report/:formType/:JobId', (req,res) => {
     Sketch.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, sketch) => {
         if (err) {
@@ -226,8 +220,8 @@ router.get('/sketch-report/:formType/:JobId', (req,res) => {
         }
     })
 })
-router.get('/logs/:employeeId', (req, res) => {
-    Logging.find({}).where('teamMember.id').equals(req.params.employeeId).exec((err, logs) => {
+router.get('/logs/:email', (req, res) => {
+    Report.find({}).where('teamMember.email').equals(req.params.email).where('formType').equals('logs-report').exec((err, logs) => {
         if (err) {
             res.status(500).send('Error')
         } else {
@@ -235,17 +229,7 @@ router.get('/logs/:employeeId', (req, res) => {
         }
     })
 })
-router.get('/logs-report/:formType/:JobId', (req, res) => {
-    Logging.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, log) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else if (log) {
-            res.status(200).json(log)
-        } else {
-            res.status(200).json({error: "Item not found", status: 404})
-        }
-    })
-})
+
 router.get('/chart-report/:formType/:JobId', (req, res) => {
     chartModel.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, chart) => {
         if (err) {
@@ -341,7 +325,7 @@ router.post("/rapid-response/new",
         .not().isEmpty().withMessage("Job id is required")
         .custom(value => duplicateJobIDCheck(value, "rapid-response")),
     createRapidResponse)
-router.post("/case-file-report/new",
+router.post("/case-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
     body('verifySig').not().isEmpty().withMessage('Signature is required'),

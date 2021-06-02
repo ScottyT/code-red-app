@@ -866,8 +866,8 @@
         </fieldset>
         <LazyFormsCreditCard v-if="currentStep >= 2 && paymentOption == 'Card'" ref="creditCardForm" company="Water Emergency Services Incorporated" abbreviation="WESI" :partOfLastSection="true" 
           :jobId="selectedJobId" :repPrint="repPrint" @submit="submitForm" @cardSubmit="cardSubmittedValue" />
-        <v-btn type="submit" v-if="currentStep === 1 && paymentOption == 'Card'">Next</v-btn>
-        <v-btn type="submit" :class="cardSubmitted || paymentOption !== 'Card' ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
+        <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Card' && existingCreditCard == 'No')">Next</v-btn>
+        <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
       </form>
     </ValidationObserver>
   </div>
@@ -878,7 +878,7 @@ import {mapGetters, mapActions} from 'vuex'
   export default {
     props: ['company', 'abbreviation'],
     computed: {
-      ...mapGetters(['getReports', 'getUser']),
+      ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser', getCards: 'reports/getCards'}),
       insuredPay1: {
         get() {
           let pay = this.deductible * .50
@@ -916,10 +916,7 @@ import {mapGetters, mapActions} from 'vuex'
         })
       },
       cardNumbers() {
-        var cards = this.getReports.filter((v) => {
-          return v.ReportType === "credit-card"
-        })
-        return cards.map((v) => {
+        return this.getCards.map((v) => {
           return v.cardNumber
         })
       }
@@ -1040,8 +1037,7 @@ import {mapGetters, mapActions} from 'vuex'
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',
-            checkStorage: 'indexDb/checkStorage',
-            mappingJobIds: 'mappingJobIds'
+            checkStorage: 'indexDb/checkStorage'
         }),
         cardSubmittedValue(params) {
           this.cardSubmitted = params
@@ -1102,7 +1098,7 @@ import {mapGetters, mapActions} from 'vuex'
                 return goTo(0)
               }
               if (!contracts.includes(this.selectedJobId)) {
-                if ((this.currentStep === 1 && this.paymentOption !== 'Card') || this.currentStep === 2) {
+                if ((this.currentStep === 1 && this.paymentOption !== 'Card' || this.existingCreditCard !== 'No') ||this.currentStep === 2) {
                   this.onSubmit()
                   return;
                 }
@@ -1114,10 +1110,6 @@ import {mapGetters, mapActions} from 'vuex'
             })
         },
         onSubmit() {
-          const userNameObj = {
-            first: this.getUser.name.split(" ")[0],
-            last: this.getUser.name.split(" ")[1]
-          }
           this.message = ''
           this.errorMessage = []
           const post = {
@@ -1156,7 +1148,7 @@ import {mapGetters, mapActions} from 'vuex'
             witnessDate: this.witnessDateFormatted,
             numberOfRooms: this.numberOfRooms,
             numberOfFloors: this.numberOfFloors,
-            teamMember: userNameObj
+            teamMember: this.getUser
           };
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {

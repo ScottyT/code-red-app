@@ -56,7 +56,14 @@ export default {
         reports:[]
     }),
     async fetch() {
-        this.reports = await this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${this.$store.state.users.user.token}`}});
+        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                this.reports = res
+            })
+        }).catch((err) => {
+            console.log(err)
+        })
+        
         this.sketchReports = this.reports.filter((v) => {
             return v.formType === 'sketch-report'
         })
@@ -82,6 +89,9 @@ export default {
     },
     mounted() {
         this.checkStorage()
+    },
+    created() {
+        this.fetchReports(this.$fire.auth.currentUser)
     }
 }
 </script>

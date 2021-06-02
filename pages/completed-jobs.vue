@@ -42,9 +42,9 @@ export default {
             }
         }
     },
-    async asyncData({ $axios }) {
+    async asyncData({ $axios, store }) {
         try {
-            let data = await $axios.$get("/api/reports/coc");
+            let data = await $axios.$get("/api/reports/coc", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
             return {
                 coc: data
             }

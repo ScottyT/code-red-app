@@ -20,15 +20,15 @@
                     <label>Job ID: </label>
                     <span>{{report.JobId}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType === 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType === 'moisture-map'">
                     <label>Initial Eval Date: </label>
                     <span>{{report.initialEvalDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
                     <label>Initial Start Date: </label>
                     <span>{{report.startDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
                     <label>End Date: </label>
                     <span>{{report.endDate}}</span>
                 </div>
@@ -47,7 +47,7 @@
                 <label>Notes: </label>
                 <div class="pdf-item__textbox">{{report.notes}}</div>
             </div>
-            <div class="pdf-item__table moisture-data" v-if="report.formType === 'moisture-map'">
+            <div class="pdf-item__table moisture-data" v-if="report.ReportType === 'moisture-map'">
                 <div class="pdf-item__table moisture-data--rows">
                     <div class="pdf-item__table moisture-data--cols">
                         <div>DATE:</div>
@@ -98,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table inventory-logs" v-if="report.formType === 'quantity-inventory-logs'">
+            <div class="pdf-item__table inventory-logs" v-if="report.ReportType === 'quantity-inventory-logs'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -143,7 +143,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table logs-pdf" v-if="report.formType === 'atmospheric-readings'">
+            <div class="pdf-item__table logs-pdf" v-if="report.ReportType === 'atmospheric-readings'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -157,7 +157,7 @@
                         <label>Tech ID #</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="`techids-col-${n}`">
-                        <input type="number" class="pdf-item__table--data" v-model="$store.state.user.id" readonly />
+                        <input type="number" class="pdf-item__table--data" v-model="$store.state.users.user.id" readonly />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.readingsLog" :key="`row-${i}`">
@@ -192,7 +192,7 @@
             <button v-if="report.formType === 'moisture-map'" class="button--normal" type="button" @click="addRow">Add row</button>
         </section>
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
-        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="report.formType === 'moisture-map'">Upload job files</v-btn>
+        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="report.ReportType === 'moisture-map'">Upload job files</v-btn>
         <p v-if="uploadMessage !== ''">{{uploadMessage}}</p>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
         <!-- Only make submit button clickable on Day 7 -->
@@ -205,7 +205,7 @@
 import {mapActions, mapGetters} from 'vuex'
 export default {
     name: "SavedLogReports",
-    props: ['formName', 'formType','report', 'reportType', 'company'],
+    props: ['formType', "formName", 'report', 'reportType', 'company'],
     data() {
         return {
             uploadMessage: "",
@@ -213,6 +213,7 @@ export default {
             updateMessage: "",
             errorMessage: "",
             savedreport: {},
+            savedrep:{},
             alertDialog: false,
             newreport: false,
             areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
@@ -235,11 +236,11 @@ export default {
         }
     },
     async fetch() {
-        await this.$axios.$get(`/api/logs-report/${this.$route.params.formType}/${this.$route.params.id}`).then((res) => {
+        await this.$axios.$get(`/api/report/${this.$route.params.reportType}/${this.$route.params.id}`).then((res) => {
             if (res.error) {
                 this.newreport = true
                 this.savedreport = this.savedReports.find((v) => {
-                    return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+                    return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
                 })
                 return
             }
@@ -247,7 +248,7 @@ export default {
             this.newreport = false
         }).catch((err) => {
             this.savedreport = this.savedReports.find((v) => {
-                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+                return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
             })
         })
     },

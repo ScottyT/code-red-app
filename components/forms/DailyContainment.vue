@@ -428,13 +428,10 @@
         this.submitting = true
         const user = this.getUser;
         const reports = this.getReports.filter((v) => {
-          return v.CaseFileType === 'containment'
+          return v.ReportType === 'case-file-containment'
         })
         const jobids = reports.map((v) => {
           return v.JobId
-        })
-        const casefile = reports.map((v) => {
-          return v.CaseFileType
         })
         const evaluationLogs = [{
             label: 'Dispatch to Property',
@@ -478,7 +475,7 @@
             return goTo(0)
           }
           if (this.$nuxt.isOffline) {
-            if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
+            if (!jobids.includes(this.selectedJobId)) {
               this.addReport(post).then(() => {
                 this.message = "Report was saved successfully for submission later!"
                 this.submitted = true
@@ -492,14 +489,14 @@
               this.submitting = false
               this.errorDialog = true
               this.$refs.form.setErrors({
-                JobId: ['Cannot have two containment reprots']
+                JobId: ['Cannot have two containment reports']
               })
               
               return goTo(0)
             }
           }
           if (this.$nuxt.isOnline) {
-            this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+            this.$axios.$post("/api/case-report/new", post).then((res) => {
               if (res.errors) {
                 this.errorDialog = true
                 this.submitting = false

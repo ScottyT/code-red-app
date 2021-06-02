@@ -404,7 +404,7 @@ export default {
         cardSubmitted: false
     }),
     computed: {
-        ...mapGetters({getUser: "users/getUser", getReports: "reports/getReports"}),
+        ...mapGetters({getUser: "users/getUser", getReports: "reports/getReports", getCards:'reports/getCards'}),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -585,10 +585,6 @@ export default {
               insuredPay: this.insuredPay1,
               day1Date: this.insuredPayment.day1DateFormatted
             };
-            const userNameObj = {
-                first: this.getUser.name.split(" ")[0],
-                last: this.getUser.name.split(" ")[1]
-            }
             let insuredPayment2Arr = {
               insuredPay: this.insuredPay2,
               day5Date: this.insuredPayment.day5DateFormatted
@@ -613,7 +609,7 @@ export default {
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
               paymentOption: this.paymentOption,
-              teamMember: userNameObj
+              teamMember: this.getUser
             };
             if (this.$nuxt.isOffline) {
               this.addReport(post).then(() => {

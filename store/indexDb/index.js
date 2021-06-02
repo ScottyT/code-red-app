@@ -54,13 +54,13 @@ const actions = {
     },
     async saveReports({ state, commit }, newReport) {
         var keyname = ""
-        if (newReport.CaseFileType === 'containment') {
+        /* if (newReport.formType === 'containment') {
             keyname = "containment-rep-"
         }
-        if (newReport.CaseFileType === 'technician') {
+        if (newReport.formType === 'technician') {
             keyname = "technician-rep-"
-        }
-        if (newReport.ReportType === 'dispatch' || newReport.ReportType === 'rapid-response') {
+        } */
+        /* if (newReport.ReportType === 'dispatch' || newReport.ReportType === 'rapid-response') {
             keyname = "report-"
         }
         if (newReport.ReportType === 'aob') {
@@ -68,9 +68,9 @@ const actions = {
         }
         if (newReport.ReportType === 'coc') {
             keyname = "coc-"
-        }
-        if (newReport.hasOwnProperty('formType')) {
-            keyname = newReport.formType + "-"
+        } */
+        if (newReport.hasOwnProperty('ReportType')) {
+            keyname = newReport.ReportType + "-"
         }
         newReport.key = keyname + newReport.JobId
         await set(keyname + newReport.JobId, newReport).then(() => commit('addRep', newReport))

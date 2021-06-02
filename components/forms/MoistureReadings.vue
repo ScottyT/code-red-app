@@ -216,7 +216,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports', 'getUser'])
+        ...mapGetters({getReports:'getReports', getUser:'getUser'})
     },
     watch: {
         initalEvalDate(val) {

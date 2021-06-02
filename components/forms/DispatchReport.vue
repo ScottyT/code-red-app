@@ -78,7 +78,7 @@
             <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label" for="phone">Phone Number</label>
             <input id="phone" v-model="phone" name="Phone" class="form__input" type="phone" @input="acceptNumber" />
-            <ValidationProvider v-slot="{ errors }" rules="email" name="Email" vid="email">
+            <ValidationProvider v-slot="{ errors }" rules="email|required" name="Email" vid="email">
               <label for="email" class="form__label">Email Address</label>
               <br />
               <input id="email" v-model="email" type="email" class="form__input" name="Email" />

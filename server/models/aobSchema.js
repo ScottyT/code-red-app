@@ -42,4 +42,4 @@ const aobMitigationContract = mongoose.Schema({
     teamMember: Object
 })
 aobMitigationContract.plugin(timestamps)
-module.exports = mongoose.model('AOB', aobMitigationContract, 'aob-mitigation-contract');
+module.exports = mongoose.model('AOB', aobMitigationContract, 'reports');

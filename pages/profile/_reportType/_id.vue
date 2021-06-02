@@ -1,6 +1,6 @@
 <template>
     <div class="pa-6 report-details-wrapper" v-if="$nuxt.isOnline">
-        <LazySavedLogReports :formName="formName" :formType="formType" :company="company" :report="logreport" />
+        <LazySavedLogReports :company="company" :formName="formName" :report="logreport" />
     </div>
     <div class="pa-6 report-details-wrapper" v-else>
         <LazySavedLogReports :formName="formName" :formType="formType" :company="company" :report="report" />
@@ -12,11 +12,11 @@ export default {
     async asyncData({$axios, params, store}) {
         try {
             var formName = ""
-            let formType = params.formType;
-            let logreports = await $axios.$get(`/api/logs-report/${formType}/${params.id}`);
-            if (logreports.hasOwnProperty('status')) {
+            let formType = params.reportType;
+            let logreports = await $axios.$get(`/api/report/${params.reportType}/${params.id}`);
+            if (logreports.hasOwnProperty('error')) {
                 logreports = store.state.indexDb.reports.find((v) => {
-                    return v.JobId === params.id && v.formType === params.formType
+                    return v.JobId === params.id && v.ReportType === params.reportType
                 })
             }
             switch (formType) {
@@ -47,7 +47,7 @@ export default {
             clonedreports: [],
             report: {},
             logreport: {},
-            company: "Water Emergency Services Incorporated"
+            company: ""
         }
     },
     computed: {
@@ -64,7 +64,7 @@ export default {
         }),
         offlinereport() {
             var saved = this.getSavedReports.find((v) => {
-                return v.formType === this.$route.params.formType && v.JobId === this.$route.params.id
+                return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
             })
             this.report = saved
         }

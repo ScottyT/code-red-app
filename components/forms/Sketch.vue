@@ -44,7 +44,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { defineComponent, useStore, computed, ref, onMounted } from '~/node_modules/@nuxtjs/composition-api/dist/runtime'
+import { defineComponent, useStore, computed, ref, onMounted } from '@nuxtjs/composition-api'
 export default defineComponent({
     props: ['formname'],
     setup(props, {root}) {
@@ -52,6 +52,7 @@ export default defineComponent({
         const sketchRef = ref(null)
         const user = computed(() => store.getters['users/getUser']); const getReports = computed(() => store.getters['reports/getReports']);
         function checkStorage() { store.dispatch('indexDb/checkStorage') }
+        
         const sketchData = ref({}); const sketchFormData = ref(null); const selectedJobId = ref(""); const submittedMessage = ref("");
         const errorDialog = ref(false); const submitting = ref(false);
         onMounted(checkStorage)
@@ -67,7 +68,20 @@ export default defineComponent({
             const { isEmpty } = sketchRef.value.saveSignature()
             sketchData.value = { isEmpty }
         }
+        const addReport = (item) => {
+            submitting.value = true
+            root.$store.dispatch('indexDb/addReport', item).then(() => {
+                submittedMessage.value = "Form was saved successfully"
+                submitting.value = false
+                errorMessage.value = ""
+                setTimeout(() => {
+                    submittedMessage.value = ""
+                    errorMessage.value = ""
+                }, 5000)
+            })
+        }
         return {
+            addReport,
             sketchRef,
             clear, save, onBegin,
             sketchData,
@@ -82,7 +96,7 @@ export default defineComponent({
     methods: {
         onSubmit() {           
             this.submittedMessage = ""
-            this.submitting = true
+            
             const sketchReps = this.getReports.filter((v) => {
                 return v.ReportType === this.$route.params.uid
             })
@@ -104,15 +118,7 @@ export default defineComponent({
                 }
                 if (this.$nuxt.isOffline) {
                     if (!sketchRepsIds.includes(this.selectedJobId)) {
-                        this.addReport(post).then(() => {
-                            this.submittedMessage = "Form was saved successfully"
-                            this.submitting = false
-                            this.errorMessage = ""
-                            setTimeout(() => {
-                                this.submittedMessage = ""
-                                this.errorMessage = ""
-                            }, 5000)
-                        })
+                        this.addReport(post)
                     } else {
                         this.errorDialog = true
                         this.submitting = false
@@ -122,6 +128,7 @@ export default defineComponent({
                     }
                 }
                 if (this.$nuxt.isOnline) {
+                    this.submitting = true
                     this.$axios.$post(`/api/sketch-report/new`, post).then((res) => {
                         if (res.errors) {
                             this.errorDialog = true

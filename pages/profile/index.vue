@@ -65,9 +65,9 @@
             </template>
             <template v-slot:default="props">
               <li v-for="(item, i) in props.items" :key="`logreports-${i}`" class="reports-wrapper__data block-group__col" :class="!item.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
-                <nuxt-link :to="`/profile/${item.formType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
+                <nuxt-link :to="`/profile/${item.ReportType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
                   <p>{{item.JobId}}</p>
-                  <p>{{item.formType}}</p>
+                  <p>{{item.ReportType}}</p>
                 </nuxt-link>
               </li>
             </template>

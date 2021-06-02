@@ -43,9 +43,9 @@ export default {
             }
         }
     },
-    async asyncData({ $axios }) {
+    async asyncData({ $axios, store }) {
         try {
-            let data = await $axios.$get("/api/reports/aob");
+            let data = await $axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
             return { 
                 contracts: data
             }

@@ -259,7 +259,7 @@ import {mapActions, mapGetters} from 'vuex';
             let fullname = this.cardholderInfo.first + ' '+ [this.cardholderInfo.middle ? this.cardholderInfo.middle +' ' : null] + this.cardholderInfo.last
             return fullname;
         },
-        ...mapGetters(['getCards', 'getUser'])
+        ...mapGetters({getCards:'reports/getCards', getUser:'users/getUser'})
     },
     watch: {
         cusSigDate(val) {
@@ -287,7 +287,7 @@ import {mapActions, mapGetters} from 'vuex';
             return `${month}/${day}/${year}`
         },
         parseDate(date) {
-          if (!date) return nullW
+          if (!date) return null
           const [month, day, year] = date.split('/')
           return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
@@ -313,7 +313,7 @@ import {mapActions, mapGetters} from 'vuex';
             var newFile = new File([blob], `${uploadarea}-${this.cardNumber}${filetype}`, {
               type: file.type
             })
-            if (uploadarea === 'frontcardimage') {          
+            if (uploadarea === 'frontcardimage') {      
               this.frontCardImage[0] = newFile
               this.frontCardValue = this.$refs.frontCard.value
               this.$refs.frontcardimage.src = URL.createObjectURL(newFile)
@@ -448,7 +448,6 @@ import {mapActions, mapGetters} from 'vuex';
         },
         maskDate() {
             var x = this.expirationDate.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})/)
-            console.log(x)
             this.expirationDate = !x[2] ? x[1] : x[1] + '/' + x[2]
         }
     },

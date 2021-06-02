@@ -2,58 +2,58 @@
   <!-- This will be used for storing forms saved in offline mode -->
   <!-- Might refactor later -->
   <div>
+    <div class="profile__title">
+      <h1 class="text-center">Saved Forms</h1>
+      <h2 v-show="message">{{message}}</h2>
+    </div>
     <div class="profile">
-      <div class="profile__title">
-        <h1 class="text-center">Saved Forms</h1>
-        <h2 v-show="message">{{message}}</h2>
-      </div>
       <ul class="profile__group" v-if="defaultReports.length > 0">
         <h3>Dispatch and Rapid Response Reports</h3>
         <li v-for="(report, i) in defaultReports" :key="`default-reports-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.ReportType)" class="button button--normal">Submit</button>
         </li>
       </ul>
-      <ul class="profile__group" v-if="containmentReps.length > 0">
+      <ul class="profile__group" v-if="caseFileReports.length > 0">
         <h3>Containment Reports</h3>
-        <li v-for="(report, i) in containmentReps" :key="`containment-reps-${i}`">
-          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.CaseFileType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+        <li v-for="(report, i) in caseFileReports" :key="`containment-reps-${i}`">
+          {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.formType : null}}</span> <button type="submit"
+            @click="submitForm(report, report.formType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group" v-if="creditCardReps.length > 0">
         <h3>Credit Card Reports</h3>
         <li v-for="(report, i) in creditCardReps" :key="`credit-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.ReportType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group" v-if="cocReports.length > 0">
         <h3>Certificate of Completion Reports</h3>
         <li v-for="(report, i) in cocReports" :key="`coc-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.ReportType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group" v-if="aobReports.length > 0">
         <h3>AOB Mitigation Contract</h3>
         <li v-for="(report, i) in aobReports" :key="`aob-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.ReportType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group" v-if="sketchReports.length > 0">
         <h3>Sketch Reports</h3>
         <li v-for="(report, i) in sketchReports" :key="`sketch-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.formType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group" v-if="chartReports.length > 0">
         <h3>Chart Reports</h3>
         <li v-for="(report, i) in chartReports" :key="`chart-${i}`">
           {{report ? report.JobId : null}} / <span class="text-capitalize">{{report ? report.ReportType : null}}</span> <button type="submit"
-            @click="submitForm(report)" class="button button--normal">Submit</button>
+            @click="submitForm(report, report.formType)" class="button button--normal">Submit</button>
         </li>
       </ul>
       <ul class="profile__group block-group" v-if="logReports.length > 0">
@@ -65,9 +65,9 @@
             </template>
             <template v-slot:default="props">
               <li v-for="(item, i) in props.items" :key="`logreports-${i}`" class="reports-wrapper__data block-group__col" :class="!item.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
-                <nuxt-link :to="`/profile/${item.formType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
+                <nuxt-link :to="`/profile/${item.ReportType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
                   <p>{{item.JobId}}</p>
-                  <p>{{item.formType}}</p>
+                  <p>{{item.ReportType}}</p>
                 </nuxt-link>
               </li>
             </template>
@@ -102,17 +102,12 @@
     },
     computed: {
       ...mapGetters({
-        isLoggedIn: 'isLoggedIn',
+        isLoggedIn: 'users/isLoggedIn',
         getSavedReports: 'indexDb/getSavedReports'
       }),
-      containmentReps() {
+      caseFileReports() {
         return this.getSavedReports.filter((v) => {
-          return v.CaseFileType == 'containment'
-        })
-      },
-      technicianReps() {
-        return this.getSavedReports.filter((v) => {
-          return v.CaseFileType == 'technician'
+          return v.formType == 'case-report'
         })
       },
       defaultReports() {
@@ -137,22 +132,22 @@
       },
       sketchReports() {
         return this.getSavedReports.filter((v) => {
-          return v.ReportType == 'sketch-report'
+          return v.formType == 'sketch-report'
         })
       },
       logReports() {
         var savedLogs = this.getSavedReports.filter((v) => {
-          return v.ReportType == 'logs-report'
+          return v.formType == 'logs-report'
         })
-        var concatlogs = savedLogs.concat(this.$store.state.logreports)
-        let checkKeyPresenceInArray = key => this.$store.state.logreports.some(obj => Object.keys(obj).includes(key));
+        var concatlogs = savedLogs.concat(this.$store.state.reports.logreports)
+        let checkKeyPresenceInArray = key => this.$store.state.reports.logreports.some(obj => Object.keys(obj).includes(key));
         if (checkKeyPresenceInArray('_id') && this.$nuxt.isOnline) {
           const result = Array.from(new Set(concatlogs.map(s => s._id)))
             .map(id => {
               return {
                 _id: id,
                 JobId: concatlogs.find(s => s._id === id).JobId,
-                formType: concatlogs.find(s => s._id === id).formType
+                ReportType: concatlogs.find(s => s._id === id).ReportType
               }
             });
             return result
@@ -161,12 +156,7 @@
       },
       chartReports() {
         return this.getSavedReports.filter((v) => {
-          return v.ReportType === 'chart-report'
-        })
-      },
-      moistureMaps() {
-        return this.getSavedReports.filter((v) => {
-          return v.ReportType === 'moisture-map'
+          return v.formType === 'chart-report'
         })
       },
       isOnline() {
@@ -190,7 +180,8 @@
       ...mapActions({
         checkStorage: 'indexDb/checkStorage',
         deleteReport: 'indexDb/deleteReport',
-        fetchLogs: 'fetchLogs'
+        fetchLogs: 'reports/fetchLogs',
+        fetchReports: 'reports/fetchReports'
       }),
       async pageChangeHandler(value) {
         switch (value) {
@@ -204,9 +195,9 @@
             this.currentPage = value
         }
       },
-      submitForm(post) {
+      submitForm(post, postType) {
         this.message = ""  
-          this.$axios.$post(`/api/${post.ReportType}/new`, post).then((res) => {
+          this.$axios.$post(`/api/${postType}/new`, post).then((res) => {
             if (res.errors) {
               this.message = "Something went wrong"
               return;
@@ -231,8 +222,6 @@
             this.deleteReport(post)
             this.fetchReports()
             return
-          }).catch((err) => {
-            this.message = "Must be online to submit report"
           })
       },
       submitFiles(report, uploadarr, element) {
@@ -292,8 +281,8 @@
 <style lang="scss">
 .profile {
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows:100px 1fr;
+  grid-template-columns:repeat(auto-fit, minmax(476px, 1fr));
+  padding:0 30px 0 0;
   &__title {
     grid-column:1/4;
   }

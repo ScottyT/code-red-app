@@ -54,8 +54,8 @@ export default {
     },
     computed: {
         ...mapGetters({
-            getUser: 'getUser',
-            getReports: 'getReports'
+            getUser: 'users/getUser',
+            getReports: 'reports/getReports'
         })
     },
     methods: {

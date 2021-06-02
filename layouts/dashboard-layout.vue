@@ -23,19 +23,21 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar dark :clipped-left="true" fixed app extension-height="60" height="80" class="header-navigation">
-      <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
-        <span>
-          <i class="button__icon-content button__icon-content--top"></i>
-          <i class="button__icon-content button__icon-content--middle"></i>
-          <i class="button__icon-content button__icon-content--bottom"></i>
-        </span>
-      </button>
+      <div class="d-flex align-center">
+        <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
+          <span>
+            <i class="button__icon-content button__icon-content--top"></i>
+            <i class="button__icon-content button__icon-content--middle"></i>
+            <i class="button__icon-content button__icon-content--bottom"></i>
+          </span>
+        </button>
 
-      <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
+        <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
       <!-- <ul class="menu-items" v-if="!isMobile">
         
       </ul> -->
-      
+      </div>
+      <UiProfileDropdown v-if="user" />
     </v-app-bar>
     <v-main>
       <span v-if="!user"><LazyFormsLogin /></span>

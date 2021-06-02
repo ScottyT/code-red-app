@@ -795,7 +795,7 @@ export default {
       }, 1000)
     })
   },
-  created() {
+  /* created() {
     if (this.certificate.paymentOption === 'Card') {
         this.$axios.$get(`/api/reports/credit-card/${this.contracts.JobId}`).then((res) => {
             this.cards = res
@@ -804,7 +804,7 @@ export default {
             })
         });
     }
-  }
+  } */
 }
 </script>
 <style lang="scss" scoped>

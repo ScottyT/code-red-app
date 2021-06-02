@@ -117,7 +117,7 @@
             <label class="form__label" for="phone">Phone Number</label>
             <input id="phone" v-model="phoneNumber" name="Phone" class="form__input" type="phone"
               @input="acceptNumber" />
-            <ValidationProvider v-slot="{ errors }" name="Email" rules="email">
+            <ValidationProvider v-slot="{ errors }" name="Email" rules="email|required">
               <label for="email" class="form__label">Email Address</label>
               <input v-model="emailAddress" id="email" type="email" class="form__input" name="Email" />
               <span class="form__input--error">{{ errors[0] }}</span>

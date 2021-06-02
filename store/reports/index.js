@@ -43,7 +43,7 @@ const mutations = {
 const actions = {
     async fetchLogs({ commit, state }, authUser) {
       if (authUser) {
-        await this.$axios.$get(`/api/employee/${authUser.email}/savedlogreports`).then((res) => {
+        await this.$axios.$get(`/api/logs/${authUser.email}`).then((res) => {
           let copyArr = JSON.parse(JSON.stringify(res));
           commit('setLogReports', res)
         }).catch((err) => {
