@@ -18,7 +18,7 @@
                         <label class="form__label">Job ID: </label>
                         <select class="form__select" v-model="selectedJobId">
                             <option disabled value="">Please select a Job id</option>
-                            <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+                            <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error">{{ errors[0] }}</span>
                     </ValidationProvider>                   
@@ -30,7 +30,7 @@
                         <div class="form__button-wrapper">
                             <button type="button" class="button button--normal" @click="clear">Clear</button>
                             <button type="button" @click="save" :class="`button ${sketchData.isEmpty ? 'button--disabled':''}`">
-                                {{sketchData.data !== '' ? 'Saved' : 'Save'}}
+                                {{sketchData.data !== undefined ? 'Saved' : 'Save'}}
                             </button>
                         </div>
                         <span class="form__input--error">{{ errors[0] }}</span>
@@ -44,7 +44,106 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-export default {
+import { defineComponent, useStore, computed, ref, onMounted } from '~/node_modules/@nuxtjs/composition-api/dist/runtime'
+export default defineComponent({
+    props: ['formname'],
+    setup(props, {root}) {
+        const store = useStore()
+        const sketchRef = ref(null)
+        const user = computed(() => store.getters['users/getUser']); const getReports = computed(() => store.getters['reports/getReports']);
+        function checkStorage() { store.dispatch('indexDb/checkStorage') }
+        const sketchData = ref({}); const sketchFormData = ref(null); const selectedJobId = ref(""); const submittedMessage = ref("");
+        const errorDialog = ref(false); const submitting = ref(false);
+        onMounted(checkStorage)
+        function clear() {
+            sketchRef.value.clearSignature();
+            sketchData.value.data = null; sketchData.value.isEmpty = true
+        }
+        function save() {
+            const { data, isEmpty } = sketchRef.value.saveSignature();
+            sketchData.value = { data, isEmpty }
+        }
+        function onBegin() {
+            const { isEmpty } = sketchRef.value.saveSignature()
+            sketchData.value = { isEmpty }
+        }
+        return {
+            sketchRef,
+            clear, save, onBegin,
+            sketchData,
+            sketchFormData,
+            selectedJobId,
+            submittedMessage,
+            errorDialog,
+            submitting,
+            user, getReports
+        }
+    },
+    methods: {
+        onSubmit() {           
+            this.submittedMessage = ""
+            this.submitting = true
+            const sketchReps = this.getReports.filter((v) => {
+                return v.ReportType === this.$route.params.uid
+            })
+            const sketchRepsIds = sketchReps.map((v) => {
+                return v.JobId
+            })
+            const post = {
+                JobId: this.selectedJobId,
+                user: this.user,
+                sketch: this.sketchData.data,
+                ReportType: this.$route.params.uid,
+                formType: 'sketch-report'
+            };
+            this.$refs.form.validate().then(success => {
+                if (!success) {
+                    this.submitting = false
+                    this.errorDialog = true
+                    return;
+                }
+                if (this.$nuxt.isOffline) {
+                    if (!sketchRepsIds.includes(this.selectedJobId)) {
+                        this.addReport(post).then(() => {
+                            this.submittedMessage = "Form was saved successfully"
+                            this.submitting = false
+                            this.errorMessage = ""
+                            setTimeout(() => {
+                                this.submittedMessage = ""
+                                this.errorMessage = ""
+                            }, 5000)
+                        })
+                    } else {
+                        this.errorDialog = true
+                        this.submitting = false
+                        this.$refs.form.setErrors({
+                            JobId: ['Job ID already exists for this sketch type']
+                        })
+                    }
+                }
+                if (this.$nuxt.isOnline) {
+                    this.$axios.$post(`/api/sketch-report/new`, post).then((res) => {
+                        if (res.errors) {
+                            this.errorDialog = true
+                            this.submitting = false
+                            this.$refs.form.setErrors({
+                                JobId: res.errors.filter(obj => obj.param === 'JobId').map(v => v.msg),
+                                sketch: res.errors.filter(obj => obj.param === 'sketch').map(v => v.msg),
+                            })
+                            return
+                        }
+                        this.submittedMessage = res.message
+                        this.submitting = false
+                        setTimeout(() => {
+                            window.location = "/"
+                        }, 2000)
+                    })
+                }
+            })
+        }
+    }
+})
+/* export default {
     props: ['formname'],
     data() {
         return {
@@ -104,8 +203,8 @@ export default {
                 JobId: this.selectedJobId,
                 teamMember: this.getUser,
                 sketch: this.sketchData.data,
-                ReportType: 'sketch-report',
-                sketchType: this.$route.params.uid
+                ReportType: this.$route.params.uid,
+                formType: 'sketch-report'
             };
             this.$refs.form.validate().then(success => {
                 if (!success) {
@@ -160,7 +259,7 @@ export default {
             this.$refs.sketchRef.resizeCanvas()
         })
     }
-}
+} */
 </script>
 <style lang="scss">
 #sketchPad {

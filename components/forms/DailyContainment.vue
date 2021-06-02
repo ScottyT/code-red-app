@@ -465,8 +465,8 @@
           selectedStructualCleaning: this.selectedStructualCleaning,
           evaluationLogs: evaluationLogs,
           verifySig: this.verifySig.data,
-          ReportType: 'case-file-report',
-          formType: 'containment',
+          ReportType: 'case-file-containment',
+          formType: 'case-report',
           teamMember: this.getUser,
           afterHoursWork: 'N/A'
         };

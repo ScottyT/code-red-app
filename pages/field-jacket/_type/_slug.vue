@@ -32,10 +32,47 @@
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
             <LazyLayoutCaseFileDetails :notPdf="true" :report="report" />
         </span>
+        <span v-if="report.formType === 'sketch-report'">
+            <h1>{{formName}} for job {{jobId}}</h1>
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                 :show-layout="false" :preview-modal="false" ref="html2Pdf-0">
+                    <PdfSketch :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
+        </span>
+        <span v-if="report.formType === 'logs-report'">
+            <h1>{{formName}} for job {{jobId}}</h1>
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1200" :manual-pagination="false"
+                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                    <PdfLogs :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
+                 </vue-html2pdf>
+            </client-only>
+            <!-- <LazyLogsPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
+        </span>
+        <span v-if="report.formType === 'chart-report'">
+            <h1>{{formName}} for job {{jobId}}</h1>
+            <client-only>
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
+                 :show-layout="false" :preview-modal="false" ref="html2Pdf-0">
+                    <PdfSketch :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
+                </vue-html2pdf>
+            </client-only>
+            <!-- <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
+            <button class="button--normal" @click="generateReport(0)">Download PDF</button>
+        </span>
+        <span v-if="report.formType === 'moisture-map'">
+            <h1>{{formName}} for job {{jobId}}</h1>
+            <LazySavedLogReports :formName="formName" :formType="formType" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" />
+        </span>
     </div>
 </template>
 <script>
 import VueHtml2pdf from 'vue-html2pdf'
+import {mapGetters} from 'vuex'
 export default {
     layout: "dashboard-layout",
     head() {
@@ -57,14 +94,14 @@ export default {
             return redirect("/")
         }
     },
-    async asyncData({$axios, params}) {
+    async asyncData({$axios, params, store}) {
         try {
             var formName = ""
-            var formType = params.id;
             var reportType = params.type;
             var jobId = params.slug;
-            let data = await $axios.$get(`/api/report/${params.type}/${params.slug}`);
-            switch (formType) {
+            var token = store.state.users.user.token
+            let data = await $axios.$get(`/api/report/${params.type}/${params.slug}`, {headers: {authorization: `Bearer ${token}`}});
+            switch (reportType) {
                 case "moisture-sketch":
                     formName = "Moisture Mapping Location and Sketch"
                     break;
@@ -86,7 +123,6 @@ export default {
             return {
                 report: data,
                 jobId,
-                formType,
                 reportType,
                 formName
             }
@@ -95,6 +131,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters({user: 'users/getUser'}),
         htmlToPdfOptions() {
             return {
                 margin:[20, 10, 20, 10],

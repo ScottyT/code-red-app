@@ -77,7 +77,13 @@ const getters = {
         return state.employees
     },
     getUser: (state) => {
-        return state.user
+        var user = {
+            email: state.user.email,
+            id: state.user.id,
+            role: state.user.role,
+            name: state.user.name
+        }
+        return user
     },
     isLoggedIn: (state) => {
         try {

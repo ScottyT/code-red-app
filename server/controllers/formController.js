@@ -9,7 +9,6 @@ const CaseFile = require("../models/caseFileSchema");
 const CreditCard = require("../models/creditCardSchema");
 const chartModel = require('../models/chartSchema');
 const moistureModel = require('../models/moistureMapSchema');
-const Report = require("../models/reportsSchema");
 const { validationResult } = require('express-validator');
 
 const createMoistureMap = async (req, res) => {
@@ -28,8 +27,7 @@ const createMoistureMap = async (req, res) => {
         notes: req.body.notes,
         teamMember: req.body.teamMember
     })
-    const moistureMap = await moisture.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
-    if (!errors.isEmpty() || moistureMap !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await moisture.save().then(() => {
@@ -61,8 +59,8 @@ const uploadChart = async (req, res) => {
         ReportType: req.body.ReportType,
         chart: req.body.chart
     })
-    const chartReport = await chartModel.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
-    if (!errors.isEmpty() || chartReport !== null) {
+    
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await obj.save().then(() => {
@@ -75,14 +73,14 @@ const createSketch = async (req, res) => {
     const errors = validationResult(req)
     const sketch = new Sketch({
         JobId: req.body.JobId,
-        teamMember: req.body.teamMember,
+        teamMember: req.body.user,
         sketch: req.body.sketch,
-        formType: req.body.sketchType,
+        formType: req.body.formType,
         ReportType: req.body.ReportType
     });
-    const sketchReport = await Sketch.findOne({JobId: req.body.JobId, formType: req.body.sketchType}).exec()
+    
     //returns the error
-    if (!errors.isEmpty() || sketchReport !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await sketch.save().then(() => {
@@ -94,7 +92,7 @@ const createSketch = async (req, res) => {
 const createLogs = async (req, res) => {
     const errors = validationResult(req)
     var logs
-    if (req.body.formType === 'moisture-map') {
+    if (req.body.ReportType === 'moisture-map') {
         logs = new Logging({
             JobId: req.body.JobId,
             ReportType: req.body.ReportType,
@@ -125,10 +123,8 @@ const createLogs = async (req, res) => {
             teamMember: req.body.teamMember
         })
     }
-    //const logs = new Logging(req.body)
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
     
-    if (!errors.isEmpty() || logsReport !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     /* const employee = await User.findOne({email: req.body.teamMember.email});
@@ -244,7 +240,7 @@ const createAOB = async (req, res) => {
 }
 const createDispatch = async (req, res) => {
     const errors = validationResult(req);       
-    const dispatch = new Report({
+    const dispatch = new Dispatch({
         ArrivalContactName: req.body.ArrivalContactName,
         JobId: req.body.JobId,
         ReportType: req.body.ReportType,

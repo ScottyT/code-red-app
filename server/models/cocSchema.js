@@ -27,4 +27,4 @@ const certificateOfCompletion = mongoose.Schema({
     paymentOption: String
 })
 certificateOfCompletion.plugin(timestamps)
-module.exports = mongoose.model('COC', certificateOfCompletion, 'certificate-of-completion');
+module.exports = mongoose.model('COC', certificateOfCompletion, 'reports');

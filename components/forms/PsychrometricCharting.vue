@@ -68,19 +68,17 @@ export default {
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.ReportType === "chart-report"
+                return v.ReportType === "psychrometric-chart"
             })
-            const chartReps = reports.filter((v) => {
-                return v.formType === "psychrometric-chart"
-            })
-            const jobids = chartReps.map((v) => {
+            
+            const jobids = reports.map((v) => {
                 return v.JobId
             })
 
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "chart-report",
-                formType: "psychrometric-chart",
+                ReportType: "psychrometric-chart",
+                formType: "chart-report",
                 teamMember: this.getUser,
                 chart: this.chartImg
             }

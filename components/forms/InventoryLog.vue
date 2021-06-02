@@ -548,7 +548,7 @@ export default {
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.formType === 'quantity-inventory-logs'
+                return v.ReportType === 'quantity-inventory-logs'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
@@ -557,10 +557,10 @@ export default {
             var checkboxInputs = this.checkBoxArr.concat(this.serviceArr)
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "logs-report",
+                ReportType: "quantity-inventory-logs",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
-                formType: "quantity-inventory-logs",
+                formType: "logs-report",
                 quantityData: numberInputs,
                 checkData: checkboxInputs,
                 categoryData: this.catArr,

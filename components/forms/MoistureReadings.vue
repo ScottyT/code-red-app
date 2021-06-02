@@ -276,8 +276,8 @@ export default {
             })
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "logs-report",
-                formType: "moisture-map",
+                ReportType: "moisture-map",
+                formType: "logs-report",
                 initialEvalDate: this.initialEvalDateFormatted,
                 location: this.location,
                 areaSub1: this.areaSub1,

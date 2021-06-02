@@ -45,7 +45,7 @@ export default {
     },
     async asyncData({ $axios }) {
         try {
-            let data = await $axios.$get("/api/aob-mitigation-contracts");
+            let data = await $axios.$get("/api/reports/aob");
             return { 
                 contracts: data
             }

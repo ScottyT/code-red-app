@@ -33,4 +33,4 @@ const logging = mongoose.Schema({
     readingsRow: Array
 });
 logging.plugin(timestamps);
-module.exports = mongoose.model('Logs', logging);
+module.exports = mongoose.model('Logs', logging, 'reports');

@@ -22,6 +22,7 @@
     "file-saver": "^2.0.5",
     "firebase": "^8.4.2",
     "idb-keyval": "^5.0.4",
+    "jspdf": "^1.4.1",
     "jszip": "^3.5.0",
     "mapbox-gl": "1.13.0",
     "moment": "^2.29.1",

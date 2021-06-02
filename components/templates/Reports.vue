@@ -3,10 +3,9 @@
     <UiAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
       <div class="reports-wrapper__data block-group__col" v-for="(item, i) in reportslist" :key="`item-${i}`">
-        <nuxt-link :to="`/field-jacket/${routeSwitching(item)}/${item.JobId}`">
+        <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.JobId}`">
           <p>{{item.JobId}}</p>
           <p v-show="item.formType !== ''">{{item.formType}}</p>
-          <p v-show="item.CaseFileType !== ''">{{item.CaseFileType}}</p>
           <p>{{item.ReportType}}</p>
         </nuxt-link>
       </div>

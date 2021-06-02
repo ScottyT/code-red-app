@@ -270,12 +270,14 @@ export default {
       })
     },
     created() {
-      this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
-        this.cards = res
-        this.cards.forEach((card) => {
-          this.fetchcardimages(card.cardNumber)
+      if (this.certificate.paymentOption === 'Card') {
+        this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
+          this.cards = res
+          this.cards.forEach((card) => {
+            this.fetchcardimages(card.cardNumber)
+          })
         })
-      })
+      }
     }
 }
 </script>

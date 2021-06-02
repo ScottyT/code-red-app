@@ -292,7 +292,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports', 'getUser'])
+        ...mapGetters({getReports: 'reports/getReports', getUser: 'users/getUser'})
     },
     methods: {
         ...mapActions({
@@ -318,17 +318,17 @@ export default {
             this.submittedMessage = ""
             this.submitting = true
             const reports = this.getReports.filter((v) => {
-                return v.formType === 'atmospheric-readings'
+                return v.ReportType === 'atmospheric-readings'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
             })
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "logs-report",
+                ReportType: "atmospheric-readings",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
-                formType: "atmospheric-readings",
+                formType: "logs-report",
                 readingsLog: this.readingsArr,
                 lossClassification: this.lossArr,
                 notes: this.notes,

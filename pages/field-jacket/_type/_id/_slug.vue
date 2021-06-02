@@ -37,6 +37,7 @@
     </div>
 </template>
 <script>
+import {mapGetters} from 'vuex'
 export default {
     head() {
         return {
@@ -53,7 +54,7 @@ export default {
         var formType = params.id;
         var reportType = params.type;
         var jobId = params.slug;
-        let data = await $axios.$get(`/api/${params.type}/${params.id}/${params.slug}`);
+        let data = await $axios.$get(`/api/report/${params.type}/${params.id}/${params.slug}`, {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
         switch (formType) {
             case "moisture-sketch":
                 formName = "Moisture Mapping Location and Sketch"
@@ -88,6 +89,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters({user: 'users/getUser'}),
         htmlToPdfOptions(e) {
             return {
                 margin:[20, 10, 20, 10],

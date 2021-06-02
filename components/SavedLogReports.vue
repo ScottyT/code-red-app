@@ -221,7 +221,7 @@ export default {
     computed: {
         ...mapGetters({
             savedReports: 'indexDb/getSavedReports',
-            getReports: 'getReports',
+            getReports: 'reports/getReports',
         }),
         showSubmit() {
             return this.$nuxt.isOnline && this.currentDate === this.savedreport.endDate

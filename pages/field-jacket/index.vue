@@ -56,27 +56,22 @@ export default {
         reports:[]
     }),
     async fetch() {
-        this.reports = await this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${this.user.token}`}});
+        this.reports = await this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${this.$store.state.users.user.token}`}});
         this.sketchReports = this.reports.filter((v) => {
-            return v.ReportType === 'sketch-report'
+            return v.formType === 'sketch-report'
         })
         this.logReports = this.reports.filter((v) => {
-            return v.ReportType === 'logs-report'
+            return v.formType === 'logs-report'
         })
         
         this.chartData = this.reports.filter((v) => {
-            return v.ReportType === 'chart-report'
+            return v.formType === 'chart-report'
         })
         this.defaultData = this.reports.filter((v) => {
             return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
         })
         this.caseFileData = this.reports.filter((v) => {
-            return v.formType == 'containment' || v.formType == 'technician'
-        })
-    },
-    computed: {
-        ...mapGetters({
-            user: 'users/getUser'
+            return v.formType === "case-report"
         })
     },
     methods: {

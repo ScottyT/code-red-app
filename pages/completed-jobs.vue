@@ -44,7 +44,7 @@ export default {
     },
     async asyncData({ $axios }) {
         try {
-            let data = await $axios.$get("/api/certificates");
+            let data = await $axios.$get("/api/reports/coc");
             return {
                 coc: data
             }

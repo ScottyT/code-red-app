@@ -22,4 +22,4 @@ const moistureMap = mongoose.Schema({
     teamMember: Object
 })
 moistureMap.plugin(timestamps)
-module.exports = mongoose.model('Moisture', moistureMap)
+module.exports = mongoose.model('Moisture', moistureMap, 'reports')

@@ -169,7 +169,6 @@ export default {
       }
     },
     getUser(val) {
-      console.log(val)
       if (Object.keys(val).length !== 0) {
         this.itemsArr()
       }
