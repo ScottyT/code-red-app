@@ -66,16 +66,6 @@ router.post("/employee/new",
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
 router.get('/reports', checkIfAuthenticated, async (req, res) => {
-    
-    /* const dispatch = await Dispatch.find({}).lean();
-    const rapidresponse = await RapidResponse.find({}).lean();
-    const caseFile = await CaseFile.find({}).lean();
-    const certificate = await COC.find({}).lean();
-    const sketches = await Sketch.find({}).lean();
-    const logging = await Logging.find({}).lean();
-    const charts = await chartModel.find({}).lean();
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, sketches, logging, charts)
-    res.json(results) */
     await Report.find({}).lean().exec((err, reports) => {
         if (err) {
             res.status(500).send('Error')
@@ -159,35 +149,8 @@ router.get('/employee/:email', checkIfAuthenticated, (req, res) => {
 router.get('/employee/:email/reports', checkIfAuthenticated, async (req, res) => {
     
 })
-router.get('/employee/:email/savedlogreports', async (req, res) => {
-    const emp = await User.findOne({email: req.params.email}).select({email: req.params.email}).lean()
-    if (emp) {
-        const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email).lean()
-        res.json(logreports)
-    } else {
-        res.json({error: "User does not exist"})
-    }
-})
 router.post("/employee/:email/:formType/:JobId/update", updateLogs)
 //router.delete("/employee:email/:formType/:JobId/delete", )
-/* router.get('/certificates', checkIfAuthenticated, (req, res) => {
-    COC.find({}, (err, coc) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(coc)
-        }
-    }).lean()
-})
-router.get('/aob-mitigation-contracts', (req, res) => {
-    AOB.find({}, (err, aob) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(aob)
-        }
-    })
-}) */
 router.get('/credit-cards', (req, res) => {
     CreditCard.find({}, (err, creditcard) => {
         if (err) {
@@ -197,8 +160,8 @@ router.get('/credit-cards', (req, res) => {
         }
     })
 })
-router.get('/credit-card/:cardNumber', (req, res) => {
-    CreditCard.findOne({cardNumber: req.body.cardNumber}, (err, creditcard) => {
+router.get('/credit-card/:cardNumber', checkIfAuthenticated, async (req, res) => {
+    await CreditCard.where('cardNumber').equals(req.params.cardNumber).lean().exec((err, creditcard) => {
         if (err) {
             res.status(500).send('Error')
         } else if (creditcard) {
@@ -208,36 +171,12 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
-
-router.get('/sketch-report/:formType/:JobId', (req,res) => {
-    Sketch.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, sketch) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else if (sketch) {
-            res.status(200).json(sketch)
-        } else {
-            res.status(404).send('Item not found')
-        }
-    })
-})
 router.get('/logs/:email', (req, res) => {
     Report.find({}).where('teamMember.email').equals(req.params.email).where('formType').equals('logs-report').exec((err, logs) => {
         if (err) {
             res.status(500).send('Error')
         } else {
             res.status(200).json(logs)
-        }
-    })
-})
-
-router.get('/chart-report/:formType/:JobId', (req, res) => {
-    chartModel.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, chart) => {
-        if (err) {
-            res.status(500).send('Server Error')
-        } else if (chart) {
-            res.status(200).json(chart)
-        } else {
-            res.status(200).json({error: "Item not found", status: 404})
         }
     })
 })
@@ -275,15 +214,9 @@ router.post('/avatar/new', upload.single('avatar'), (req, res) => {
 })
 router.post("/moisture-map/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {
-        return moistureModel.findOne({JobId: value, formType: req.body.formType}).then(moisture => {
-            if (moisture) {
-                return Promise.reject('Job ID is already in use')
-            }
-        })
-    },
-    check('notes').not().isEmpty().withMessage('Notes is required')
-    ), createMoistureMap)
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
+    check('notes').not().isEmpty().withMessage('Notes is required'), 
+    createMoistureMap)
 router.post("/sketch-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
     .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),

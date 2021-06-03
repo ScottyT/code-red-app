@@ -39,7 +39,8 @@ const aobMitigationContract = mongoose.Schema({
     witnessDate: String,
     numberOfRooms: String,
     numberOfFloors: String,
-    teamMember: Object
+    teamMember: Object,
+    cardNumber: String
 })
 aobMitigationContract.plugin(timestamps)
 module.exports = mongoose.model('AOB', aobMitigationContract, 'reports');

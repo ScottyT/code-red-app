@@ -1,6 +1,7 @@
 <template>
-  <div class="reports-list">
-    
+  <p v-if="reportslist.length < 0">There are no reports to show</p>
+  <p v-else-if="$nuxt.isOffline">You need to be connected to the internet to view reports</p>
+  <div class="reports-list" v-else>
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
         <UiAutocomplete @sendReportsToParent="reportsfetched" :items="reportslist" theme="light" />

@@ -155,6 +155,13 @@ export default {
       return this.$nuxt.isOnline
     }
   },
+  watch: {
+    getUser(val) {
+      if (Object.keys(val).length !== 0) {
+        this.itemsArr()
+      }
+    }
+  },
   methods: {
     ...mapActions({
       fetchReports: 'reports/fetchReports',
@@ -190,7 +197,7 @@ export default {
     window.addEventListener('resize', this.onResize, { passive: true })
     
     this.$nextTick(() => {
-      this.fetchReports(this.$fire.auth.currentUser)
+      //this.fetchReports(this.$fire.auth.currentUser)
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       

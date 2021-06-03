@@ -193,19 +193,18 @@ export default {
         return {
             editing: false,
             updateMessage: '',
-            newdata: {},
             updated: false,
             errorMessage: "",
             areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
         }
     },
     async fetch() {
-        this.newdata = await this.$axios.$get(`/api/logs-report/${this.formType}/${this.report.JobId}`)
+        this.newdata = await this.$axios.$get(`/api/report/${this.reportType}/${this.report.JobId}`)
     },
     methods: {
         updateReport() {
             // use indexDb for offline support here
-            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.newdata).then((res) => {
+            this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.newdata).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
                     return;                

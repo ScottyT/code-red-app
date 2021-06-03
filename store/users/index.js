@@ -2,7 +2,8 @@ import axios from 'axios'
 const state = () => ({
     user: null,
     employees: [],
-    avatarurl:{}
+    avatarurl:{},
+    error: null
 })
 const mutations = {
     setUser: (state, payload) => {
@@ -16,6 +17,9 @@ const mutations = {
     },
     setAvatar: (state, payload) => {
         state.avatarurl = payload
+    },
+    setError: (state, error) => {
+        state.error = error
     }
 }
 const actions = {
@@ -54,11 +58,13 @@ const actions = {
         })
     },
     async fetchAvatar({ commit, dispatch }, user) {
-        await axios.get(`${process.env.serverUrl}/api/employee/${user}`).then((res) => {
-            dispatch('settingAvatar', res.data.avatar)
-        }).catch((err) => {
-            commit('setError', err)
-        })   
+        await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            axios.get(`${process.env.serverUrl}/api/employee/${user.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                dispatch('settingAvatar', res.data.avatar)
+            }).catch((err) => {
+                commit('setError', err)
+            }) 
+        })         
     },
     settingAvatar({ commit }, response) {
         if (response.image.data.length > 1) {

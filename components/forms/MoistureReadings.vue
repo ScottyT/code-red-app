@@ -18,7 +18,7 @@
                         <label class="form__label">Job ID:</label>
                         <select class="form__select" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
-                            <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
+                            <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
@@ -216,7 +216,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters({getReports:'getReports', getUser:'getUser'})
+        ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser'})
     },
     watch: {
         initalEvalDate(val) {

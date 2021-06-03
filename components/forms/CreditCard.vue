@@ -267,7 +267,7 @@ import {mapActions, mapGetters} from 'vuex';
         },
         isSubmitted(val) {
             this.submitText = "Submitted"
-            this.$emit("cardSubmit", this.isSubmitted)
+            this.$emit("cardSubmit", { 'isSubmit': this.isSubmitted, 'cardNumber': this.cardNumber })
         }
     },
     methods: {

@@ -300,7 +300,7 @@
                     <LazyFormsCreditCard v-if="currentStep >= 2 && paymentOption == 'Card'" ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
                         @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                     <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Card' && existingCreditCard == 'No')">Next</v-btn>
-                    <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
+                    <v-btn type="submit" :class="Object.keys(cardObj).length !== 0 || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>
             </ValidationObserver>
         </div>
@@ -401,7 +401,7 @@ export default {
         errorDialog: false,
         existingCreditCard: "",
         cardToUse: "",
-        cardSubmitted: false
+        cardObj: {},
     }),
     computed: {
         ...mapGetters({getUser: "users/getUser", getReports: "reports/getReports", getCards:'reports/getCards'}),
@@ -439,10 +439,7 @@ export default {
             })
         },
         cardNumbers() {
-            var cards = this.getReports.filter((v) => {
-                return v.ReportType === "credit-card"
-            })
-            return cards.map((v) => {
+            return this.getCards.map((v) => {
                 return v.cardNumber
             })
         }
@@ -495,8 +492,10 @@ export default {
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
         },
-        cardSubmittedValue(params) {
-            this.cardSubmitted = params
+        cardSubmittedValue(...params) {
+            const {isSubmit, cardNumber} = params[0]
+            this.cardObj = params
+            this.cardToUse = cardNumber
         },
         formatTime(timeReturned) {
             if (!timeReturned) return null
@@ -609,7 +608,8 @@ export default {
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
               paymentOption: this.paymentOption,
-              teamMember: this.getUser
+              teamMember: this.getUser,
+              cardNumber: this.cardToUse
             };
             if (this.$nuxt.isOffline) {
               this.addReport(post).then(() => {

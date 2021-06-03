@@ -1,5 +1,6 @@
 <template>
-    <div class="report-details-wrapper">
+    <p v-if="$nuxt.isOffline">You must be online to view a report</p>
+    <div class="report-details-wrapper" v-else>
         <UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
@@ -36,7 +37,7 @@
             <h1>{{formName}} for job {{jobId}}</h1>
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                 :show-layout="false" :preview-modal="false" ref="html2Pdf-0">
+                 :show-layout="false" :preview-modal="false" ref="html2Pdf0">
                     <PdfSketch :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
@@ -46,7 +47,7 @@
             <h1>{{formName}} for job {{jobId}}</h1>
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1200" :manual-pagination="false"
-                 :show-layout="false" :preview-modal="true" ref="html2Pdf-0">
+                 :show-layout="false" :preview-modal="true" ref="html2Pdf0">
                     <PdfLogs :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
                  </vue-html2pdf>
             </client-only>
@@ -57,7 +58,7 @@
             <h1>{{formName}} for job {{jobId}}</h1>
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="900" :manual-pagination="false"
-                 :show-layout="false" :preview-modal="false" ref="html2Pdf-0">
+                 :show-layout="false" :preview-modal="false" ref="html2Pdf0">
                     <PdfSketch :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>

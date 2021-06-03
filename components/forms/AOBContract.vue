@@ -1148,7 +1148,8 @@ import {mapGetters, mapActions} from 'vuex'
             witnessDate: this.witnessDateFormatted,
             numberOfRooms: this.numberOfRooms,
             numberOfFloors: this.numberOfFloors,
-            teamMember: this.getUser
+            teamMember: this.getUser,
+            cardNumber: this.cardToUse
           };
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {

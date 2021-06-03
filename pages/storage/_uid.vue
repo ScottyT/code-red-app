@@ -7,7 +7,7 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
-  layout: 'dashboard-layout',
+  layout: 'default',
   data: () => ({
     folders: [],
     subfolders: []

@@ -692,7 +692,7 @@
         },
         {
           id: 26,
-          text: 'Is an electrician required?',
+          text: 'Is a Remediation Tech required?',
           checked: false
         },
         {

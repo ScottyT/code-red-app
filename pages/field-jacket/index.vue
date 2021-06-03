@@ -56,30 +56,65 @@ export default {
         reports:[]
     }),
     async fetch() {
-        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
-            this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
-                this.reports = res
+        if (this.$nuxt.isOnline) {
+            await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+                this.$axios.$get("/api/reports", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                    this.reports = res
+                    this.sketchReports = this.reports.filter((v) => {
+                        return v.formType === 'sketch-report'
+                    })
+                    this.logReports = this.reports.filter((v) => {
+                        return v.formType === 'logs-report'
+                    })
+                    
+                    this.chartData = this.reports.filter((v) => {
+                        return v.formType === 'chart-report'
+                    })
+                    this.defaultData = this.reports.filter((v) => {
+                        return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
+                    })
+                    this.caseFileData = this.reports.filter((v) => {
+                        return v.formType === "case-report"
+                    })
+                })
+            }).catch((err) => {
+                console.log(err)
             })
-        }).catch((err) => {
-            console.log(err)
-        })
-        
-        this.sketchReports = this.reports.filter((v) => {
-            return v.formType === 'sketch-report'
-        })
-        this.logReports = this.reports.filter((v) => {
-            return v.formType === 'logs-report'
-        })
-        
-        this.chartData = this.reports.filter((v) => {
-            return v.formType === 'chart-report'
-        })
-        this.defaultData = this.reports.filter((v) => {
-            return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
-        })
-        this.caseFileData = this.reports.filter((v) => {
-            return v.formType === "case-report"
-        })
+        } else {
+            this.reports = this.getReports
+            this.sketchReports = this.reports.filter((v) => {
+                        return v.formType === 'sketch-report'
+                    })
+                    this.logReports = this.reports.filter((v) => {
+                        return v.formType === 'logs-report'
+                    })
+                    
+                    this.chartData = this.reports.filter((v) => {
+                        return v.formType === 'chart-report'
+                    })
+                    this.defaultData = this.reports.filter((v) => {
+                        return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
+                    })
+                    this.caseFileData = this.reports.filter((v) => {
+                        return v.formType === "case-report"
+                    })
+        }
+    },
+    computed: {
+        ...mapGetters({getReports: 'reports/getReports'}),
+        isOnline() {
+            return this.$nuxt.isOnline
+        }
+    },
+    watch: {
+        isOnline(val) {
+            if(val) {
+                this.$fetch()
+                //this.fetchReports(this.$fire.auth.currentUser)
+            } else {
+                this.reports = this.getReports
+            }
+        }
     },
     methods: {
         ...mapActions({
@@ -90,8 +125,8 @@ export default {
     mounted() {
         this.checkStorage()
     },
-    created() {
+    /* created() {
         this.fetchReports(this.$fire.auth.currentUser)
-    }
+    } */
 }
 </script>

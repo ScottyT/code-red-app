@@ -271,12 +271,16 @@ export default {
     },
     created() {
       if (this.certificate.paymentOption === 'Card') {
-        this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
-          this.cards = res
-          this.cards.forEach((card) => {
-            this.fetchcardimages(card.cardNumber)
-          })
+        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+          this.$axios.$get(`/api/credit-card/${this.certificate.cardNumber}`, {headers: {authorization: `Bearer ${idToken}`}})
+            .then((res) => {
+              this.cards = res
+              this.cards.forEach((card) => {
+                this.fetchcardimages(card.cardNumber)
+              })        
+            })
         })
+        
       }
     }
 }

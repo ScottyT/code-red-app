@@ -23,7 +23,6 @@ export default {
   }) {
     const repId = params.slug
     const subfolder = params.id
-    console.log("repId:", repId)
     return {
       repId,
       subfolder

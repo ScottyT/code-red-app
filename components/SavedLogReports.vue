@@ -328,7 +328,7 @@ export default {
         },
         submitReport() {
             this.alertDialog = !this.alertDialog
-            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
+            this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.report).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
                     return;                
@@ -353,7 +353,7 @@ export default {
                             this.updateMessage = res.message
                         })
                     } else {
-                        this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.report).then((res) => {
+                        this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.report).then((res) => {
                             if (res.errors) {
                                 this.errorMessage = res.errors
                                 return;                

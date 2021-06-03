@@ -1,9 +1,9 @@
 <template>
     <div class="pa-6 report-details-wrapper" v-if="$nuxt.isOnline">
-        <LazySavedLogReports :company="company" :formName="formName" :report="logreport" />
+        <LazySavedLogReports :company="company" :reportType="reportType" :formName="formName" :report="logreport" />
     </div>
     <div class="pa-6 report-details-wrapper" v-else>
-        <LazySavedLogReports :formName="formName" :formType="formType" :company="company" :report="report" />
+        <LazySavedLogReports :formName="formName" :reportType="reportType" :company="company" :report="report" />
     </div>
 </template>
 <script>
@@ -12,7 +12,7 @@ export default {
     async asyncData({$axios, params, store}) {
         try {
             var formName = ""
-            let formType = params.reportType;
+            let reportType = params.reportType;
             let logreports = await $axios.$get(`/api/report/${params.reportType}/${params.id}`);
             if (logreports.hasOwnProperty('error')) {
                 logreports = store.state.indexDb.reports.find((v) => {
@@ -34,7 +34,7 @@ export default {
             }
             return {
                 formName,
-                formType,
+                reportType,
                 logreport: logreports
             }
         } catch(e) {

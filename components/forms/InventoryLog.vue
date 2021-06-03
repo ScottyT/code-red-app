@@ -547,6 +547,7 @@ export default {
         },
         onSubmit() {
             this.submittedMessage = ""
+            this.submitting = true
             const reports = this.getReports.filter((v) => {
                 return v.ReportType === 'quantity-inventory-logs'
             })
@@ -580,6 +581,7 @@ export default {
                             this.submitted = true
                             setTimeout(() => {
                                 this.submittedMessage = ""
+                                this.submitting = false
                             }, 2000)
                         })
                     } else {
@@ -601,6 +603,7 @@ export default {
                         }
                         this.submittedMessage = res.message
                         this.submitting = false
+                        this.submitted = true
                         setTimeout(() => {
                             window.location = "/"
                         }, 2000)

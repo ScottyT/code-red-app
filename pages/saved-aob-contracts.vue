@@ -43,8 +43,17 @@ export default {
             }
         }
     },
-    async asyncData({ $axios, store }) {
+    async asyncData({ $axios, store, $fire }) {
         try {
+            /* let data = []
+            let reports = []
+            await $fire.auth.currentUser.getIdToken(true).then((idToken) => {
+                data = $axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${idToken}`}})
+            })
+            Promise.resolve(data).then((value) => {
+                reports = value
+                console.log(value)
+            }) */
             let data = await $axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
             return { 
                 contracts: data

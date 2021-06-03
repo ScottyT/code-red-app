@@ -175,7 +175,8 @@ const createCOC = async (req, res) => {
         teamSignDate: req.body.teamSignDate,
         teamMember: req.body.teamMember,
         testimonial: req.body.testimonial,
-        paymentOption: req.body.paymentOption
+        paymentOption: req.body.paymentOption,
+        cardNumber: req.body.cardNumber
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })
@@ -227,7 +228,8 @@ const createAOB = async (req, res) => {
         witnessDate: req.body.witnessDate,
         numberOfRooms: req.body.numberOfRooms,
         numberOfFloors: req.body.numberOfFloors,
-        teamMember: req.body.teamMember
+        teamMember: req.body.teamMember,
+        cardNumber: req.body.cardNumber
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })
