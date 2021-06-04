@@ -35,6 +35,7 @@ export default {
     width:100%;
     height:100%;
     z-index:1;
+    margin-top:0!important;
   }
   &__cta {
     width:100%;

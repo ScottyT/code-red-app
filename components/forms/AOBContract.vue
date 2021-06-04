@@ -1003,7 +1003,8 @@ import {mapGetters, mapActions} from 'vuex'
         paymentOptions: ["Cash", "Card", "Thrive"],
         paymentOption: "",
         existingCreditCard: "",
-        cardToUse: ""
+        cardToUse: "",
+        cardObj: {},
     }),
     watch: {
         insuredEndDate(val) {
@@ -1039,8 +1040,10 @@ import {mapGetters, mapActions} from 'vuex'
             addReport: 'indexDb/addReport',
             checkStorage: 'indexDb/checkStorage'
         }),
-        cardSubmittedValue(params) {
-          this.cardSubmitted = params
+        cardSubmittedValue(...params) {
+            const {isSubmit, cardNumber} = params[0]
+            this.cardObj = params
+            this.cardToUse = cardNumber
         },
         onBegin() {
           const {
@@ -1149,7 +1152,8 @@ import {mapGetters, mapActions} from 'vuex'
             numberOfRooms: this.numberOfRooms,
             numberOfFloors: this.numberOfFloors,
             teamMember: this.getUser,
-            cardNumber: this.cardToUse
+            cardNumber: this.cardToUse,
+            paymentOption: this.paymentOption
           };
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {

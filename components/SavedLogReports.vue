@@ -9,8 +9,8 @@
                 <v-btn class="button--normal" text @click="alertDialog = false">No</v-btn>
             </div>
         </v-dialog>
-        <p v-if="$fetchState.pending">Fetching content...</p>
-        <section class="pdf-item" v-else>
+        
+        <section class="pdf-item">
             <LazyUiBreadcrumbs page="saved-reports" />
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
@@ -235,23 +235,25 @@ export default {
             return this.$nuxt.isOnline
         }
     },
-    async fetch() {
-        await this.$axios.$get(`/api/report/${this.$route.params.reportType}/${this.$route.params.id}`).then((res) => {
-            if (res.error) {
-                this.newreport = true
+    /* async fetch() {
+        await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            this.$axios.$get(`/api/report/${this.$route.params.reportType}/${this.$route.params.id}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                if (res.error) {
+                    this.newreport = true
+                    this.savedreport = this.savedReports.find((v) => {
+                        return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
+                    })
+                    return
+                }
+                this.savedreport = res
+                this.newreport = false
+            }).catch((err) => {
                 this.savedreport = this.savedReports.find((v) => {
                     return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
                 })
-                return
-            }
-            this.savedreport = res
-            this.newreport = false
-        }).catch((err) => {
-            this.savedreport = this.savedReports.find((v) => {
-                return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
             })
         })
-    },
+    }, */
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',

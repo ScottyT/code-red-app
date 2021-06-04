@@ -1,5 +1,5 @@
 <template>
-  <div class="block-group">
+  <div class="block-group__content">
     <UiAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
       <div class="reports-wrapper__data block-group__col" v-for="(item, i) in reportslist" :key="`item-${i}`">

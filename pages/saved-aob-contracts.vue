@@ -66,7 +66,8 @@ export default {
         return {
             contracts: [],
             contentRendered: false,
-            errorMessage: ''
+            errorMessage: '',
+            cards:[]
         }
     },
     methods: {

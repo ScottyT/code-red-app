@@ -795,16 +795,20 @@ export default {
       }, 1000)
     })
   },
-  /* created() {
-    if (this.certificate.paymentOption === 'Card') {
-        this.$axios.$get(`/api/reports/credit-card/${this.contracts.JobId}`).then((res) => {
-            this.cards = res
-            this.cards.forEach((card) => {
+  created() {
+    if (this.contracts.paymentOption === 'Card') {
+        
+        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+          this.$axios.$get(`/api/credit-card/${this.contracts.cardNumber}`, {headers: {authorization: `Bearer ${idToken}`}})
+            .then((res) => {
+              this.cards = res
+              this.cards.forEach((card) => {
                 this.getCardImages(card.cardNumber)
+              })        
             })
-        });
+        })       
     }
-  } */
+  }
 }
 </script>
 <style lang="scss" scoped>

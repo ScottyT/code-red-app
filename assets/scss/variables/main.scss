@@ -47,8 +47,14 @@ $color-red: #b10e0e;
     }
   }
 
-  @if $breakpoint==tabletMid {
+  @if $breakpoint==tabletLandscape {
     @media only screen and (min-width: 1025px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==tabletLandscapeMax {
+    @media only screen and (max-width: 1024px) {
       @content;
     }
   }

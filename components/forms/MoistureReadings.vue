@@ -448,11 +448,11 @@ export default {
         font-size:.95em;
     }
     .form__table--rows {
-        grid-template-columns:1.2fr repeat(12, 1fr);
+        grid-template-columns:100px repeat(12, 1fr);
     }
     input[type=text] {
         margin-bottom:0;
-        @include respond(tabletLargeMax) {
+        @include respond(tabletLandscapeMax) {
             font-size:.9em;
             padding:2px 4px;
         }

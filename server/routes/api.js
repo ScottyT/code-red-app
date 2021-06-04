@@ -86,7 +86,7 @@ router.get('/reports/:ReportType', checkIfAuthenticated, async (req, res) => {
         }
     })
 })
-router.get('/report/:ReportType/:JobId', async (req, res) => {
+router.get('/report/:ReportType/:JobId', checkIfAuthenticated, async (req, res) => {
     await Report.findOne({JobId: req.params.JobId, ReportType: req.params.ReportType}).lean().exec((err, report) => {
         if (err) {
             res.status(500).send('Error')
@@ -147,7 +147,15 @@ router.get('/employee/:email', checkIfAuthenticated, (req, res) => {
     })
 })
 router.get('/employee/:email/reports', checkIfAuthenticated, async (req, res) => {
-    
+    await Report.where('teamMember.email').equals(req.params.email).lean().exec((err, reports) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (reports) {
+            res.status(200).json(reports)
+        } else {
+            res.status(200).json({error: "Oh no! You have created no reports!"})
+        }
+    })
 })
 router.post("/employee/:email/:formType/:JobId/update", updateLogs)
 //router.delete("/employee:email/:formType/:JobId/delete", )

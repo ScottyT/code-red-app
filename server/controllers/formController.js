@@ -229,7 +229,8 @@ const createAOB = async (req, res) => {
         numberOfRooms: req.body.numberOfRooms,
         numberOfFloors: req.body.numberOfFloors,
         teamMember: req.body.teamMember,
-        cardNumber: req.body.cardNumber
+        cardNumber: req.body.cardNumber,
+        paymentOption: req.body.paymentOption
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })

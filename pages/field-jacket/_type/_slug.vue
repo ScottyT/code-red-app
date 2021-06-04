@@ -1,7 +1,8 @@
 <template>
     <p v-if="$nuxt.isOffline">You must be online to view a report</p>
     <div class="report-details-wrapper" v-else>
-        <UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
+        <p v-if="$fetchState.pending">Fetching content...</p>
+        <div v-else><UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1200" :manual-pagination="false"
@@ -51,7 +52,6 @@
                     <PdfLogs :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
                  </vue-html2pdf>
             </client-only>
-            <!-- <LazyLogsPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
         </span>
         <span v-if="report.formType === 'chart-report'">
@@ -62,81 +62,54 @@
                     <PdfSketch :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
-            <!-- <LazySketchPdf :formType="formType" :formName="formName" :reportType="reportType" :report="data" company="Water Emergency Services Incorporated" slot="pdf-content" /> -->
             <button class="button--normal" @click="generateReport(0)">Download PDF</button>
         </span>
         <span v-if="report.formType === 'moisture-map'">
             <h1>{{formName}} for job {{jobId}}</h1>
-            <LazySavedLogReports :formName="formName" :formType="formType" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" />
-        </span>
+            <LazySavedLogReports :formName="formName" :reportType="reportType" :report="report" company="Water Emergency Services Incorporated" />
+        </span></div>
     </div>
 </template>
 <script>
 import VueHtml2pdf from 'vue-html2pdf'
 import {mapGetters} from 'vuex'
-export default {
-    layout: "dashboard-layout",
-    head() {
-        return {
-            title: "Report -" + this.reportType + '-' + this.jobId
-        }
-    },
-    data() {
-        return {
-            report: {},
-            contentRendered: false
-        }
-    },
+import { defineComponent, ref, onMounted, useAsync, computed } from '@nuxtjs/composition-api';
+import useReports from '@/composable/reports';
+export default defineComponent({
+    layout: 'dashboard-layout',
     components: {
         VueHtml2pdf
     },
-    async middleware({store, redirect}) {
-        if (store.state.users.user.role !== "admin") {
-            return redirect("/")
-        }
-    },
-    async asyncData({$axios, params, store}) {
-        try {
-            var formName = ""
-            var reportType = params.type;
-            var jobId = params.slug;
-            var token = store.state.users.user.token
-            let data = await $axios.$get(`/api/report/${params.type}/${params.slug}`, {headers: {authorization: `Bearer ${token}`}});
-            switch (reportType) {
+    setup(props, {root, refs}) {
+        let authUser = root.$fire.auth.currentUser
+        const { report, getReport } = useReports()
+        const formName = ref("")
+        const company = ref("")
+        let reportType = root.$route.params.type
+        switch (reportType) {
                 case "moisture-sketch":
-                    formName = "Moisture Mapping Location and Sketch"
+                    formName.value = "Moisture Mapping Location and Sketch"
                     break;
                 case "measurements-sketch":
-                    formName = "Measurements and Sketch"
+                    formName.value = "Measurements and Sketch"
                     break;
                 case "equipment-location-sketch":
-                    formName = "Equipment Location and Sketch"
+                    formName.value = "Equipment Location and Sketch"
                     break;
                 case "atmospheric-readings":
-                    formName = "Atmospheric Readings"
+                    formName.value = "Atmospheric Readings"
                     break;
                 case "quantity-inventory-logs":
-                    formName = "Unit Quantity and Equipment Inventory"
+                    formName.value = "Unit Quantity and Equipment Inventory"
                     break;
                 default:
-                    formName = "Sketch Form"
+                    formName.value = "Sketch Form"
             }
-            return {
-                report: data,
-                jobId,
-                reportType,
-                formName
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
-    },
-    computed: {
-        ...mapGetters({user: 'users/getUser'}),
-        htmlToPdfOptions() {
+        let jobId = root.$route.params.slug
+        const htmlToPdfOptions = computed(() => {
             return {
                 margin:[20, 10, 20, 10],
-                filename: `${this.reportType}-${this.jobId}`,
+                filename: `${reportType}-${jobId}`,
                 image: {
                     type: "jpeg",
                     quality: 0.98
@@ -154,25 +127,28 @@ export default {
                     hotfixes: ['px_scaling']
                 }
             }
+        })
+        const generateReport = async () => {
+            refs.html2Pdf0.generatePdf()
         }
-    },
-    methods: {
-        async generateReport(key) {
-            //this.htmlToPdfOptions.filename = `coc-${this.report[key].JobId}`
-            this.$refs.html2Pdf0.generatePdf()
-        },
-        async beforeDownload({ html2pdf, options, pdfContent }) {
+        const beforeDownload = async ({ html2pdf, options, pdfContent }) => {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
                 const totalPages = pdf.internal.getNumberOfPages()
                 pdf.addPage()
             })
-        },
-        startPagination() {
-            console.log("PDF has started pagination")
-        },
-        hasPaginated() {
-            console.log("PDF has been paginated")
+        }
+        getReport(`${reportType}/${jobId}`, authUser)
+        
+        return {
+            report,
+            reportType,
+            htmlToPdfOptions,
+            generateReport,
+            beforeDownload,
+            formName,
+            jobId,
+            company
         }
     }
-}
+})
 </script>

@@ -26,15 +26,16 @@
             </form>
             
         </v-card>
-        <div>
-            <!-- <p v-if="$fetchState.pending">Fetching reports...</p> -->
-            <div>{{reports}}</div>
+        <p v-if="$fetchState.pending">Fetching reports...</p>
+        <div class="block-group" v-else>
+            <LayoutReports :reports="reports" theme="dark" />
         </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
 import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
+import useReports from '@/composable/reports'
 export default defineComponent({
     setup(props, {root}) {
         const authUser = root.$fire.auth.currentUser
@@ -43,17 +44,11 @@ export default defineComponent({
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
-        const reports = computed(() => store.state.reports.all)
         const user = computed(() => store.getters['users/getUser'])
         const avatarurl = computed(() => store.getters['users/getAvatar'])
-        async function fetchReports(user) { store.dispatch('reports/fetchReports', user)};
-        /* const { fetch, fetchState } = useFetch(async () => {
-            reports.value = await axios.get(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${user.value.token}`}})
-        }) */
-        //const { user, fetchUser } = useUsers();
-        /* fetch()
-        fetchState */
-        fetchReports(authUser)
+        const { reports, getUserReports } = useReports()
+
+        getUserReports(authUser.email, authUser)
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
@@ -63,9 +58,9 @@ export default defineComponent({
             savedAvatar()
             avatar.value = {}
         }
+
         return {
             reports,
-            fetchReports,
             uploadImage,
             savedAvatar,
             avatarurl,
@@ -94,6 +89,7 @@ export default defineComponent({
 .user-page {
     max-width:1200px;
     margin:auto;
+    margin-top:40px;
 }
 .user-card {
     padding:10px 15px;

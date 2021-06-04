@@ -153,6 +153,11 @@ export default {
         &--light {
             color:black;
         }
+        &--dark {
+            color:$color-black;
+            background-color:$color-white;
+            padding:5px 8px;
+        }
     }
     &__placeholder {
         color:rgba(0,0,0, .6);
