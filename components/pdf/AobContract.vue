@@ -7,7 +7,7 @@
                         <img src="https://images.prismic.io/water-emergency-services/31b3f2ab-d44e-4f77-8072-faef63fcceb5_WESI+new+Shield+Graphic_800x800.png?auto=compress,format" />
                     </div>
                     <div class="text-center pdf-first-section">
-                        <h1>{{company}}</h1>
+                        <h2>AOB & Mitigation Contract</h2>
                         <p>
                             This is not a contract to Repair/Rebuild/Restore any Property
                             {{company}} {{abbreviation !== '' ? '('+abbreviation+')' : ''}} is an independent janitorial contractor.
@@ -104,6 +104,7 @@
                                             exclusively
                                             to {{abbreviation}}.
                                         </li>
+                                         <!-- <div class="html2pdf__page-break"/> -->
                                         <li>
                                             Property Representative understands and agrees that any portion of work, deductible(s),
                                             betterment, depreciation, or additional work requested by the Property Representative or
@@ -187,7 +188,7 @@
                                     </li>
                                 </ol>
                             </li>
-                            <div class="html2pdf__page-break"/>
+                            <!-- <div class="html2pdf__page-break"/> -->
                             <li>
                                 <span class="font-weight-bold">{{abbreviation}} is contracted for its services including equipment rental
                                 services as set forth herein:</span>
@@ -224,6 +225,7 @@
                                         upon the date of execution of this Equipment Rental Agreement and will be paid on the agreed
                                         day(s) throughout the Term.
                                     </li>
+                                    <div class="html2pdf__page-break"/>
                                     <li>
                                         The Property Representative will use the equipment in a good and careful manner and will comply
                                         with all the manufacturer’s requirements and recommendations respecting the equipment and with
@@ -270,7 +272,7 @@
                                         The equipment is the property of {{abbreviation}} and will remain the property of {{abbreviation}}
                                         unless otherwise provided herein.
                                     </li>
-                                    <div class="html2pdf__page-break"/>
+                                    <!-- <div class="html2pdf__page-break"/> -->
                                     <li>
                                         The Property Representative will not encumber the equipment or allow the equipment to be encumbered or
                                         pledge the equipment as security in any manner.
@@ -341,7 +343,8 @@
                                     behalf thereof) of this Agreement, and will formally direct the insurance company to the
                                     proper party if contacted regarding actions and/or services authorized in this Agreement.
                                 </li>
-                                <li>
+                                <div class="html2pdf__page-break"/>
+                                <li style="margin-top:15px;">
                                     <p>GOOD FAITH:
                                     It is the responsibility of the Property Representative to act in “good faith”. To the extent
                                     that any of the Property Representative’s actions or behaviors are deemed inappropriate
@@ -361,8 +364,8 @@
                                     depending on the skills and thoroughness of the adjustor, analyst and {{abbreviation}}. The goal is
                                     to make {{abbreviation}} whole.</p>
                                 </li>
-                                <div class="html2pdf__page-break"/>
-                                <li>
+                                
+                                <li >
                                     FRAUD:
                                     In most statesthe Property Representative is legally required to pay its deductible. Property
                                     Representative understands that Available Proceeds as defined and calculated herein in this
@@ -450,7 +453,7 @@
                                     commenced except by the written agreement of both parties.
                                 </li>
                                 <div class="html2pdf__page-break"/>
-                                <li>
+                                <li style="margin-top:15px;">
                                     <p>
                                     INTEREST:
                                     If {{abbreviation}} is not paid by the Property Representative within three (3) days of receipt of the
@@ -485,7 +488,6 @@
                                 </li>
                                 </ol>                                
                             </li>
-                            <!-- <div class="html2pdf__page-break"/> -->
                             <li>
                                 <span class="font-weight-bold">Entire Agreement and Jurisdiction:</span>
                                 <div class="report-details__data-field">
@@ -527,8 +529,7 @@
                                 per this Agreement. This payment will be applied to the balance of the Available Proceeds as
                                 defined above.
                             </li>
-                            <div class="html2pdf__page-break"/>
-                            <li style="margin-top:10px;">
+                            <li>
                                 Pending Insurance<br />
                                 If insurance coverage is in question on the Subject Property by the Property Representative, then
                                 the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
@@ -543,7 +544,7 @@
                                 reserve said services and equipment herein per this Agreement. This payment will be applied to
                                 the balance of the Available Proceeds as defined above.
                             </li>
-                            
+                            <!-- <div class="html2pdf__page-break"/> -->
                             <li>
                                 Non-Insured<br />
                                 If there is not any insurance coverage on the Subject Property, then Property Representative
@@ -556,6 +557,7 @@
                             </li>
                         </ol>
                     </div>
+                    <div class="html2pdf__page-break"/>
                      <!-- <div class="html2pdf__page-break"/> -->
                     <div class="report-details__bordered pdf-detail">
                         <div class="report-details__data report-details__data--row">
@@ -640,11 +642,11 @@
                         <label>Minimum believed Square Foot as defined above: </label>
                         <div>{{contracts.minimumSqft}}</div>
                     </div>
-                    <div class="html2pdf__page-break"/>
                     <div class="pdf-item">
                         <p class="text-center detail-margin-top">Property Representative understands Water Emergency Services Incorporated is not affiliated, associated, endorsed 
                             by, or in any way officially connected with any other company, agency or franchise.</p>
                     </div>
+                    
                     <div class="report-details__bordered">
                         <div class="report-details__data report-details__data--row">
                             <label>Driver's License Number:</label>
@@ -746,7 +748,7 @@
                                     <img :src="image.url" />
                                 </div>
                             </div>
-                            <div class="html2pdf__page-break"/>
+                            <!-- <div class="html2pdf__page-break"/> -->
                         </div>
                     </div>
             </section>
@@ -812,6 +814,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.report-details__listing {
+    font-size:14px;
+}
 .data-section {
     margin: 20px 0;
     display:grid;
@@ -831,6 +836,7 @@ export default {
         width:100%;
         padding:5px;
         margin-top:5px;
+        font-size:14px!important;
         display:grid;
         grid-column:1 span;
         grid-template-columns:1fr;

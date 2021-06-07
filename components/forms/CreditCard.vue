@@ -37,11 +37,6 @@
             <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderInfo.phoneNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input--input-group">
-            <label for="cardNumber" class="form__label">Card Number:</label>
-            <input type="text" class="form__input" id="cardNumber" v-model="cardNumber" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
         </div>
         <div class="form__form-group">
           <h3 class="form__label">Debit/Credit Card</h3>
@@ -83,31 +78,9 @@
       </fieldset>
       <fieldset v-if="currentStep === 2" class="form__form-group form__form-group form__form-group--info-box">
         <div class="form__form-group--left-side">
-          <h3 class="form__label">Billing Address*</h3>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input--input-group">
-            <label for="addressLine1" class="form__label">Address Line 1:</label>
-            <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider name="Address Line 2" class="form__input--input-group">
-            <label for="addressLine2" class="form__label">Address Line 2:</label>
-            <input id="addressLine2" type="text" v-model="billingAddress.address2" class="form__input" />
-          </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input--input-group">
-            <label for="city" class="form__label">City:</label>
-            <input id="city" type="text" v-model="billingAddress.city" class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input--input-group">
-            <label for="state" class="form__label">State:</label>
-            <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input--input-group">
-            <label for="zip" class="form__label">Zip:</label>
-            <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
+          <div class="credit-card">
+
+          </div>
         </div>
         <div class="form__form-group--right-side">
           <h3 class="form__label">Credit Card*</h3>
@@ -125,6 +98,12 @@
             <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
+          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input-group form__input-group--long">
+            <label for="cardNumber" class="form__label">Card Number:</label>
+            <input type="text" class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" id="cardNumber" v-model="cardNumber" />
+            <!-- <imask-input v-model="cardNumber" :mask="mask" :unmask="true" :dispatch="cardNumberMask" class="form__input" @accept="onAccept" /> -->
+            <span class="form__input--error">{{ errors[0] }}</span>
+          </ValidationProvider>
           <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group">
             <label for="expDate" class="form__label">Expiration Date (mm/yy):</label>
             <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
@@ -140,6 +119,35 @@
             <input type="text" id="cvc" v-model="billingAddress.zip" readonly class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
+        </div>
+        <div class="form__section">
+          <h3 class="form__label">Billing Address*</h3>
+          <div class="form__form-group">
+            <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input-group form__input-group--long">
+              <label for="addressLine1" class="form__label">Address Line 1:</label>
+              <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider name="Address Line 2" class="form__input-group form__input-group--long">
+              <label for="addressLine2" class="form__label">Address Line 2:</label>
+              <input id="addressLine2" type="text" v-model="billingAddress.address2" class="form__input" />
+            </ValidationProvider>
+            <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input-group form__input-group--normal">
+              <label for="city" class="form__label">City:</label>
+              <input id="city" type="text" v-model="billingAddress.city" class="form__input" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input-group form__input-group--normal">
+              <label for="state" class="form__label">State:</label>
+              <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--long">
+              <label for="zip" class="form__label">Zip:</label>
+              <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
         </div>
         <div class="form__form-group form__form-group--inline">
           <p>I, {{repPrint}}, authorize {{company}}
@@ -182,9 +190,14 @@
     </ValidationObserver>
 </template>
 <script>
+import { cardMasks } from "@/masks";
+//import { IMaskDirective } from "vue-imask";
 import {mapActions, mapGetters} from 'vuex';
   export default {
     name: "CreditCard",
+   /*  directives: {
+      imask: IMaskDirective
+    }, */
     data: (vm) => ({
         currentStep:1,
         message: '',
@@ -231,7 +244,8 @@ import {mapActions, mapGetters} from 'vuex';
         cardTypes: ["Debit", "Credit"],
         selectedCardType: "",
         frontCardValue: '',
-        backCardValue: ''
+        backCardValue: '',
+        cardMasks: cardMasks
     }),
     props: {
         jobId: {
@@ -271,10 +285,80 @@ import {mapActions, mapGetters} from 'vuex';
         }
     },
     methods: {
+      /* var cardnumber_mask = new IMask(cardnumber, {
+    mask: [
+        {
+            mask: '0000 000000 00000',
+            regex: '^3[47]\\d{0,13}',
+            cardtype: 'american express'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
+            cardtype: 'discover'
+        },
+        {
+            mask: '0000 000000 0000',
+            regex: '^3(?:0([0-5]|9)|[689]\\d?)\\d{0,11}',
+            cardtype: 'diners'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(5[1-5]\\d{0,2}|22[2-9]\\d{0,1}|2[3-7]\\d{0,2})\\d{0,12}',
+            cardtype: 'mastercard'
+        },
+        
+        {
+            mask: '0000 000000 00000',
+            regex: '^(?:2131|1800)\\d{0,11}',
+            cardtype: 'jcb15'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:35\\d{0,2})\\d{0,12}',
+            cardtype: 'jcb'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:5[0678]\\d{0,2}|6304|67\\d{0,2})\\d{0,12}',
+            cardtype: 'maestro'
+        },
+        
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^4\\d{0,15}',
+            cardtype: 'visa'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^62\\d{0,14}',
+            cardtype: 'unionpay'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            cardtype: 'Unknown'
+        }
+    ],
+    dispatch: function (appended, dynamicMasked) {
+        var number = (dynamicMasked.value + appended).replace(/\D/g, '');
+
+        for (var i = 0; i < dynamicMasked.compiledMasks.length; i++) {
+            let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
+            if (number.match(re) != null) {
+                return dynamicMasked.compiledMasks[i];
+            }
+        }
+    }
+}); */
         ...mapActions({
             addCreditCard: 'indexDb/addCreditCard',
             checkStorage: 'indexDb/checkStorage'
         }),
+        onAcceptCardType(e) {
+          let maskRef = e.detail;
+          //let type = maskRef.masked.currentMask.cardTypes
+          console.log(maskRef)
+        },
         goToStep(step) {
           if (step < 1) {
             return;
@@ -456,7 +540,14 @@ import {mapActions, mapGetters} from 'vuex';
     }
   }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+.credit-card {
+  width:100%;
+  max-width:400px;
+  max-height:251px;
+  height:54vw;
+  padding:20px;
+}
 .card-upload {
   display:flex;
   flex-direction:column;

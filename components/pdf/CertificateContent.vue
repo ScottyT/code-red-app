@@ -222,7 +222,6 @@
                   <img :src="image.url" />
                 </div>
               </div>
-              <div class="html2pdf__page-break"/>
             </div>
           </div>
       </section>
@@ -345,6 +344,10 @@ export default {
 }
 .pdf-detail {
   padding-bottom: 10px;
+  max-width:700px;
+  width:100%;
+  margin-left:auto;
+  margin-right:auto;
 
   label {
     font-weight:bold;

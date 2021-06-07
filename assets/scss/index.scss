@@ -357,8 +357,6 @@ button {
     &--input-group {
       padding: 5px 25px 5px 5px;
       display:block;
-      grid-template-columns: auto 1fr;
-      grid-template-rows: 1fr 1fr;
       width:auto;
 
       @include respond(tabletLargeMax) {
@@ -425,7 +423,7 @@ button {
     }
 
     &--short {
-      max-width:300px;
+      max-width:390px;
       width:auto;
     }
 
@@ -437,6 +435,18 @@ button {
     &--icon {
       color: $color-black;
       font-size: 23px;
+    }
+  }
+
+  &__input-group {
+    padding: 5px 25px 5px 5px;
+    display:block;
+    width:100%;
+    &--normal {
+      max-width:200px;
+    }
+    &--long {
+      max-width:300px;
     }
   }
 
@@ -811,7 +821,7 @@ button {
   &__data-sig {
     //height:150px;
     > div {
-      height:245px;
+      height:180px;
     }
   }
 }
