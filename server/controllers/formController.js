@@ -340,7 +340,7 @@ const createCreditCard = async (req, res) => {
         cardNumber: req.body.cardNumber,
         cardholderName: req.body.cardholderName,
         expirationDate: req.body.expDate,
-        cvcNum: req.body.cvcNum,
+        cvvNum: req.body.cvvNum,
         cardholderZip: req.body.cardholderZip,
         customerSig: req.body.cusSign,
         customerSignDate: req.body.customerSigDate

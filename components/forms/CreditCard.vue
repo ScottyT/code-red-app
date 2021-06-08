@@ -3,12 +3,12 @@
       <h2>{{message}}</h2>
       <h2 class="alert alert--error">{{errorMessage}}</h2>
       <p class="text-decoration-underline text-center"><strong>THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</strong></p>
-      <p class="text-center">{{company}} ({{abbreviation}}) is an independent janitorial contractor.
+      <p class="text-center">{{company}} {{abbreviation !== '' ? '('+abbreviation+')' : ''}} is an independent janitorial contractor.
         We are not affiliated, associated, endorsed by or in any way officially connected with any other company,
         agency or franchise.</p>
       <p>Please complete all fields. You may cancel this authorization at any time by contacting us. This
         authorization will remain in effect until cancelled.</p>
-        <form ref="cardForm" @submit.prevent="submitCard">
+        <form :class="`${partOfLastSection ? '' : 'form-wrapper'}`" ref="cardForm" @submit.prevent="submitCard">
       <fieldset v-if="currentStep === 1" class="form__form-group form__form-group--info-box form__form-group--column">
         <h3 class="form__label">Cardholder Name* (as shown on card)</h3>
         <div class="d-flex flex-wrap">
@@ -77,45 +77,40 @@
         </div>
       </fieldset>
       <fieldset v-if="currentStep === 2" class="form__form-group form__form-group form__form-group--info-box">
-        <div class="form__form-group--left-side">
-          <div class="credit-card">
-
-          </div>
-        </div>
-        <div class="form__form-group--right-side">
-          <h3 class="form__label">Credit Card*</h3>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
+        <LayoutCreditCard :cardNumber="cardNumber" :expirationDate="expirationDate" :cvv="cvvNum" :name="cardName" />
+        <div class="card-form">
+          <h3 class="form__label card-form__title">Credit Card*</h3>
+          <!-- <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
             <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
               <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
               <label :for="card" class="form__label">{{card}}</label>            
             </div>
             <input :required="selectedCard.card == 'Other'" v-if="selectedCard.card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
+          </ValidationProvider> -->
           
-          <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group">
+          <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group card-input">
             <label for="cardholderName" class="form__label">Cardholder Name</label>
             <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider vid="cardNumber" rules="required|numeric" v-slot="{errors}" name="Card number" class="form__input-group form__input-group--long">
-            <label for="cardNumber" class="form__label">Card Number:</label>
-            <input type="text" class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" id="cardNumber" v-model="cardNumber" />
-            <!-- <imask-input v-model="cardNumber" :mask="mask" :unmask="true" :dispatch="cardNumberMask" class="form__input" @accept="onAccept" /> -->
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group">
-            <label for="expDate" class="form__label">Expiration Date (mm/yy):</label>
+          <span class="form__input--input-group card-input">
+            <label for="cardNumber" class="form__label">Card Number</label>
+            <input class="form__input" v-imask="cardMasks" @accept="onAccept" @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
+            <span>{{selectedCardType}}</span>
+          </span>
+          <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group card-input">
+            <label for="expDate" class="form__label">Expiration Date (mm/yy)</label>
             <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required|length:3|numeric" v-slot="{errors}" name="CVC number" class="form__input--input-group">
-            <label for="cvc" class="form__label">CVC Number:</label>
-            <input type="number" id="cvc" v-model="cvcNum" class="form__input" />
+          <ValidationProvider rules="required|length:3|numeric" v-slot="{errors}" name="CVV number" class="form__input--input-group card-input">
+            <label for="cvv" class="form__label">CVV Number</label>
+            <input type="number" id="cvv" v-model="cvvNum" class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group">
-            <label for="cvc" class="form__label">Cardholder zip code:</label>
+          <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group card-input">
+            <label for="cvc" class="form__label">Cardholder zip code</label>
             <input type="text" id="cvc" v-model="billingAddress.zip" readonly class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
@@ -124,26 +119,26 @@
           <h3 class="form__label">Billing Address*</h3>
           <div class="form__form-group">
             <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input-group form__input-group--long">
-              <label for="addressLine1" class="form__label">Address Line 1:</label>
+              <label for="addressLine1" class="form__label">Address Line 1</label>
               <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
             <ValidationProvider name="Address Line 2" class="form__input-group form__input-group--long">
-              <label for="addressLine2" class="form__label">Address Line 2:</label>
+              <label for="addressLine2" class="form__label">Address Line 2</label>
               <input id="addressLine2" type="text" v-model="billingAddress.address2" class="form__input" />
             </ValidationProvider>
             <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input-group form__input-group--normal">
-              <label for="city" class="form__label">City:</label>
+              <label for="city" class="form__label">City</label>
               <input id="city" type="text" v-model="billingAddress.city" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
             <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input-group form__input-group--normal">
-              <label for="state" class="form__label">State:</label>
+              <label for="state" class="form__label">State</label>
               <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
             <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--long">
-              <label for="zip" class="form__label">Zip:</label>
+              <label for="zip" class="form__label">Zip</label>
               <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
@@ -191,15 +186,11 @@
 </template>
 <script>
 import { cardMasks } from "@/masks";
-//import { IMaskDirective } from "vue-imask";
 import {mapActions, mapGetters} from 'vuex';
   export default {
     name: "CreditCard",
-   /*  directives: {
-      imask: IMaskDirective
-    }, */
     data: (vm) => ({
-        currentStep:1,
+        currentStep:2,
         message: '',
         errorMessage: null,
         cardholderInfo: {
@@ -223,9 +214,9 @@ import {mapActions, mapGetters} from 'vuex';
             card: "",
             otherCard: ""
         },
-        cardNumber: null,
+        cardNumber: "",
         expirationDate: "",
-        cvcNum: "",
+        cvvNum: "",
         cusSig: {
             data: '',
             isEmpty: true
@@ -256,10 +247,12 @@ import {mapActions, mapGetters} from 'vuex';
             type: String
         },
         step: {
-            type: Number
+            type: Number,
+            default: 1
         },
         partOfLastSection: {
-            type: Boolean
+            type: Boolean,
+            default:false
         },
         company: {
           type: String
@@ -285,79 +278,29 @@ import {mapActions, mapGetters} from 'vuex';
         }
     },
     methods: {
-      /* var cardnumber_mask = new IMask(cardnumber, {
-    mask: [
-        {
-            mask: '0000 000000 00000',
-            regex: '^3[47]\\d{0,13}',
-            cardtype: 'american express'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
-            cardtype: 'discover'
-        },
-        {
-            mask: '0000 000000 0000',
-            regex: '^3(?:0([0-5]|9)|[689]\\d?)\\d{0,11}',
-            cardtype: 'diners'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^(5[1-5]\\d{0,2}|22[2-9]\\d{0,1}|2[3-7]\\d{0,2})\\d{0,12}',
-            cardtype: 'mastercard'
-        },
-        
-        {
-            mask: '0000 000000 00000',
-            regex: '^(?:2131|1800)\\d{0,11}',
-            cardtype: 'jcb15'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:35\\d{0,2})\\d{0,12}',
-            cardtype: 'jcb'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:5[0678]\\d{0,2}|6304|67\\d{0,2})\\d{0,12}',
-            cardtype: 'maestro'
-        },
-        
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^4\\d{0,15}',
-            cardtype: 'visa'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            regex: '^62\\d{0,14}',
-            cardtype: 'unionpay'
-        },
-        {
-            mask: '0000 0000 0000 0000',
-            cardtype: 'Unknown'
-        }
-    ],
-    dispatch: function (appended, dynamicMasked) {
-        var number = (dynamicMasked.value + appended).replace(/\D/g, '');
-
-        for (var i = 0; i < dynamicMasked.compiledMasks.length; i++) {
-            let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
-            if (number.match(re) != null) {
-                return dynamicMasked.compiledMasks[i];
-            }
-        }
-    }
-}); */
         ...mapActions({
             addCreditCard: 'indexDb/addCreditCard',
             checkStorage: 'indexDb/checkStorage'
         }),
-        onAcceptCardType(e) {
-          let maskRef = e.detail;
-          //let type = maskRef.masked.currentMask.cardTypes
-          console.log(maskRef)
+        onAccept(e) {
+          var maskRef = e.detail
+          var dynamicMask = maskRef.masked;
+          var number = (dynamicMask.value).replace(/\D/g, '');
+          for (var i = 0; i < dynamicMask.compiledMasks.length; i++) {
+            const re = new RegExp(dynamicMask.compiledMasks[i].regex)            
+            if (number.match(re) != null && !dynamicMask.compiledMasks[i].isComplete) {
+              this.cardNumber = dynamicMask.compiledMasks[i].value
+              console.log(dynamicMask.compiledMasks[i])
+              this.selectedCardType = dynamicMask.compiledMasks[i].cardtype
+              return dynamicMask.compiledMasks[i]
+            }
+          }
+          
+         return maskRef.value
+        },
+        onComplete(e) {
+          const maskRef = e.detail;
+          console.log('complete', maskRef.unmaskedValue)
         },
         goToStep(step) {
           if (step < 1) {
@@ -483,7 +426,7 @@ import {mapActions, mapGetters} from 'vuex';
                   cardNumber: this.cardNumber,
                   cardholderName: this.cardName,
                   expDate: this.expirationDate,
-                  cvcNum: this.cvcNum,
+                  cvvNum: this.cvvNum,
                   cardholderZip: this.billingAddress.zip,
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
@@ -541,13 +484,6 @@ import {mapActions, mapGetters} from 'vuex';
   }
 </script>
 <style lang="scss" scoped>
-.credit-card {
-  width:100%;
-  max-width:400px;
-  max-height:251px;
-  height:54vw;
-  padding:20px;
-}
 .card-upload {
   display:flex;
   flex-direction:column;
@@ -555,6 +491,37 @@ import {mapActions, mapGetters} from 'vuex';
   width:100%;
   &__message {
     grid-column:3;
+  }
+}
+.card-form {
+  display:grid;
+  @include respond(tabletLarge) {   
+    grid-template-columns: auto auto auto;
+    grid-template-areas: 'title title title'
+      'name name name'
+      'number number number'
+      'date cvc zip';
+    max-width:670px;
+  }
+  &__title {
+    grid-area:title;
+  }
+}
+.card-input {
+  &:nth-of-type(1) {
+    grid-area:name;
+  }
+  &:nth-of-type(2) {
+    grid-area:number;
+  }
+  &:nth-of-type(3) {
+    grid-area:date;
+  }
+  &:nth-of-type(4) {
+    grid-area:cvc;
+  }
+  &:nth-of-type(5) {
+    grid-area:zip;
   }
 }
 </style>

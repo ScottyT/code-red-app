@@ -331,6 +331,12 @@ button {
     border-bottom: 1px solid $dark-primary-1;
     margin-bottom:10px;
 
+    &:focus-visible {
+      border-bottom:2px solid $color-red;
+      outline:none;
+      transition:border-bottom .2s ease-in;
+    }
+
     &--cusSig {
       color: $color-white;
     }
