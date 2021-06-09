@@ -56,7 +56,7 @@ export default defineComponent ({
         const hidden = ref(true)
         const onClickOutside = () => {
             hidden.value = true
-        }    
+        }
         //fetchAvatar(user.email)
         return {
             user,

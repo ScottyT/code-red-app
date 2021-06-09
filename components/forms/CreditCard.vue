@@ -77,41 +77,34 @@
         </div>
       </fieldset>
       <fieldset v-if="currentStep === 2" class="form__form-group form__form-group form__form-group--info-box">
-        <LayoutCreditCard :cardNumber="cardNumber" :expirationDate="expirationDate" :cvv="cvvNum" :name="cardName" />
+        <LayoutCreditCard :cardNumber="cardNumber" :symbolImage="selectedCard !== '' ? `/${cardCompany}.png` : ''"
+          :expirationDate="expirationDate" :cvv="cvvNum" :name="cardName" />
         <div class="card-form">
           <h3 class="form__label card-form__title">Credit Card*</h3>
-          <!-- <ValidationProvider rules="required" v-slot="{errors}" name="Card" class="form__checkbox-wrapper--long">
-            <div class="form__input--radio" v-for="(card, i) in creditCards" :key="`card-${i}`">
-              <input type="radio" :id="card" v-model="selectedCard.card" :value="card" />
-              <label :for="card" class="form__label">{{card}}</label>            
-            </div>
-            <input :required="selectedCard.card == 'Other'" v-if="selectedCard.card == 'Other'" type="text" v-model="selectedCard.otherCard" class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider> -->
-          
           <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group card-input">
             <label for="cardholderName" class="form__label">Cardholder Name</label>
-            <input type="text" id="cardholderName" class="form__input" v-model="cardName" readonly />
+            <input type="text" id="cardholderName" class="form__input" v-model="cardName" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <span class="form__input--input-group card-input">
             <label for="cardNumber" class="form__label">Card Number</label>
-            <input class="form__input" v-imask="cardMasks" @accept="onAccept" @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
-            <span>{{selectedCardType}}</span>
+            <input class="form__input" v-imask="cardMasks" @accept="onAccept" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
+            <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
+            <span>{{selectedCard}}</span>
           </span>
           <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group card-input">
             <label for="expDate" class="form__label">Expiration Date (mm/yy)</label>
             <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required|length:3|numeric" v-slot="{errors}" name="CVV number" class="form__input--input-group card-input">
+          <ValidationProvider rules="required|numeric" v-slot="{errors}" name="CVV number" class="form__input--input-group card-input">
             <label for="cvv" class="form__label">CVV Number</label>
-            <input type="number" id="cvv" v-model="cvvNum" class="form__input" />
+            <imask-input class="form__input" v-model="cvvNum" :max="cardCompany !== 'american-express' ? 1000 : 10000" :mask="Number" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group card-input">
-            <label for="cvc" class="form__label">Cardholder zip code</label>
-            <input type="text" id="cvc" v-model="billingAddress.zip" readonly class="form__input" />
+            <label for="zipCard" class="form__label">Cardholder zip code</label>
+            <input type="text" id="zipCard" v-model="billingAddress.zip" readonly class="form__input" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </div>
@@ -185,10 +178,14 @@
     </ValidationObserver>
 </template>
 <script>
-import { cardMasks } from "@/masks";
+import { cardMasks, cvvMasks } from "@/masks";
 import {mapActions, mapGetters} from 'vuex';
+import {IMaskComponent} from 'vue-imask';
   export default {
     name: "CreditCard",
+    components: {
+      'imask-input': IMaskComponent
+    },
     data: (vm) => ({
         currentStep:2,
         message: '',
@@ -210,10 +207,6 @@ import {mapActions, mapGetters} from 'vuex';
         creditCards: [
             "Mastercard", "VISA", "Discover", "Amex", "Other"
         ],
-        selectedCard: {
-            card: "",
-            otherCard: ""
-        },
         cardNumber: "",
         expirationDate: "",
         cvvNum: "",
@@ -234,9 +227,12 @@ import {mapActions, mapGetters} from 'vuex';
         uploaded: false,
         cardTypes: ["Debit", "Credit"],
         selectedCardType: "",
+        selectedCard: "",
         frontCardValue: '',
         backCardValue: '',
-        cardMasks: cardMasks
+        cardMasks: cardMasks,
+        cvvMasks: cvvMasks,
+        cardCompany: ''
     }),
     props: {
         jobId: {
@@ -284,23 +280,38 @@ import {mapActions, mapGetters} from 'vuex';
         }),
         onAccept(e) {
           var maskRef = e.detail
+          const type = maskRef.masked.currentMask.cardtype
           var dynamicMask = maskRef.masked;
-          var number = (dynamicMask.value).replace(/\D/g, '');
-          for (var i = 0; i < dynamicMask.compiledMasks.length; i++) {
-            const re = new RegExp(dynamicMask.compiledMasks[i].regex)            
-            if (number.match(re) != null && !dynamicMask.compiledMasks[i].isComplete) {
-              this.cardNumber = dynamicMask.compiledMasks[i].value
-              console.log(dynamicMask.compiledMasks[i])
-              this.selectedCardType = dynamicMask.compiledMasks[i].cardtype
-              return dynamicMask.compiledMasks[i]
+          this.selectedCard = ""
+          if (type !== "Unknown") {
+            this.cardCompany = dynamicMask.currentMask.cardtype
+            switch (type) {
+              case "american-express":
+                this.selectedCard = "AMEX"
+                break;
+              case "mastercard":
+                this.selectedCard = "Mastercard"
+                break;
+              case "visa":
+                this.selectedCard = "VISA"
+                break;
+              case "discover":
+                this.selectedCard = "Discover"
+                break;
+              case "jcb":
+                this.selectedCard = "JCB"
+                break;
+              case "maestro":
+                this.selectedCard = "Maestro"
+                break;
+              default:
+                this.selectedCard = "Other"
             }
           }
-          
-         return maskRef.value
+          this.cardNumber = maskRef.value
         },
         onComplete(e) {
           const maskRef = e.detail;
-          console.log('complete', maskRef.unmaskedValue)
         },
         goToStep(step) {
           if (step < 1) {
@@ -508,6 +519,7 @@ import {mapActions, mapGetters} from 'vuex';
   }
 }
 .card-input {
+  position:relative;
   &:nth-of-type(1) {
     grid-area:name;
   }
@@ -522,6 +534,13 @@ import {mapActions, mapGetters} from 'vuex';
   }
   &:nth-of-type(5) {
     grid-area:zip;
+  }
+  &__symbol {
+    height:40px;
+    width:70px;
+    position:absolute;
+    right:34px;
+    top:25px;
   }
 }
 </style>
