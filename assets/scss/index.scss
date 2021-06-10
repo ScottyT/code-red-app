@@ -244,6 +244,15 @@ button {
   }
 }
 
+.icon {
+  &--angle-down {
+    &:before {
+      content: "\F0140";
+      //font-size:24px;
+    }
+  }
+}
+
 .form-wrapper {
   max-width: 80rem;
   width:100%;
@@ -283,32 +292,34 @@ button {
 
   &__select {
     border:1px solid $dark-primary-1;
-    padding:5px;
-    
-    /* &.open {
-      height: 217px;
-      transition: height .3s ease-in;
-
-      .info-bar__sort--options {
-        opacity: 1;
-        visibility: visible;
-        cursor: pointer;
-      }
-    } */
+    padding:8px;
+    width:100%;
+    &--icon {
+      position:absolute;
+      right:21px;
+      width:36px;
+      line-height:41px;
+      font-size:28px;
+      display:flex;
+    }
   }
 
   &__checkbox-wrapper {
     &--long {
       display: flex;
       flex-wrap: wrap;
-      //font-size: 0.9em;
     }
   }
 
   &__input-wrapper {
     margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
+    margin-bottom:25px;
+    /* display: flex;
+    flex-wrap: wrap; */
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(auto, 200px));
+    column-gap:20px;
+    row-gap:15px;
 
     &--checkboxes {
       padding: 4px 0;
@@ -328,13 +339,19 @@ button {
     padding: 8px 12px;
     display: block;
     width: 100%;
-    border-bottom: 1px solid $dark-primary-1;
-    margin-bottom:10px;
+    border: 1px solid transparent;
+    border-radius:6px;
+    border-bottom-color:$dark-primary-1;
+    border-bottom-width:2px;
+    box-shadow:0px 3px 7px 0px rgba($color-black, .3);
+    //margin-bottom:10px;
+    transition:all .2s ease-in;
 
     &:focus-visible {
-      border-bottom:2px solid $color-red;
+      border-bottom:3px solid $color-red;
+      box-shadow:1px 10px 20px 0px rgba($color-black, .3);
       outline:none;
-      transition:border-bottom .2s ease-in;
+      transition:all .2s ease-in;
     }
 
     &--cusSig {
@@ -361,7 +378,7 @@ button {
     }
 
     &--input-group {
-      padding: 5px 25px 5px 5px;
+      //padding: 5px 25px 5px 5px;
       display:block;
       width:auto;
 
@@ -428,9 +445,14 @@ button {
       max-width: 100%;
     }
 
+    &--normal {
+      width:400px;
+      max-width:100%;
+    }
+
     &--short {
-      max-width:390px;
-      width:auto;
+      max-width:100%;
+      width:220px;
     }
 
     &--error {
@@ -444,21 +466,31 @@ button {
     }
   }
 
+  &__geocoder {
+    padding:0;
+  }
+
   &__input-group {
     padding: 5px 25px 5px 5px;
     display:block;
     width:100%;
+    position:relative;
+    min-height:99px;
     &--normal {
-      max-width:200px;
+      max-width:230px;
     }
     &--long {
-      max-width:300px;
+      max-width:320px;
+    }
+    &--short {
+      max-width:195px;
     }
   }
 
   &__label {
     font-weight: 500;
     padding-right: 7px;
+    font-size:.9em;
   }
   &__table {
     display:grid;
@@ -507,6 +539,7 @@ button {
   &__form-group {
     display: flex;
     flex-wrap: wrap;
+    align-items:center;
     //font-size: 1.1em;
     
     &--info-box {

@@ -10,38 +10,38 @@
         authorization will remain in effect until cancelled.</p>
         <form :class="`${partOfLastSection ? '' : 'form-wrapper'}`" ref="cardForm" @submit.prevent="submitCard">
       <fieldset v-if="currentStep === 1" class="form__form-group form__form-group--info-box form__form-group--column">
-        <h3 class="form__label">Cardholder Name* (as shown on card)</h3>
+        <h3>Cardholder Name* (as shown on card)</h3>
         <div class="d-flex flex-wrap">
-          <ValidationProvider rules="required" v-slot="{errors}" name="First name" class="form__input--input-group">
+          <ValidationProvider rules="required" v-slot="{errors}" name="First name" class="form__input-group form__input-group--long">
             <label for="firstname" class="form__label">First name</label>
             <input id="firstname" type="text" class="form__input" v-model="cardholderInfo.first" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="alpha" v-slot="{errors}" name="Middle initial" class="form__input--input-group">
+          <ValidationProvider rules="alpha" v-slot="{errors}" name="Middle initial" class="form__input-group form__input-group--normal">
             <label for="middle" class="form__label">Middle initial</label>
             <input id="middle" type="text" class="form__input" v-model="cardholderInfo.middle" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Last name" class="form__input--input-group">
+          <ValidationProvider rules="required" v-slot="{errors}" name="Last name" class="form__input-group form__input-group--long">
             <label for="lastname" class="form__label">Last name</label>
             <input id="lastname" type="text" class="form__input" v-model="cardholderInfo.last" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input--input-group">
+          <ValidationProvider rules="required|email" v-slot="{errors}" name="Cardholder email" class="form__input-group form__input-group--long">
             <label for="cardholderemail" class="form__label">Cardholder Email</label>
             <input id="cardholderemail" type="email" class="form__input" v-model="cardholderInfo.email" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input--input-group">
+          <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input-group form__input-group--normal">
             <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
             <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderInfo.phoneNumber" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </div>
         <div class="form__form-group">
-          <h3 class="form__label">Debit/Credit Card</h3>
+          <h3>Debit/Credit Card</h3>
           <ValidationProvider name="Card type" class="form__input--input-group form__form-group" rules="required" v-slot="{errors}">
-            <p class="form__label">Which card will you be using?</p>
+            <span class="form__label">Which card will you be using?</span>
             <ul class="form__form-group--inline">
               <li v-for="(type, i) in cardTypes" :key="`type-${i}`" class="form__input--radio">
                 <label :for="type">{{type}}</label>
@@ -77,39 +77,41 @@
         </div>
       </fieldset>
       <fieldset v-if="currentStep === 2" class="form__form-group form__form-group form__form-group--info-box">
-        <LayoutCreditCard :cardNumber="cardNumber" :symbolImage="selectedCard !== '' ? `/${cardCompany}.png` : ''"
-          :expirationDate="expirationDate" :cvv="cvvNum" :name="cardName" />
-        <div class="card-form">
-          <h3 class="form__label card-form__title">Credit Card*</h3>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input--input-group card-input">
-            <label for="cardholderName" class="form__label">Cardholder Name</label>
-            <input type="text" id="cardholderName" class="form__input" v-model="cardName" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <span class="form__input--input-group card-input">
-            <label for="cardNumber" class="form__label">Card Number</label>
-            <input class="form__input" v-imask="cardMasks" @accept="onAccept" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
-            <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
-            <span>{{selectedCard}}</span>
-          </span>
-          <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Expiration date" class="form__input--input-group card-input">
-            <label for="expDate" class="form__label">Expiration Date (mm/yy)</label>
-            <input type="text" id="expDate" v-model="expirationDate" class="form__input" @input="maskDate" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider rules="required|numeric" v-slot="{errors}" name="CVV number" class="form__input--input-group card-input">
-            <label for="cvv" class="form__label">CVV Number</label>
-            <imask-input class="form__input" v-model="cvvNum" :max="cardCompany !== 'american-express' ? 1000 : 10000" :mask="Number" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder zip code" class="form__input--input-group card-input">
-            <label for="zipCard" class="form__label">Cardholder zip code</label>
-            <input type="text" id="zipCard" v-model="billingAddress.zip" readonly class="form__input" />
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
+        
+        <div class="form__section d-flex card-section">
+          <LayoutCreditCard :cardNumber="cardNumber" :symbolImage="selectedCard !== '' ? `/${cardCompany}.png` : ''"
+            :expirationDate="expirationDate" :cvv="cvvNum" :cardName="cardName" />         
+          <div class="form__form-group card-form">
+            <h3 class="card-form__title">Credit Card*</h3>
+            <ValidationProvider rules="required" v-slot="{errors}" name="Card name" class="form__input-group card-input">
+              <label for="cardholderName" class="form__label">Cardholder Name</label>
+              <input type="text" id="cardholderName" class="form__input" v-model="cardName" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <span class="form__input-group form__input-group card-input">
+              <label for="cardNumber" class="form__label">Card Number</label>
+              <input class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
+              <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
+            </span>
+            <ValidationProvider rules="required" v-slot="{errors}" name="Exp. date" class="form__input-group card-input ">
+              <label for="expDate" class="form__label">Expiration Date</label>
+              <input type="text" id="expDate" v-model="expirationDate" class="form__input" placeholder="01/23" @input="maskDate" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider rules="required|numeric" v-slot="{errors}" name="CVV" class="form__input-group card-input">
+              <label for="cvv" class="form__label">CVV Number</label>
+              <imask-input class="form__input" v-model="cvvNum" :max="cardCompany !== 'american-express' ? 1000 : 10000" :mask="Number" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <ValidationProvider rules="required|length:5" v-slot="{errors}" name="Zip code" class="form__input-group card-input">
+              <label for="zipCard" class="form__label">Cardholder zip code</label>
+              <imask-input id="zipCard" class="form__input" v-model="billingAddress.zip" :mask="zipMask" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+          </div>
         </div>
         <div class="form__section">
-          <h3 class="form__label">Billing Address*</h3>
+          <h3>Billing Address*</h3>
           <div class="form__form-group">
             <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input-group form__input-group--long">
               <label for="addressLine1" class="form__label">Address Line 1</label>
@@ -127,12 +129,16 @@
             </ValidationProvider>
             <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input-group form__input-group--normal">
               <label for="state" class="form__label">State</label>
-              <input id="state" type="text" v-model="billingAddress.state" class="form__input" />
+              <i class="form__select--icon icon--angle-down mdi"></i>
+              <select class="form__select" id="state" v-model="billingAddress.state">
+                <option disabled value="" selected>State</option>
+                <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
+              </select>
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--long">
+            <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--normal">
               <label for="zip" class="form__label">Zip</label>
-              <input id="zip" type="text" v-model="billingAddress.zip" class="form__input" />
+              <imask-input id="zip" v-model="billingAddress.zip" class="form__input" :mask="zipMask" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -178,14 +184,11 @@
     </ValidationObserver>
 </template>
 <script>
-import { cardMasks, cvvMasks } from "@/masks";
+import { cardMasks, cvvMasks, zipCodeMask } from "@/data/masks";
 import {mapActions, mapGetters} from 'vuex';
-import {IMaskComponent} from 'vue-imask';
+import { statesArr } from "@/data/states"
   export default {
     name: "CreditCard",
-    components: {
-      'imask-input': IMaskComponent
-    },
     data: (vm) => ({
         currentStep:2,
         message: '',
@@ -232,7 +235,9 @@ import {IMaskComponent} from 'vue-imask';
         backCardValue: '',
         cardMasks: cardMasks,
         cvvMasks: cvvMasks,
-        cardCompany: ''
+        cardCompany: '',
+        zipMask: zipCodeMask.mask,
+        states: statesArr
     }),
     props: {
         jobId: {
@@ -278,7 +283,7 @@ import {IMaskComponent} from 'vue-imask';
             addCreditCard: 'indexDb/addCreditCard',
             checkStorage: 'indexDb/checkStorage'
         }),
-        onAccept(e) {
+        onAcceptCardType(e) {
           var maskRef = e.detail
           const type = maskRef.masked.currentMask.cardtype
           var dynamicMask = maskRef.masked;
@@ -310,6 +315,10 @@ import {IMaskComponent} from 'vue-imask';
           }
           this.cardNumber = maskRef.value
         },
+        onAcceptZip(e) {
+          const maskRef = e.detail
+          this.billingAddress.zip = maskRef.value
+        },
         onComplete(e) {
           const maskRef = e.detail;
         },
@@ -331,9 +340,7 @@ import {IMaskComponent} from 'vue-imask';
         },
         acceptNumber() {
             var x = this.cardholderInfo.phoneNumber.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/)
-            this.cardholderInfo.phoneNumber = !x[2] ?
-            x[1] :
-            '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
+            this.cardholderInfo.phoneNumber = !x[2] ?x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
         },
         async filesChange(e) {
           const fileList = e.target.files
@@ -417,10 +424,6 @@ import {IMaskComponent} from 'vue-imask';
         },
         async submitCard() {
             const cards = this.getCards.map((v) => { return v.cardNumber })
-            const userNameObj = {
-                first: this.getUser.name.split(" ")[0],
-                last: this.getUser.name.split(" ")[1]
-            };
 
             await this.$refs.cardForm.validate().then(success => {
               if (!success) {
@@ -441,7 +444,7 @@ import {IMaskComponent} from 'vue-imask';
                   cardholderZip: this.billingAddress.zip,
                   cusSign: this.cusSig.data,
                   customerSigDate: this.cusSigDateFormatted,
-                  teamMember: userNameObj,
+                  teamMember: this.getUser,
                   cardImages: this.$nuxt.isOffline ? this.cardImages : this.cardDownloadUrls
                 };
                 if (!cards.includes(this.cardNumber)) {
@@ -504,16 +507,26 @@ import {IMaskComponent} from 'vue-imask';
     grid-column:3;
   }
 }
+.card-section {
+  @include respond(tabletLandscapeMax) {
+    flex-direction: column;
+  }
+}
 .card-form {
   display:grid;
-  @include respond(tabletLarge) {   
-    grid-template-columns: auto auto auto;
+  width:100%;
+  @include respond(tabletLandscape) {
     grid-template-areas: 'title title title'
       'name name name'
       'number number number'
       'date cvc zip';
-    max-width:670px;
+    grid-template-columns:repeat(3, 1fr);
+    max-width:580px;
   }
+  grid-template-areas: 'title title title title'
+    'name name number number'
+    'date cvc zip .';
+  grid-template-columns:repeat(4, 1fr);
   &__title {
     grid-area:title;
   }
@@ -541,6 +554,14 @@ import {IMaskComponent} from 'vue-imask';
     position:absolute;
     right:34px;
     top:25px;
+  }
+  &__name, &__cardnumber {
+    max-width:350px;
+  }
+  &__name {
+    @include respond(tabletLarge) {
+      max-width:400px;
+    }
   }
 }
 </style>

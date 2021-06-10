@@ -9,16 +9,16 @@
                 <div class="card-front__info">
                     <div class="card-front__card-number">
                         <p>card number</p>
-                        <p class="value--cardnumber">{{cardNumber}}</p>
+                        <p class="value--cardnumber">{{cardnumber}}</p>
                     </div>
                     <div class="card-front__cardholder">
                         <p>cardholder name</p>
-                        <p class="value">{{name}}</p>
+                        <p class="value">{{cardName}}</p>
                     </div>
                     <div class="card-front__expiration">
                         <p>expiration</p>
                         <span>VALID THRU</span>
-                        <p class="value">{{expirationDate}}</p>
+                        <p class="value">{{expdate}}</p>
                     </div>
                 </div>
             </div>
@@ -26,8 +26,8 @@
                 <img class="credit-card__image" :src="backgroundImage" alt="back card" />
                 <div aria-label="Credit card stripe" class="card-back__stripe"></div>
                 <div class="card-back__info">
-                    <div class="card-back__signature">{{name}}</div>
-                    <div class="card-back__cvv">{{cvv}}</div>
+                    <div class="card-back__signature">{{cardName}}</div>
+                    <div class="card-back__cvv">{{securityCode}}</div>
                     <span>security code</span>
                 </div>
             </div>
@@ -39,27 +39,36 @@ import { computed, defineComponent, onMounted, ref, toRefs, watch } from '@nuxtj
 
 export default defineComponent({
     props: {
-        cardNumber: String,
+        cardNumber:String,
         expirationDate: String,
         cvv: String,
-        name: String,
+        cardName: String,
         symbolImage: String
     },
     setup(props, {root}) {
+        const { cardNumber, expirationDate, cvv } = toRefs(props)
         const showBack = ref(false);
-        //const placeholderCard = ref("");
+        const cardnumber = ref("0123 4567 8910 1112");
+        const expdate = ref("01/23");
+        const securityCode = ref("985")
         const backgroundImage = ref('');
         const randomCard = () => {
             backgroundImage.value = `/card-${Math.floor(Math.random() * 3) + 1}.jpg`;
         }
-        //const setCardnumber = computed(() => placeholderCard.value = "123456789101112")
-        
+        const setPlaceholders = (value, property, placeholder) => {
+            if (value === "") { value = placeholder }
+            property.value = value
+        }
         function flipCard() {
             showBack.value = !showBack.value
         }
+
         onMounted(randomCard)
+        watch(cardNumber, (val) => setPlaceholders(val, cardnumber, "0123 4567 8910 1112"))
+        watch(expirationDate, (val) => setPlaceholders(val, expdate, "01/23"))
+        watch(cvv, (val) => setPlaceholders(val, securityCode, "985"))
         return {
-            backgroundImage, showBack, flipCard
+            backgroundImage, showBack, flipCard, cardnumber, expdate, securityCode
         }
     },
 })
@@ -73,10 +82,11 @@ $y-space:16px;
     font-family: "Source Code Pro", monospace;
     width:100%;
     max-width:420px;
-    height:288px;
+    height:309px;
     padding:20px;
     perspective: 1000px;
     display:inline-block;
+    margin:auto;
     & > img {
         object-fit:contain;
     }
@@ -100,9 +110,6 @@ $y-space:16px;
     }
     &__back {
         transform:rotateY(180deg);
-        &:hover {
-            
-        }
     }
     &__image {
         border-radius:16px;

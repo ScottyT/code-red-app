@@ -13,8 +13,7 @@
       <h2 class="alert alert--success">{{ successMessage }}</h2>
       <form v-if="!submitted" class="form" enctype="multipart/form-data" @submit.prevent="submitForm">
         <div class="form__form-group">
-          <ValidationProvider name="Team lead id" rules="required|numeric"
-            class="form__input--input-group">
+          <ValidationProvider name="Team lead id" rules="required|numeric" class="form__input-group form__input-group--normal">
             <label class="form__label">Team Lead ID #</label>
             <input v-model="id" name="teamLeadId" class="form__input" type="text" />
           </ValidationProvider>

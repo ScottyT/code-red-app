@@ -46,7 +46,6 @@ export const cardMasks = {
           }
     }
 };
-
 export const cvvMasks = {
     mask: [
         {
@@ -60,4 +59,7 @@ export const cvvMasks = {
             regex: '^\\d{3}$',
         }
     ]
-}
+};
+export const zipCodeMask = {
+    mask: /^\d{1,5}$/
+};

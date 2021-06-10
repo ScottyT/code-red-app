@@ -16,7 +16,7 @@
               <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
                 <input type="hidden" v-model="selectedJobId" />
                 <label class="form__label">Job ID Number</label>
-                <select class="form__select" v-model="selectedJobId">
+                <select class="form__select form__input" v-model="selectedJobId">
                   <option disabled value="">Please select a Job ID</option>
                   <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                 </select>

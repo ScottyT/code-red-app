@@ -24,12 +24,12 @@
             <input v-model="timeOfCall" class="form__input" type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>-->
-          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input--input-group">
+          <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg, ariaInput }" name="Job Id" class="form__input-group form__input-group--short">
             <label class="form__label">Job ID Number</label>
             <input name="jobId" v-model="jobId" class="form__input" type="text" v-bind="ariaInput" />
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
           </ValidationProvider>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--short">
             <label for="timeOfCall" class="form__label">Time of Call</label>
             <v-dialog ref="timeDialog" v-model="timeModal" :return-value.sync="timeOfCall" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
@@ -42,7 +42,7 @@
               </v-time-picker>
             </v-dialog>
           </div>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--short">
             <label for="dateOfCall" class="form__label">Date of Call</label>
 
             <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent width="400px">
@@ -58,7 +58,7 @@
             </v-dialog>
             <v-date-picker v-if="dateBoxSelected" v-model="picker"></v-date-picker>
           </div>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--long">
             <label for="location" class="form__label">Location</label>
             <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
                  @change="$nuxt.$emit('location-updated')"></div>
@@ -77,11 +77,11 @@
             <label class="form__label">City, State, Zip</label>
             <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label" for="phone">Phone Number</label>
-            <input id="phone" v-model="phone" name="Phone" class="form__input" type="phone" @input="acceptNumber" />
+            <input id="phone" v-model="phone" name="Phone" class="form__input form__input--short" type="phone" @input="acceptNumber" />
             <ValidationProvider v-slot="{ errors }" rules="email|required" name="Email" vid="email">
               <label for="email" class="form__label">Email Address</label>
               <br />
-              <input id="email" v-model="email" type="email" class="form__input" name="Email" />
+              <input id="email" v-model="email" type="email" class="form__input form__input--normal" name="Email" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -148,7 +148,7 @@
             </div>
           </div>
           <div class="form__form-group--full-width">
-            <div class="form__input--input-group">
+            <div class="form__input-group form__input-group--normal">
               <label for="appointment" class="form__label">Appointment time set for</label>
               <v-dialog content-class="time-pickers__range" max-width="700px" ref="appointmentTimeDialog"
                         v-model="appointmentTimeModal" :return-value.sync="appointmentTimeFormatted" persistent>
@@ -169,7 +169,7 @@
               
               </v-dialog>
             </div>
-            <div class="form__input--input-group">
+            <div class="form__input-group form__input-group--normal">
               <label for="appointmentDate" class="form__label">Date of Appointment</label>
               <v-dialog ref="dialogAppointment" v-model="modalAppointment" :return-value.sync="appointmentDate"
                         persistent width="400px">
@@ -186,14 +186,14 @@
                 </v-date-picker>
               </v-dialog>
             </div>
-            <div class="form__input--input-group">
+            <div class="form__input-group form__input-group--long">
               <label for="updateTimeCall" class="form__label">(15-Min) ETA Verification Call Time</label>
               <v-dialog ref="updateCallTime" v-model="verificationTime.callTime" :return-value.sync="callTime"
                         persistent width="400px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="updateTimeCall" v-model="callTimeFormatted" class="form__input" readonly v-bind="attrs"
                          v-on="on" />
-                  <span class="button" @click="callTime = ''">clear</span>
+                  <span class="button d-block" @click="callTime = ''">clear</span>
                 </template>
                 <v-time-picker v-if="verificationTime.callTime" v-model="callTime" full-width format="ampm">
                   <v-spacer></v-spacer>
@@ -202,14 +202,14 @@
                 </v-time-picker>
               </v-dialog>
             </div>
-            <div class="form__input--input-group">
+            <div class="form__input-group form__input-group--long">
               <label for="textVerificationTime" class="form__label">Text ETA Verification Time</label>
               <v-dialog ref="textVerificationTime" v-model="verificationTime.textEtaTime" :return-value.sync="textEtaTime"
                         persistent width="400px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="textVerificationTime" v-model="textEtaTimeFormatted" class="form__input" readonly
                          v-bind="attrs" v-on="on" />
-                  <span class="button" @click="textEtaTime = ''">clear</span>
+                  <span class="button d-block" @click="textEtaTime = ''">clear</span>
                 </template>
                 <v-time-picker v-if="verificationTime.textEtaTime" v-model="textEtaTime" full-width format="ampm">
                   <v-spacer></v-spacer>
@@ -223,12 +223,12 @@
             <label for="notes" class="form__label">Notes</label>
             <textarea class="form__input--textbox form__input" v-model="notes"></textarea>
           </div>
-          <div class="form__form-group--full-width form__section">
-            <div class="form__input--input-group">
+          <div class="form__section">
+            <div class="form__input-group form__input-group--short">
               <label class="form__label">Team Member</label>
               <p>{{getUser ? getUser.name : null}}</p>
             </div>
-            <div class="form__input--input-group">
+            <div class="form__input-group form__input-group--short">
               <label class="form__label">Team Member Signature</label>
               <div class="form__input-wrapper">
                 <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
