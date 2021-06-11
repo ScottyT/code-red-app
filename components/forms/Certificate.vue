@@ -364,30 +364,6 @@ export default {
         teamSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         testimonial:"",
         usingCreditCard: false,
-        cardholderName: {
-            first: "",
-            middle: "",
-            last: "",
-            email: "",
-            phoneNumber: ""
-        },
-        billingAddress: {
-            address1: "",
-            address2: "",
-            city: "",
-            state: "",
-            zip: ""
-        },
-        creditCards: [
-            "Mastercard", "VISA", "Discover", "Amex", "Other"
-        ],
-        selectedCard: {
-            card: "",
-            otherCard: ""
-        },
-        cardNumber: null,
-        expirationDate: "",
-        cvcNum: "",
         cusSig: {
             data: '',
             isEmpty: true

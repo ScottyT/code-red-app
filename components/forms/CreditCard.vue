@@ -190,7 +190,7 @@ import { statesArr } from "@/data/states"
   export default {
     name: "CreditCard",
     data: (vm) => ({
-        currentStep:2,
+        currentStep:1,
         message: '',
         errorMessage: null,
         cardholderInfo: {
@@ -436,7 +436,7 @@ import { statesArr } from "@/data/states"
                   ReportType: 'credit-card',
                   cardholderInfo: this.cardholderInfo,
                   billingAddress: this.billingAddress,
-                  creditCard: this.selectedCard.card == 'Other' ? this.selectedCard.otherCard : this.selectedCard.card,
+                  creditCard: this.selectedCard,
                   cardNumber: this.cardNumber,
                   cardholderName: this.cardName,
                   expDate: this.expirationDate,
