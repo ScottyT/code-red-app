@@ -1,11 +1,11 @@
 import { set, values, del } from 'idb-keyval';
 
-export const state = () => ({
+const state = () => ({
     reports: [],
     error:"",
     success:""
 })
-export const mutations = {
+const mutations = {
     setReport: (state, payload) => {
         state.reports = payload
     },
@@ -28,7 +28,7 @@ export const mutations = {
         state.success = success
     }
 };
-export const actions = {
+const actions = {
     addReport({ commit, dispatch }, newReport) {        
         dispatch('saveReports', newReport)
     },
@@ -54,13 +54,13 @@ export const actions = {
     },
     async saveReports({ state, commit }, newReport) {
         var keyname = ""
-        if (newReport.CaseFileType === 'containment') {
+        /* if (newReport.formType === 'containment') {
             keyname = "containment-rep-"
         }
-        if (newReport.CaseFileType === 'technician') {
+        if (newReport.formType === 'technician') {
             keyname = "technician-rep-"
-        }
-        if (newReport.ReportType === 'dispatch' || newReport.ReportType === 'rapid-response') {
+        } */
+        /* if (newReport.ReportType === 'dispatch' || newReport.ReportType === 'rapid-response') {
             keyname = "report-"
         }
         if (newReport.ReportType === 'aob') {
@@ -68,9 +68,9 @@ export const actions = {
         }
         if (newReport.ReportType === 'coc') {
             keyname = "coc-"
-        }
-        if (newReport.hasOwnProperty('formType')) {
-            keyname = newReport.formType + "-"
+        } */
+        if (newReport.hasOwnProperty('ReportType')) {
+            keyname = newReport.ReportType + "-"
         }
         newReport.key = keyname + newReport.JobId
         await set(keyname + newReport.JobId, newReport).then(() => commit('addRep', newReport))
@@ -86,8 +86,15 @@ export const actions = {
             .catch((err) => commit("setError", err))
     }
 }
-export const getters = {
+const getters = {
     getSavedReports: (state) => {
         return state.reports
     }
+}
+export default {
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions
 }

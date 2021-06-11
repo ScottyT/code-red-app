@@ -27,8 +27,7 @@ const createMoistureMap = async (req, res) => {
         notes: req.body.notes,
         teamMember: req.body.teamMember
     })
-    const moistureMap = await moisture.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
-    if (!errors.isEmpty() || moistureMap !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await moisture.save().then(() => {
@@ -40,9 +39,7 @@ const createMoistureMap = async (req, res) => {
 const createEmployee = async (req, res) => {
     const result = validationResult(req);
     const employee = new User(req.body)
-    /* const reports = new Logging({
-        JobId: "2222"
-    }); */
+    
     if (!result.isEmpty()) {
         return res.json(result)
     }
@@ -62,8 +59,8 @@ const uploadChart = async (req, res) => {
         ReportType: req.body.ReportType,
         chart: req.body.chart
     })
-    const chartReport = await chartModel.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
-    if (!errors.isEmpty() || chartReport !== null) {
+    
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await obj.save().then(() => {
@@ -76,14 +73,14 @@ const createSketch = async (req, res) => {
     const errors = validationResult(req)
     const sketch = new Sketch({
         JobId: req.body.JobId,
-        teamMember: req.body.teamMember,
+        teamMember: req.body.user,
         sketch: req.body.sketch,
-        formType: req.body.sketchType,
+        formType: req.body.formType,
         ReportType: req.body.ReportType
     });
-    const sketchReport = await Sketch.findOne({JobId: req.body.JobId, formType: req.body.sketchType}).exec()
+    
     //returns the error
-    if (!errors.isEmpty() || sketchReport !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     await sketch.save().then(() => {
@@ -95,7 +92,7 @@ const createSketch = async (req, res) => {
 const createLogs = async (req, res) => {
     const errors = validationResult(req)
     var logs
-    if (req.body.formType === 'moisture-map') {
+    if (req.body.ReportType === 'moisture-map') {
         logs = new Logging({
             JobId: req.body.JobId,
             ReportType: req.body.ReportType,
@@ -126,10 +123,8 @@ const createLogs = async (req, res) => {
             teamMember: req.body.teamMember
         })
     }
-    //const logs = new Logging(req.body)
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
     
-    if (!errors.isEmpty() || logsReport !== null) {
+    if (!errors.isEmpty()) {
         return res.json(errors)
     }
     /* const employee = await User.findOne({email: req.body.teamMember.email});
@@ -180,7 +175,8 @@ const createCOC = async (req, res) => {
         teamSignDate: req.body.teamSignDate,
         teamMember: req.body.teamMember,
         testimonial: req.body.testimonial,
-        paymentOption: req.body.paymentOption
+        paymentOption: req.body.paymentOption,
+        cardNumber: req.body.cardNumber
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })
@@ -232,7 +228,9 @@ const createAOB = async (req, res) => {
         witnessDate: req.body.witnessDate,
         numberOfRooms: req.body.numberOfRooms,
         numberOfFloors: req.body.numberOfFloors,
-        teamMember: req.body.teamMember
+        teamMember: req.body.teamMember,
+        cardNumber: req.body.cardNumber,
+        paymentOption: req.body.paymentOption
     });
     if (!result.isEmpty()) {
         return res.json({ errors: result.array() })
@@ -265,7 +263,7 @@ const createDispatch = async (req, res) => {
         teamMember: req.body.teamMember,
         timeFormatted: req.body.timeFormatted,
         teamMemberSig: req.body.teamMemberSig,
-        signDateTime: req.body.signDate
+        signDate: req.body.signDate
     });
     if (!errors.isEmpty()) {
         return res.json(errors)
@@ -289,10 +287,10 @@ const createRapidResponse = async (req, res) => {
         adjusterPhone: req.body.adjusterPhone,
         ContactName: req.body.ContactName,
         DateOfEvaluation: req.body.DateOfEvaluation,
-        EmailAddress: req.body.EmailAddress,
-        EvaluationLogs: req.body.EvaluationLogs,
+        emailAddress: req.body.EmailAddress,
+        evaluationLogs: req.body.evaluationLogs,
         documentVerification: req.body.documentVerification,
-        PhoneNumber: req.body.PhoneNumber,
+        phoneNumber: req.body.PhoneNumber,
         PictureTypes: req.body.PictureTypes,
         ReportType: req.body.ReportType,
         Steps: req.body.Steps,
@@ -342,7 +340,7 @@ const createCreditCard = async (req, res) => {
         cardNumber: req.body.cardNumber,
         cardholderName: req.body.cardholderName,
         expirationDate: req.body.expDate,
-        cvcNum: req.body.cvcNum,
+        cvvNum: req.body.cvvNum,
         cardholderZip: req.body.cardholderZip,
         customerSig: req.body.cusSign,
         customerSignDate: req.body.customerSigDate
@@ -381,7 +379,7 @@ const createCaseFile = async (req, res) => {
         evaluationLogs: req.body.evaluationLogs,
         verifySign: req.body.verifySig,
         teamMember: req.body.teamMember,
-        CaseFileType: req.body.CaseFileType
+        formType: req.body.formType
     });
     if (!errors.isEmpty()) {
         return res.json(errors)
@@ -398,7 +396,7 @@ module.exports = {
     createSketch, 
     createLogs, 
     updateLogs, 
-    uploadChart, 
+    uploadChart,
     createDispatch, 
     createRapidResponse, 
     createCOC, 

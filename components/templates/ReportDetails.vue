@@ -126,7 +126,7 @@
   </div>
 </template>
 <script>
-
+import {mapGetters, mapActions} from 'vuex';
   export default {
     name: 'ReportDetails',
     props: ['report', 'notPdf'],
@@ -194,6 +194,9 @@
       })
     },
     methods: {
+      ...mapActions({
+        fetchReport: 'reports/fetchReport'
+      }),
       generateReport(key) {
         this.$refs["html2pdf-"+key].generatePdf()
       },
@@ -253,7 +256,14 @@
       },
     },
     created() {
+      /* var reportArgs = {
+        authUser: this.$fire.auth.currentUser,
+        ReportType: "dispatch",
+        formType: "",
+        JobId: this.$route.params.slug
+      } */
       this.repData = this.report
+      //this.fetchReport(reportArgs)
     }
   }
 </script>

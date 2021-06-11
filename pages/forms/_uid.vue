@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <SlicesBlock :slice="formType" :company="company" />
+  <div class="px-5 mt-6 mb-6">
+    <SlicesBlock :slice="formType" :abbreviation="abbreviation" />
   </div>
 </template>
 <script>
@@ -11,7 +11,6 @@ export default {
     return {
       authUser: false,
       // These would be different per company
-      company: "Water Emergency Services Incorporated",
       abbreviation: "WESI"
     }
   },
@@ -20,11 +19,9 @@ export default {
       title: this.title
     }
   },
-  computed: {
-    ...mapGetters(['isLoggedIn'])
-  },
+
   async middleware({redirect, store}) {
-    if (store.state.user.email == null) {
+    if (store.state.users.user.email == null) {
       return redirect("/")
     }
   },

@@ -23,51 +23,26 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="true" fixed app extension-height="60" height="80" class="header-navigation">
-      <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
-        <span>
-          <i class="button__icon-content button__icon-content--top"></i>
-          <i class="button__icon-content button__icon-content--middle"></i>
-          <i class="button__icon-content button__icon-content--bottom"></i>
-        </span>
-      </button>
+      <div class="d-flex align-center">
+        <button type="button" aria-label="Toggle navigation" @click.stop="drawer = !drawer" class="button__icon button__icon--nav">
+          <span>
+            <i class="button__icon-content button__icon-content--top"></i>
+            <i class="button__icon-content button__icon-content--middle"></i>
+            <i class="button__icon-content button__icon-content--bottom"></i>
+          </span>
+        </button>
 
-      <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
-      <ul class="menu-items" v-if="!isMobile">
-        <li class="menu-items__item">
-          <a @click="signOut">{{isLoggedIn ? "Logout" : "Login"}}</a>
-        </li>
-        <span>{{getUser ? getUser.name : null}}</span>
-        <li class="menu-items__item" v-if="user">
-          <nuxt-link to="/profile">Saved forms</nuxt-link>
-        </li>
-        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
-        </li>
-        <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-          <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
-        </li>
-      </ul>
-      <template v-slot:extension v-if="isMobile">
-        <ul class="menu-items__extended-menu menu-items">
-          <li class="menu-items__item">
-            <a @click="signOut">{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</a>
-          </li>
-          <span>{{getUser ? getUser.name : null}}</span>
-          <li class="menu-items__item" v-if="user">
-            <nuxt-link to="/profile">Saved forms</nuxt-link>
-          </li>
-          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-            <nuxt-link to="/completed-jobs">Certificates of completion</nuxt-link>
-          </li>
-          <li class="menu-items__item" v-if="user && $store.state.user.role === 'admin'">
-            <nuxt-link to="/saved-aob-contracts">AOB & Mitigation Contracts</nuxt-link>
-          </li>
-        </ul>
-      </template>
+        <nuxt-link class="v-toolbar__title ml-4" to="/">{{title}}</nuxt-link>
+      </div>
+      
+      <UiProfileDropdown v-if="user" />
+      <!-- <ul class="menu-items" v-if="!isMobile">
+        
+      </ul> -->
     </v-app-bar>
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <span v-if="!user"><LazyFormsLogin /></span>
-      <nuxt class="mt-6 mb-6 mx-auto px-5" v-else />
+      <nuxt class="px-5 mx-auto" v-else />
     </v-main>
     <v-footer :fixed="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -179,7 +154,10 @@ export default {
     matchUrl() {
       return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
     },
-    ...mapGetters(["getUser", "isLoggedIn"]),
+    ...mapGetters({
+        getUser: "users/getUser", 
+        isLoggedIn: "users/isLoggedIn"
+      }),
     isOnline() {
       return this.$nuxt.isOnline
     }
@@ -189,15 +167,19 @@ export default {
       if (val) {
         this.fetchReports(this.$fire.auth.currentUser)
       }
+    },
+    getUser(val) {
+      if (Object.keys(val).length !== 0) {
+        this.itemsArr()
+      }
     }
   },
   methods: {
     ...mapActions({
-      fetchReports: 'fetchReports',
-      fetchLogs: 'fetchLogs'
+      fetchReports: 'reports/fetchReports',
+      fetchLogs: 'reports/fetchLogs'
     }),
     itemsArr() {
-      if (this.$fire.auth.currentUser) {
         const filtered = (role) => this.items.filter((v) => {
           return v.access === role
         })
@@ -208,10 +190,9 @@ export default {
           case "admin":
             this.filteredNavItems = this.items
         }
-      }
     },
     async signOut() {
-      this.$store.dispatch("signout")
+      this.$store.dispatch("users/signout")
     },
     onResize() {
       setTimeout(() => {
@@ -226,6 +207,7 @@ export default {
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
       this.fetchReports(this.$fire.auth.currentUser)
+      
     })
   },
   beforeDestroy() {

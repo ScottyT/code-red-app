@@ -7,6 +7,7 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
+  layout: 'default',
   data: () => ({
     folders: [],
     subfolders: []
@@ -16,7 +17,7 @@ export default {
     redirect,
     route
   }) {
-    if (store.state.user.role !== "admin") {    
+    if (store.state.users.user.role !== "admin") {    
       return redirect("/")
     }
   },

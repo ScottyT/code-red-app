@@ -29,4 +29,4 @@ const dispatchReport = mongoose.Schema({
     signDate: String
 })
 dispatchReport.plugin(timestamps)
-module.exports = mongoose.model('Dispatch', dispatchReport, 'dispatch-reports')
+module.exports = mongoose.model('Dispatch', dispatchReport, 'reports')

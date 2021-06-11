@@ -38,53 +38,43 @@
     </div>
 </template>
 <script>
-import {mapActions, mapGetters} from 'vuex';
-export default {
-    name: "FieldJacket",
-    layout: "dashboard-layout",
-    head() {
-        return {
-            title: "Field Jacket"
-        }
-    },
-    data: () => ({
-        sketchReports:[],
-        logReports:[],
-        chartData: [],
-        defaultData: [],
-        caseFileData: [],
-        reports:[]
-    }),
-    async fetch() {
-        this.reports = await this.$axios.$get("/api/reports");
-        this.sketchReports = this.reports.filter((v) => {
-            return v.ReportType === 'sketch-report'
+import { defineComponent, ref, useFetch, useStore, computed, watch, onMounted } from '@nuxtjs/composition-api';
+export default defineComponent({
+    layout: 'dashboard-layout',
+    setup(props, {root}) {
+        const store = useStore()
+        const reports = computed(() => store.getters['reports/getReports'])
+        const isOnline = computed(() => root.$nuxt.isOnline)
+        async function checkStorage() { store.dispatch('indexDb/checkStorage') }
+        let authUser = root.$fire.auth.currentUser
+        const [ defaultData, caseFileData, chartData, logReports, sketchReports ] = [ref([]), ref([]), ref([]), ref([]), ref([])]
+
+        const { fetch, fetchState } = useFetch(async () => {
+            if (root.$nuxt.isOnline) {
+                await authUser.getIdToken(true).then((idToken) => {
+                    root.$axios.$get(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                        defaultData.value = res.filter(v => v.ReportType === 'dispatch' || v.ReportType == 'rapid-response')
+                        chartData.value = res.filter(v => v.formType === 'chart-report')
+                        caseFileData.value = res.filter(v => v.formType === 'case-report')
+                        logReports.value = res.filter(v => v.formType === 'logs-report')
+                        sketchReports.value = res.filter(v => v.formType === 'sketch-report')
+                    })
+                })
+            } else {
+                defaultData.value = reports.filter(v => v.ReportType === 'dispatch' || v.ReportType == 'rapid-response')
+                chartData.value = reports.filter(v => v.formType === 'chart-report')
+                caseFileData.value = reports.filter(v => v.formType === 'case-report')
+                logReports.value = reports.filter(v => v.formType === 'logs-report')
+                sketchReports.value = reports.filter(v => v.formType === 'sketch-report')
+            }
         })
-        this.logReports = this.reports.filter((v) => {
-            return v.ReportType === 'logs-report'
-        })
-        
-        this.chartData = this.reports.filter((v) => {
-            return v.ReportType === 'chart-report'
-        })
-        this.defaultData = this.reports.filter((v) => {
-            return v.ReportType === 'dispatch' || v.ReportType == 'rapid-response'
-        })
-        this.caseFileData = this.reports.filter((v) => {
-            return v.CaseFileType == 'containment' || v.CaseFileType == 'technician'
-        })
-    },
-    computed: {
-        
-    },
-    methods: {
-        ...mapActions({
-            fetchReports: 'fetchReports',
-            checkStorage: 'indexDb/checkStorage',
-        })
-    },
-    mounted() {
-        this.checkStorage()
+
+        fetch()
+        fetchState
+        watch(isOnline, fetch)
+        onMounted(checkStorage)
+
+        return { defaultData, chartData, caseFileData, logReports, sketchReports, isOnline, reports }
     }
-}
+})
 </script>

@@ -16,9 +16,9 @@
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select" v-model="selectedJobId">
+                        <select class="form__select form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
-                            <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
+                            <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
@@ -216,7 +216,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports', 'getUser'])
+        ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser'})
     },
     watch: {
         initalEvalDate(val) {
@@ -276,8 +276,8 @@ export default {
             })
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "logs-report",
-                formType: "moisture-map",
+                ReportType: "moisture-map",
+                formType: "logs-report",
                 initialEvalDate: this.initialEvalDateFormatted,
                 location: this.location,
                 areaSub1: this.areaSub1,
@@ -448,11 +448,11 @@ export default {
         font-size:.95em;
     }
     .form__table--rows {
-        grid-template-columns:1.2fr repeat(12, 1fr);
+        grid-template-columns:100px repeat(12, 1fr);
     }
     input[type=text] {
         margin-bottom:0;
-        @include respond(tabletLargeMax) {
+        @include respond(tabletLandscapeMax) {
             font-size:.9em;
             padding:2px 4px;
         }

@@ -1,6 +1,8 @@
 $color-white: #fff;
 $dark-primary-1: #2a73ae;
+$color-grey:#c1c1c1;
 $color-black: #181818;
+$color-red: #b10e0e;
 
 @mixin respond($breakpoint) {
   @if $breakpoint==mobileSmall {
@@ -45,8 +47,14 @@ $color-black: #181818;
     }
   }
 
-  @if $breakpoint==tabletMid {
+  @if $breakpoint==tabletLandscape {
     @media only screen and (min-width: 1025px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint==tabletLandscapeMax {
+    @media only screen and (max-width: 1024px) {
       @content;
     }
   }

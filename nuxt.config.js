@@ -65,14 +65,18 @@ export default {
    ** https://nuxtjs.org/guide/plugins
    */
   plugins: [
+    //'~/plugins/axios.js',
     {
       src: '~/plugins/mapbox.js',
       mode: 'client',
     },
+    '~/plugins/imask.js',
     '~/plugins/vee-validate.js',
     '~/plugins/signature.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' },
-    '~/plugins/mask.js'
+    '~/plugins/mask.js',
+    '~/plugins/composition-api.js',
+    '~/plugins/directives.js'
   ],
   /*
    ** Auto import components
@@ -92,6 +96,7 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     '@nuxtjs/vuetify',
+    '@nuxtjs/composition-api/module'
   ],
   /*
    ** Nuxt.js modules
@@ -116,7 +121,7 @@ export default {
       auth: { 
         ssr: true,
         initialize: {
-          onAuthStateChangedAction: 'onAuthStateChangedAction',
+          onAuthStateChangedAction: 'users/onAuthStateChangedAction',
         },
       },
       storage: true,
@@ -161,15 +166,15 @@ export default {
             },
           },
         },
-        /* {
-          urlPattern: "https://code-red-app.web.app/*",
+        {
+          urlPattern: "https://code-red-app-313517.web.app/*",
           handler: 'networkFirst',
           method: 'GET',
           strategyOptions: {
             cacheableResponse: { statuses: [0, 200] }
           },
 
-        }, */
+        },
         {
           urlPatter: "http://localhost:8080/api/*",
           handler: 'networkFirst',
@@ -180,7 +185,7 @@ export default {
         },
         {
           urlPattern:
-            'https://firebasestorage.googleapis.com/v0/b/code-red-app.appspot.com/o/.*',
+            'https://firebasestorage.googleapis.com/v0/b/code-red-app-313517.appspot.com/o/.*',
           handler: 'cacheFirst',
           method: 'GET',
           strategyOptions: {
@@ -259,7 +264,7 @@ export default {
       dark: true,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
+          primary: colors.red.darken2,
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
@@ -320,6 +325,7 @@ export default {
     },
   },
   generate: {
-    fallback: '404.html'
+    fallback: '404.html',
+    interval: 2000
   }
 }

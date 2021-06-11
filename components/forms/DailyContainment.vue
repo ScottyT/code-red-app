@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper form-wrapper__case-file">
-    <h1 class="text-center">Water Emergency Services Incorporated</h1>
+    <h1 class="text-center">{{company}}</h1>
     <h2 class="text-center">Daily Containement Case File Report</h2>
     <ValidationObserver ref="form" v-slot="{ errors}">
       <h2>{{message}}</h2>
@@ -16,9 +16,9 @@
           <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
             <input type="hidden" v-model="selectedJobId" />
             <label class="form__label">Job ID Number</label>
-            <select class="form__select" v-model="selectedJobId">
+            <select class="form__select form__input" v-model="selectedJobId">
               <option disabled value="">Please select a Job ID</option>
-              <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+              <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
             </select>
             <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
           </ValidationProvider>
@@ -53,9 +53,9 @@
           <input v-model="location.cityStateZip" name="CityStateZip" type="text"
                  class="form__input form__input--long" />
         </div>
-        <div class="form__form-group form__section">         
-          <ol class="form__form-group--block form__form-group--listing" v-for="(item, i) in tmpRepairSection" :key="`item-${i}`">
-            <h3>1) TMP REPAIR</h3>
+        <div class="form__form-group--listing form__section form__form-group--info-box">
+          <h3>1) TMP REPAIR</h3>    
+          <ol class="form__form-group--block" v-for="(item, i) in tmpRepairSection" :key="`item-${i}`">
             <li>
               {{item.subheading}}
             </li>
@@ -67,9 +67,9 @@
             </ol>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>2) CONTENT</h3>
-          <ol class="form__form-group--listing">                
+          <ol class="">                
               <li v-for="(item, i) in contentSection" :key="`content-${i}`">                
                   <span>{{item.subheading}}</span>
                   <ol class="form__form-group form__form-group--sublisting">
@@ -81,7 +81,7 @@
               </li>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>3) STRUCTURAL DRYING</h3>
           <ol class="form__form-group--listing">
             <li v-for="(item, i) in structualDryingSection" :key="`structure-${i}`">
@@ -95,7 +95,7 @@
             </li>
           </ol>
         </div>
-        <div class="form__form-group form__form-group--info-box">
+        <div class="form__form-group--listing form__form-group--info-box">
           <h3>4) STRUCTURAL CLEANING</h3>
           <ol class="form__form-group--listing">
             <li v-for="(item, i) in structualCleaningSection" :key="`cleaning-${i}`">
@@ -188,6 +188,7 @@
   import goTo from 'vuetify/es5/services/goto'
   import moment from 'moment';
   export default {
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -368,7 +369,7 @@
       }
     },
     computed: {
-      ...mapGetters(['getUser']),
+      ...mapGetters({getUser:'users/getUser', getReports:'reports/getReports'}),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -426,14 +427,11 @@
         this.message = ''
         this.submitting = true
         const user = this.getUser;
-        const reports = this.$store.state.reports.filter((v) => {
-          return v.CaseFileType === 'containment'
+        const reports = this.getReports.filter((v) => {
+          return v.ReportType === 'case-file-containment'
         })
         const jobids = reports.map((v) => {
           return v.JobId
-        })
-        const casefile = reports.map((v) => {
-          return v.CaseFileType
         })
         const evaluationLogs = [{
             label: 'Dispatch to Property',
@@ -464,10 +462,10 @@
           selectedStructualCleaning: this.selectedStructualCleaning,
           evaluationLogs: evaluationLogs,
           verifySig: this.verifySig.data,
-          ReportType: 'case-file-report',
-          CaseFileType: 'containment',
+          ReportType: 'case-file-containment',
+          formType: 'case-report',
           teamMember: this.getUser,
-          afterHoursWork: 'No'
+          afterHoursWork: 'N/A'
         };
         this.$refs.form.validate().then(success => {
           if (!success) {
@@ -477,7 +475,7 @@
             return goTo(0)
           }
           if (this.$nuxt.isOffline) {
-            if (!jobids.includes(this.selectedJobId) && casefile.includes('containment')) {
+            if (!jobids.includes(this.selectedJobId)) {
               this.addReport(post).then(() => {
                 this.message = "Report was saved successfully for submission later!"
                 this.submitted = true
@@ -491,14 +489,14 @@
               this.submitting = false
               this.errorDialog = true
               this.$refs.form.setErrors({
-                JobId: ['Cannot have two containment reprots']
+                JobId: ['Cannot have two containment reports']
               })
               
               return goTo(0)
             }
           }
           if (this.$nuxt.isOnline) {
-            this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+            this.$axios.$post("/api/case-report/new", post).then((res) => {
               if (res.errors) {
                 this.errorDialog = true
                 this.submitting = false

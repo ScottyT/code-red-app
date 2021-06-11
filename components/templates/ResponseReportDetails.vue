@@ -76,7 +76,7 @@
     </div>
     <div class="report-details__data">
       <label class="form__label">Initial:</label>
-      <span>{{report.initial2}}</span>
+      <span class="text-uppercase">{{report.initial1}}</span>
     </div>
     <div class="report-details__section">
       <div class="report-details__checklist">
@@ -92,7 +92,7 @@
   <div class="report-details report-details__response-report">
     <div class="report-details__data">
       <label class="form__label">Initial:</label>
-      <span>{{report.initial1}}</span>
+      <span class="text-uppercase">{{report.initial2}}</span>
     </div>
     <div class="report-details__section">
       <div class="report-details__checklist">
@@ -106,7 +106,7 @@
     </div>
     <div class="report-details__data">
       <label class="form__label">Initial:</label>
-      <span>{{report.initial3}}</span>
+      <span class="text-uppercase">{{report.initial3}}</span>
     </div>
     
     <div class="report-details__section">
@@ -143,7 +143,7 @@
     </div>
     <div class="report-details__data">
       <label class="form__label">Initial:</label>
-      <span>{{report.initial4}}</span>
+      <span class="text-uppercase">{{report.initial4}}</span>
     </div>
     </div>
     <div class="report-details report-details__response-report">

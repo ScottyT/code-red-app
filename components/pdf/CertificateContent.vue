@@ -222,7 +222,6 @@
                   <img :src="image.url" />
                 </div>
               </div>
-              <div class="html2pdf__page-break"/>
             </div>
           </div>
       </section>
@@ -270,12 +269,18 @@ export default {
       })
     },
     created() {
-      this.$axios.$get(`/api/reports/credit-card/${this.certificate.JobId}`).then((res) => {
-        this.cards = res
-        this.cards.forEach((card) => {
-          this.fetchcardimages(card.cardNumber)
+      if (this.certificate.paymentOption === 'Card') {
+        this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+          this.$axios.$get(`/api/credit-card/${this.certificate.cardNumber}`, {headers: {authorization: `Bearer ${idToken}`}})
+            .then((res) => {
+              this.cards = res
+              this.cards.forEach((card) => {
+                this.fetchcardimages(card.cardNumber)
+              })        
+            })
         })
-      })
+        
+      }
     }
 }
 </script>
@@ -339,6 +344,10 @@ export default {
 }
 .pdf-detail {
   padding-bottom: 10px;
+  max-width:700px;
+  width:100%;
+  margin-left:auto;
+  margin-right:auto;
 
   label {
     font-weight:bold;

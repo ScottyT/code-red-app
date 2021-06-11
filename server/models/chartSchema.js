@@ -15,4 +15,4 @@ const chartSchema = mongoose.Schema({
     ReportType: String
 });
 chartSchema.plugin(timestamps)
-module.exports = mongoose.model('Chart', chartSchema)
+module.exports = mongoose.model('Chart', chartSchema, 'reports')

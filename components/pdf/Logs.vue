@@ -1,6 +1,5 @@
 <template>
-    <p v-if="$fetchState.pending">Fetching content...</p>
-    <div v-else class="pdf-content" slot="pdf-content">
+    <div class="pdf-content" slot="pdf-content">
         <section class="pdf-item">
             <h1 class="text-center">{{company}}</h1>
             <h2 class="text-center">{{formName}}</h2>
@@ -11,15 +10,15 @@
                     <label>Job ID: </label>
                     <span>{{report.JobId}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType === 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType === 'moisture-map'">
                     <label>Initial Eval Date: </label>
                     <span>{{report.initialEvalDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
                     <label>Initial Start Date: </label>
                     <span>{{report.startDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.formType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
                     <label>End Date: </label>
                     <span>{{report.endDate}}</span>
                 </div>
@@ -38,7 +37,7 @@
                 <label>Notes: </label>
                 <div class="pdf-item__textbox">{{report.notes}}</div>
             </div>
-            <div class="pdf-item__table moisture-data" v-if="report.formType === 'moisture-map'">
+            <div class="pdf-item__table moisture-data" v-if="report.ReportType === 'moisture-map'">
                 <div class="pdf-item__table moisture-data--rows">
                     <div class="pdf-item__table moisture-data--cols">
                         <div>DATE:</div>
@@ -89,7 +88,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table inventory-logs" v-if="report.formType === 'quantity-inventory-logs'">
+            <div class="pdf-item__table inventory-logs" v-if="report.ReportType === 'quantity-inventory-logs'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -111,8 +110,7 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                        <input type="number" class="pdf-item__table--data" :readonly="report.quantityData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.quantityData[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" v-model="report.quantityData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
@@ -120,8 +118,7 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
-                        <input type="checkbox" class="pdf-item__table--data" :readonly="report.checkData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.checkData[i].day[j].value" />
+                        <input type="checkbox" class="pdf-item__table--data" v-model="report.checkData[i].day[j].value" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
@@ -129,12 +126,11 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.categoryData[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.categoryData[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" v-model="report.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table logs-pdf" v-if="report.formType === 'atmospheric-readings'">
+            <div class="pdf-item__table logs-pdf" v-if="report.ReportType === 'atmospheric-readings'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -156,12 +152,11 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.readingsLog[i].day[j].value !== '' ? true : false"
-                            v-model="newdata.readingsLog[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" v-model="report.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                 
-                <span v-if="report.formType === 'atmospheric-readings'" class="loss-classification">
+                <span v-if="report.ReportType === 'atmospheric-readings'" class="loss-classification">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Loss Classification</div>
@@ -176,8 +171,7 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :readonly="report.lossClassification[i].day[j].value !== '' ? true : false" 
-                            v-model="newdata.lossClassification[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" v-model="report.lossClassification[i].day[j].value" />
                     </div>
                 </div>
                 </span>
@@ -193,19 +187,16 @@ export default {
         return {
             editing: false,
             updateMessage: '',
-            newdata: {},
             updated: false,
             errorMessage: "",
             areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
         }
     },
-    async fetch() {
-        this.newdata = await this.$axios.$get(`/api/logs-report/${this.formType}/${this.report.JobId}`)
-    },
+    
     methods: {
         updateReport() {
             // use indexDb for offline support here
-            this.$axios.$post(`/api/logs-report/${this.formType}/${this.report.JobId}/update`, this.newdata).then((res) => {
+            this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.newdata).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
                     return;                

@@ -20,7 +20,7 @@
                                 <label for="selectJobId" class="form__label">Job ID</label>
                                 <select class="form__select" v-model="selectedJobId">
                                     <option disabled value="">Please select a Job Id</option>
-                                    <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+                                    <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                                 </select>
                                 <span class="form__input--error">{{ errors[0] }}</span>
                             </ValidationProvider>
@@ -297,12 +297,10 @@
                             </ValidationProvider>
                         </div>
                     </fieldset>
-                    <div v-if="currentStep >= 2 && paymentOption == 'Card'">
-                        <LazyFormsCreditCard ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
-                            @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
-                    </div>
+                    <LazyFormsCreditCard v-if="currentStep >= 2 && paymentOption == 'Card'" ref="creditCardForm"  :partOfLastSection="true" :jobId="selectedJobId" :repPrint="repPrint"
+                        @submit="submitForm" @cardSubmit="cardSubmittedValue" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                     <v-btn type="submit" v-if="currentStep === 1 && (paymentOption == 'Card' && existingCreditCard == 'No')">Next</v-btn>
-                    <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
+                    <v-btn type="submit" :class="Object.keys(cardObj).length !== 0 || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">Submit</v-btn>
                 </form>
             </ValidationObserver>
         </div>
@@ -366,30 +364,6 @@ export default {
         teamSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         testimonial:"",
         usingCreditCard: false,
-        cardholderName: {
-            first: "",
-            middle: "",
-            last: "",
-            email: "",
-            phoneNumber: ""
-        },
-        billingAddress: {
-            address1: "",
-            address2: "",
-            city: "",
-            state: "",
-            zip: ""
-        },
-        creditCards: [
-            "Mastercard", "VISA", "Discover", "Amex", "Other"
-        ],
-        selectedCard: {
-            card: "",
-            otherCard: ""
-        },
-        cardNumber: null,
-        expirationDate: "",
-        cvcNum: "",
         cusSig: {
             data: '',
             isEmpty: true
@@ -403,10 +377,10 @@ export default {
         errorDialog: false,
         existingCreditCard: "",
         cardToUse: "",
-        cardSubmitted: false
+        cardObj: {},
     }),
     computed: {
-        ...mapGetters(["getUser", "getReports"]),
+        ...mapGetters({getUser: "users/getUser", getReports: "reports/getReports", getCards:'reports/getCards'}),
         insuredDay1() {
             return this.insuredPayment.day1Date;
         },
@@ -441,10 +415,7 @@ export default {
             })
         },
         cardNumbers() {
-            var cards = this.getReports.filter((v) => {
-                return v.ReportType === "credit-card"
-            })
-            return cards.map((v) => {
+            return this.getCards.map((v) => {
                 return v.cardNumber
             })
         }
@@ -497,8 +468,10 @@ export default {
             const [year, month, day] = dateReturned.split('-')
             return `${month}/${day}/${year}`
         },
-        cardSubmittedValue(params) {
-            this.cardSubmitted = params
+        cardSubmittedValue(...params) {
+            const {isSubmit, cardNumber} = params[0]
+            this.cardObj = params
+            this.cardToUse = cardNumber
         },
         formatTime(timeReturned) {
             if (!timeReturned) return null
@@ -587,10 +560,6 @@ export default {
               insuredPay: this.insuredPay1,
               day1Date: this.insuredPayment.day1DateFormatted
             };
-            const userNameObj = {
-                first: this.getUser.name.split(" ")[0],
-                last: this.getUser.name.split(" ")[1]
-            }
             let insuredPayment2Arr = {
               insuredPay: this.insuredPay2,
               day5Date: this.insuredPayment.day5DateFormatted
@@ -615,7 +584,8 @@ export default {
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
               paymentOption: this.paymentOption,
-              teamMember: userNameObj
+              teamMember: this.getUser,
+              cardNumber: this.cardToUse
             };
             if (this.$nuxt.isOffline) {
               this.addReport(post).then(() => {

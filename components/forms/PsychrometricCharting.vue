@@ -10,9 +10,9 @@
                     <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select" v-model="selectedJobId">
+                        <select class="form__select form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
-                            <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
+                            <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors.msg }}</span>
                     </ValidationProvider>
@@ -54,8 +54,8 @@ export default {
     },
     computed: {
         ...mapGetters({
-            getUser: 'getUser',
-            getReports: 'getReports'
+            getUser: 'users/getUser',
+            getReports: 'reports/getReports'
         })
     },
     methods: {
@@ -68,19 +68,17 @@ export default {
         onSubmit() {
             this.submittedMessage = ""
             const reports = this.getReports.filter((v) => {
-                return v.ReportType === "chart-report"
+                return v.ReportType === "psychrometric-chart"
             })
-            const chartReps = reports.filter((v) => {
-                return v.formType === "psychrometric-chart"
-            })
-            const jobids = chartReps.map((v) => {
+            
+            const jobids = reports.map((v) => {
                 return v.JobId
             })
 
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "chart-report",
-                formType: "psychrometric-chart",
+                ReportType: "psychrometric-chart",
+                formType: "chart-report",
                 teamMember: this.getUser,
                 chart: this.chartImg
             }

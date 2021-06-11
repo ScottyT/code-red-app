@@ -16,9 +16,9 @@
                     <ValidationProvider vid="JobId" rules="required" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select" v-model="selectedJobId">
+                        <select class="form__select form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
-                            <option v-for="(item, i) in $store.state.jobids" :key="`jobids-${i}`">{{item}}</option>
+                            <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
@@ -515,7 +515,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['getReports', 'getUser'])
+        ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser'})
     },
     methods: {
         ...mapActions({
@@ -547,8 +547,9 @@ export default {
         },
         onSubmit() {
             this.submittedMessage = ""
+            this.submitting = true
             const reports = this.getReports.filter((v) => {
-                return v.formType === 'quantity-inventory-logs'
+                return v.ReportType === 'quantity-inventory-logs'
             })
             const jobids = reports.map((v) => {
                 return v.JobId
@@ -557,10 +558,10 @@ export default {
             var checkboxInputs = this.checkBoxArr.concat(this.serviceArr)
             const post = {
                 JobId: this.selectedJobId,
-                ReportType: "logs-report",
+                ReportType: "quantity-inventory-logs",
                 startDate: this.initDateFormatted,
                 endDate: this.endDateFormatted,
-                formType: "quantity-inventory-logs",
+                formType: "logs-report",
                 quantityData: numberInputs,
                 checkData: checkboxInputs,
                 categoryData: this.catArr,
@@ -580,6 +581,7 @@ export default {
                             this.submitted = true
                             setTimeout(() => {
                                 this.submittedMessage = ""
+                                this.submitting = false
                             }, 2000)
                         })
                     } else {
@@ -601,6 +603,7 @@ export default {
                         }
                         this.submittedMessage = res.message
                         this.submitting = false
+                        this.submitted = true
                         setTimeout(() => {
                             window.location = "/"
                         }, 2000)

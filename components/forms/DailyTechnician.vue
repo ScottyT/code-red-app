@@ -1,6 +1,6 @@
 <template>
     <div class="form-wrapper form-wrapper__case-file">
-        <h1 class="text-center">Water Emergency Services Incorporated</h1>
+        <h1 class="text-center">{{company}}</h1>
         <h2 class="text-center">Daily Technician Case File Report</h2>
         <ValidationObserver ref="form" v-slot="{ errors }">
           <h2>{{message}}</h2>
@@ -16,9 +16,9 @@
               <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
                 <input type="hidden" v-model="selectedJobId" />
                 <label class="form__label">Job ID Number</label>
-                <select class="form__select" v-model="selectedJobId">
+                <select class="form__select form__input" v-model="selectedJobId">
                   <option disabled value="">Please select a Job ID</option>
-                  <option v-for="(item, i) in $store.state.jobids" :key="`jobid-${i}`">{{item}}</option>
+                  <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                 </select>
                 <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
               </ValidationProvider>
@@ -43,7 +43,7 @@
               <input v-model="location.cityStateZip" name="CityStateZip" type="text"
                      class="form__input form__input--long" />
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>1) CONTENT CLEANING TECHNICIAN INSPECTION</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in contentCleaningInspection" :key="`content-cleaning-${i}`">
@@ -57,7 +57,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>2) WATER RESTORATION TECHNICIAN INSPECTION</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in waterRestorationInspection" :key="`water-restoration-${i}`">
@@ -71,7 +71,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>3) WATER REMEDIATION TECHNICIAN ASSESSMENT</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in waterRemediationAssesment" :key="`water-remdiation-${i}`">
@@ -85,7 +85,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>4) OVERVIEW OF SCOPE OF WORK</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in overviewScopeOfWork" :key="`scope-${i}`">
@@ -99,7 +99,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>5) SPECIALIZED EXPERT</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in specializedExpert" :key="`expert-${i}`">
@@ -113,7 +113,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>6) SCOPE OF WORK</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in scopeOfWork" :key="`scope2-${i}`">
@@ -127,7 +127,7 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group form__form-group--info-box">
+            <div class="form__form-group--listing form__form-group--info-box">
               <h3>7) PROJECT WORK PLANS</h3>
               <ol class="form__form-group--listing">
                 <li v-for="(item, i) in projectWorkPlans" :key="`work-plans-${i}`">
@@ -226,6 +226,7 @@ import goTo from 'vuetify/es5/services/goto'
   } from 'vuex';
   import moment from 'moment';
 export default {
+    props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
         jobId: null,
         date: new Date().toISOString().substr(0, 10),
@@ -572,7 +573,7 @@ export default {
         }
     },
     computed: {
-      ...mapGetters(["getUser"]),
+      ...mapGetters({getUser:"users/getUser", getReports:'reports/getReports'}),
       duration() {
         let start = moment(this.date + 'T' + this.evalStart)
         let end = moment(this.date + 'T' + this.evalEnd)
@@ -619,14 +620,12 @@ export default {
       },
       submitForm() {
           this.message = ''
-          const reports = this.$store.state.reports.filter((v) => {
-            return v.CaseFileType === 'technician'
+          this.submitting = true
+          const reports = this.getReports.filter((v) => {
+            return v.ReportType === 'case-file-technician'
           })
           const jobids = reports.map((v) => {
             return v.JobId
-          })
-          const casefile = reports.map((v) => {
-            return v.CaseFileType
           })
           const evaluationLogs= [
             {label: 'Dispatch to Property', value: this.dispatchPropertyFormatted},
@@ -648,8 +647,8 @@ export default {
             notes: this.notes,
             evaluationLogs: evaluationLogs,
             id: this.getUser.id,
-            ReportType: 'case-file-report',
-            CaseFileType: 'technician',
+            ReportType: 'case-file-technician',
+            formType: 'case-report',
             teamMember: this.getUser,
             verifySig: this.verifySig.data,
             afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
@@ -663,7 +662,7 @@ export default {
               return goTo(0)
             }
             if (this.$nuxt.isOffline) {
-              if (!jobids.includes(this.selectedJobId) && casefile.includes('technician')) {
+              if (!jobids.includes(this.selectedJobId)) {
                 this.addReport(post).then(() => {
                   this.message = "Report was saved successfully for submission later!"
                   this.submitted = true
@@ -677,13 +676,13 @@ export default {
                 this.submitting = false
                 this.errorDialog = true
                 this.$refs.form.setErrors({
-                  JobId: ['Cannot have two technician reprots']
+                  JobId: ['Cannot have two technician reports']
                 })
                 return goTo(0)
               }
             }
             if (this.$nuxt.isOnline) {
-              this.$axios.$post("/api/case-file-report/new", post).then((res) => {
+              this.$axios.$post("/api/case-report/new", post).then((res) => {
                 if (res.errors) {
                   this.errorDialog = true
                   this.submitting = false

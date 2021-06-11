@@ -19,7 +19,7 @@ const creditCardReport = mongoose.Schema({
     },
     cardholderName: String,
     expirationDate: String,
-    cvcNum: String,
+    cvvNum: String,
     cardholderZip: String,
     customerSig: String,
     customerSignDate: String

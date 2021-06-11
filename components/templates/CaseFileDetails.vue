@@ -1,6 +1,7 @@
 <template>
     <div class="report-details">
         <section class="pdf-content" slot="pdf-content">
+            <h1>Daily Containment Case File Report</h1>
         <div class="report-details__section">
             <div class="report-details__data">
                 <h3>Job ID:</h3>
@@ -164,7 +165,7 @@
                 </ul>
             </div>
         </div>
-        <div class="report-details__section--block">
+        <div class="report-details__section--block" v-if="report.notes && report.notes !== ''">
             <h3>Notes</h3>
             <span>{{report.notes}}</span>
         </div>

@@ -1,24 +1,50 @@
 const express = require("express");
+const mongoose = require('mongoose');
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
-const CaseFile = require("../models/caseFileSchema");
-const COC = require("../models/cocSchema");
-const AOB = require("../models/aobSchema");
 const CreditCard = require("../models/creditCardSchema");
 const Sketch = require("../models/sketchSchema");
 const Logging = require('../models/loggingSchema');
 const chartModel = require("../models/chartSchema");
 const moistureModel = require('../models/moistureMapSchema');
+const imageModel = require("../models/imageSchema");
+const Report = require("../models/reportsSchema");
+const multer = require('multer');
 const { getEmployee, createUser } = require("../controllers/authController");
+const { checkIfAuthenticated } = require("../middleware/authMiddleware");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
+const fs = require('fs');
+const path = require('path');
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
-
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname + '/uploads/'))
+    },
+});
+var upload = multer({ storage: storage })
+const duplicateJobIDCheck = (val, reportType) => {
+    return Report.findOne({JobId: val, ReportType: reportType}).then(report => {
+        if (report) {
+            return Promise.reject('Job id already in use');
+        }
+    });
+}
+/* router.get('/', (req, res) => {
+    imageModel.find({}, (err, items) => {
+        if (err) {
+            console.log(err)
+            res.status(500).send('An error occured', err);
+        } else {
+            res.json(items)
+        }
+    })
+}) */
 router.post("/auth/signup", createUser);
-router.post("/employee/new",
+router.post("/employee/new", 
     check('email', 'Email is required').isEmail().withMessage('Email must be valid')
     .custom(value => {
         return User.findOne({email: value}).then(user => {
@@ -39,51 +65,37 @@ router.post("/employee/new",
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
-router.get('/reports', async (req, res) => {
-    const dispatch = await Dispatch.find({}).lean();
-    const rapidresponse = await RapidResponse.find({}).lean();
-    const caseFile = await CaseFile.find({}).lean();
-    const certificate = await COC.find({}).lean();
-    const sketches = await Sketch.find({}).lean();
-    const logging = await Logging.find({}).lean();
-    const charts = await chartModel.find({}).lean();
-    const results = dispatch.concat(rapidresponse, caseFile, certificate, sketches, logging, charts)
-    res.json(results)
+router.get('/reports', checkIfAuthenticated, async (req, res) => {
+    await Report.find({}).lean().exec((err, reports) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else {
+            res.status(200).json(reports)
+        }
+    })
+    //const results = await reportsModel.find({})
 })
-router.get('/reports/:ReportType/:JobId', async (req, res) => {
-    const repDispatch = await Dispatch.findOne({JobId: req.params.JobId});
-    const repRapid = await RapidResponse.findOne({JobId: req.params.JobId});
-    const containment = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'containment'});
-    const technician = await CaseFile.findOne({JobId: req.params.JobId, CaseFileType: 'technician'});
-    const creditCard = await CreditCard.find({JobId: req.params.JobId})
-    const aob = await AOB.findOne({JobId: req.params.JobId});
-    const coc = await COC.findOne({JobId: req.params.JobId});
-    const chart = await chartModel.findOne({JobId: req.params.JobId});
-    switch (req.params.ReportType) {
-        case "dispatch":
-            res.json(repDispatch)
-            break;
-        case "rapid-response":
-            res.json(repRapid)
-            break;
-        case "case-file-containment":
-            res.json(containment)
-            break;
-        case "case-file-technician":
-            res.json(technician);
-            break;
-        case "credit-card":
-            res.json(creditCard);
-            break;
-        case "aob":
-            res.json(aob)
-            break;
-        case "coc":
-            res.json(coc)
-            break;
-        case "chart-report":
-            res.json(chart)
-    }
+router.get('/reports/:ReportType', checkIfAuthenticated, async (req, res) => {
+    await Report.where('ReportType').equals(req.params.ReportType).lean().exec((err, report) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (report) {
+            res.status(200).json(report)
+        } else {
+            res.status(200).json({error: "No report found"})
+        }
+    })
+})
+router.get('/report/:ReportType/:JobId', checkIfAuthenticated, async (req, res) => {
+    await Report.findOne({JobId: req.params.JobId, ReportType: req.params.ReportType}).lean().exec((err, report) => {
+        if (err) {
+            res.status(500).send('Error')
+        } else if (report) {
+            res.status(200).json(report)
+        } else {
+            res.status(200).json({error: "No report found"})
+        }
+    })
 })
 router.post("/report/:ReportType/:JobId/update", async (req, res) => {
     switch (req.params.ReportType) {
@@ -122,7 +134,7 @@ router.get('/employees', (req, res) => {
         }
     }).lean()
 })
-router.get('/employee/:email', (req, res) => {
+router.get('/employee/:email', checkIfAuthenticated, (req, res) => {
     User.findOne({email: req.params.email}).exec((err, employee) => {
         if (err) {
             res.status(500).send('Error')
@@ -134,35 +146,19 @@ router.get('/employee/:email', (req, res) => {
         }
     })
 })
-router.get('/employee/:email/savedreports', async (req, res) => {
-    const emp = await User.findOne({email: req.params.email}).select({email: req.params.email}).lean()
-    if (emp) {
-        const logreports = await Logging.find({}).lean().where('teamMember.email').equals(req.params.email)
-        res.json(logreports)
-    } else {
-        res.json({error: "User does not exist"})
-    }
-})
-router.post("/employee/:email/:formType/:JobId/update", updateLogs)
-//router.delete("/employee:email/:formType/:JobId/delete", )
-router.get('/certificates', (req, res) => {
-    COC.find({}, (err, coc) => {
+router.get('/employee/:email/reports', checkIfAuthenticated, async (req, res) => {
+    await Report.where('teamMember.email').equals(req.params.email).lean().exec((err, reports) => {
         if (err) {
             res.status(500).send('Error')
+        } else if (reports) {
+            res.status(200).json(reports)
         } else {
-            res.status(200).json(coc)
-        }
-    }).lean()
-})
-router.get('/aob-mitigation-contracts', (req, res) => {
-    AOB.find({}, (err, aob) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(aob)
+            res.status(200).json({error: "Oh no! You have created no reports!"})
         }
     })
 })
+router.post("/employee/:email/:formType/:JobId/update", updateLogs)
+//router.delete("/employee:email/:formType/:JobId/delete", )
 router.get('/credit-cards', (req, res) => {
     CreditCard.find({}, (err, creditcard) => {
         if (err) {
@@ -172,8 +168,8 @@ router.get('/credit-cards', (req, res) => {
         }
     })
 })
-router.get('/credit-card/:cardNumber', (req, res) => {
-    CreditCard.findOne({cardNumber: req.body.cardNumber}, (err, creditcard) => {
+router.get('/credit-card/:cardNumber', checkIfAuthenticated, async (req, res) => {
+    await CreditCard.where('cardNumber').equals(req.params.cardNumber).lean().exec((err, creditcard) => {
         if (err) {
             res.status(500).send('Error')
         } else if (creditcard) {
@@ -183,28 +179,8 @@ router.get('/credit-card/:cardNumber', (req, res) => {
         }
     })
 })
-router.get('/sketch', (req, res) => {
-    Sketch.find({}, (err, sketch) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else {
-            res.status(200).json(sketch)
-        }
-    })
-})
-router.get('/sketch-report/:formType/:JobId', (req,res) => {
-    Sketch.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, sketch) => {
-        if (err) {
-            res.status(500).send('Error')
-        } else if (sketch) {
-            res.status(200).json(sketch)
-        } else {
-            res.status(404).send('Item not found')
-        }
-    })
-})
-router.get('/logs/:employeeId', (req, res) => {
-    Logging.find({}).where('teamMember.id').equals(req.params.employeeId).exec((err, logs) => {
+router.get('/logs/:email', (req, res) => {
+    Report.find({}).where('teamMember.email').equals(req.params.email).where('formType').equals('logs-report').exec((err, logs) => {
         if (err) {
             res.status(500).send('Error')
         } else {
@@ -212,93 +188,59 @@ router.get('/logs/:employeeId', (req, res) => {
         }
     })
 })
-router.get('/logs-report/:formType/:JobId', (req, res) => {
-    Logging.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, log) => {
+router.get('/employee/:email/avatar', (req, res) => {
+    imageModel.findOne({teamMember: req.params.email}, (err, avi) => {
         if (err) {
-            res.status(500).send('Error')
-        } else if (log) {
-            res.status(200).json(log)
+            res.status(500).send('Server Error')
+        } else if (avi) {
+            res.status(200).json(avi)
         } else {
             res.status(200).json({error: "Item not found", status: 404})
         }
     })
 })
-router.get('/chart-report/:formType/:JobId', (req, res) => {
-    chartModel.findOne({JobId: req.params.JobId, formType: req.params.formType}, (err, chart) => {
-        if (err) {
-            res.status(500).send('Server Error')
-        } else if (chart) {
-            res.status(200).json(chart)
-        } else {
-            res.status(200).json({error: "Item no found", status: 404})
-        }
-    })
+router.post('/avatar/new', upload.single('avatar'), (req, res) => {
+    var img = {
+        image: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        contentType: req.body.contentType
+    }
+    if (!req.file) {
+        return res.send({
+            success: false,
+            message: "Please include an avatar image"
+        })
+    } else {
+        User.findOneAndUpdate({email: req.body.teamMember}, {avatar: img}, (err, item) => {
+            if (err) {
+                console.log('CREATE error: ' + err);
+                res.status(500).send('Error')
+            } else {
+                res.json(item)
+            }
+        })
+    }
 })
 router.post("/moisture-map/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {
-        return moistureModel.findOne({JobId: value, formType: req.body.formType}).then(moisture => {
-            if (moisture) {
-                return Promise.reject('Job ID is already in use')
-            }
-        })
-    },
-    check('notes').not().isEmpty().withMessage('Notes is required')
-    ), createMoistureMap)
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
+    check('notes').not().isEmpty().withMessage('Notes is required'), 
+    createMoistureMap)
 router.post("/sketch-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {       
-        return Sketch.findOne({JobId: value, formType: req.body.sketchType}).then(sketch => {
-            if (sketch) {
-                return Promise.reject('Job ID is already in use')
-            }
-        });
-    }),
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
     check('sketch').not().isEmpty().withMessage('Sketch is required'),
-    check('teamMember').not().isEmpty().withMessage('Employee must be logged in')
-    .custom(value => {
-        return User.findOne({id: value.id}).then(user => {
-            if (!user) {
-                return Promise.reject('You are not authorized')
-            }
-        })
-    }),
+    check('user').not().isEmpty().withMessage('Employee must be logged in'),
     createSketch);
 router.post("/chart-report/new", 
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {       
-        return chartModel.findOne({JobId: value, formType: req.body.formType}).then(chart => {
-            if (chart) {
-                return Promise.reject('Job ID is already in use')
-            }
-        });
-    }),
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
     check('chart').not().isEmpty().withMessage('Chart is required'),
-    check('teamMember').not().isEmpty().withMessage('Employee must be logged in')
-    .custom(value => {
-        return User.findOne({id: value.id}).then(user => {
-            if (!user) {
-                return Promise.reject('You are not authorized')
-            }
-        })
-    }),
+    check('teamMember').not().isEmpty().withMessage('Employee must be logged in'),
     uploadChart)
 router.post("/logs-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {
-        return Logging.findOne({JobId: value, formType: req.body.formType}).then(log => {
-            if (log) {
-                return Promise.reject('Job ID is already in use for this type of form')
-            }
-        })
-    }),
-    check('teamMember').custom(value => {
-        return User.findOne({id: value.id}).then(user => {
-            if (!user) {
-                return Promise.reject('You are not authorized')
-            }
-        })
-    }),
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
+    check('teamMember').not().isEmpty().withMessage('Employee must be logged in'),
     createLogs);
 router.post("/logs-report/:formType/:JobId/update", updateLogs);
 router.post("/dispatch/new",
@@ -307,13 +249,7 @@ router.post("/dispatch/new",
     body('teamMemberSig').not().isEmpty().withMessage('Signature is required'),
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
-        .custom(value => {
-        return Dispatch.findOne({JobId: value}).then(dispatch => {
-            if (dispatch) {
-                return Promise.reject('Job id already in use');
-            }
-        });
-    }),
+        .custom(value => duplicateJobIDCheck(value, "dispatch")),
     createDispatch)
 router.post("/rapid-response/new", 
     check('id').not().isEmpty().withMessage('Team lead id is required')
@@ -328,45 +264,21 @@ router.post("/rapid-response/new",
     body('customerSig').not().isEmpty().withMessage('Customer signature is required'),
     body('JobId')
         .not().isEmpty().withMessage("Job id is required")
-        .custom(value => {
-            return RapidResponse.findOne({JobId: value}).then(report => {
-                if (report) {
-                    return Promise.reject('Job id already in use');
-                }
-            });
-    }),
+        .custom(value => duplicateJobIDCheck(value, "rapid-response")),
     createRapidResponse)
-router.post("/case-file-report/new",
+router.post("/case-report/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')
-    .custom((value, {req}) => {
-        return CaseFile.findOne({JobId: value, CaseFileType: req.body.CaseFileType}).then(casefile => {
-            if (casefile) {
-                return Promise.reject('Job ID is already in use')
-            }
-        })
-    }),
+    .custom((value, {req}) => duplicateJobIDCheck(value, req.body.ReportType)),
     body('verifySig').not().isEmpty().withMessage('Signature is required'),
     check('id').not().isEmpty().withMessage('Team Lead ID is required'),
     createCaseFile)
 router.post("/coc/new",
     check('JobId').not().isEmpty().withMessage("Job ID is required")
-        .custom(value => {
-            return COC.findOne({JobId: value}).then(coc => {
-                if (coc) {
-                    return Promise.reject('Duplicate Job ID is not allowed')
-                }
-            })
-        }),
+        .custom(value => duplicateJobIDCheck(value, "coc")),
     createCOC)
 router.post("/aob/new",
     check('JobId').not().isEmpty().withMessage("Job ID is required")
-    .custom(value => {
-        return AOB.findOne({JobId: value}).then(aob => {
-            if (aob) {
-                return Promise.reject('Duplicate Job ID is not allowed')
-            }
-        })
-    }),
+    .custom(value => duplicateJobIDCheck(value, "aob")),
     createAOB)
 router.post("/credit-card/new", [
     check('JobId').not().isEmpty().withMessage('Job id is required'),

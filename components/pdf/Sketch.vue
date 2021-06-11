@@ -10,7 +10,7 @@
         <div class="pdf-item__inline">
           Job ID: {{report.JobId}}
         </div>
-        <div v-if="report.ReportType === 'sketch-report'" class="pdf-item__sketch-area" :style="'background-image:url('+report.sketch+')'"></div>
+        <div v-if="report.formType === 'sketch-report'" class="pdf-item__sketch-area" :style="'background-image:url('+report.sketch+')'"></div>
         <div class="chart-wrapper" v-else>
             <img class="chart-wrapper__bg" :src="bgimage" />
             <img class="chart-wrapper__bg" :src="report.chart" />
@@ -20,7 +20,7 @@
 </template>
 <script>
 export default {
-    props: ['formType', 'formName', 'reportType', 'report', 'company'],
+    props: ['formName', 'reportType', 'report', 'company'],
     data() {
         return {
             chartimg: null,
@@ -31,7 +31,7 @@ export default {
         htmlToPdfOptions(e) {
             return {
                 margin:[10, 10, 20, 10],
-                filename: `${this.reportType}-${this.formType}-${this.jobId}`,
+                filename: `${this.reportType}-${this.jobId}`,
                 image: {
                     type: "jpeg",
                     quality: 0.98

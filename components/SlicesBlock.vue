@@ -30,11 +30,19 @@
     <template v-if="slice === 'certificate-of-completion'">
       <LazyFormsCertificate :company="company" abbreviation="WESI" />
     </template>
+    <template v-if="slice === 'credit-card'">
+      <LazyFormsCreditCard :company="company" abbreviation="" jobId="222" />
+    </template>
   </v-layout>
 </template>
 <script>
 export default {
   name: 'SlicesBlock',
-  props: ['slice', 'company', 'abbreviation']
+  props: ['slice', 'abbreviation'],
+  data() {
+    return {
+      company: ""
+    }
+  }
 }
 </script>

@@ -20,16 +20,7 @@
           "value": "no-cache"
         }
       ]
-    }],
-    "rewrites": [
-      {
-        "source": "*",
-        "run": {
-          "serviceId": "code-red-app",
-          "region": "us-central1"
-        }
-      }
-    ]
+    }]
   },
   "emulators": {
     "hosting": {

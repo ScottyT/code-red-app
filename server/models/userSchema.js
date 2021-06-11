@@ -22,9 +22,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    savedreports: [
-        {type: mongoose.Schema.Types.ObjectId, ref: 'Logs'}
-    ]
+    avatar: {
+        image: Buffer,
+        contentType: String
+    },
 });
 userSchema.plugin(timestamps)
 module.exports = mongoose.model('Employee', userSchema)

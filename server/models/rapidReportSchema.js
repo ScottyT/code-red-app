@@ -10,7 +10,7 @@ const responseReport = mongoose.Schema({
     ContactName: String,
     DateOfEvaluation: String,
     EmailAddress: String,
-    EvaluationLogs: Array,
+    evaluationLogs: Array,
     documentVerification: Array,
     InsuranceCompany: String,
     PhoneNumber: String,
@@ -48,4 +48,4 @@ const responseReport = mongoose.Schema({
     initial4: String
 })
 responseReport.plugin(timestamps);
-module.exports = mongoose.model('RapidResponse', responseReport, 'rapid-response-reports');
+module.exports = mongoose.model('RapidResponse', responseReport, 'reports');

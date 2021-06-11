@@ -1,6 +1,7 @@
 <template>
-  <div class="reports-list">
-    
+  <p v-if="reportslist.length < 0">There are no reports to show</p>
+  <p v-else-if="$nuxt.isOffline">You need to be connected to the internet to view reports</p>
+  <div class="reports-list" v-else>
     <div class="info-bar">
       <div class="info-bar__search-wrapper">
         <UiAutocomplete @sendReportsToParent="reportsfetched" :items="reportslist" theme="light" />
@@ -27,7 +28,7 @@
 import {mapActions} from 'vuex';
 export default {
   name: "ReportsList",
-  props: ['reportslist','sortoptions', 'page'],
+  props: ['reportslist','sortoptions', 'page', "items"],
   data: () => ({
     search: null,
     report: {},
@@ -63,7 +64,7 @@ export default {
     }),
     
     reportsfetched(reports) {
-      this.reports = reports
+      this.reports = reports.value
     },
     sortValue(s) {
       if (s.value === this.sortBy) {

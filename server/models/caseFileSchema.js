@@ -13,7 +13,7 @@ const caseFileReport = mongoose.Schema({
     date: String,
     location: Map,
     ReportType: String,
-    CaseFileType: String,
+    formType: String,
     selectedTmpRepairs: Array,
     selectedContent: Array,
     selectedStructualCleaning: Array,
@@ -33,4 +33,4 @@ const caseFileReport = mongoose.Schema({
     verifySign: String
 })
 caseFileReport.plugin(timestamps)
-module.exports = mongoose.model('CaseFileReports', caseFileReport, 'case-file-report')
+module.exports = mongoose.model('CaseFileReports', caseFileReport, 'reports')

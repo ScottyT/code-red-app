@@ -1,12 +1,11 @@
 <template>
-  <div class="block-group">
+  <div class="block-group__content">
     <UiAutocomplete :items="reports" @sendReportsToParent="reportsFetched" :theme="theme" />
     <div class="block-group--grid">
       <div class="reports-wrapper__data block-group__col" v-for="(item, i) in reportslist" :key="`item-${i}`">
-        <nuxt-link :to="`/field-jacket/${routeSwitching(item)}/${item.JobId}`">
+        <nuxt-link :to="`/field-jacket/${item.ReportType}/${item.JobId}`">
           <p>{{item.JobId}}</p>
           <p v-show="item.formType !== ''">{{item.formType}}</p>
-          <p v-show="item.CaseFileType !== ''">{{item.CaseFileType}}</p>
           <p>{{item.ReportType}}</p>
         </nuxt-link>
       </div>
@@ -26,7 +25,7 @@ export default {
         var route = ""
         switch (item.ReportType) {
           case "case-file-report":
-            route = "case-file-" + item.CaseFileType
+            route = "case-file-" + item.formType
             break;
           case "logs-report":
             route = "logs-report/"+item.formType
@@ -43,7 +42,7 @@ export default {
         return route
       },
       reportsFetched(reports) {
-        this.reportslist = reports
+        this.reportslist = reports.value
       }
     },
     
