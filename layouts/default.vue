@@ -206,8 +206,7 @@ export default {
     this.$nextTick(() => {
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
-      this.fetchReports(this.$fire.auth.currentUser)
-      
+      this.fetchReports(this.$fire.auth.currentUser)      
     })
   },
   beforeDestroy() {

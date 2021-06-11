@@ -4,7 +4,6 @@ export const cardMasks = {
             mask: '0000 000000 00000',
             regex: '^3[47]\\d{0,13}',
             cardtype: 'american-express',
-            startsWith: 2
         },
         {
             mask: '0000 0000 0000 0000',
@@ -38,12 +37,13 @@ export const cardMasks = {
     ],
     dispatch: function(appended, dynamicMasked) {
         const number = (dynamicMasked.value + appended).replace(/\D/g, "");
+        console.log(dynamicMasked)
         for (let i = 0; i < dynamicMasked.compiledMasks.length; i++) {
             const re = new RegExp(dynamicMasked.compiledMasks[i].regex);
             if (number.match(re) != null) {
               return dynamicMasked.compiledMasks[i];
             }
-          }
+        }
     }
 };
 export const cvvMasks = {
@@ -62,4 +62,33 @@ export const cvvMasks = {
 };
 export const zipCodeMask = {
     mask: /^\d{1,5}$/
+};
+export const driversLicenseMask = {
+    mask: [
+        {
+            //Kentucky
+            //mask:/^(?:[a-zA-Z]\\d{2}-\\d{3}-\\d{3}$)/,
+            mask: 'a00 000 000',
+            regex: '^[A-Za-z]\\d{8}$'
+        },
+        {
+            //Kansas
+            mask: 'a00 00 0000',
+            //mask:/^(?:[a-zA-Z]\\d{2}-\\d{2}-\\d{4}$)/,
+            regex: '^[a-zA-Z]\\d{2}\\d{2}\\d{4}$'
+        },
+        {
+            mask: '000000000',
+        }
+    ],
+    /* dispatch: function(appended, dynamicMasked) {
+        const number = (dynamicMasked.value + appended).replace(/\D/g, "");
+        console.log(dynamicMasked)
+        for (let i = 0; i < dynamicMasked.compiledMasks.length; i++) {
+            const re = new RegExp(dynamicMasked.compiledMasks[i].regex);
+            if (number.match(re) != null) {
+              return dynamicMasked.compiledMasks[i];
+            }
+        }
+    } */
 };

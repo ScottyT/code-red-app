@@ -32,6 +32,11 @@
             <input id="cardholderemail" type="email" class="form__input" v-model="cardholderInfo.email" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
+          <span class="form__input-group form__input-group card-input">
+            <label for="cardNumber" class="form__label">Card Number</label>
+            <input class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
+            <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
+          </span>
           <ValidationProvider rules="required" v-slot="{errors}" name="Cardholder phone number" class="form__input-group form__input-group--normal">
             <label for="cardholderphone" class="form__label">Cardholder Phone Number</label>
             <input id="cardholderphone" type="text" class="form__input" @input="acceptNumber" v-model="cardholderInfo.phoneNumber" />
@@ -90,7 +95,7 @@
             </ValidationProvider>
             <span class="form__input-group form__input-group card-input">
               <label for="cardNumber" class="form__label">Card Number</label>
-              <input class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
+              <input class="form__input" v-imask="cardMasks" required id="cardNumber" autocomplete="off" readonly :value="cardNumber">
               <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
             </span>
             <ValidationProvider rules="required" v-slot="{errors}" name="Exp. date" class="form__input-group card-input ">

@@ -137,7 +137,8 @@ export default defineComponent({
                 pdf.addPage()
             })
         }
-        getReport(`${reportType}/${jobId}`, authUser)
+        //getReport(`${reportType}/${jobId}`).fetchReport()
+        getReport(`${reportType}/${jobId}`).fetchState
         
         return {
             report,

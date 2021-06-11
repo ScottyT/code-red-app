@@ -25,10 +25,10 @@
       <LazyFormsPsychrometricCharting :company="company" />
     </template>
     <template v-if="slice === 'aob-contract-form'">
-      <LazyFormsAOBContract :company="company" abbreviation="WESI" />
+      <LazyFormsAOBContract company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </template>
     <template v-if="slice === 'certificate-of-completion'">
-      <LazyFormsCertificate :company="company" abbreviation="WESI" />
+      <LazyFormsCertificate company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </template>
     <template v-if="slice === 'credit-card'">
       <LazyFormsCreditCard :company="company" abbreviation="" jobId="222" />

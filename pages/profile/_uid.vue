@@ -24,7 +24,6 @@
                     </div>
                 </v-slide-x-transition>  
             </form>
-            
         </v-card>
         <p v-if="$fetchState.pending">Fetching reports...</p>
         <div class="block-group" v-else>
@@ -35,10 +34,11 @@
 <script>
 import axios from 'axios';
 import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
-import useReports from '@/composable/reports'
+import { userReports } from '@/composable/userReports'
 export default defineComponent({
-    setup(props, {root}) {
-        const authUser = root.$fire.auth.currentUser
+    setup(props, context) {
+        console.log(context)
+        const authUser = context.root.$fire.auth.currentUser
         const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
@@ -46,9 +46,9 @@ export default defineComponent({
         const error = ref('')
         const user = computed(() => store.getters['users/getUser'])
         const avatarurl = computed(() => store.getters['users/getAvatar'])
-        const { reports, getUserReports } = useReports()
+        const { reports, fetchUserReports } = userReports(authUser.email)
 
-        getUserReports(authUser.email, authUser)
+        fetchUserReports()
         const savedAvatar = () => {
             saving.value = false
             saved.value = true

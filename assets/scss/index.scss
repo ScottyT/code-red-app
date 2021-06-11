@@ -10,6 +10,15 @@ body {
     font-size: 16px;
   }
 }
+.grid {
+  display:grid;
+  &--one-column {
+    grid-template-columns:1fr;
+  }
+  &--two-column {
+    grid-template-columns:1fr 1fr;
+  }
+}
 .v-application {
   p {
     &:last-child {
@@ -301,6 +310,7 @@ button {
       line-height:41px;
       font-size:28px;
       display:flex;
+      pointer-events:none;
     }
   }
 
@@ -359,11 +369,14 @@ button {
     }
 
     &--currency {
-      border-bottom: 1px solid $dark-primary-1;
       display:inline-flex;
+      align-items:center;
+      span {
+        margin-right:7px;
+      }
       input {
-        border:0;
         width:auto;
+        position:relative;
         margin:0;
       }
     }
@@ -440,7 +453,7 @@ button {
       width: 100%;
     }
 
-    &--long {
+    /* &--long {
       width: 500px;
       max-width: 100%;
     }
@@ -448,11 +461,11 @@ button {
     &--normal {
       width:400px;
       max-width:100%;
-    }
+    } */
 
     &--short {
-      max-width:100%;
-      width:220px;
+      max-width:180px;
+      width:100%;
     }
 
     &--error {
@@ -476,6 +489,19 @@ button {
     width:100%;
     position:relative;
     min-height:99px;
+    &--inline {
+      display:grid;
+      grid-template-columns:auto 1fr;
+      column-gap:20px;
+      &:not(:last-child) {
+        margin-bottom:15px;
+      }
+
+    }
+    &--section {
+      display:flex;
+      align-items:center;
+    }
     &--normal {
       max-width:230px;
     }
@@ -613,10 +639,10 @@ button {
     &--inline {
       display:inline-flex;
       flex-direction:row;
-      & > span {
+      /* & > span {
         margin:5px;
         flex-wrap:wrap;
-      }
+      } */
     }
 
     & > span {

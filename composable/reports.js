@@ -1,41 +1,32 @@
 import { onMounted, ref, useAsync, useContext, useFetch } from "@nuxtjs/composition-api";
 
-export default function useReports() {   
+export default function useReports() {
     let reports = ref([])
     let report = ref({})
-    const { $axios } = useContext()
+    const { $axios, $fire } = useContext()
     
     function getReports(authUser) {
         const { fetch: fetchReports, fetchState } = useFetch(async () => {
             await authUser.getIdToken(true).then((idToken) => {
-                $axios.$get(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
-                    reports.value = res
-                })
+                fetch(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${idToken}`}})
+                    .then(res => res.json())
+                    .then(json => reports.value = json)
             })
         })
-        return { fetchReports, reports, fetchState }
+        return { fetchReports, reports, fetch, fetchState }
     }
 
-    function getUserReports(email, authUser) {
-        const { fetch: fetchUserReports, fetchState } = useFetch(async () => {
-            await authUser.getIdToken(true).then((idToken) => {
-                $axios.$get(`/api/employee/${email}/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
-                    reports.value = res
-                })
-            })
-        })
-        return { fetchUserReports, reports, fetchState }
-    }
+    
 
-    function getReport(path, authUser) {       
+    const getReport = (path) => {       
         const { fetch: fetchReport, fetchState } = useFetch(async () => {
-            await authUser.getIdToken(true).then((idToken) => {
+            await $fire.auth.currentUser.getIdToken(true).then((idToken) => {
                 $axios.$get(`${process.env.serverUrl}/api/report/${path}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                     report.value = res
                 })
             })
         })
-        return { fetchReport, report, fetch, fetchState }
+        return { fetchReport, report, fetchState }
     }
-    return { getReports, reports, report, getReport, getUserReports }
+    return { getReports, reports, report, getReport }
 }
