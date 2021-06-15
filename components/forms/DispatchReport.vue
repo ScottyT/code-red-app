@@ -223,17 +223,12 @@
             <label for="notes" class="form__label">Notes</label>
             <textarea class="form__input--textbox form__input" v-model="notes"></textarea>
           </div>
-          <div class="form__section">
-            <div class="form__input-group form__input-group--short">
+          <div class="form__form-group">
+            <div class="form__input-group form__input-group--normal">
               <label class="form__label">Team Member</label>
               <p>{{getUser ? getUser.name : null}}</p>
             </div>
-            <div class="form__input-group form__input-group--short">
-              <label class="form__label">Team Member Signature</label>
-              <div class="form__input-wrapper">
-                <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
-              </div>
-            </div>          
+            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
           </div>
         </div>
         <button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button>

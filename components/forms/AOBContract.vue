@@ -96,11 +96,11 @@
               </ol>
             </li>
             <div class="form__form-group form__form-group--row">
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                     <label class="form__label">Signature</label>
                     <LazyUiSignaturePadModal :sigData="cusSign" sigRef="customerSig" name="Signature" />
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                     <label for="cusSignDate" class="form__label">Date:</label>
                     <v-dialog ref="dialogCusSign" v-model="cusSignDateModal" :return-value.sync="cusSignDate" persistent width="400px">
                         <template v-slot:activator="{ on, attrs }">
@@ -742,11 +742,12 @@
                 <input type="text" id="lastname" class="form__input" v-model="lastName" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <span class="form__input-group form__input-group--long">
+              <ValidationProvider name="License" :rules="`max:${licenseMask.length}|min:${licenseMask.min}|required`" v-slot="{errors}" 
+                class="form__input-group form__input-group--long">
                 <label for="driverslicense" class="form__label">Driver's License #:</label>
-                <input required id="driverslicense" class="form__input" v-imask="licenseMask" autocomplete="off" @accept="onAccept" 
-                  :value="driversLicense" @complete="onComplete" />
-              </span>
+                <imask-input @complete="onComplete" required id="driverslicense" class="form__input" :mask="licenseMask.mask" v-model="driversLicense" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
               <!-- <ValidationProvider rules="required|alpha_num|length:9" v-slot="{errors}" class="form__input-group form__input-group--long" name="Drivers license number">
                 <label for="driverslicense" class="form__label">Driver's License #:</label>
                 <input type="text" id="driverslicense" class="form__input" v-model="driversLicense" />
@@ -769,47 +770,44 @@
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
           <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
           <div class="form__form-group">
-              <span class="form__input-group form__input-group--normal d-flex flex-column justify-space-between">
+              <span class="form__input-group form__input-group--normal">
                   <label class="form__label">Driver's License #:</label>
                   <input type="text" readonly v-model="driversLicense" class="form__input" />
               </span>
-              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}">
+              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="repPrint" class="form__label">Property Representative Print:</label>
                   <input type="text" id="repPrint" class="form__input" v-model="repPrint" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <span>
+              <span class="form__input-group form__input-group--normal">
                   <label class="form__label">Property Representative Signature:</label>
                   <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
               </span>
-              <span class="form__form-group--info-box">
-                  <ValidationProvider class="form__input--input-group" name="Representative of" rules="required" v-slot="{errors}">
-                      <label for="repOf" class="form__label">Property Representative of:</label>
-                      <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <div class="form__input--input-group">
-                      <label for="repOfDate" class="form__label">Date:</label>
-                      <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
-                        <template v-slot:activator="{ on, attrs }">
-                          <input id="repOfDate" v-model="repDateFormatted" v-bind="attrs"
-                                class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(repDateFormatted)" />
-                        </template>
-                        <v-date-picker v-model="repDate" scrollable>
-                          <v-spacer></v-spacer>
-                          <v-btn text color="#fff" @click="repDateModal = false">Cancel</v-btn>
-                          <v-btn text color="#fff" @click="$refs.dialogRepDate.save(repDate)">OK</v-btn>
-                        </v-date-picker>
-                      </v-dialog>
-                  </div>
-              </span>
-              <span class="form__form-group--info-box">
-              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input--input-group">
+              <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
+                <label for="repOf" class="form__label">Property Representative of:</label>
+                <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <div class="form__input-group form__input-group--normal">
+                <label for="repOfDate" class="form__label">Date:</label>
+                <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <input id="repOfDate" v-model="repDateFormatted" v-bind="attrs"
+                           class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(repDateFormatted)" />
+                  </template>
+                  <v-date-picker v-model="repDate" scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="#fff" @click="repDateModal = false">Cancel</v-btn>
+                    <v-btn text color="#fff" @click="$refs.dialogRepDate.save(repDate)">OK</v-btn>
+                  </v-date-picker>
+                </v-dialog>
+              </div>
+              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witness" class="form__label">Witness</label>
                   <input type="text" id="witness" class="form__input" v-model="witness" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input--input-group">
+              <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witnesslabel" class="form__label">Witness date:</label>
                   <input type="hidden" v-model="witnessDate" />
                   <v-dialog ref="dialogWitnessDate" v-model="witnessDateModal" :return-value.sync="witnessDate" persistent width="500px">
@@ -825,48 +823,49 @@
                   </v-dialog>
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              </span>
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
-              <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}">
+              <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}" class="form__input-group form__input-group--short">
                   <label for="numberOfRooms" class="form__label">Number of Rooms:</label>
                   <input id="numberOfRooms" type="number" class="form__input" v-model="numberOfRooms" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="numeric" name="Number of floors" v-slot="{errors}">
+              <ValidationProvider rules="numeric" name="Number of floors" v-slot="{errors}" class="form__input-group form__input-group--short">
                   <label for="numberOfFloors" class="form__label">Number of Floors:</label>
                   <input type="number" id="numberOfFloors" class="form__input" v-model="numberOfFloors" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider name="Payment option" rules="required" v-slot="{errors}">
+              <ValidationProvider name="Payment option" rules="required" v-slot="{errors}" class="form__input-group">
                 <p class="form__label">Which payment method will you use?</p>
-                <ul class="form__form-group--inline">
-                  <li v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
+                <div class="form__form-group--inline">
+                  <span v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
                     <label :for="item">{{item}}</label>
                     <input :id="item" type="radio" v-model="paymentOption" :value="item" />
-                  </li>
-                </ul><br />
+                  </span>
+                </div><br />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider v-if="paymentOption === 'Card'" name="Existing credit card" rules="required" v-slot="{errors}">
+              <ValidationProvider v-if="paymentOption === 'Card'" name="Existing credit card" rules="required" v-slot="{errors}" class="form__input-group">
                 <p class="form__label">Are you using an existing credit/debit card?</p>
-                <ul class="form__form-group--inline">
-                  <li class="form__input--radio">
+                <div class="form__form-group--inline">
+                  <span class="form__input--radio">
                     <label for="Yes">Yes</label>
                     <input id="Yes" type="radio" v-model="existingCreditCard" value="Yes" />
-                  </li>
-                  <li class="form__input--radio">
+                  </span>
+                  <span class="form__input--radio">
                     <label for="No">No</label>
                     <input id="No" type="radio" v-model="existingCreditCard" value="No" />
-                  </li>
-                </ul>
+                  </span>
+                </div>
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider v-if="existingCreditCard === 'Yes' && paymentOption === 'Card'" name="Card to link" rules="required" v-slot="{errors}">
+              <ValidationProvider v-if="existingCreditCard === 'Yes' && paymentOption === 'Card'" name="Card to link" rules="required" v-slot="{errors}"
+                class="form__input-group form__input-group--normal">
                 <input type="hidden" v-model="cardToUse" />
                 <label class="form__label">Card number</label>
-                <select class="form__select" v-model="cardToUse">
-                  <option disabled value="">Please select a credit/debit card</option>
+                <i class="form__select--icon icon--angle-down mdi"></i>
+                <select class="form__input" v-model="cardToUse">
+                  <option disabled value="">Card Number</option>
                   <option v-for="(item, i) in cardNumbers" :key="`cardnumbers-${i}`">{{item}}</option>
                 </select>
                 <span class="form__input--error">{{ errors[0] }}</span>
@@ -885,7 +884,7 @@
 import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
 import { statesArr } from "@/data/states"
-import { driversLicenseMask } from "@/data/masks";
+import { licenseNumbers } from "@/data/driversLicense";
   export default {
     props: ['company', 'abbreviation'],
     computed: {
@@ -930,6 +929,19 @@ import { driversLicenseMask } from "@/data/masks";
         return this.getCards.map((v) => {
           return v.cardNumber
         })
+      },
+      licenseMask() {
+        var mask = {
+          mask:/^\d{0,9}$/,
+          length: 9,
+          min: 1,
+        }
+        
+        if (this.location.state !== "") {
+          var numbersArr = licenseNumbers.find(e => e.state === this.location.state)
+          mask = { mask: numbersArr.mask, length: numbersArr.length, min: numbersArr.min }
+        }
+        return mask
       }
     },
     data: (vm) => ({
@@ -978,10 +990,10 @@ import { driversLicenseMask } from "@/data/masks";
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         },
         location: {
-            address: null,
-            city: null,
-            state: null,
-            zip: null
+            address: "",
+            city: "",
+            state: "",
+            zip: ""
         },
         firstName:'',
         lastName:'',
@@ -1017,10 +1029,7 @@ import { driversLicenseMask } from "@/data/masks";
         cardToUse: "",
         cardObj: {},
         states: statesArr,
-        licenseMask: {
-          mask: 'a00-000-000',
-          regex: /^[a-zA-Z]\\d{8}$/
-        }
+        /* licenseMask: driversLicenseMask.mask */
     }),
     watch: {
         insuredEndDate(val) {
@@ -1057,12 +1066,12 @@ import { driversLicenseMask } from "@/data/masks";
             checkStorage: 'indexDb/checkStorage'
         }),
         onAccept(e) {
-          var maskRef = e.detail
-          this.driversLicense = maskRef.value
+          var maskRef = e
+          this.driversLicense = maskRef
         },
         onComplete(e) {
-          const maskRef = e.detail;
-          console.log('complete', maskRef.unmaskedValue);
+          const maskRef = e;
+          console.log('complete', maskRef);
         },
         cardSubmittedValue(...params) {
             const {isSubmit, cardNumber} = params[0]

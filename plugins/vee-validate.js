@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { extend, ValidationObserver, ValidationProvider } from 'vee-validate'
-import { required, email, numeric, regex, image, ext, mimes, digits, alpha, length, alpha_num, alpha_spaces } from 'vee-validate/dist/rules'
+import { required, email, numeric, regex, image, ext, mimes, digits, alpha, length, max, alpha_num, alpha_spaces, min, between } from 'vee-validate/dist/rules'
 
 extend('required', {
   ...required,
@@ -36,7 +36,7 @@ extend('alpha', {
 })
 extend('length', {
   ...length,
-  message: '{_field_} has to be exactly {length} characters'
+  message: '{_field_} must be exactly {length} characters'
 })
 extend('alpha_num', {
   ...alpha_num,
@@ -44,7 +44,18 @@ extend('alpha_num', {
 })
 extend('alpha_spaces', {
   ...alpha_spaces,
-  messages: '{_field_} only white spaces and letters are allowed'
+  message: '{_field_} only white spaces and letters are allowed'
+})
+extend('min', {
+  ...min,
+  message: '{_field_} must be longer than {length}'
+})
+extend('max', {
+  ...max,
+  message: '{_field} must be shorter than {length}'
+})
+extend('between', {
+  ...between
 })
 Vue.component("ValidationObserver", ValidationObserver)
 Vue.component("ValidationProvider", ValidationProvider)
