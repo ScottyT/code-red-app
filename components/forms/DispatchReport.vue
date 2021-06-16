@@ -44,11 +44,9 @@
           </div>
           <div class="form__input-group form__input-group--short">
             <label for="dateOfCall" class="form__label">Date of Call</label>
-
             <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfCall" v-model="dateFormatted" v-bind="attrs" class="form__input" v-on="on"
-                       @blur="date = parseDate(dateFormatted)" />
+                <input id="dateOfCall" v-model="dateFormatted" v-bind="attrs" class="form__input" v-on="on" @blur="date = parseDate(dateFormatted)" />
               </template>
               <v-date-picker v-model="date" scrollable>
                 <v-spacer></v-spacer>
@@ -60,8 +58,7 @@
           </div>
           <div class="form__input-group form__input-group--long">
             <label for="location" class="form__label">Location</label>
-            <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
-                 @change="$nuxt.$emit('location-updated')"></div>
+            <div id="geocoder" ref="geocoder" class="form__geocoder form__input" @change="$nuxt.$emit('location-updated')"></div>
           </div>
         </div>
         <div class="form__form-group form__form-group--info-box">

@@ -316,6 +316,9 @@ button {
       font-size:28px;
       display:flex;
       pointer-events:none;
+      @include respond(tabletLargeMax) {
+        line-height:35px;
+      }
     }
   }
 
@@ -370,8 +373,12 @@ button {
     //margin-bottom:10px;
     transition:all .2s ease-in;
 
+    @include respond(tabletLargeMax) {
+      padding: 6px 5px;
+    }
+
     &:focus-visible {
-      border-bottom:3px solid $color-red;
+      border-bottom:2px solid $color-red;
       box-shadow:1px 10px 20px 0px rgba($color-black, .3);
       outline:none;
       transition:all .2s ease-in;
@@ -467,7 +474,7 @@ button {
     }
 
     &--short {
-      max-width:180px;
+      max-width:150px;
       width:100%;
     }
 
@@ -496,10 +503,14 @@ button {
     width:auto;
     position:relative;
     min-height:105px;
+    @include respond(tabletLargeMax) {
+      min-height:99px;
+    }
     &--inline {
       display:grid;
       grid-template-columns:auto 1fr;
       column-gap:20px;
+      align-items:center;
       &:not(:last-child) {
         margin-bottom:15px;
       }
@@ -522,7 +533,7 @@ button {
 
   &__label {
     font-weight: 500;
-    padding-right: 7px;
+    padding-right: 10px;
     font-size:.9em;
   }
   &__table {
@@ -600,6 +611,7 @@ button {
 
     &--block {
       display: block;
+      margin-bottom:15px;
     }
 
     &--column {
@@ -681,9 +693,9 @@ button {
     }
     &--sublisting {
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+      grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
       grid-template-rows: repeat(auto-fill, minmax(34px, 1fr));
-
+      column-gap:10px;
       li {
         list-style-type: none;
         padding-right:10px;

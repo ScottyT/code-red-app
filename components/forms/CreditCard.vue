@@ -45,17 +45,18 @@
         </div>
         <div class="form__form-group">
           <h3>Debit/Credit Card</h3>
-          <ValidationProvider name="Card type" class="form__input--input-group form__form-group" rules="required" v-slot="{errors}">
-            <span class="form__label">Which card will you be using?</span>
-            <ul class="form__form-group--inline">
-              <li v-for="(type, i) in cardTypes" :key="`type-${i}`" class="form__input--radio">
-                <label :for="type">{{type}}</label>
-                <input :id="type" v-model="selectedCardType" type="radio" :value="type" /> 
-              </li>
-            </ul>
-            <span class="form__input--error">{{ errors[0] }}</span>
-          </ValidationProvider>
-          <div class="form__input--card-upload-group">             
+          <div class="d-flex flex-wrap">
+            <ValidationProvider name="Card type" class="form__form-group--block" rules="required" v-slot="{errors}">
+              <span class="form__label">Which card will you be using?</span>
+              <ul class="form__form-group--inline">
+                <li v-for="(type, i) in cardTypes" :key="`type-${i}`" class="form__input--radio">
+                  <label :for="type">{{type}}</label>
+                  <input :id="type" v-model="selectedCardType" type="radio" :value="type" /> 
+                </li>
+              </ul>
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <div class="form__input--card-upload-group">             
               <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--front">
                 <p>Front side:</p>
                 <input type="hidden" v-model="frontCardImage[0]" @click="validate" />
@@ -79,6 +80,7 @@
                 <p class="card-upload__message" aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
               </div>
             </div>
+          </div>
         </div>
       </fieldset>
       <fieldset v-if="currentStep === 2" class="form__form-group form__form-group form__form-group--info-box">
@@ -135,7 +137,7 @@
             <ValidationProvider rules="required" v-slot="{errors}" name="State" class="form__input-group form__input-group--normal">
               <label for="state" class="form__label">State</label>
               <i class="form__select--icon icon--angle-down mdi"></i>
-              <select class="form__select" id="state" v-model="billingAddress.state">
+              <select class="form__input" id="state" v-model="billingAddress.state">
                 <option disabled value="" selected>State</option>
                 <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
               </select>
@@ -554,11 +556,11 @@ import { statesArr } from "@/data/states"
     grid-area:zip;
   }
   &__symbol {
-    height:40px;
+    height:37px;
     width:70px;
     position:absolute;
-    right:34px;
-    top:25px;
+    right:25px;
+    top:30px;
   }
   &__name, &__cardnumber {
     max-width:350px;
