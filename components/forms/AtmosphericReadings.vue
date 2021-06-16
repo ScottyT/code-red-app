@@ -14,16 +14,17 @@
             <h3 class="alert alert--error">{{errorMessage}}</h3>
             <form ref="form" class="form" @submit.prevent="onSubmit" v-if="!submitted">
                 <div class="form__form-group">
-                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
+                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input-group form__input-group--normal">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select" v-model="selectedJobId">
+                        <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                        <select class="form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
                             <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input--input-group">
+                    <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input-group form__input-group--short">
                         <label for="initDate" class="form__label">Initial Starting Date:</label>
                         <input type="hidden" v-model="initDate" />
                         <v-dialog ref="initDateDialog" v-model="initDateModal" :return-value.sync="initDate" persistent width="400px">
@@ -38,7 +39,7 @@
                         </v-dialog>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input--input-group">
+                    <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input-group form__input-group--short">
                         <label for="enddate" class="form__label">End Date:</label>
                         <input type="hidden" v-model="endDate" />
                         <v-dialog ref="endDateDialog" v-model="endDateModal" :return-value.sync="endDate" persistent width="400px">
@@ -57,7 +58,7 @@
                 <div class="form__table reading-logs">
                     <div class="form__table form__table--rows">
                         <div class="form__table--cols">
-                            <div>Description</div>
+                            <div class="form__label">Description</div>
                         </div>
                         <div class="form__table--cols" v-for="n in 7" :key="n">
                             <div>Day {{n}}</div>
@@ -65,7 +66,7 @@
                     </div>
                     <div class="form__table form__table--rows">
                         <div class="form__table--cols">
-                            <div>Tech ID #</div>
+                            <div class="form__label">Tech ID #</div>
                         </div>
                         <div class="form__table--cols" v-for="n in 7" :key="n">
                             <input type="text" class="form__input" readonly v-model="getUser.id" />
@@ -73,7 +74,7 @@
                     </div>
                     <div class="form__table form__table--rows" v-for="(row, i) in readingsArr" :key="`row-${i}`">
                         <div class="form__table--cols">
-                            <div>{{row.text}}</div>
+                            <div class="form__label">{{row.text}}</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, j) in row.day" :key="`col-${j}`">
                             <input type="text" :tabindex="j" v-model="item.value" class="form__input" />
@@ -81,7 +82,7 @@
                     </div>
                     <div class="form__table form__table--rows">
                         <div class="form__table--cols">
-                            <div>Loss Classification</div>
+                            <div class="form__label">Loss Classification</div>
                         </div>
                         <div class="form__table--cols" v-for="n in 7" :key="n">
                             <div>4</div>
@@ -89,7 +90,7 @@
                     </div>
                     <div class="form__table--rows form__table" v-for="(row, i) in lossArr" :key="`lossrow-${i}`">
                         <div class="form__table--cols">
-                            <div>{{row.text}}</div>
+                            <div class="form__label">{{row.text}}</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, j) in row.day" :key="`col-${j}`">
                             <input type="number" :tabindex="j" v-model="item.value" class="form__input" />

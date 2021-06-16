@@ -36,6 +36,7 @@
             <LayoutReports :reports="caseFileData" theme="light" v-else />
         </div>
     </div>
+    
 </template>
 <script>
 import { defineComponent, ref, useFetch, useStore, computed, watch, onMounted } from '@nuxtjs/composition-api';
@@ -43,9 +44,10 @@ export default defineComponent({
     layout: 'dashboard-layout',
     setup(props, {root}) {
         const store = useStore()
-        const reports = computed(() => store.getters['reports/getReports'])
+        //const reports = computed(() => store.getters['reports/getReports'])
         const isOnline = computed(() => root.$nuxt.isOnline)
         async function checkStorage() { store.dispatch('indexDb/checkStorage') }
+       
         let authUser = root.$fire.auth.currentUser
         const [ defaultData, caseFileData, chartData, logReports, sketchReports ] = [ref([]), ref([]), ref([]), ref([]), ref([])]
 
@@ -74,7 +76,7 @@ export default defineComponent({
         watch(isOnline, fetch)
         onMounted(checkStorage)
 
-        return { defaultData, chartData, caseFileData, logReports, sketchReports, isOnline, reports }
+        return { defaultData, chartData, caseFileData, logReports, sketchReports, isOnline }
     }
 })
 </script>

@@ -46,15 +46,12 @@ export default {
             }
         }
     },
-    async asyncData({ $axios, store }) {
-        try {
-            let data = await $axios.$get("/api/reports/coc", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
-            return {
-                coc: data
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
+    async fetch() {
+        await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            this.$axios.$get("/api/reports/coc", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                this.coc = res
+            })
+        })
     },
     data() {
         return {

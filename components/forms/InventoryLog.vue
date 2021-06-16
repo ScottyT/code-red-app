@@ -13,16 +13,17 @@
             </v-dialog>
             <form ref="form" class="form" @submit.prevent="onSubmit" v-if="!submitted">
                 <div class="form__form-group">
-                    <ValidationProvider vid="JobId" rules="required" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
+                    <ValidationProvider vid="JobId" rules="required" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input-group form__input-group--normal">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select form__input" v-model="selectedJobId">
+                        <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                        <select class="form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
                             <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input--input-group">
+                    <ValidationProvider vid="startDate" rules="required" v-slot="{errors, ariaMsg}" name="Initial Starting Date" class="form__input-group form__input-group--short">
                         <label for="initDate" class="form__label">Initial Starting Date:</label>
                         <input type="hidden" v-model="initDate" />
                         <v-dialog ref="initDateDialog" v-model="initDateModal" :return-value.sync="initDate" persistent width="400px">
@@ -37,7 +38,7 @@
                         </v-dialog>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input--input-group">
+                    <ValidationProvider vid="endDate" rules="required" v-slot="{errors, ariaMsg}" name="End Date" class="form__input-group form__input-group--short">
                         <label for="enddate" class="form__label">End Date:</label>
                         <input type="hidden" v-model="endDate" />
                         <v-dialog ref="endDateDialog" v-model="endDateModal" :return-value.sync="endDate" persistent width="400px">
@@ -64,7 +65,7 @@
                     </div>
                     <div class="form__table form__table--rows">
                         <div class="form__table--cols">
-                            <div>Tech ID #</div>
+                            <div class="form__label">Tech ID #</div>
                         </div>
                         <div class="form__table--cols" v-for="(item, i) in techIdArr[0].day" :key="`techid-${i}`">
                             <input class="form__input" type="text" readonly v-model="getUser.id" />

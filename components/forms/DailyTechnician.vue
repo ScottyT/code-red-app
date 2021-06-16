@@ -13,35 +13,41 @@
           </v-dialog>
           <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
             <div class="form__form-group">
-              <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input--input-group">
+              <ValidationProvider rules="required" vid="JobId" v-slot="{ errors, ariaMsg }" name="Job Id" class="form__input-group form__input-group--normal">
                 <input type="hidden" v-model="selectedJobId" />
                 <label class="form__label">Job ID Number</label>
-                <select class="form__select form__input" v-model="selectedJobId">
+                <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                <select class="form__input" v-model="selectedJobId">
                   <option disabled value="">Please select a Job ID</option>
                   <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                 </select>
                 <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
               </ValidationProvider>
-              <div class="form__input--input-group">
+              <div class="form__input-group form__input-group--short">
                 <label class="form__label">Team Lead ID #</label>
                 <input type="text" readonly v-model="getUser.id" name="teamLeadId" class="form__input" />
               </div>
-              <div class="form__input--input-group">
+              <div class="form__input-group form__input-group--short">
                 <label for="date" class="form__label">Date</label>
                 <input id="date" v-model="dateFormatted" readonly class="form__input" />
               </div>
-              <div class="form__input--input-group">
+              <div class="form__input-group form__input-group--long">
                 <label for="location" class="form__label">Address</label>
                 <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
                      @change="$nuxt.$emit('location-updated')"></div>
               </div>
             </div>
             <div class="form__form-group">
-              <label class="form__label">Address</label>
-              <input v-model="location.address" name="Address" type="text" class="form__input form__input--long" />
-              <label class="form__label">City, State, and Zip</label>
-              <input v-model="location.cityStateZip" name="CityStateZip" type="text"
-                     class="form__input form__input--long" />
+              <ValidationProvider rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--long">
+                <label class="form__label">Address</label>
+                <input v-model="location.address" name="Address" type="text" class="form__input form__input--long" />
+                <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--long">
+                <label class="form__label">City, State, and Zip</label>
+                <input v-model="location.cityStateZip" name="City, State, and Zip" type="text" class="form__input form__input--long" />
+                <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
+              </ValidationProvider>             
             </div>
             <div class="form__form-group--listing form__form-group--info-box">
               <h3>1) CONTENT CLEANING TECHNICIAN INSPECTION</h3>
@@ -147,8 +153,8 @@
             </div>
             <div class="form__form-group--block form__section">
               <h3>Evaluation Logs</h3>
-              <div class="form__input-wrapper">
-                <div class="form__input--input-group">
+              <div class="d-flex flex-wrap">
+                <div class="form__input-group form__input-group--normal">
                   <label for="dispatchToProperty" class="form__label">Dispatch to Property</label>
                   <v-dialog ref="dispatchDialog" v-model="evalLogsDialog.dispatchToProperty" persistent
                             :return-value.sync="dispatchToProperty" transition="scale-transition" max-width="290px">
@@ -165,7 +171,7 @@
                     </v-time-picker>
                   </v-dialog>
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                   <label for="startTime" class="form__label">Start Time</label>
                   <v-dialog ref="dialogEvalStart" v-model="evalLogsDialog.evalStart" persistent
                             :return-value.sync="evalStart" transition="scale-transition" max-width="290px">
@@ -181,7 +187,7 @@
                     </v-time-picker>
                   </v-dialog>
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                   <label for="endTime" class="form__label">End Time</label>
                   <v-dialog ref="dialogEvalEnd" v-model="evalLogsDialog.evalEnd" persistent :return-value.sync="evalEnd"
                             transition="scale-transition" max-width="290px">
@@ -197,11 +203,11 @@
                     </v-time-picker>
                   </v-dialog>
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                   <label for="totalTime" class="form__label">Total Time</label>
                   <input type="text" readonly v-model="duration" />
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                     <input id="verifyCheckbox" :value="workCompletedAfterHours" v-model="workCompletedAfterHours" type="checkbox" />
                     <label for="verifyCheckbox" class="form__label">Work Completed After Hours</label>
                 </div>

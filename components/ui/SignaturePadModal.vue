@@ -1,5 +1,6 @@
 <template>
-  <ValidationProvider v-slot="{ errors }" :vid="inputId" rules="required" :name="name" class="form__input--input-group" :class="{modalOpen: sigDialog}">
+  <ValidationProvider v-slot="{ errors }" :vid="inputId" rules="required" :name="name" class="form__input-group" :class="{modalOpen: sigDialog}">
+    <label class="form__label">{{name}}</label>
     <input type="hidden" v-model="sigData.data" />
     <v-dialog v-model="sigDialog" width="700">
       <template v-slot:activator="{ on, attrs }">

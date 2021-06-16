@@ -13,16 +13,17 @@
             <p class="font-weight-bold">{{submittedMessage}}</p>
             <form class="form" v-if="!submitted" @submit.prevent="submitForm">
                 <div class="form__form-group">
-                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
+                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input-group form__input-group--normal">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
-                        <select class="form__select form__input" v-model="selectedJobId">
+                        <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                        <select class="form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
                             <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
                         </select>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="evalDate" name="Initial date of evaluation" rules="required" v-slot="{errors, ariaMsg}" class="form__input--input-group">
+                    <ValidationProvider vid="evalDate" name="Initial date of evaluation" rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--short">
                         <label class="form__label" for="evalDate">Initial Date of Evaluation</label>
                         <input type="hidden" v-model="initialEvalDate" />
                         <v-dialog ref="initEvalDateDialog" v-model="initEvalDateModal" :return-value.sync="initialEvalDate" persistent width="500px">
@@ -38,36 +39,36 @@
                         </v-dialog>
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <div class="form__input--input-group">
+                    <div class="form__input-group form__input-group--long">
                         <label for="location" class="form__label">Location</label>
                         <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
                             @change="$nuxt.$emit('location-updated')"></div>
                     </div>
-                    <ValidationProvider vid="address" name="Address" rules="required" v-slot="{errors, ariaMsg}" class="form__input--input-group">
+                    <ValidationProvider vid="address" name="Address" rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--long">
                         <label for="address" class="form__label">Address</label>
                         <input id="address" v-model="location.address" name="Address" type="text" class="form__input form__input--long" />
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
-                    <ValidationProvider vid="cityStateZip" name="City, State, and Zip" rules="required" v-slot="{errors, ariaMsg}" class="form__input--input-group">
+                    <ValidationProvider vid="cityStateZip" name="City, State, and Zip" rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--long">
                         <label for="citystatezip" class="form__label">City, State, Zip</label>
                         <input id="citystatezip" v-model="location.cityStateZip" type="text" class="form__input form__input--long" />
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
                 </div>
                 <div class="form__form-group">
-                    <div class="form__input--input-group">
+                    <div class="form__input-group form__input-group--normal">
                         <label for="areaSub1" class="form__label">Area Sub-1</label>
                         <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" />
                     </div>
-                    <div class="form__input--input-group">
+                    <div class="form__input-group form__input-group--normal">
                         <label for="areaSub2" class="form__label">Area Sub-2</label>
                         <input id="areaSub2" type="text" class="form__input" v-model="areaSub2" />
                     </div>
-                    <div class="form__input--input-group">
+                    <div class="form__input-group form__input-group--normal">
                         <label for="areaSub3" class="form__label">Area Sub-3</label>
                         <input id="areaSub3" type="text" class="form__input" v-model="areaSub3" />
                     </div>
-                    <div class="form__input--input-group">
+                    <div class="form__input-group form__input-group--long">
                         <label for="baseLine" class="form__label">Base Line Comparitive Readings (Non-Affected)</label>
                         <input id="baseLine" type="text" class="form__input" v-model="baseLineReadings" />
                     </div>

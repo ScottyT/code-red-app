@@ -17,7 +17,7 @@
             <label class="form__label">Team Lead ID #</label>
             <input v-model="id" name="teamLeadId" class="form__input" type="text" />
           </ValidationProvider>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--normal">
             <label for="dateOfLoss" class="form__label">Date of Loss</label>
             <v-dialog ref="dolDialog" v-model="dolModal" :return-value.sync="dateOfLoss" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
@@ -31,7 +31,7 @@
               </v-date-picker>
             </v-dialog>
           </div>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--normal">
             <label for="timeOfDispatch" class="form__label">Time of Dispatch</label>
             <v-dialog ref="todDialog" v-model="todModal" :return-value.sync="timeOfDispatch" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
@@ -44,7 +44,7 @@
               </v-time-picker>
             </v-dialog>
           </div>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--normal">
             <label for="dateOfEval" class="form__label">Date of Evaluation</label>
             <v-dialog ref="doeDialog" v-model="doeModal" :return-value.sync="dateOfEval" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
@@ -58,12 +58,12 @@
               </v-date-picker>
             </v-dialog>
           </div>
-          <ValidationProvider v-slot="{ errors }" vid="JobId" name="Job ID" rules="required" class="form__input--input-group">
+          <ValidationProvider v-slot="{ errors }" vid="JobId" name="Job ID" rules="required" class="form__input-group form__input-group--normal">
             <label for="jobId" class="form__label">Job ID</label>
             <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <div class="form__input--input-group">
+          <div class="form__input-group form__input-group--normal">
             <label for="location" class="form__label">Address</label>
             <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
               @change="$nuxt.$emit('location-updated')"></div>
@@ -90,12 +90,9 @@
           </div>
           <div class="form__form-group--left-side form__section">
             <label for="contactName" class="form__label">Contact Name</label>
-            <input id="contactName" v-model="contactName" name="contactName" type="text"
-              class="form__input form__input--long" />
+            <input id="contactName" v-model="contactName" name="contactName" type="text" class="form__input form__input--long" />
             <label for="PropertyOwner" class="form__label">Property Owner</label>
-            <input id="PropertyOwner" v-model="propertyOwner" name="PropertyOwner" type="text"
-              class="form__input form__input--long" />
-
+            <input id="PropertyOwner" v-model="propertyOwner" name="PropertyOwner" type="text" class="form__input form__input--long" />
             <label class="form__label">City, State, Zip</label>
             <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
             <label class="form__label">Address</label>
@@ -114,7 +111,7 @@
               readonly
             /> -->
             <label class="form__label" for="phone">Phone Number</label>
-            <input id="phone" v-model="phoneNumber" name="Phone" class="form__input" type="phone"
+            <input id="phone" v-model="phoneNumber" name="Phone" class="form__input form__input--short" type="phone"
               @input="acceptNumber" />
             <ValidationProvider v-slot="{ errors }" name="Email" rules="email|required">
               <label for="email" class="form__label">Email Address</label>
@@ -152,16 +149,16 @@
             <br />
             <span>{{ uploadSuccess }}</span>        
           </div>
-          <div class="form__form-group--listing">
+          <div class="form__section">
             <h3>Source of Water Intrusion</h3>
-            <ul class="form__checkbox-wrapper--long">
-              <div class="form__input--checkboxes" v-for="(type, i) in sourceOfIntrustion" :key="`loss-${i+1}`">
+            <ul class="form__checkbox-wrapper">
+              <div class="form__input-wrapper--checkboxes" v-for="(type, i) in sourceOfIntrustion" :key="`loss-${i+1}`">
                 <input type="checkbox" :id="`loss-${i+1}`" v-model="selectedTypes" :value="type.text" />
                 <label :for="`loss-${i+1}`">{{type.text}}</label>
               </div>
             </ul>
           </div>
-          <div class="form__form-group form__section">
+          <div class="form__form-group--block form__section">
             <div class="form__input-wrapper">
               <div class="form__input--input-group">
                 <label for="dateOfIntrusion" class="form__label">Date of Intrusion</label>
@@ -197,44 +194,46 @@
                 <label :for="intrusion.label" class="form__label">{{intrusion.label}}</label>
                 <input :type="intrusion.type" :id="intrusion.label" v-model="intrusion.value" class="form__input" />
               </div>
-            </div>
-            <div class="form__input--input-group">
-              <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
-                  <label class="form__label" for="initial1">Initial:</label>
-                  <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+              <div class="form__input--input-group">
+                <div class="form__form-group">
+                  <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
+                    <label class="form__label" for="initial1">Initial</label>
+                    <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
+                    <span class="form__input--error">{{ errors[0] }}</span>
+                  </ValidationProvider>
+                </div>
               </div>
             </div>
           </div>
-          <div class="form__form-group--left-side form__section">
-            <h3>Preliminary Determination</h3>
-            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
-              <div class="form__input--checkboxes" v-for="item in preliminaryDetermination" :key="item">
-                <input type="checkbox" :id="item" v-model="selectedPreliminary" :value="item" />
-                <label :for="item">{{item}}</label>
+          <div class="form__form-group--grid">
+            <div class="form__section">
+              <h3>Preliminary Determination</h3>
+              <div class="form__checkbox-wrapper">
+                <div class="form__input-wrapper--checkboxes" v-for="item in preliminaryDetermination" :key="item">
+                  <input type="checkbox" :id="item" v-model="selectedPreliminary" :value="item" />
+                  <label :for="item">{{item}}</label>
+                </div>
               </div>
-            </ul>
-            <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
-              <label class="form__label" for="initial2">Initial:</label>
-              <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
-              <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
-          </div>
-          <div class="form__form-group--right-side form__section">
-            <h3>Inital Moisture Inspection</h3>
-            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
-              <div class="form__input--checkboxes" v-for="item in moistureInspection" :key="item">
-                <input type="checkbox" :id="item" v-model="selectedInspection" :value="item" />
-                <label :for="item">{{item}}</label>
+              <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
+                <label class="form__label" for="initial2">Initial</label>
+                <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
+            <div class="form__section">
+              <h3>Inital Moisture Inspection</h3>
+              <div class="form__checkbox-wrapper">
+                <div class="form__input-wrapper--checkboxes" v-for="item in moistureInspection" :key="item">
+                  <input type="checkbox" :id="item" v-model="selectedInspection" :value="item" />
+                  <label :for="item">{{item}}</label>
+                </div>
               </div>
-            </ul>
-            <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
-              <label class="form__label" for="initial3">Initial:</label>
-              <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
-              <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+              <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
+                <label class="form__label" for="initial3">Initial</label>
+                <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
           </div>
           <div class="form__form-group form__form-group--info-box form__section">
             <label class="form__label">Initial Moisture Map</label>
@@ -257,66 +256,72 @@
               </div>
             </div>
             <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
-              <label class="form__label" for="initial4">Initial:</label>
+              <label class="form__label" for="initial4">Initial</label>
               <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
-          <div class="form__form-group form__form-group--info-box form__section">
+          <div class="form__form-group form__section">
             <h3>Pre-Restoration Evaluation</h3>
-            <div class="form__input-wrapper">
-              <label for="emergencyRes" class="form__label">Emergency Response Actions Identified</label>
-              <input id="emergencyRes" type="text" class="form__input" v-model="preRestoreEval.emergencyResAct" />
-              <label for="buildingMat" class="form__label">Building Material Restorability</label>
-              <input id="buildingMat" type="text" class="form__input" v-model="preRestoreEval.buildingMatRestore" />
-              <label for="contentEval" class="form__label">Content Evaluation</label>
-              <input id="contentEval" type="text" class="form__input" v-model="preRestoreEval.contentEval" />
-              <label for="hvacEval" class="form__label">HVAC Evaluation</label>
-              <input id="hvacEval" type="text" class="form__input" v-model="preRestoreEval.hvacEval" />
-              <label for="substructure" class="form__label">Substructure & Unfinished Spaces</label>
-              <input id="substructure" type="text" class="form__input" v-model="preRestoreEval.substructure" />
+            <div class="d-flex flex-wrap">
+              <span class="form__input-group form__input-group--long">
+                <label for="emergencyRes" class="form__label">Emergency Response Actions Identified</label>
+                <input id="emergencyRes" type="text" class="form__input" v-model="preRestoreEval.emergencyResAct" />
+              </span>
+              <span class="form__input-group form__input-group--long">
+                <label for="buildingMat" class="form__label">Building Material Restorability</label>
+                <input id="buildingMat" type="text" class="form__input" v-model="preRestoreEval.buildingMatRestore" />
+              </span>
+              <span class="form__input-group form__input-group--long">
+                <label for="contentEval" class="form__label">Content Evaluation</label>
+                <input id="contentEval" type="text" class="form__input" v-model="preRestoreEval.contentEval" />
+              </span>
+              <span class="form__input-group form__input-group--long">
+                <label for="hvacEval" class="form__label">HVAC Evaluation</label>
+                <input id="hvacEval" type="text" class="form__input" v-model="preRestoreEval.hvacEval" />
+              </span>
+              <span class="form__input-group form__input-group--long">
+                <label for="substructure" class="form__label">Substructure & Unfinished Spaces</label>
+                <input id="substructure" type="text" class="form__input" v-model="preRestoreEval.substructure" />
+              </span>
             </div>
           </div>
-          <div class="form__form-group form__section">
+          <div class="form__section">
             <h3>Develop Initial Project Work Plan & Communicate to Headquarters</h3>
-            <ul class="form__checkbox-wrapper--long form__checkbox-wrapper">
-              <div class="form__input--checkboxes" v-for="(step, i) in steps" :key="`steps-${i+1}`">
+            <div class="form__checkbox-wrapper--long form__checkbox-wrapper">
+              <div class="form__input-wrapper--checkboxes" v-for="(step, i) in steps" :key="`steps-${i+1}`">
                 <input type="checkbox" :id="`steps-${i+1}`" v-model="selectedSteps" :value="step.text" />
                 <label :for="`steps-${i+1}`">{{step.text}}</label>
               </div>
-            </ul>
+            </div>
           </div>
           <div class="form__form-group form__section">
-            <ValidationProvider v-slot="{errors}" name="Insurance" rules="required" class="form__input--input-group">
+            <ValidationProvider v-slot="{errors}" name="Insurance" rules="required" class="form__input-group form__input-group--normal">
               <label for="insurance" class="form__label">Insurance Company</label>
               <input type="text" id="insurance" class="form__input" name="insurance" v-model="insuranceCompany" />
-              <br />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <ValidationProvider v-slot="{errors}" name="claimNumber" class="form__input--input-group">
+            <ValidationProvider v-slot="{errors}" name="claimNumber" class="form__input-group form__input-group--normal">
               <label for="claimNumber" class="form__label">Claim Number</label>
               <input type="text" id="claimNumber" class="form__input" name="claimNumber" v-model="claimNumber" />
-              <br />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <ValidationProvider v-slot="{errors}" name="policyNumber" class="form__input--input-group">
+            <ValidationProvider v-slot="{errors}" name="policyNumber" class="form__input-group form__input-group--normal">
               <label for="policyNumber" class="form__label">Policy Number</label>
               <input type="text" id="policyNumber" class="form__input" name="policyNumber" v-model="policyNumber" />
-              <br />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <span class="form__input--input-group">
+            <span class="form__input-group form__input-group--normal">
               <label for="adjusterName" class="form__label">Adjuster Name</label>
               <input id="adjusterName" type="text" class="form__input" v-model="adjusterName" />
             </span>
-            <span class="form__input--input-group">
+            <span class="form__input-group form__input-group--normal">
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
               <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" v-mask="'(###) ###-####'" />
             </span>
-            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input--input-group">
+            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input-group form__input-group--normal">
               <label for="adjusterEmail" class="form__label">Adjuster Email</label>
               <input type="email" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
-              <br />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
@@ -426,37 +431,32 @@
           </div>
           <div class="form__section">
             <h3>Team Lead Document Verification</h3>
-            <ul class="form__checkbox-wrapper--long">
-              <div class="form__input--checkboxes" v-for="item in verificationCheckboxes" :key="`item${item.id+1}`">
-                <input type="checkbox" :id="`item${item.id+1}`" v-model="selectedVerification" :value="item.text" />
-                <label :for="`item${item.id+1}`">{{item.text}}</label>
-              </div>
-            </ul>
+            <div class="form__input-wrapper--checkboxes" v-for="item in verificationCheckboxes" :key="`item${item.id+1}`">
+              <input type="checkbox" :id="`item${item.id+1}`" v-model="selectedVerification" :value="item.text" />
+              <label :for="`item${item.id+1}`">{{item.text}}</label>
+            </div>
           </div>
-          <div class="form__form-group">
-            <div class="form__input-wrapper">
-              <label class="form__label">Customer (Print)</label>
-              <ValidationProvider v-slot="{ errors }" name="Customer first name" rules="required" class="form__input--input-group">
+          <div class="d-flex flex-column pt-4 pb-4">
+            <label class="form__label">Customer (Print)</label>
+            <div class="grid grid--three-column">
+              <ValidationProvider v-slot="{ errors }" name="Customer first name" rules="required">
                 <input id="firstname" placeholder="First" type="text" class="form__input" v-model="customerName.first" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider v-slot="{ errors }" name="Customer last name" rules="required" class="form__input--input-group">
+              <ValidationProvider v-slot="{ errors }" name="Customer last name" rules="required">
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>            
-              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />
-              <ValidationProvider v-slot="{ errors }" name="Customer sign date" rules="required" class="form__input--input-group">
-                <label class="form__label">Date:</label>
-                <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
-                <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
+              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />
             </div>
           </div>
-          <div class="form__form-group">
-            <div class="form__input-wrapper">
-              <label class="form__label">Team Member (Signature)</label>
-              <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
-            </div>
+          <div class="form__form-group">            
+            <ValidationProvider v-slot="{ errors }" name="Customer sign date" rules="required" class="form__input-group form__input-group--normal">
+              <label class="form__label">Date</label>
+              <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
           </div>
         </div>
         <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>

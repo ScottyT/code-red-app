@@ -13,10 +13,11 @@
             </v-dialog>
             <form class="form" @submit.prevent="onSubmit">
                 <div class="form__form-group">
-                    <ValidationProvider vid="JobId" name="Job ID" v-slot="{errors}" rules="required" class="form__input--input-group-simple">
+                    <ValidationProvider vid="JobId" name="Job ID" v-slot="{errors}" rules="required" class="form__input-group form__input-group--normal">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID: </label>
-                        <select class="form__select form__input" v-model="selectedJobId">
+                        <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                        <select class="form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job id</option>
                             <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
                         </select>

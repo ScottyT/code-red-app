@@ -44,11 +44,9 @@
           </div>
           <div class="form__input-group form__input-group--short">
             <label for="dateOfCall" class="form__label">Date of Call</label>
-
             <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent width="400px">
               <template v-slot:activator="{ on, attrs }">
-                <input id="dateOfCall" v-model="dateFormatted" v-bind="attrs" class="form__input" v-on="on"
-                       @blur="date = parseDate(dateFormatted)" />
+                <input id="dateOfCall" v-model="dateFormatted" v-bind="attrs" class="form__input" v-on="on" @blur="date = parseDate(dateFormatted)" />
               </template>
               <v-date-picker v-model="date" scrollable>
                 <v-spacer></v-spacer>
@@ -60,8 +58,7 @@
           </div>
           <div class="form__input-group form__input-group--long">
             <label for="location" class="form__label">Location</label>
-            <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
-                 @change="$nuxt.$emit('location-updated')"></div>
+            <div id="geocoder" ref="geocoder" class="form__geocoder form__input" @change="$nuxt.$emit('location-updated')"></div>
           </div>
         </div>
         <div class="form__form-group form__form-group--info-box">
@@ -223,17 +220,12 @@
             <label for="notes" class="form__label">Notes</label>
             <textarea class="form__input--textbox form__input" v-model="notes"></textarea>
           </div>
-          <div class="form__section">
-            <div class="form__input-group form__input-group--short">
+          <div class="form__form-group">
+            <div class="form__input-group form__input-group--normal">
               <label class="form__label">Team Member</label>
               <p>{{getUser ? getUser.name : null}}</p>
             </div>
-            <div class="form__input-group form__input-group--short">
-              <label class="form__label">Team Member Signature</label>
-              <div class="form__input-wrapper">
-                <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
-              </div>
-            </div>          
+            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
           </div>
         </div>
         <button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button>

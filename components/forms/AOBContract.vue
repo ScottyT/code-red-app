@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrapper">
-    <h1 class="text-center">{{company}}</h1>
+    <!-- <h1 class="text-center">{{company}}</h1> -->
     <h2 class="text-center">ASSIGNMENT OF BENEFITS & MITIGATION CONTRACT</h2>
     <h2 class="text-center">THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</h2>
     <ValidationObserver ref="form">
@@ -9,9 +9,10 @@
       <form ref="form" class="form" @submit.prevent="submitForm" v-if="!submitted">
         <fieldset v-if="currentStep === 1">
           <div class="form__form-group">
-            <ValidationProvider rules="required" name="Job ID" v-slot="{errors}">
+            <ValidationProvider rules="required" name="Job ID" v-slot="{errors}" class="form__input-group form__input-group--normal">
               <label for="selectJobId" class="form__label">Job ID</label>
-              <select class="form__select" v-model="selectedJobId">
+              <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+              <select class="form__input" v-model="selectedJobId">
                 <option disabled value="">Please select a Job Id</option>
                 <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobid-${i}`">{{item}}</option>
               </select>
@@ -96,11 +97,10 @@
               </ol>
             </li>
             <div class="form__form-group form__form-group--row">
-                <div class="form__input--input-group">
-                    <label class="form__label">Signature</label>
+                <div class="form__input-group form__input-group--normal">
                     <LazyUiSignaturePadModal :sigData="cusSign" sigRef="customerSig" name="Signature" />
                 </div>
-                <div class="form__input--input-group">
+                <div class="form__input-group form__input-group--normal">
                     <label for="cusSignDate" class="form__label">Date:</label>
                     <v-dialog ref="dialogCusSign" v-model="cusSignDateModal" :return-value.sync="cusSignDate" persistent width="400px">
                         <template v-slot:activator="{ on, attrs }">
@@ -582,41 +582,43 @@
                 </ValidationProvider>
               </div>
           </ol>
-          <div class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
+          <div class="form__form-group form__form-group--column">
             <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
-            <div class="form__input-wrapper form__form-group--inline">
-              <span>
-                  <label for="InsuredDeductible" class="form__label">Insured Deductible:</label>
-                  <span class="form__input--currency">$<input type="text" id="InsuredDeductible"
-                          class="form__input form__input--short" v-model="deductible"
-                          @keypress="currencyFormat" /></span>
-              </span>
-              <span>
-                <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” End Date:</label>
-                <div class="form__form-group--inline">
-                  <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="500px">
-                    <template v-slot:activator="{ on, attrs }">
-                      <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)" readonly />
-                    </template>
-                    <v-date-picker v-model="insuredEndDate" scrollable>
-                      <v-spacer></v-spacer>
-                      <v-btn text color="#fff" @click="insuredEndDateModal = false">Cancel</v-btn>
-                      <v-btn text color="#fff" @click="$refs.dialogEndDate.save(insuredEndDate)">OK</v-btn>
-                    </v-date-picker>
-                  </v-dialog>
+            <div class="form__input-wrapper form__form-group">
+              <span class="form__input-group--inline grid--one-column">
+                <div class="form__input-group--section">
+                  <label for="InsuredDeductible" class="form__label">Insured Deductible</label>
+                  <span class="form__input--currency"><span>$</span><input type="text" id="InsuredDeductible"
+                          class="form__input form__input--short" v-model="deductible" @keypress="currencyFormat" /></span>
                 </div>
               </span>
-              <span>
-                <div>
-                  <label for="insuredPayment1" class="form__label">Insured Payment 1) = ($500.00 or 50% of Deductible):</label>
+              <span class="form__input-group--inline grid--one-column">
+                <div class="form__input-group--section">
+                  <label for="InsuredEndDate" class="form__label">Insured: Agreed “Term” End Date</label>
+                  <div class="form__input-group--section">
+                    <v-dialog ref="dialogEndDate" v-model="insuredEndDateModal" :return-value.sync="insuredEndDate" persistent width="500px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <input id="InsuredEndDate" v-model="insuredEndDateFormatted" v-bind="attrs" class="form__input form__input--short" v-on="on" @blur="insuredEndDate = parseDate(insuredEndDateFormatted)" readonly />
+                      </template>
+                      <v-date-picker v-model="insuredEndDate" scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="#fff" @click="insuredEndDateModal = false">Cancel</v-btn>
+                        <v-btn text color="#fff" @click="$refs.dialogEndDate.save(insuredEndDate)">OK</v-btn>
+                      </v-date-picker>
+                    </v-dialog>
+                  </div>
+                </div>
+              </span>
+              <span class="form__input-group--inline">
+                <div class="form__input-group--section">
+                  <label for="insuredPayment1" class="form__label">Insured Payment 1)</label>
                   <span class="form__input--currency">
-                    $<input type="text" class="form__input form__input--short" v-model="insuredPay1" />
+                    <span>$</span><input type="text" class="form__input form__input--short" v-model="insuredPay1" />
                   </span>
                 </div>
-                <div class="form__form-group--inline">
-                  <label for="insuredDay1" class="form__label">Day (1) Date:</label>
-                  <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal"
-                            :return-value.sync="insuredPayment.day1Date" persistent width="500px">
+                <div class="form__input-group--section">
+                  <label for="insuredDay1" class="form__label">Day (1) Date</label>
+                  <v-dialog ref="insuredPayDay1" v-model="insuredPayment.day1Modal" :return-value.sync="insuredPayment.day1Date" persistent width="500px">
                     <template v-slot:activator="{ on, attrs }">
                       <input id="insuredDay1" v-model="insuredPayment.day1DateFormatted" v-bind="attrs" readonly class="form__input form__input--short" v-on="on" 
                           @blur="insuredPayment.day1Date = parseDate(insuredPayment.day1DateFormatted)" />
@@ -629,15 +631,15 @@
                   </v-dialog>
                 </div>
               </span>
-              <span>
-                <div>
-                  <label for="insuredPayment2" class="form__label">Insured Payment 2) = (Remaining 50% of Deductible):</label>
+              <span class="form__input-group--inline">
+                <div class="form__input-group--section">
+                  <label for="insuredPayment2" class="form__label">Insured Payment 2)</label>
                   <span class="form__input--currency">
-                    $<input id="insuredPayment2" type="text" class="form__input form__input--short" v-model="insuredPay2" />
+                    <span>$</span><input id="insuredPayment2" type="text" class="form__input form__input--short" v-model="insuredPay2" />
                   </span>
                 </div>
-                <div class="form__form-group--inline">
-                  <label for="insuredDay5" class="form__label">Day (5) Date:</label>
+                <div class="form__input-group--section">
+                  <label for="insuredDay5" class="form__label">Day (5) Date</label>
                   <v-dialog ref="insuredPayDay5" v-model="insuredPayment.day5Modal"
                             :return-value.sync="insuredPayment.day5Date" persistent width="500px">
                     <template v-slot:activator="{ on, attrs }">
@@ -654,154 +656,154 @@
               </span>
             </div>
           </div>
-          <div class="form__form-group form__form-group--inline form__form-group--info-box form__form-group--column">
+          <div class="form__form-group form__form-group--column">
               <h3 class="font-weight-bold">NON-INSURED OR STILL PENDING COVERAGE RETAINER & RESERVE</h3>
-            <span>
-              <label for="NonInsuredEndDate" class="form__label">Non-Insured or Still Pending Coverage: Agreed “Term” End Date:</label>
-              <v-dialog ref="dialognoninsuredEndDate" v-model="nonInsuredPayment.endDateModal"
-                        :return-value.sync="nonInsuredPayment.endDate" persistent width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                  <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs"
-                        class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.endDate = parseDate(nonInsuredPayment.endDateFormatted)" />
-                </template>
-                <v-date-picker v-model="nonInsuredPayment.endDate" scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="#fff" @click="nonInsuredPayment.endDateModal = false">Cancel</v-btn>
-                  <v-btn text color="#fff" @click="$refs.dialognoninsuredEndDate.save(nonInsuredPayment.endDate)">OK
-                  </v-btn>
-                </v-date-picker>
-              </v-dialog>
-            </span>
-            <span>
-              <label for="NonInsuredDay1Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 1) =
-                $750.00 Day (1) Date:</label>
-              <v-dialog ref="nonInsuredDay1" v-model="nonInsuredPayment.day1Modal"
-                        :return-value.sync="nonInsuredPayment.day1Date" persistent width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                  <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs"
-                        class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day1Date = parseDate(nonInsuredPayment.day1DateFormatted)" />
-                </template>
-                <v-date-picker v-model="nonInsuredPayment.day1Date" scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="#fff" @click="nonInsuredPayment.day1Modal = false">Cancel</v-btn>
-                  <v-btn text color="#fff" @click="$refs.nonInsuredDay1.save(nonInsuredPayment.day1Date)">OK</v-btn>
-                </v-date-picker>
-              </v-dialog>
-            </span>
-            <span>
-              <label for="NonInsuredDay5Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 2) =
-                $750.00 Day (5) Date:</label>
-              <v-dialog ref="nonInsuredDay5" v-model="nonInsuredPayment.day5Modal"
-                        :return-value.sync="nonInsuredPayment.day5Date" persistent width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                  <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs"
-                        class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day5Date = parseDate(nonInsuredPayment.day5DateFormatted)" />
-                </template>
-                <v-date-picker v-model="nonInsuredPayment.day5Date" scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="#fff" @click="nonInsuredPayment.day5Modal = false">Cancel</v-btn>
-                  <v-btn text color="#fff" @click="$refs.nonInsuredDay5.save(nonInsuredPayment.day5Date)">OK</v-btn>
-                </v-date-picker>
-              </v-dialog>
-            </span>
+              <div class="form__form-group">
+                <span class="form__input-group--inline">
+                  <label for="NonInsuredEndDate" class="form__label">Non-Insured or Still Pending Coverage: Agreed “Term” End Date</label>
+                  <v-dialog ref="dialognoninsuredEndDate" v-model="nonInsuredPayment.endDateModal"
+                            :return-value.sync="nonInsuredPayment.endDate" persistent width="500px">
+                    <template v-slot:activator="{ on, attrs }">
+                      <input id="NonInsuredEndDate" v-model="nonInsuredPayment.endDateFormatted" v-bind="attrs"
+                            class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.endDate = parseDate(nonInsuredPayment.endDateFormatted)" />
+                    </template>
+                    <v-date-picker v-model="nonInsuredPayment.endDate" scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="#fff" @click="nonInsuredPayment.endDateModal = false">Cancel</v-btn>
+                      <v-btn text color="#fff" @click="$refs.dialognoninsuredEndDate.save(nonInsuredPayment.endDate)">OK
+                      </v-btn>
+                    </v-date-picker>
+                  </v-dialog>
+                </span>
+                <span class="form__input-group--inline">
+                  <label for="NonInsuredDay1Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 1) =
+                    $750.00 Day (1) Date</label>
+                  <v-dialog ref="nonInsuredDay1" v-model="nonInsuredPayment.day1Modal"
+                            :return-value.sync="nonInsuredPayment.day1Date" persistent width="500px">
+                    <template v-slot:activator="{ on, attrs }">
+                      <input id="NonInsuredDay1Date" v-model="nonInsuredPayment.day1DateFormatted" v-bind="attrs"
+                            class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day1Date = parseDate(nonInsuredPayment.day1DateFormatted)" />
+                    </template>
+                    <v-date-picker v-model="nonInsuredPayment.day1Date" scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="#fff" @click="nonInsuredPayment.day1Modal = false">Cancel</v-btn>
+                      <v-btn text color="#fff" @click="$refs.nonInsuredDay1.save(nonInsuredPayment.day1Date)">OK</v-btn>
+                    </v-date-picker>
+                  </v-dialog>
+                </span>
+                <span class="form__input-group--inline">
+                  <label for="NonInsuredDay5Date" class="form__label">Non-Insured or Still Pending Coverage: Payment 2) =
+                    $750.00 Day (5) Date</label>
+                  <v-dialog ref="nonInsuredDay5" v-model="nonInsuredPayment.day5Modal"
+                            :return-value.sync="nonInsuredPayment.day5Date" persistent width="500px">
+                    <template v-slot:activator="{ on, attrs }">
+                      <input id="NonInsuredDay5Date" v-model="nonInsuredPayment.day5DateFormatted" v-bind="attrs"
+                            class="form__input form__input--short" readonly v-on="on" @blur="nonInsuredPayment.day5Date = parseDate(nonInsuredPayment.day5DateFormatted)" />
+                    </template>
+                    <v-date-picker v-model="nonInsuredPayment.day5Date" scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="#fff" @click="nonInsuredPayment.day5Modal = false">Cancel</v-btn>
+                      <v-btn text color="#fff" @click="$refs.nonInsuredDay5.save(nonInsuredPayment.day5Date)">OK</v-btn>
+                    </v-date-picker>
+                  </v-dialog>
+                </span>
+              </div>           
           </div>
-          <div class="form__form-group form__form-group--info-box">
-              <div class="form__form-group--left-side">
-                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="Address">
-                      <label for="address" class="form__label">Address</label>
-                      <input id="address" type="text" class="form__input" v-model="location.address" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="City">
-                      <label for="city" class="form__label">City:</label>
-                      <input id="city" type="text" v-model="location.city" class="form__input" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider rules="required" class="form__input--input-group" v-slot="{errors}" name="State">
-                      <label for="state" class="form__label">State:</label>
-                      <input id="state" class="form__input" type="text" v-model="location.state" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider rules="required|numeric|length:5" class="form__input--input-group" v-slot="{errors}" name="Zip">
-                      <label for="zip" class="form__label">Zip:</label>
-                      <input type="text" id="zip" class="form__input" v-model="location.zip" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-              </div>
-              <div class="form__form-group--right-side">
-                  <ValidationProvider rules="required|alpha" v-slot="{errors}" name="First name" class="form__input--input-group">
-                      <label for="firstname" class="form__label">First Name:</label>
-                      <input type="text" id="firstname" class="form__input" v-model="firstName" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider rules="required|alpha" v-slot="{errors}" name="Last name" class="form__input--input-group">
-                      <label for="lastname" class="form__label">Last Name:</label>
-                      <input type="text" id="lastname" class="form__input" v-model="lastName" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <ValidationProvider rules="required|alpha_num|length:9" v-slot="{errors}" class="form__input--input-group" name="Drivers license number">
-                      <label for="driverslicense" class="form__label">Driver's License #:</label>
-                      <input type="text" id="driverslicense" class="form__input" v-model="driversLicense" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <div class="form__input--input-group">
-                      <label for="relation" class="form__label">Relation:</label>
-                      <input id="relation" type="text" class="form__input" v-model="relation" />
-                  </div>
+          <div class="form__form-group">
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
+                <label for="address" class="form__label">Address</label>
+                <input id="address" type="text" class="form__input" v-model="location.address" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="City">
+                <label for="city" class="form__label">City</label>
+                <input id="city" type="text" v-model="location.city" class="form__input" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="State">
+                <label for="state" class="form__label">State</label>
+                <i class="form__select--icon icon--angle-down mdi"></i>
+                <select class="form__input" id="state" v-model="location.state">
+                  <option disabled value="" selected>State</option>
+                  <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
+                </select>
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required|numeric|length:5" class="form__input-group form__input-group--short" v-slot="{errors}" name="Zip">
+                <label for="zip" class="form__label">Zip</label>
+                <input type="text" id="zip" class="form__input" v-model="location.zip" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required|alpha" v-slot="{errors}" name="First name" class="form__input-group form__input-group--normal">
+                <label for="firstname" class="form__label">First Name</label>
+                <input type="text" id="firstname" class="form__input" v-model="firstName" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider rules="required|alpha" v-slot="{errors}" name="Last name" class="form__input-group form__input-group--normal">
+                <label for="lastname" class="form__label">Last Name</label>
+                <input type="text" id="lastname" class="form__input" v-model="lastName" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider name="License" :rules="`max:${licenseMask.length}|min:${licenseMask.min}|required`" v-slot="{errors}" 
+                class="form__input-group form__input-group--long">
+                <label for="driverslicense" class="form__label">Driver's License #</label>
+                <imask-input @complete="onComplete" required id="driverslicense" class="form__input" :mask="licenseMask.mask" v-model="driversLicense" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <div class="form__input-group form__input-group--normal">
+                <label for="relation" class="form__label">Relation</label>
+                <input id="relation" type="text" class="form__input" v-model="relation" />
               </div>
           </div>
           <div class="form__form-group form__form-group--inline">
               <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
-                  <label class="form__label">Minimum believed Square Foot as defined above:</label>
+                  <label class="form__label">Minimum believed Square Foot as defined above</label>
                   <input type="number" v-model="sqft" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
           <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
-          <div class="form__form-group form__form-group--inline">
-              <span>
-                  <label class="form__label">Driver's License #:</label>
+          <div class="form__form-group">
+              <span class="form__input-group form__input-group--normal">
+                  <label class="form__label">Driver's License #</label>
                   <input type="text" readonly v-model="driversLicense" class="form__input" />
               </span>
-              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}">
-                  <label for="repPrint" class="form__label">Property Representative Print:</label>
+              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
+                  <label for="repPrint" class="form__label">Property Representative Print</label>
                   <input type="text" id="repPrint" class="form__input" v-model="repPrint" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <span>
-                  <label class="form__label">Property Representative Signature:</label>
+              <span class="form__input-group form__input-group--normal">
+                  <label class="form__label">Property Representative Signature</label>
                   <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
               </span>
-              <span class="form__form-group--info-box">
-                  <ValidationProvider class="form__input--input-group" name="Representative of" rules="required" v-slot="{errors}">
-                      <label for="repOf" class="form__label">Property Representative of:</label>
-                      <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
-                      <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                  <div class="form__input--input-group">
-                      <label for="repOfDate" class="form__label">Date:</label>
-                      <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
-                        <template v-slot:activator="{ on, attrs }">
-                          <input id="repOfDate" v-model="repDateFormatted" v-bind="attrs"
-                                class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(repDateFormatted)" />
-                        </template>
-                        <v-date-picker v-model="repDate" scrollable>
-                          <v-spacer></v-spacer>
-                          <v-btn text color="#fff" @click="repDateModal = false">Cancel</v-btn>
-                          <v-btn text color="#fff" @click="$refs.dialogRepDate.save(repDate)">OK</v-btn>
-                        </v-date-picker>
-                      </v-dialog>
-                  </div>
-              </span>
-              <span class="form__form-group--info-box">
-              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input--input-group">
+              <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
+                <label for="repOf" class="form__label">Property Representative of</label>
+                <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <div class="form__input-group form__input-group--normal">
+                <label for="repOfDate" class="form__label">Date</label>
+                <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <input id="repOfDate" v-model="repDateFormatted" v-bind="attrs"
+                           class="form__input form__input--short" readonly v-on="on" @blur="repDate = parseDate(repDateFormatted)" />
+                  </template>
+                  <v-date-picker v-model="repDate" scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="#fff" @click="repDateModal = false">Cancel</v-btn>
+                    <v-btn text color="#fff" @click="$refs.dialogRepDate.save(repDate)">OK</v-btn>
+                  </v-date-picker>
+                </v-dialog>
+              </div>
+              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witness" class="form__label">Witness</label>
                   <input type="text" id="witness" class="form__input" v-model="witness" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input--input-group">
-                  <label for="witnesslabel" class="form__label">Witness date:</label>
+              <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input-group form__input-group--normal">
+                  <label for="witnesslabel" class="form__label">Witness date</label>
                   <input type="hidden" v-model="witnessDate" />
                   <v-dialog ref="dialogWitnessDate" v-model="witnessDateModal" :return-value.sync="witnessDate" persistent width="500px">
                     <template v-slot:activator="{ on, attrs }">
@@ -816,48 +818,49 @@
                   </v-dialog>
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              </span>
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
-              <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}">
-                  <label for="numberOfRooms" class="form__label">Number of Rooms:</label>
+              <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}" class="form__input-group form__input-group--short">
+                  <label for="numberOfRooms" class="form__label">Number of Rooms</label>
                   <input id="numberOfRooms" type="number" class="form__input" v-model="numberOfRooms" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="numeric" name="Number of floors" v-slot="{errors}">
-                  <label for="numberOfFloors" class="form__label">Number of Floors:</label>
+              <ValidationProvider rules="numeric" name="Number of floors" v-slot="{errors}" class="form__input-group form__input-group--short">
+                  <label for="numberOfFloors" class="form__label">Number of Floors</label>
                   <input type="number" id="numberOfFloors" class="form__input" v-model="numberOfFloors" />
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider name="Payment option" rules="required" v-slot="{errors}">
+              <ValidationProvider name="Payment option" rules="required" v-slot="{errors}" class="form__input-group">
                 <p class="form__label">Which payment method will you use?</p>
-                <ul class="form__form-group--inline">
-                  <li v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
+                <div class="form__form-group--inline">
+                  <span v-for="(item, i) in paymentOptions" :key="`payment-${i}`" class="form__input--radio">
                     <label :for="item">{{item}}</label>
                     <input :id="item" type="radio" v-model="paymentOption" :value="item" />
-                  </li>
-                </ul><br />
+                  </span>
+                </div><br />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider v-if="paymentOption === 'Card'" name="Existing credit card" rules="required" v-slot="{errors}">
+              <ValidationProvider v-if="paymentOption === 'Card'" name="Existing credit card" rules="required" v-slot="{errors}" class="form__input-group">
                 <p class="form__label">Are you using an existing credit/debit card?</p>
-                <ul class="form__form-group--inline">
-                  <li class="form__input--radio">
+                <div class="form__form-group--inline">
+                  <span class="form__input--radio">
                     <label for="Yes">Yes</label>
                     <input id="Yes" type="radio" v-model="existingCreditCard" value="Yes" />
-                  </li>
-                  <li class="form__input--radio">
+                  </span>
+                  <span class="form__input--radio">
                     <label for="No">No</label>
                     <input id="No" type="radio" v-model="existingCreditCard" value="No" />
-                  </li>
-                </ul>
+                  </span>
+                </div>
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider v-if="existingCreditCard === 'Yes' && paymentOption === 'Card'" name="Card to link" rules="required" v-slot="{errors}">
+              <ValidationProvider v-if="existingCreditCard === 'Yes' && paymentOption === 'Card'" name="Card to link" rules="required" v-slot="{errors}"
+                class="form__input-group form__input-group--normal">
                 <input type="hidden" v-model="cardToUse" />
                 <label class="form__label">Card number</label>
-                <select class="form__select" v-model="cardToUse">
-                  <option disabled value="">Please select a credit/debit card</option>
+                <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
+                <select class="form__input" v-model="cardToUse">
+                  <option disabled value="">Card Number</option>
                   <option v-for="(item, i) in cardNumbers" :key="`cardnumbers-${i}`">{{item}}</option>
                 </select>
                 <span class="form__input--error">{{ errors[0] }}</span>
@@ -875,6 +878,8 @@
 <script>
 import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
+import { statesArr } from "@/data/states"
+import { licenseNumbers } from "@/data/driversLicense";
   export default {
     props: ['company', 'abbreviation'],
     computed: {
@@ -919,6 +924,19 @@ import {mapGetters, mapActions} from 'vuex'
         return this.getCards.map((v) => {
           return v.cardNumber
         })
+      },
+      licenseMask() {
+        var mask = {
+          mask:/^\d{0,9}$/,
+          length: 9,
+          min: 1,
+        }
+        
+        if (this.location.state !== "") {
+          var numbersArr = licenseNumbers.find(e => e.state === this.location.state)
+          mask = { mask: numbersArr.mask, length: numbersArr.length, min: numbersArr.min }
+        }
+        return mask
       }
     },
     data: (vm) => ({
@@ -967,10 +985,10 @@ import {mapGetters, mapActions} from 'vuex'
             day5DateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         },
         location: {
-            address: null,
-            city: null,
-            state: null,
-            zip: null
+            address: "",
+            city: "",
+            state: "",
+            zip: ""
         },
         firstName:'',
         lastName:'',
@@ -1005,6 +1023,8 @@ import {mapGetters, mapActions} from 'vuex'
         existingCreditCard: "",
         cardToUse: "",
         cardObj: {},
+        states: statesArr,
+        /* licenseMask: driversLicenseMask.mask */
     }),
     watch: {
         insuredEndDate(val) {
@@ -1040,6 +1060,14 @@ import {mapGetters, mapActions} from 'vuex'
             addReport: 'indexDb/addReport',
             checkStorage: 'indexDb/checkStorage'
         }),
+        onAccept(e) {
+          var maskRef = e
+          this.driversLicense = maskRef
+        },
+        onComplete(e) {
+          const maskRef = e;
+          console.log('complete', maskRef);
+        },
         cardSubmittedValue(...params) {
             const {isSubmit, cardNumber} = params[0]
             this.cardObj = params

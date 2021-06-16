@@ -7,9 +7,10 @@
             <h3 class="alert alert--error">{{errorMessage}}</h3>
             <form class="form" @submit.prevent="passes(onSubmit)">
                 <div class="form__form-group">
-                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input--input-group">
+                    <ValidationProvider vid="JobId" v-slot="{errors, ariaMsg}" name="Job ID" class="form__input-group form__input-group--normal">
                         <input type="hidden" v-model="selectedJobId" />
                         <label class="form__label">Job ID:</label>
+                        <i class="form__select--icon icon--angle-down mdi" aria-label="icon"></i>
                         <select class="form__select form__input" v-model="selectedJobId">
                             <option disabled value="">Please select a Job ID</option>
                             <option v-for="(item, i) in $store.state.reports.jobids" :key="`jobids-${i}`">{{item}}</option>
