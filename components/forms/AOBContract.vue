@@ -1053,6 +1053,13 @@ import { licenseNumbers } from "@/data/driversLicense";
         },
         cusSignDate(val) {
             this.cusSignDateFormatted = this.formatDate(val)
+        },
+        selectedJobId(val) {
+          var report = this.getReports.find((v) => {
+            return val === this.selectedJobId && v.ReportType === 'rapid-response'
+          })
+          this.numberOfFloors = report.intrusion.find(e => e.label === 'Number of Floors').value
+          
         }
     },
     methods: {

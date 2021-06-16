@@ -55,17 +55,6 @@ export default {
             })
         })
     },
-    /* async asyncData({ $axios, store, $fire }) {
-        try {
-            
-            let data = await $axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
-            return { 
-                contracts: data
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
-    }, */
     data() {
         return {
             contracts: [],

@@ -63,7 +63,7 @@
             <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <div class="form__input-group form__input-group--normal">
+          <div class="form__input-group form__input-group--long">
             <label for="location" class="form__label">Address</label>
             <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
               @change="$nuxt.$emit('location-updated')"></div>
@@ -614,14 +614,14 @@
         timeIntrusion: false
       },
       intrusionSection: [
-        { label: 'Control Status of Intrusion', value: '', type: 'text' },
-        { label: 'Structure Type', value: '', type: 'text' },
-        { label: 'Use', value: '', type: 'text' },
-        { label: 'History', value: '', type: 'text' },
-        { label: 'Age', value: null, type: 'text' },
-        { label: 'Approximate sqft', value: null, type: 'number' },
-        { label: 'Number of Rooms', value: null, type: 'number' },
-        { label: 'Number of Floors', value: null, type: 'number' }
+        { id:'statusOfIntrusion', label: 'Control Status of Intrusion', value: '', type: 'text' },
+        { id:'structureType', label: 'Structure Type', value: '', type: 'text' },
+        { id:'use', label: 'Use', value: '', type: 'text' },
+        { id:'history', label: 'History', value: '', type: 'text' },
+        { id:'age', label: 'Age', value: null, type: 'text' },
+        { id:'appxSqft', label: 'Approximate sqft', value: null, type: 'number' },
+        { id:'numberOfRooms', label: 'Number of Rooms', value: null, type: 'number' },
+        { id:'numberOfFloors', label: 'Number of Floors', value: null, type: 'number' }
       ],
       dateIntrusion: new Date().toISOString().substr(0, 10),
       dateIntrusionFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

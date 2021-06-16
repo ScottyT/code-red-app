@@ -139,7 +139,7 @@ export default defineComponent({
         }
         //getReport(`${reportType}/${jobId}`).fetchReport()
         getReport(`${reportType}/${jobId}`).fetchState
-        
+        console.log(report)
         return {
             report,
             reportType,
