@@ -51,14 +51,16 @@
 </template>
 
 <script>
+import { computed, defineComponent, reactive, ref, useStore, watch, onMounted } from '@nuxtjs/composition-api'
 import {mapGetters, mapActions} from 'vuex'
-export default {
-  data() {
-    return {
-      clipped: true,
-      drawer: false,
-      fixed: false,
-      items: [
+//import userReports from '@/store/userReports/index'
+
+export default defineComponent({
+  setup(props, {root}) {
+    const authUser = root.$fire.auth.currentUser
+    const store = useStore()
+    //const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
+    const items = [
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
@@ -137,7 +139,65 @@ export default {
           to: '/storage',
           access: 'admin'
         }
-      ],
+    ];
+    const clipped = ref(true); 
+    const drawer = ref(false); 
+    const fixed = ref(false); 
+    const miniVariant = ref(false);
+    const right = ref(true); 
+    const rightDrawer = ref(false); 
+    const title = ref("Code Red Claims"); 
+    const user = ref(false);
+    const filteredNavItems = ref([]); const isMobile = ref(false);
+    const appTheme = computed(() => root.$vuetify.theme.dark = true);
+    const matchUrl = computed(() => root.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm))
+    const getUser = reactive({ user: store.getters['users/getUser'] })
+    const isLoggedIn = computed(() => store.getters['users/isLoggedIn'])
+    const isOnline = computed(() => root.$nuxt.isOnline)
+    const filtered = (role) => items.filter((v) => {
+      return v.access === role
+    })
+    const itemsArr = () => {
+      switch(getUser.value.role) {
+        case "user":
+          filteredNavItems.value = filtered("user")
+          break;
+        default:
+          filteredNavItems.value = items
+      }
+    }
+    const userLoggedIn = () => {
+      user.value = authUser ? true : false
+    }
+    /* watch(isOnline, (val) => {
+      if (val) {
+        fetchReports(authUser)
+      }
+    }) */
+    watch(authUser, (newVal, oldVal) => {
+      if (Object.keys(newVal).length !== 0) {
+        itemsArr()
+      }
+    })
+    //root.$reportStore.methods.loadReports(getUser.value.email)
+    onMounted(userLoggedIn)
+    return { 
+      items, clipped, drawer, fixed, miniVariant, right, rightDrawer, title, user,
+      filteredNavItems,
+      itemsArr,
+      appTheme,
+      matchUrl,
+      isLoggedIn,
+      getUser
+    }
+  }
+})
+/* export default {
+  data() {
+    return {
+      clipped: true,
+      drawer: false,
+      fixed: false,
       miniVariant: false,
       right: true,
       rightDrawer: false,
@@ -206,14 +266,15 @@ export default {
     this.$nextTick(() => {
       this.itemsArr()
       this.user = this.$fire.auth.currentUser ? true : false
-      this.fetchReports(this.$fire.auth.currentUser)      
+      
+      this.fetchReports(this.$fire.auth.currentUser)
     })
   },
   beforeDestroy() {
     if (typeof window === 'undefined') return
     window.removeEventListener('resize', this.onResize, { passive: true })
   }
-}
+} */
 </script>
 <style lang="scss">
 .reports-page {

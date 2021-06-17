@@ -75,8 +75,8 @@ export default {
     '~/plugins/signature.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' },
     '~/plugins/mask.js',
-    '~/plugins/composition-api.js',
-    '~/plugins/directives.js'
+    '~/plugins/directives.js',
+    '~/plugins/provide-composable.js'
   ],
   /*
    ** Auto import components

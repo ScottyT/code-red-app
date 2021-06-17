@@ -366,11 +366,6 @@
           '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
       }
     },
-    mounted() {
-      this.$nextTick(() => {
-        console.log(this.report)
-      })
-    },
     created() {
       this.repData = this.report
       

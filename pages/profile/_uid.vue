@@ -25,9 +25,9 @@
                 </v-slide-x-transition>  
             </form>
         </v-card>
-        <p v-if="$fetchState.pending">Fetching reports...</p>
-        <div class="block-group" v-else>
-            <LayoutReports :reports="reports" theme="dark" />
+        <!-- <p v-if="$fetchState.pending">Fetching reports...</p> -->
+        <div class="block-group">
+            <!-- <LayoutReports :reports="reports" theme="dark" /> -->
         </div>
     </div>
 </template>
@@ -35,20 +35,29 @@
 import axios from 'axios';
 import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
 import { userReports } from '@/composable/userReports'
+//import { reportStore } from '@/store/userReports/index'
 export default defineComponent({
     setup(props, context) {
-        console.log(context)
         const authUser = context.root.$fire.auth.currentUser
+        const email = context.root.$route.params.uid
         const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
+        const reports = ref([])
+        /* const fetch = () => {
+            reports.value = reportStore.loadReports(email)
+        }
+        fetch() */
         const user = computed(() => store.getters['users/getUser'])
         const avatarurl = computed(() => store.getters['users/getAvatar'])
-        const { reports, fetchUserReports } = userReports(authUser.email)
-
-        fetchUserReports()
+       // const data = computed(() => reports.value)
+        //const fetchReports = () => { store.dispatch('userReports/loadReports') }
+        /* const { reports, fetchUserReports } = userReports(authUser.email)
+        fetchUserReports() */
+        //fetchReports(email)
+        
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
@@ -58,9 +67,10 @@ export default defineComponent({
             savedAvatar()
             avatar.value = {}
         }
-
         return {
+            
             reports,
+            //fetchReports,
             uploadImage,
             savedAvatar,
             avatarurl,

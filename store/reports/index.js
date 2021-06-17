@@ -1,14 +1,21 @@
+import { ref } from "@nuxtjs/composition-api"
+import { userReports } from "~/composable/userReports"
+
 const state = () => ({
     error: null,
     all: [],
     report: {},
     creditCards:[],
     jobids:null,
-    logreports: []
+    logreports: [],
+    userreports: []
 })
 const getters = {
     getReports: (state) => {
         return state.all
+    },
+    getUserReports: (state) => {
+      return state.userreports
     },
     getCards: (state) => {
         return state.creditCards
@@ -30,6 +37,9 @@ const mutations = {
     setReports: (state, payload) => {
         state.all = payload
     },
+    setUserReports: (state, payload) => {
+      state.userreports = payload
+    },
     setReport: (state, payload) => {
       state.report = payload
     },
@@ -50,6 +60,12 @@ const actions = {
           commit('setError', err)
         })
       }   
+    },
+    userReports({ commit }) {
+      const { reports, fetchUserReports } = userReports(this.$fire.auth.currentUser.email)
+      fetchUserReports().then((res) => {
+        commit('setUserReports', res)
+      })
     },
     async fetchReports({ commit, dispatch }, authUser) {
       if (authUser) {

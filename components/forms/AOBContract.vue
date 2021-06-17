@@ -1059,7 +1059,7 @@ import { licenseNumbers } from "@/data/driversLicense";
             return val === this.selectedJobId && v.ReportType === 'rapid-response'
           })
           this.numberOfFloors = report.intrusion.find(e => e.label === 'Number of Floors').value
-          
+          this.numberOfRooms = report.intrusion.find(e => e.label === 'Number of Rooms').value
         }
     },
     methods: {
