@@ -1,22 +1,39 @@
 import { computed, ref, reactive, readonly } from "@nuxtjs/composition-api"
-import { userReports, fetchUserReports } from "~/composable/userReports"
+import { userReports } from "~/composable/userReports"
 
 const state = () => reactive({
-    all: []
+    all: [],
+    loading: false
 })
 
 const methods = {
     setReports(reports) {
+        state.loading = true
         state.all = reports
+        state.loading = false
     },
-    loadReports(email) {
-        const { reports, fetchUserReports } = userReports(email)
-        console.log(reports)
-        this.setReports(reports)
+    setLoading(loadState) {
+        console.log(loadState)
+        state.loading = loadState
+    },
+    async loadReports() {
+        const { reports, fetchUserReports, loading } = userReports()
+        console.log(loading)
+        await fetchUserReports().then(() => {
+            console.log('success')
+            this.setReports(reports)
+            
+        })
+        console.log(loading)
     }
 }
 
-const getReports = computed(() => state.all)
+const getters = {
+    getReports() {
+        return state.all
+    }
+}
+//const getReports = () => { return state.all }
 /* function setReports(reports) {
     state.all = reports
 }
@@ -31,7 +48,7 @@ function loadReports(email) {
 export default {
     state,
     methods,
-    getReports
+    getters
 }
 /* export const useReports = (email) => {
     const loading = ref(false)

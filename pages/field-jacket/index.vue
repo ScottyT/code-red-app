@@ -44,7 +44,6 @@ export default defineComponent({
     layout: 'dashboard-layout',
     setup(props, {root}) {
         const store = useStore()
-        //const reports = computed(() => store.getters['reports/getReports'])
         const isOnline = computed(() => root.$nuxt.isOnline)
         async function checkStorage() { store.dispatch('indexDb/checkStorage') }
        

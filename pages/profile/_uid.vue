@@ -25,35 +25,37 @@
                 </v-slide-x-transition>  
             </form>
         </v-card>
-        <!-- <p v-if="$fetchState.pending">Fetching reports...</p> -->
-        <div class="block-group">
-            <!-- <LayoutReports :reports="reports" theme="dark" /> -->
+        <p v-if="$reportStore.state.loading">Fetching reports...</p>
+        <div class="block-group" v-else>
+            
+            <LayoutReports :reports="$reportStore.state.all.value" theme="dark" />
         </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, defineComponent, useStore, useFetch, watch } from '@nuxtjs/composition-api'
 import { userReports } from '@/composable/userReports'
-//import { reportStore } from '@/store/userReports/index'
 export default defineComponent({
+    async middleware({redirect, store}) {
+        if (store.state.users.user.email == null) {
+            return redirect("/")
+        }
+    },
     setup(props, context) {
         const authUser = context.root.$fire.auth.currentUser
         const email = context.root.$route.params.uid
+        const reportStore = context.root.$reportStore
         const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
-        const reports = ref([])
-        /* const fetch = () => {
-            reports.value = reportStore.loadReports(email)
-        }
-        fetch() */
+        const loading = reportStore.state.loading
+        const reports = computed(() => context.root.$reportStore.getters.getReports())        
         const user = computed(() => store.getters['users/getUser'])
         const avatarurl = computed(() => store.getters['users/getAvatar'])
-       // const data = computed(() => reports.value)
-        //const fetchReports = () => { store.dispatch('userReports/loadReports') }
+
         /* const { reports, fetchUserReports } = userReports(authUser.email)
         fetchUserReports() */
         //fetchReports(email)
@@ -67,10 +69,10 @@ export default defineComponent({
             savedAvatar()
             avatar.value = {}
         }
+
         return {
-            
+            loading,
             reports,
-            //fetchReports,
             uploadImage,
             savedAvatar,
             avatarurl,

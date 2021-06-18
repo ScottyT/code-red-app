@@ -1,7 +1,7 @@
 <template>
     <p v-if="$nuxt.isOffline">You must be online to view a report</p>
     <div class="report-details-wrapper" v-else>
-        <p v-if="$fetchState.pending">Fetching content...</p>
+        <p v-if="loading">Fetching content...</p>
         <div v-else><UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
@@ -75,6 +75,7 @@ import VueHtml2pdf from 'vue-html2pdf'
 import {mapGetters} from 'vuex'
 import { defineComponent, ref, onMounted, useAsync, computed } from '@nuxtjs/composition-api';
 import useReports from '@/composable/reports';
+import { userReports } from '@/composable/userReports'
 export default defineComponent({
     layout: 'dashboard-layout',
     components: {
@@ -82,7 +83,8 @@ export default defineComponent({
     },
     setup(props, {root, refs}) {
         let authUser = root.$fire.auth.currentUser
-        const { report, getReport } = useReports()
+        //const { report, getReport } = useReports()
+        const { report, loading, fetchReport } = userReports()
         const formName = ref("")
         const company = ref("")
         let reportType = root.$route.params.type
@@ -138,8 +140,10 @@ export default defineComponent({
             })
         }
         //getReport(`${reportType}/${jobId}`).fetchReport()
-        getReport(`${reportType}/${jobId}`).fetchState
+        //getReport(`${reportType}/${jobId}`).fetchState
+        fetchReport(`${reportType}/${jobId}`)
         return {
+            loading,
             report,
             reportType,
             htmlToPdfOptions,

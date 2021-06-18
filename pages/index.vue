@@ -8,21 +8,17 @@
 </template>
 
 <script>
-import { defineComponent, ref, inject, computed, onMounted } from '@nuxtjs/composition-api'
-import {mapGetters, mapActions} from 'vuex'
+import { defineComponent, ref, inject, computed, onMounted, watch } from '@nuxtjs/composition-api';
 
 export default defineComponent({
   setup(props, context) {
-    console.log(context)
-    //const store = inject('userReports')
     const authUser = context.root.$fire.auth.currentUser
-    //store.methods.loadReports(authUser.email)
+    let reportStoreMethods = context.root.$reportStore.methods
     const data = ref([])
-    context.root.$reportStore.methods.loadReports(authUser.email)
     const reports = computed(() => context.root.$reportStore.state.all.value)
-
+  
     return {
-      reports
+      reports,
     }
   }
 })

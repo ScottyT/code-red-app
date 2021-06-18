@@ -1,17 +1,34 @@
-import { ref, useContext, useFetch } from "@nuxtjs/composition-api";
+import { computed, ref, useContext, useFetch, watch } from "@nuxtjs/composition-api";
 
-export const userReports = (email) => {
+export const userReports = () => {
     const reports = ref([])
-    const { root, $fire, $axios } = useContext()
-    const { fetch: fetchUserReports } = useFetch(async () => {
+    const loading = ref(false)
+    const report = ref({})
+    const { root, $fire, $axios, $nuxt } = useContext()
+    async function fetchUserReports() {
+        loading.value = true
         await $fire.auth.currentUser.getIdToken(true).then((idToken) => {
-            $axios.$get(`/api/employee/${email}/reports`, {headers: {authorization: `Bearer ${idToken}`}})
+            $axios.$get(`/api/employee/${$fire.auth.currentUser.email}/reports`, {headers: {authorization: `Bearer ${idToken}`}})
                 .then((res) => {
                     reports.value = res
-                }).catch((err) => {
-                    console.log(err)
                 })
         })
-    })
-    return { reports, fetchUserReports }
+        loading.value = false
+    }
+    async function fetchReport(path) {
+        loading.value = true
+        await $fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            $axios.$get(`${process.env.serverUrl}/api/report/${path}`, {headers: {authorization: `Bearer ${idToken}`}})
+                .then((res) => {
+                    report.value = res
+                })
+        })
+        loading.value = false
+    }
+    /* watch(() => root.$nuxt.isOnline, (val) => {
+        if (val) {
+            fetchUserReports()
+        }
+    }) */
+    return { reports, fetchUserReports, loading: computed(() => loading.value), fetchReport, report: computed(() => report.value) }
 }

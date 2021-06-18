@@ -51,16 +51,15 @@
 </template>
 
 <script>
-import { computed, defineComponent, reactive, ref, useStore, watch, onMounted } from '@nuxtjs/composition-api'
-import {mapGetters, mapActions} from 'vuex'
-//import userReports from '@/store/userReports/index'
+import { computed, defineComponent, reactive, ref, useStore, watch, onMounted, useFetch } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  setup(props, {root}) {
-    const authUser = root.$fire.auth.currentUser
+  setup(props, context) {
+    let authUser = context.root.$fire.auth.currentUser
+    let reportStoreMethods = context.root.$reportStore.methods
     const store = useStore()
     //const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
-    const items = [
+    const items = ref([
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
@@ -139,7 +138,7 @@ export default defineComponent({
           to: '/storage',
           access: 'admin'
         }
-    ];
+    ]);
     const clipped = ref(true); 
     const drawer = ref(false); 
     const fixed = ref(false); 
@@ -147,13 +146,16 @@ export default defineComponent({
     const right = ref(true); 
     const rightDrawer = ref(false); 
     const title = ref("Code Red Claims"); 
-    const user = ref(false);
-    const filteredNavItems = ref([]); const isMobile = ref(false);
-    const appTheme = computed(() => root.$vuetify.theme.dark = true);
-    const matchUrl = computed(() => root.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm))
-    const getUser = reactive({ user: store.getters['users/getUser'] })
+    const user = ref(false);  
+    const isMobile = ref(false);
+    const filteredNavItems = ref([]);
+    const reports = ref([])
+    const appTheme = computed(() => context.root.$vuetify.theme.dark = true);
+    const matchUrl = computed(() => context.root.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm))
+    const getUser = computed(() => store.getters['users/getUser'])
     const isLoggedIn = computed(() => store.getters['users/isLoggedIn'])
-    const isOnline = computed(() => root.$nuxt.isOnline)
+    const isOnline = computed(() => context.root.$nuxt.isOnline)
+
     const filtered = (role) => items.filter((v) => {
       return v.access === role
     })
@@ -162,119 +164,38 @@ export default defineComponent({
         case "user":
           filteredNavItems.value = filtered("user")
           break;
-        default:
-          filteredNavItems.value = items
+        case "admin":
+          filteredNavItems.value = items.value
       }
-    }
+    }   
     const userLoggedIn = () => {
       user.value = authUser ? true : false
+    }   
+    const fetchUserReports = async () => {
+      await reportStoreMethods.loadReports()
     }
-    /* watch(isOnline, (val) => {
-      if (val) {
-        fetchReports(authUser)
-      }
-    }) */
-    watch(authUser, (newVal, oldVal) => {
-      if (Object.keys(newVal).length !== 0) {
-        itemsArr()
+    onMounted(userLoggedIn)
+    onMounted(itemsArr)
+    onMounted(fetchUserReports)
+    watch(() => getUser.value, (val) => {
+      if (Object.keys(val).length !== 0) {
+        itemsArr()        
       }
     })
-    //root.$reportStore.methods.loadReports(getUser.value.email)
-    onMounted(userLoggedIn)
+
     return { 
       items, clipped, drawer, fixed, miniVariant, right, rightDrawer, title, user,
       filteredNavItems,
-      itemsArr,
       appTheme,
       matchUrl,
       isLoggedIn,
-      getUser
+      getUser,
+      reports,
+      isOnline,
+      fetchUserReports
     }
   }
 })
-/* export default {
-  data() {
-    return {
-      clipped: true,
-      drawer: false,
-      fixed: false,
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Code Red Claims',
-      user: false,
-      filteredNavItems: [],
-      isMobile: false
-    }
-  },
-  computed: {  
-    appTheme() {
-      return this.$vuetify.theme.dark = true
-    },
-    matchUrl() {
-      return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
-    },
-    ...mapGetters({
-        getUser: "users/getUser", 
-        isLoggedIn: "users/isLoggedIn"
-      }),
-    isOnline() {
-      return this.$nuxt.isOnline
-    }
-  },
-  watch: {
-    isOnline(val) {
-      if (val) {
-        this.fetchReports(this.$fire.auth.currentUser)
-      }
-    },
-    getUser(val) {
-      if (Object.keys(val).length !== 0) {
-        this.itemsArr()
-      }
-    }
-  },
-  methods: {
-    ...mapActions({
-      fetchReports: 'reports/fetchReports',
-      fetchLogs: 'reports/fetchLogs'
-    }),
-    itemsArr() {
-        const filtered = (role) => this.items.filter((v) => {
-          return v.access === role
-        })
-        switch (this.getUser.role) {
-          case "user":
-            this.filteredNavItems = filtered("user")
-            break;
-          case "admin":
-            this.filteredNavItems = this.items
-        }
-    },
-    async signOut() {
-      this.$store.dispatch("users/signout")
-    },
-    onResize() {
-      setTimeout(() => {
-        this.isMobile = window.innerWidth < 1200
-      }, 100)     
-    }
-  },
-  mounted() {
-    this.onResize()
-    window.addEventListener('resize', this.onResize, { passive: true })
-    this.$nextTick(() => {
-      this.itemsArr()
-      this.user = this.$fire.auth.currentUser ? true : false
-      
-      this.fetchReports(this.$fire.auth.currentUser)
-    })
-  },
-  beforeDestroy() {
-    if (typeof window === 'undefined') return
-    window.removeEventListener('resize', this.onResize, { passive: true })
-  }
-} */
 </script>
 <style lang="scss">
 .reports-page {
