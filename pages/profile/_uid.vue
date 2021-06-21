@@ -25,54 +25,52 @@
                 </v-slide-x-transition>  
             </form>
         </v-card>
-        <p v-if="$reportStore.state.loading">Fetching reports...</p>
+        <button @click="refreshReports" class="button--normal">Refresh</button>
+        <p v-if="loading">Fetching reports...</p>
         <div class="block-group" v-else>
-            
-            <LayoutReports :reports="$reportStore.state.all.value" theme="dark" />
+            <LayoutReports :reports="reports" theme="dark" />
         </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted, defineComponent, useStore, useFetch, watch } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, defineComponent, useStore, useFetch, watch, useContext } from '@nuxtjs/composition-api'
 import { userReports } from '@/composable/userReports'
 export default defineComponent({
-    async middleware({redirect, store}) {
-        if (store.state.users.user.email == null) {
-            return redirect("/")
+    async middleware({store, redirect}) {
+        if (Object.keys(store.state.users.user).length === 0) {
+            return redirect('/')
         }
     },
     setup(props, context) {
-        const authUser = context.root.$fire.auth.currentUser
+        const { $axios, $fire, $reportStore } = useContext()
+        const { reports, loading, fetchUserReports } = userReports()
+        const authUser = $fire.auth.currentUser
         const email = context.root.$route.params.uid
-        const reportStore = context.root.$reportStore
         const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
-        const loading = reportStore.state.loading
-        const reports = computed(() => context.root.$reportStore.getters.getReports())        
         const user = computed(() => store.getters['users/getUser'])
         const avatarurl = computed(() => store.getters['users/getAvatar'])
-
-        /* const { reports, fetchUserReports } = userReports(authUser.email)
-        fetchUserReports() */
-        //fetchReports(email)
-        
+        const refreshReports = async () => {
+            await fetchUserReports()
+        }
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
         }
         const uploadImage = (item) => {
-            root.$store.dispatch('users/fetchAvatar', item)
+            context.root.$store.dispatch('users/fetchAvatar', item)
             savedAvatar()
             avatar.value = {}
         }
+        fetchUserReports()
 
         return {
             loading,
-            reports,
+            reports: computed(() => reports.value),
             uploadImage,
             savedAvatar,
             avatarurl,
@@ -80,7 +78,9 @@ export default defineComponent({
             saving,
             saved,
             user,
-            error
+            error,
+            fetchUserReports,
+            refreshReports
         }
     },
     methods: {

@@ -7,8 +7,7 @@ const state = () => ({
     report: {},
     creditCards:[],
     jobids:null,
-    logreports: [],
-    userreports: []
+    logreports: []
 })
 const getters = {
     getReports: (state) => {
@@ -37,9 +36,6 @@ const mutations = {
     setReports: (state, payload) => {
         state.all = payload
     },
-    setUserReports: (state, payload) => {
-      state.userreports = payload
-    },
     setReport: (state, payload) => {
       state.report = payload
     },
@@ -60,12 +56,6 @@ const actions = {
           commit('setError', err)
         })
       }   
-    },
-    userReports({ commit }) {
-      const { reports, fetchUserReports } = userReports(this.$fire.auth.currentUser.email)
-      fetchUserReports().then((res) => {
-        commit('setUserReports', res)
-      })
     },
     async fetchReports({ commit, dispatch }, authUser) {
       if (authUser) {

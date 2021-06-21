@@ -43,42 +43,40 @@
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
         </div>
-        <div class="form__form-group">
-          <h3>Debit/Credit Card</h3>
-          <div class="d-flex flex-wrap">
-            <ValidationProvider name="Card type" class="form__form-group--block" rules="required" v-slot="{errors}">
-              <span class="form__label">Which card will you be using?</span>
+        <h3>Debit/Credit Card</h3>
+        <div class="d-flex flex-wrap">
+          <ValidationProvider name="Card type" class="form__form-group--block" rules="required" v-slot="{errors}">
+            <span class="form__label">Which card will you be using?</span>
               <ul class="form__form-group--inline">
                 <li v-for="(type, i) in cardTypes" :key="`type-${i}`" class="form__input--radio">
                   <label :for="type">{{type}}</label>
                   <input :id="type" v-model="selectedCardType" type="radio" :value="type" /> 
                 </li>
               </ul>
+            <span class="form__input--error">{{ errors[0] }}</span>
+          </ValidationProvider>
+          <div class="form__input--card-upload-group">             
+            <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--front">
+              <p>Front side:</p>
+              <input type="hidden" v-model="frontCardImage[0]" @click="validate" />
+              <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
+              <input type="file" id="frontcard" name="frontcardimage" accept="image/*" ref="frontCard" @change="filesChange" />
               <span class="form__input--error">{{ errors[0] }}</span>
+              <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
             </ValidationProvider>
-            <div class="form__input--card-upload-group">             
-              <ValidationProvider vid="frontcard" ref="frontcard" name="Front Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--front">
-                <p>Front side:</p>
-                <input type="hidden" v-model="frontCardImage[0]" @click="validate" />
-                <span class="button button--normal" @click="$refs.frontCard.click()">Add image</span>
-                <input type="file" id="frontcard" name="frontcardimage" accept="image/*" ref="frontCard" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`frontcardimage`" /></div>
-              </ValidationProvider>
               
-              <ValidationProvider vid="backcard" ref="backcard" v-if="frontCardValue !== ''" name="Back Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--back">
-                <p>Back side:</p>
-                <input type="hidden" v-model="backCardImage[0]" @click="validate" />
-                <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
-                <input type="file" id="backcard" name="backcardimage" accept="image/*" ref="backCard" @change="filesChange" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-                <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
-              </ValidationProvider>
-              <div class="buttons-wrapper">
-                <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardValue !== '' && backCardValue !== '') && $nuxt.isOnline"
+            <ValidationProvider vid="backcard" ref="backcard" v-if="frontCardValue !== ''" name="Back Side" rules="image" v-slot="{validate, errors}" class="card-upload card-upload--back">
+              <p>Back side:</p>
+              <input type="hidden" v-model="backCardImage[0]" @click="validate" />
+              <span class="button button--normal" @click="$refs.backCard.click()">Add image</span>
+              <input type="file" id="backcard" name="backcardimage" accept="image/*" ref="backCard" @change="filesChange" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+              <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`backcardimage`" /></div>          
+            </ValidationProvider>
+            <div class="buttons-wrapper">
+              <v-btn @click="submitFiles(cardImages, $refs.cardimage)" v-if="(frontCardValue !== '' && backCardValue !== '') && $nuxt.isOnline"
                   :class="[uploaded ? 'button--disabled' : 'button']">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-                <p class="card-upload__message" aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
-              </div>
+              <p class="card-upload__message" aria-label="Upload message goes here" name="Debit/Credit card " ref="cardimage"></p>
             </div>
           </div>
         </div>
@@ -248,8 +246,7 @@ import { statesArr } from "@/data/states"
     }),
     props: {
         jobId: {
-            type: String,
-            required: true
+            type: String
         },
         repPrint: {
             type: String

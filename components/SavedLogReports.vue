@@ -18,36 +18,36 @@
             <div class="pdf-item__row" style="margin-bottom:10px;">
                 <div class="pdf-item__inline">
                     <label>Job ID: </label>
-                    <span>{{report.JobId}}</span>
+                    <span>{{savedreport.JobId}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.ReportType === 'moisture-map'">
+                <div class="pdf-item__inline" v-if="savedreport.ReportType === 'moisture-map'">
                     <label>Initial Eval Date: </label>
-                    <span>{{report.initialEvalDate}}</span>
+                    <span>{{savedreport.initialEvalDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="savedreport.ReportType !== 'moisture-map'">
                     <label>Initial Start Date: </label>
-                    <span>{{report.startDate}}</span>
+                    <span>{{savedreport.startDate}}</span>
                 </div>
-                <div class="pdf-item__inline" v-if="report.ReportType !== 'moisture-map'">
+                <div class="pdf-item__inline" v-if="savedreport.ReportType !== 'moisture-map'">
                     <label>End Date: </label>
-                    <span>{{report.endDate}}</span>
+                    <span>{{savedreport.endDate}}</span>
                 </div>
-                <div class="pdf-item__inline address-box" v-if="report.hasOwnProperty('location')">
+                <div class="pdf-item__inline address-box" v-if="savedreport.hasOwnProperty('location')">
                     <div class="pdf-item__data">
                         <label>Address:</label>
-                        <span>{{report.location.address}}</span>
+                        <span>{{savedreport.location.address}}</span>
                     </div>
                     <div class="pdf-item__data">
                         <label>City, State, Zip:</label>
-                        <span>{{report.location.cityStateZip}}</span>
+                        <span>{{savedreport.location.cityStateZip}}</span>
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__row" v-if="report.notes !== undefined">
+            <div class="pdf-item__row" v-if="savedreport.notes !== undefined">
                 <label>Notes: </label>
-                <div class="pdf-item__textbox">{{report.notes}}</div>
+                <div class="pdf-item__textbox">{{savedreport.notes}}</div>
             </div>
-            <div class="pdf-item__table moisture-data" v-if="report.ReportType === 'moisture-map'">
+            <div class="pdf-item__table moisture-data" v-if="savedreport.ReportType === 'moisture-map'">
                 <div class="pdf-item__table moisture-data--rows">
                     <div class="pdf-item__table moisture-data--cols">
                         <div>DATE:</div>
@@ -56,7 +56,7 @@
                         <label class="form__label">Area {{n}}</label>
                     </div>
                 </div>
-                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in report.readingsRow" :key="`row-${i}`">
+                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in savedreport.readingsRow" :key="`row-${i}`">
                     <div class="moisture-data--cols">
                         <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
                     </div>
@@ -98,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table inventory-logs" v-if="report.ReportType === 'quantity-inventory-logs'">
+            <div class="pdf-item__table inventory-logs" v-if="savedreport.ReportType === 'quantity-inventory-logs'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -112,38 +112,35 @@
                         <label>Tech ID #</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="n in 7" :key="`techids-col-${n}`">
-                        <input type="number" class="pdf-item__table--data" readonly v-model="report.teamMember.id" />
+                        <input type="number" class="pdf-item__table--data" readonly v-model="savedreport.teamMember.id" />
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.quantityData" :key="`unitquanitity-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.quantityData" :key="`unitquanitity-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                        <input type="number" class="pdf-item__table--data"
-                            v-model="report.quantityData[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.quantityData[i].day[j].value" />
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.checkData" :key="`checkbox-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.checkData" :key="`checkbox-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
-                        <input type="checkbox" class="pdf-item__table--data" 
-                            v-model="report.checkData[i].day[j].value" />
+                        <input type="checkbox" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.checkData[i].day[j].value" />
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.categoryData" :key="`category-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.categoryData" :key="`category-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" 
-                            v-model="report.categoryData[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.categoryData[i].day[j].value" />
                     </div>
                 </div>
             </div>
-            <div class="pdf-item__table logs-pdf" v-if="report.ReportType === 'atmospheric-readings'">
+            <div class="pdf-item__table logs-pdf" v-if="savedreport.ReportType === 'atmospheric-readings'">
                 <div class="pdf-item__table pdf-item__table--rows">
                     <div class="pdf-item__table--cols">
                         <div>Description</div>
@@ -160,13 +157,12 @@
                         <input type="number" class="pdf-item__table--data" v-model="$store.state.users.user.id" readonly />
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.readingsLog" :key="`row-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.readingsLog" :key="`row-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" 
-                            v-model="report.readingsLog[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.readingsLog[i].day[j].value" />
                     </div>
                 </div>
                               
@@ -179,20 +175,19 @@
                     </div>
                 </div>
                 
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in report.lossClassification" :key="`loss-${i}`">
+                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.lossClassification" :key="`loss-${i}`">
                     <div class="pdf-item__table--cols">
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <input type="number" class="pdf-item__table--data"
-                            v-model="report.lossClassification[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.lossClassification[i].day[j].value" />
                     </div>
                 </div>
             </div>
-            <button v-if="report.formType === 'moisture-map'" class="button--normal" type="button" @click="addRow">Add row</button>
+            <button v-if="savedreport.formType === 'moisture-map'" class="button--normal" type="button" @click="addRow">Add row</button>
         </section>
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
-        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="report.ReportType === 'moisture-map'">Upload job files</v-btn>
+        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="savedreport.ReportType === 'moisture-map'">Upload job files</v-btn>
         <p v-if="uploadMessage !== ''">{{uploadMessage}}</p>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
         <!-- Only make submit button clickable on Day 7 -->
@@ -205,7 +200,23 @@
 import {mapActions, mapGetters} from 'vuex'
 export default {
     name: "SavedLogReports",
-    props: ['formType', "formName", 'report', 'reportType', 'company'],
+    props: {
+        formName: {
+            type: String
+        },
+        formType: {
+            type: String
+        },
+        report: {
+            type: Object
+        },
+        reportType: {
+            type: String
+        },
+        company: {
+            type: String
+        }
+    },
     data() {
         return {
             uploadMessage: "",
@@ -235,7 +246,7 @@ export default {
             return this.$nuxt.isOnline
         }
     },
-    /* async fetch() {
+    async fetch() {
         await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             this.$axios.$get(`/api/report/${this.$route.params.reportType}/${this.$route.params.id}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 if (res.error) {
@@ -253,7 +264,7 @@ export default {
                 })
             })
         })
-    }, */
+    },
     methods: {
         ...mapActions({
             addReport: 'indexDb/addReport',
@@ -382,6 +393,7 @@ export default {
     },
     mounted() {
         this.checkStorage()
+        console.log(this.report)
     }
 }
 </script>

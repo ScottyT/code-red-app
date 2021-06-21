@@ -29,22 +29,6 @@
       list: [],
       storage: []
     }),
-    async asyncData({ $axios }) {
-      /* var data = await $axios.$get("/api/reports");
-        var dataFilters = data.filter((v) => {
-          return v.ReportType !== 'credit-card'
-        })
-        return { reports: dataFilters } */
-      /* try {
-        var data = await $axios.$get("/api/reports");
-        var dataFilters = data.filter((v) => {
-          return v.ReportType !== 'credit-card'
-        })
-        return { reports: dataFilters }
-      } catch (e) {
-        console.error("SOMETHING WENT WRONG: " + e)
-      } */
-    },
     computed: {
       filteredRep() {
         return this.reports.filter((obj1) => {

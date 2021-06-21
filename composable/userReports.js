@@ -11,9 +11,9 @@ export const userReports = () => {
             $axios.$get(`/api/employee/${$fire.auth.currentUser.email}/reports`, {headers: {authorization: `Bearer ${idToken}`}})
                 .then((res) => {
                     reports.value = res
+                    loading.value = false
                 })
         })
-        loading.value = false
     }
     async function fetchReport(path) {
         loading.value = true
@@ -21,14 +21,9 @@ export const userReports = () => {
             $axios.$get(`${process.env.serverUrl}/api/report/${path}`, {headers: {authorization: `Bearer ${idToken}`}})
                 .then((res) => {
                     report.value = res
+                    loading.value = false
                 })
         })
-        loading.value = false
     }
-    /* watch(() => root.$nuxt.isOnline, (val) => {
-        if (val) {
-            fetchUserReports()
-        }
-    }) */
     return { reports, fetchUserReports, loading: computed(() => loading.value), fetchReport, report: computed(() => report.value) }
 }

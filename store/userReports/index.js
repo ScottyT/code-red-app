@@ -1,30 +1,44 @@
 import { computed, ref, reactive, readonly } from "@nuxtjs/composition-api"
 import { userReports } from "~/composable/userReports"
-
+import axios from 'axios';
 const state = () => reactive({
     all: [],
-    loading: false
+    loading: false,
+    jobids: null,
 })
-
+const loading = computed(() => state.loading);
 const methods = {
     setReports(reports) {
         state.loading = true
         state.all = reports
         state.loading = false
     },
-    setLoading(loadState) {
-        console.log(loadState)
-        state.loading = loadState
+    setLoading() {
+        state.loading = !state.loading
     },
-    async loadReports() {
-        const { reports, fetchUserReports, loading } = userReports()
+    setJobids(payload) {
+        state.jobids = payload
+    },
+    async loadReports(authUser) {
+        /* const { reports, fetchUserReports, loading } = userReports()
         console.log(loading)
         await fetchUserReports().then(() => {
             console.log('success')
             this.setReports(reports)
             
         })
-        console.log(loading)
+        console.log(loading) */
+        await authUser.getIdToken(true).then((idToken) => {
+            axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                this.setReports(res.data)
+                this.mappingJobIds()
+            })
+        })
+        
+    },
+    mappingJobIds() {
+        const jobids = [...new Set(state.all.map((v) => { return v.JobId }))]
+        this.setJobids(...jobids)
     }
 }
 
@@ -48,7 +62,8 @@ function loadReports(email) {
 export default {
     state,
     methods,
-    getters
+    getters,
+    loading
 }
 /* export const useReports = (email) => {
     const loading = ref(false)

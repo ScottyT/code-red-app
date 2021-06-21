@@ -51,14 +51,14 @@
 </template>
 
 <script>
-import { computed, defineComponent, reactive, ref, useStore, watch, onMounted, useFetch } from '@nuxtjs/composition-api'
-
+import { computed, defineComponent, reactive, ref, useStore, watch, onMounted, useFetch, useContext } from '@nuxtjs/composition-api'
+import useReports from "@/composable/reports"
 export default defineComponent({
   setup(props, context) {
+    const { $fire } = useContext()
     let authUser = context.root.$fire.auth.currentUser
-    let reportStoreMethods = context.root.$reportStore.methods
     const store = useStore()
-    //const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
+    const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
     const items = ref([
         {
           icon: 'mdi-apps',
@@ -156,7 +156,7 @@ export default defineComponent({
     const isLoggedIn = computed(() => store.getters['users/isLoggedIn'])
     const isOnline = computed(() => context.root.$nuxt.isOnline)
 
-    const filtered = (role) => items.filter((v) => {
+    const filtered = (role) => items.value.filter((v) => {
       return v.access === role
     })
     const itemsArr = () => {
@@ -167,16 +167,15 @@ export default defineComponent({
         case "admin":
           filteredNavItems.value = items.value
       }
-    }   
+    }
+    
     const userLoggedIn = () => {
       user.value = authUser ? true : false
     }   
-    const fetchUserReports = async () => {
-      await reportStoreMethods.loadReports()
-    }
+    
     onMounted(userLoggedIn)
     onMounted(itemsArr)
-    onMounted(fetchUserReports)
+    fetchReports($fire.auth.currentUser)
     watch(() => getUser.value, (val) => {
       if (Object.keys(val).length !== 0) {
         itemsArr()        
@@ -192,7 +191,7 @@ export default defineComponent({
       getUser,
       reports,
       isOnline,
-      fetchUserReports
+      fetchReports
     }
   }
 })

@@ -31,7 +31,7 @@
       <LazyFormsCertificate company="Water Emergency Services Incorporated" abbreviation="WESI" />
     </template>
     <template v-if="slice === 'credit-card'">
-      <LazyFormsCreditCard :company="company" abbreviation="" jobId="222" />
+      <LazyFormsCreditCard :company="company" abbreviation="" />
     </template>
   </v-layout>
 </template>

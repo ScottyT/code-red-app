@@ -21,9 +21,6 @@
                 <v-icon>mdi-contacts</v-icon>
                 <p>Profile</p>
             </nuxt-link>
-            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/forms/credit-card`">
-                <p>Credit Card Form</p>
-            </nuxt-link>
             <a class="profile-menu__dropdown-menu--item" @click="auth">
                 <v-icon>{{user ? 'mdi-logout-variant' : 'mdi-login-variant'}}</v-icon>
                 <p>{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</p>

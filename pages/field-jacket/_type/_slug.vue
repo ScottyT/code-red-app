@@ -75,7 +75,6 @@ import VueHtml2pdf from 'vue-html2pdf'
 import {mapGetters} from 'vuex'
 import { defineComponent, ref, onMounted, useAsync, computed } from '@nuxtjs/composition-api';
 import useReports from '@/composable/reports';
-import { userReports } from '@/composable/userReports'
 export default defineComponent({
     layout: 'dashboard-layout',
     components: {
@@ -83,8 +82,7 @@ export default defineComponent({
     },
     setup(props, {root, refs}) {
         let authUser = root.$fire.auth.currentUser
-        //const { report, getReport } = useReports()
-        const { report, loading, fetchReport } = userReports()
+        const { report, getReport } = useReports()
         const formName = ref("")
         const company = ref("")
         let reportType = root.$route.params.type
@@ -139,11 +137,10 @@ export default defineComponent({
                 pdf.addPage()
             })
         }
-        //getReport(`${reportType}/${jobId}`).fetchReport()
-        //getReport(`${reportType}/${jobId}`).fetchState
-        fetchReport(`${reportType}/${jobId}`)
+        getReport(`${reportType}/${jobId}`).fetchReport()
+        getReport(`${reportType}/${jobId}`).fetchState
         return {
-            loading,
+            getReport,
             report,
             reportType,
             htmlToPdfOptions,

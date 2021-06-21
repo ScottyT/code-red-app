@@ -159,7 +159,7 @@ export default {
   }
 
   &__report-link {
-    padding: 20px 45px;
+    padding: 20px 15px;
     display: block;
     box-shadow: -1px 2px 12px -2px rgba($color-black, .8);
     border: 1px solid #a09999;
