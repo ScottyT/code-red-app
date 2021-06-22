@@ -175,7 +175,6 @@
     mounted() {
       this.checkStorage()
       this.fetchLogs(this.$fire.auth.currentUser)
-      console.log(this.$reportStore.state.all)
     },
     methods: {
       ...mapActions({

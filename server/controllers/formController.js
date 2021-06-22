@@ -136,7 +136,7 @@ const createLogs = async (req, res) => {
     })
 }
 const updateLogs = async (req, res) => {
-    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType}).exec()
+    const logsReport = await Logging.findOne({JobId: req.body.JobId, formType: req.body.formType, ReportType: req.body.ReportType}).exec()
     logsReport.readingsLog = req.body.readingsLog
     logsReport.lossClassification = req.body.lossClassification
     logsReport.quantityData = req.body.quantityData

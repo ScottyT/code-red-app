@@ -91,9 +91,9 @@ router.get('/report/:ReportType/:JobId', checkIfAuthenticated, async (req, res) 
         if (err) {
             res.status(500).send('Error')
         } else if (report) {
-            res.status(200).json(report)
+            res.status(200).json({data: report, error: false, message: "Successfully found report"})
         } else {
-            res.status(200).json({error: "No report found"})
+            res.status(200).json({error: true, message: "No report found"})
         }
     })
 })

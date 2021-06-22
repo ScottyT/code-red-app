@@ -162,7 +162,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`cols-${j}`">
-                        <input type="text" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.readingsLog[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :tabindex="j" :value="savedreport.readingsLog[i].day[j].value" 
+                            @input="updateField($event, i, j, 'readingsLog')" />
                     </div>
                 </div>
                               
@@ -180,14 +181,16 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
-                        <input type="number" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.lossClassification[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :tabindex="j" :value="savedreport.lossClassification[i].day[j].value"
+                            @input="updateField($event, i, j, 'lossClassification')" />
                     </div>
                 </div>
             </div>
             <button v-if="savedreport.formType === 'moisture-map'" class="button--normal" type="button" @click="addRow">Add row</button>
         </section>
         <v-btn class="button mt-4" @click="updateReport">Update</v-btn>
-        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" v-if="savedreport.ReportType === 'moisture-map'">Upload job files</v-btn>
+        <v-btn class="button button--normal mt-4" @click="submitFiles(report, report.jobImages, 'Job files')" 
+            v-if="savedreport.ReportType === 'moisture-map'">Upload job files</v-btn>
         <p v-if="uploadMessage !== ''">{{uploadMessage}}</p>
         <!-- <v-btn class="button mt-4" @click="submitReport" v-if="$nuxt.isOnline">Update</v-btn> -->
         <!-- Only make submit button clickable on Day 7 -->
@@ -256,12 +259,18 @@ export default {
                     })
                     return
                 }
-                this.savedreport = res
+                this.savedreport = res.data
+                //this.singleReport(res.data)
+                this.$store.commit('indexDb/setReport', res.data)
                 this.newreport = false
             }).catch((err) => {
                 this.savedreport = this.savedReports.find((v) => {
                     return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
                 })
+            })
+        }).catch((err) => {
+            this.savedreport = this.savedReports.find((v) => {
+                return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
             })
         })
     },
@@ -269,8 +278,13 @@ export default {
         ...mapActions({
             addReport: 'indexDb/addReport',
             deleteRep: 'indexDb/deleteReport',
-            checkStorage: 'indexDb/checkStorage'
+            checkStorage: 'indexDb/checkStorage',
+            fetchReport: 'indexDb/fetchReport',
+            singleReport: 'reports/fetchReport'
         }),
+        updateField(e, row, col, fieldArr) {
+            this.$store.commit('indexDb/updateField', {fieldArr, row, col, data: e.target.value})
+        },
         submitFiles(report, uploadarr, element) {
             const today = new Date()
             const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
@@ -278,16 +292,16 @@ export default {
                 var storageRef = this.$fire.storage.ref()
                 
                 switch (element) {
-                case "Job files":
-                    var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
-                    var uploadTask = uploadRef.put(file)
-                    break;
-                case "Card Images":
-                    var uploadRef = storageRef.child(`${report.cardNumber}/${file.name}`)
-                    var uploadTask = uploadRef.put(file)
-                default:
-                    var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
-                    var uploadTask = uploadRef.put(file)
+                    case "Job files":
+                        var uploadRef = storageRef.child(`${report.JobId}/${date}/${file.name}`)
+                        var uploadTask = uploadRef.put(file)
+                        break;
+                    case "Card Images":
+                        var uploadRef = storageRef.child(`${report.cardNumber}/${file.name}`)
+                        var uploadTask = uploadRef.put(file)
+                    default:
+                        var uploadRef = storageRef.child(`${report.JobId}/${file.name}`)
+                        var uploadTask = uploadRef.put(file)
                 }
 
                 uploadTask.on('state_changed',
@@ -341,7 +355,7 @@ export default {
         },
         submitReport() {
             this.alertDialog = !this.alertDialog
-            this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.report).then((res) => {
+            this.$axios.$post(`/api/logs-report/${this.reportType}/${this.savedreport.JobId}/update`, this.savedreport).then((res) => {
                 if (res.errors) {
                     this.errorMessage = res.errors
                     return;                
@@ -349,16 +363,16 @@ export default {
                 this.updateMessage = res.message
                 setTimeout(() => {
                     this.updateMessage = ""
-                    this.deleteRep(this.report)
+                    this.deleteRep(this.savedreport)
                     this.$router.push("/saved-reports")
                 }, 5000)
             })          
         },
         updateReport() {
             try {
-                this.addReport(this.report).then(() => {
+                this.addReport(this.savedreport).then(() => {
                     if (this.$nuxt.isOnline && this.newreport) {
-                        this.$axios.$post(`/api/logs-report/new`, this.report).then((res) => {
+                        this.$axios.$post(`/api/logs-report/new`, this.savedreport).then((res) => {
                             if (res.errors) {
                                 this.errorMessage = res.errors
                                 return;                
@@ -366,12 +380,13 @@ export default {
                             this.updateMessage = res.message
                         })
                     } else {
-                        this.$axios.$post(`/api/logs-report/${this.reportType}/${this.report.JobId}/update`, this.report).then((res) => {
+                        this.$axios.$post(`/api/logs-report/${this.reportType}/${this.savedreport.JobId}/update`, this.savedreport).then((res) => {
                             if (res.errors) {
                                 this.errorMessage = res.errors
                                 return;                
                             }
                             this.updateMessage = res.message
+                            this.deleteRep(this.savedreport)
                         })
                     }
                     this.updateMessage = "Form was updated successfully"           
@@ -393,7 +408,13 @@ export default {
     },
     mounted() {
         this.checkStorage()
-        console.log(this.report)
+        //this.singleReport(this.savedreport)
+        if (this.$nuxt.isOffline) {
+            this.fetchReport(this.savedreport)
+        } else {
+            //this.fetchReport(this.$route.params)
+        }
+        
     }
 }
 </script>
@@ -484,6 +505,9 @@ export default {
             display:block;
             width:100%;
             height:100%;
+            @include respond(tabletLargeMax) {
+                font-size:.9em;
+            }
         }
         &--data-heading {
             text-align:center;

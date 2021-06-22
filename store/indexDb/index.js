@@ -1,12 +1,14 @@
 import { set, values, del } from 'idb-keyval';
+import reports from '../reports';
 
 const state = () => ({
     reports: [],
+    report: {},
     error:"",
     success:""
 })
 const mutations = {
-    setReport: (state, payload) => {
+    setReports: (state, payload) => {
         state.reports = payload
     },
     addRep: (state, newReport) => {
@@ -26,6 +28,21 @@ const mutations = {
     },
     setSuccess: (state, success) => {
         state.success = success
+    },
+    setReport: (state, payload) => {
+        /* let report = state.reports.find(
+            item => item.ReportType === payload.reportType && item.JobId === payload.id
+        )
+        if (report) {
+            state.report = report
+        } else {
+
+        } */
+        state.report = payload
+    },
+    updateField: (state, payload) => {
+        const { fieldArr, row, col, data } = {...payload}
+        state.report[fieldArr][row].day[col].value = data
     }
 };
 const actions = {
@@ -43,12 +60,31 @@ const actions = {
         }
         del(reportInfo.key)
     },
+    fetchReport({state, commit, rootState}, params) {
+        let report = state.reports.find(
+            item => item.ReportType === params.reportType && item.JobId === params.id
+        )
+        if (report) {
+            console.log("things in report")
+            commit('setReport', report)
+        } else {
+            /* await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+                this.$axios.$get(`/api/reports/${params.reportType}/${params.formType}/${payload.JobId}`, 
+                  {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+                    commit('setReport', res)
+                })
+              }) */
+              console.log("not in report")
+            commit('setReport', params)
+        }
+        
+    },
     async checkStorage({ state, commit }) {
         await values().then((values) => {
             
-            commit('setReport', values)
+            commit('setReports', values)
         }).catch((err) => {
-            commit('setReport', [])
+            commit('setReports', [])
             commit("setError", err)
         })
     },

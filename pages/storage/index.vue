@@ -15,7 +15,6 @@
     },
     layout: 'dashboard-layout',
     data: () => ({
-      authUser: false,
       sortOptions: [{
           value: 'JobId',
           text: 'Report Id'
@@ -30,13 +29,13 @@
       storage: []
     }),
     computed: {
-      filteredRep() {
+      /* filteredRep() {
         return this.reports.filter((obj1) => {
           return !this.storage.some((obj2) => {
             return obj1.JobId === obj2
           })
         })
-      },
+      }, */
     },
     methods: {
       storageItems() {
