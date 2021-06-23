@@ -257,6 +257,7 @@ export default {
                     this.savedreport = this.savedReports.find((v) => {
                         return v.ReportType === this.$route.params.reportType && v.JobId === this.$route.params.id
                     })
+                    this.$store.commit('indexDb/setReport', this.savedreport)
                     return
                 }
                 this.savedreport = res.data
@@ -279,8 +280,7 @@ export default {
             addReport: 'indexDb/addReport',
             deleteRep: 'indexDb/deleteReport',
             checkStorage: 'indexDb/checkStorage',
-            fetchReport: 'indexDb/fetchReport',
-            singleReport: 'reports/fetchReport'
+            fetchReport: 'indexDb/fetchReport'
         }),
         updateField(e, row, col, fieldArr) {
             this.$store.commit('indexDb/updateField', {fieldArr, row, col, data: e.target.value})
@@ -410,7 +410,7 @@ export default {
         this.checkStorage()
         //this.singleReport(this.savedreport)
         if (this.$nuxt.isOffline) {
-            this.fetchReport(this.savedreport)
+            this.fetchReport(this.report)
         } else {
             //this.fetchReport(this.$route.params)
         }

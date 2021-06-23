@@ -183,7 +183,7 @@ export default defineComponent({
     })
 
     return { 
-      items, clipped, drawer, fixed, miniVariant, right, rightDrawer, title, user,
+      items, clipped, drawer, fixed, miniVariant, right, rightDrawer, title, user: computed(() => user.value),
       filteredNavItems,
       appTheme,
       matchUrl,

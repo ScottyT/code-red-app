@@ -30,7 +30,6 @@ export default defineComponent({
     const reportslist = ref([])
     const items = ref([])
     const reportsFetched = (data) => {
-      console.log(data)
       reportslist.value = data.value
     }
     watch(items, (val) => {
@@ -51,40 +50,4 @@ export default defineComponent({
     }
   }
 })
-/* export default {
-    name: "Reports",
-    props: ['reports', 'theme'],
-    data: () => ({
-      reportslist: []
-    }),
-    methods: {
-      routeSwitching(item) {
-        var route = ""
-        switch (item.ReportType) {
-          case "case-file-report":
-            route = "case-file-" + item.formType
-            break;
-          case "logs-report":
-            route = "logs-report/"+item.formType
-            break;
-          case "sketch-report":
-            route = "sketch-report/"+item.formType
-            break;
-          case "chart-report":
-            route = "chart-report/"+item.formType
-            break;
-          default:
-            route = item.ReportType
-        }
-        return route
-      },
-      reportsFetched(reports) {
-        this.reportslist = reports.value
-      }
-    },
-    
-    created() {
-      this.reportslist = this.reports
-    }
-} */
 </script>

@@ -88,8 +88,13 @@ export default defineComponent({
             this.avatar.formData.append('teamMember', this.user.email)
             this.avatar.formData.append('name', 'avatar__'+this.avatar.imageName)
             this.saving = true
-            axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {}).then((res) => {
+            /* axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {}).then((res) => {
                 this.uploadImage(res.data)
+            }).catch((err) => {
+                this.error = err
+            }) */
+            axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
+                console.log(res)
             }).catch((err) => {
                 this.error = err
             })

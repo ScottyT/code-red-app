@@ -29,6 +29,7 @@ const actions = {
           claims = null
           return
         }
+        
         this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 commit('SET_USER', {

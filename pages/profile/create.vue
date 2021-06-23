@@ -60,11 +60,6 @@ export default {
             successMessage: ''
         }
     },
-    /* async middleware({store, redirect}) {
-        if (store.state.user.role !== 'admin') {
-            return redirect('/login')
-        }
-    }, */
     computed: {
         ...mapGetters(['getUser'])
     },

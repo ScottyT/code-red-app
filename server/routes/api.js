@@ -1,23 +1,21 @@
 const express = require("express");
-const mongoose = require('mongoose');
 const User = require("../models/userSchema");
 const Dispatch = require("../models/dispatchReportSchema");
 const RapidResponse = require("../models/rapidReportSchema");
 const CreditCard = require("../models/creditCardSchema");
-const Sketch = require("../models/sketchSchema");
-const Logging = require('../models/loggingSchema');
-const chartModel = require("../models/chartSchema");
-const moistureModel = require('../models/moistureMapSchema');
 const imageModel = require("../models/imageSchema");
 const Report = require("../models/reportsSchema");
 const multer = require('multer');
-const { getEmployee, createUser } = require("../controllers/authController");
+const { createUser, updateUser, uploadAvatar } = require("../controllers/authController");
 const { checkIfAuthenticated } = require("../middleware/authMiddleware");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
+const admin = require('../firebase-service');
+//const bucket = admin.storage().bucket('code-red-employees');
+
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
 var storage = multer.diskStorage({
@@ -65,6 +63,7 @@ router.post("/employee/new",
     }),
     check('role').not().isEmpty().withMessage('Role is required'), createEmployee)
 
+router.post("/employee/:email/update", updateUser)
 router.get('/reports', checkIfAuthenticated, async (req, res) => {
     await Report.find({}).lean().exec((err, reports) => {
         if (err) {
@@ -199,25 +198,43 @@ router.get('/employee/:email/avatar', (req, res) => {
         }
     })
 })
-router.post('/avatar/new', upload.single('avatar'), (req, res) => {
+
+router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
+    const { contentType, teamMember, name } = req.body
     var img = {
         image: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
         contentType: req.body.contentType
     }
+    var buff = Buffer.from(img.image).toString('base64')
+    var imageUrl = "data:"+img.contentType+";base64,"+buff
+    var imagePath = path.join(__dirname + '/uploads/' + req.file.filename)
     if (!req.file) {
         return res.send({
             success: false,
             message: "Please include an avatar image"
         })
     } else {
-        User.findOneAndUpdate({email: req.body.teamMember}, {avatar: img}, (err, item) => {
-            if (err) {
-                console.log('CREATE error: ' + err);
-                res.status(500).send('Error')
-            } else {
-                res.json(item)
+        admin.storage().bucket(process.env.BUCKET_URL).upload(imagePath, {
+            uploadType: "media",
+            metadata: {
+                contentType: "image/png"
             }
+        }).then(() => {
+            console.log("success")
+            res.send('done')
+        }).catch((err) => {
+            console.log(err)
         })
+        
+        /* bucket.upload(imageUrl, {
+            destination: name,
+            metadata: {
+                contentType: img.contentType
+            }
+        }).then((data) => {
+            console.log(data)
+        }) */
+        /* uploadAvatar(req.file, teamMember, contentType, name).catch(console.error) */
     }
 })
 router.post("/moisture-map/new",

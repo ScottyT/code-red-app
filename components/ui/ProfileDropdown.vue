@@ -17,7 +17,7 @@
                 <v-icon>mdi-apps</v-icon>
                 <p>Saved reports</p>
             </nuxt-link>
-            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/${user.email}`">
+            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/user/${user.email}`">
                 <v-icon>mdi-contacts</v-icon>
                 <p>Profile</p>
             </nuxt-link>
@@ -60,7 +60,7 @@ export default defineComponent ({
             avatarurl,
             hidden,
             auth,
-            fetchAvatar,
+            //fetchAvatar,
             onClickOutside
         }
     },
