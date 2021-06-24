@@ -373,6 +373,15 @@ button {
     //margin-bottom:10px;
     transition:all .2s ease-in;
 
+    &--short {
+      max-width:150px;
+      width:100%;
+    }
+
+    &--normal {
+      max-width:250px;
+    }
+
     @include respond(tabletLargeMax) {
       padding: 6px 5px;
     }
@@ -473,11 +482,6 @@ button {
       width: 100%;
     }
 
-    &--short {
-      max-width:150px;
-      width:100%;
-    }
-
     &--error {
       color: red;
       display:block;
@@ -514,7 +518,17 @@ button {
       &:not(:last-child) {
         margin-bottom:15px;
       }
-
+    }
+    &--name-group {
+      display:grid;
+      grid-template-areas: 'fname lname';
+      column-gap:15px;
+      &:nth-child(1) {
+        grid-area:fname;
+      }
+      &:nth-child(2) {
+        grid-area:lname;
+      }
     }
     &--section {
       display:flex;
@@ -529,6 +543,7 @@ button {
     &--short {
       width:195px;
     }
+    
   }
 
   &__label {
@@ -640,7 +655,7 @@ button {
     &--left-side,
     &--right-side {
       width: 50%;
-      padding: 0 10px;
+      padding: 0 10px 0 0;
       /* @include respond(tabletLargeMax) {
         width:100%;
       } */
@@ -648,6 +663,7 @@ button {
 
     &--right-side {
       padding-bottom: 20px;
+      padding-left:10px;
     }
 
     &--left-side input {

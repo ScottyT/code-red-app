@@ -14,7 +14,7 @@
                     </v-avatar>
                     <v-avatar size="150px" v-ripple v-else class="mb-3">
                         <!-- <img :src="`data:${avatar.contentType};base64,${avatar.img}`" />  -->
-                        <img :src="avatarurl.image" />
+                        <img :src="avatarurl" />
                     </v-avatar>
                 </template>
                 </UiImageUpload>
@@ -43,7 +43,7 @@ export default defineComponent({
         }
     },
     setup(props, context) {
-        const { $axios, $fire, $reportStore } = useContext()
+        const { $axios, $fire } = useContext()
         const { reports, loading, fetchUserReports } = userReports()
         const authUser = $fire.auth.currentUser
         const email = context.root.$route.params.uid
@@ -57,17 +57,20 @@ export default defineComponent({
         const refreshReports = async () => {
             await fetchUserReports()
         }
+        const fetchAvatar = () => {
+            store.dispatch('users/fetchAvatar')
+        }
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
         }
-        const uploadImage = (item) => {
-            context.root.$store.dispatch('users/fetchAvatar', item)
+        const uploadImage = (image) => {
+            fetchAvatar()
             savedAvatar()
             avatar.value = {}
         }
         fetchUserReports()
-
+        onMounted(fetchAvatar)
         return {
             loading,
             reports: computed(() => reports.value),
@@ -88,13 +91,8 @@ export default defineComponent({
             this.avatar.formData.append('teamMember', this.user.email)
             this.avatar.formData.append('name', 'avatar__'+this.avatar.imageName)
             this.saving = true
-            /* axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {}).then((res) => {
-                this.uploadImage(res.data)
-            }).catch((err) => {
-                this.error = err
-            }) */
             axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
-                console.log(res)
+                this.uploadImage(res.data)
             }).catch((err) => {
                 this.error = err
             })

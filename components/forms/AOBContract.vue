@@ -775,7 +775,6 @@
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <span class="form__input-group form__input-group--normal">
-                  <label class="form__label">Property Representative Signature</label>
                   <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
               </span>
               <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">

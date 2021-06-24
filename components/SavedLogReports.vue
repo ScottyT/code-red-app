@@ -120,7 +120,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`unit-col-${j}`">
-                        <input type="number" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.quantityData[i].day[j].value" />
+                        <input type="number" class="pdf-item__table--data" :tabindex="j" :value="savedreport.quantityData[i].day[j].value"
+                            @input="updateField($event, i, j, 'quantityData')" />
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.checkData" :key="`checkbox-${i}`">
@@ -128,7 +129,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`checkbox-col-${j}`">
-                        <input type="checkbox" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.checkData[i].day[j].value" />
+                        <input type="checkbox" class="pdf-item__table--data" :tabindex="j" :value="savedreport.checkData[i].day[j].value" 
+                            @input="updateField($event, i, j, 'checkData')"/>
                     </div>
                 </div>
                 <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.categoryData" :key="`category-${i}`">
@@ -136,7 +138,8 @@
                         <label>{{row.text}}</label>
                     </div>
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" :tabindex="j" v-model="savedreport.categoryData[i].day[j].value" />
+                        <input type="text" class="pdf-item__table--data" :tabindex="j" :value="savedreport.categoryData[i].day[j].value"
+                            @input="updateField($event, i, j, 'categoryData')" />
                     </div>
                 </div>
             </div>

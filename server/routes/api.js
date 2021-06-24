@@ -13,8 +13,6 @@ const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
-const admin = require('../firebase-service');
-//const bucket = admin.storage().bucket('code-red-employees');
 
 router.use(express.json({limit: "50MB"}))
 router.use(express.urlencoded({extended: true, limit: "50MB"}));
@@ -22,6 +20,9 @@ var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname + '/uploads/'))
     },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname)
+    }
 });
 var upload = multer({ storage: storage })
 const duplicateJobIDCheck = (val, reportType) => {
@@ -201,41 +202,12 @@ router.get('/employee/:email/avatar', (req, res) => {
 
 router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
     const { contentType, teamMember, name } = req.body
-    var img = {
-        image: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-        contentType: req.body.contentType
-    }
-    var buff = Buffer.from(img.image).toString('base64')
-    var imageUrl = "data:"+img.contentType+";base64,"+buff
+    /* var buff = Buffer.from(img.image).toString('base64')
+    var imageUrl = "data:"+img.contentType+";base64,"+buff */
     var imagePath = path.join(__dirname + '/uploads/' + req.file.filename)
-    if (!req.file) {
-        return res.send({
-            success: false,
-            message: "Please include an avatar image"
-        })
-    } else {
-        admin.storage().bucket(process.env.BUCKET_URL).upload(imagePath, {
-            uploadType: "media",
-            metadata: {
-                contentType: "image/png"
-            }
-        }).then(() => {
-            console.log("success")
-            res.send('done')
-        }).catch((err) => {
-            console.log(err)
-        })
-        
-        /* bucket.upload(imageUrl, {
-            destination: name,
-            metadata: {
-                contentType: img.contentType
-            }
-        }).then((data) => {
-            console.log(data)
-        }) */
-        /* uploadAvatar(req.file, teamMember, contentType, name).catch(console.error) */
-    }
+    await uploadAvatar(imagePath, teamMember, teamMember+"/"+req.file.filename, contentType).then((downloadURL) => {
+        res.send(downloadURL)
+    })
 })
 router.post("/moisture-map/new",
     check('JobId').not().isEmpty().withMessage('Job ID is required')

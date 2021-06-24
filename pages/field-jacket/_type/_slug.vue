@@ -1,7 +1,7 @@
 <template>
     <p v-if="$nuxt.isOffline">You must be online to view a report</p>
     <div class="report-details-wrapper" v-else>
-        <p v-if="loading">Fetching content...</p>
+        <p v-if="$fetchState.pending">Fetching content...</p>
         <div v-else><UiBreadcrumbs page="field-jacket" :displayStrip="false" />       
         <span v-if="reportType === 'dispatch'">
             <client-only>
@@ -138,7 +138,7 @@ export default defineComponent({
             })
         }
         getReport(`${reportType}/${jobId}`).fetchReport()
-        getReport(`${reportType}/${jobId}`).fetchState
+        //getReport(`${reportType}/${jobId}`).fetchState
         return {
             getReport,
             report,

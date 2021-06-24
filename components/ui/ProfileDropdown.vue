@@ -6,7 +6,7 @@
                 <v-icon size="45">mdi-account-circle</v-icon>              
             </span>
             <span class="profile-menu__pfp" v-else>
-                <img :src="avatarurl.image" />
+                <img :src="avatarurl" />
             </span>
             <i :class="`mdi-triangle mdi profile-menu__arrow ${hidden ? '' : 'open'}`"></i>
             <span class="text text--subtitle text-right">{{user.email}}</span>
@@ -38,23 +38,29 @@
     </div>
 </template>
 <script>
-import { computed, ref, onMounted, watch, defineComponent, useStore } from '@nuxtjs/composition-api'
+import { computed, ref, onMounted, watch, defineComponent, useStore, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent ({
     setup() {
+        const { $fire } = useContext();
         const store = useStore()
         const auth = () => {
             store.dispatch('users/signout')
         }
-        const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
-        const avatarurl = computed(() => store.getters['users/getAvatar'])
+        const avatarurl = ref("");
+        //const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
+        //const avatarurl = computed(() => store.getters['users/getAvatar'])
         const user = computed(() => store.getters['users/getUser'])
     
         const hidden = ref(true)
+
+        const fetchAvatar = () => {
+            avatarurl.value = $fire.auth.currentUser.photoURL
+        }
         const onClickOutside = () => {
             hidden.value = true
         }
-        //fetchAvatar(user.email)
+        fetchAvatar()
         return {
             user,
             avatarurl,

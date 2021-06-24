@@ -1,5 +1,6 @@
 const admin = require('../firebase-service');
 const bucket = admin.storage().bucket('code-red-employees');
+const { v4: uuidv4 } = require("uuid");
 
 const getEmployee = async (email) => {
     var user = {}
@@ -47,32 +48,31 @@ const updateUser = async (req,res) => {
         return res.json({error: false, message: "Updated user!", data: user})
     })
 }
-const uploadAvatar = async (avatar, teamMember, type, filename) => {
-    var uid = ""  
-    var img = {
-        image: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-        contentType: req.body.contentType
-    }
-    //const { contentType, teamMember, name } = req.body
-    var buff = Buffer.from(avatar.image).toString('base64')
-    var imageUrl = "data:"+type+";base64,"+buff
-    console.log(img)
-
-    /* await getEmployee(teamMember).then((user) => {
+const uploadAvatar = async (filepath, teamMember, remotepath, type) => {
+    let uuid = uuidv4()
+    var uid = ""
+    await getEmployee(teamMember).then((user) => {
         uid = user.uid
     })
-
-    await bucket.upload(imageUrl, {
-        destination: filename
-    });
-    console.log(`${imageUrl} uploaded to bucket ${bucket} `) */
-       
-    /* await admin.auth().updateUser(uid, {
-        photoURL: imageUrl
-    }).then((userRecord) => {
-        //return res.json({error: false, message: "Avatar has been uploaded!", data: userRecord.photoURL})
-        return userRecord
-    }) */
+    return admin.storage().bucket('code-red-employees').upload(filepath, {
+        destination: remotepath,
+        uploadType: "media",
+        metadata: {
+            contentType: type,
+            metadata: {
+                firebaseStorageDownloadTokens: uuid
+            }
+        }
+    }).then((data) => {
+        var file = data[0]
+        var downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(file.name)}?alt=media&token=${uuid}`;
+        admin.auth().updateUser(uid, {
+            photoURL: downloadUrl
+        })
+        return Promise.resolve(`https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(file.name)}?alt=media&token=${uuid}`)
+    }).catch((err) => {
+        return Promise.reject(err)
+    })
 }
 
 module.exports = { createUser, updateUser, fetchUser, uploadAvatar }
