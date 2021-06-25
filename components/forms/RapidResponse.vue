@@ -74,13 +74,8 @@
             <ValidationProvider  ref="idprovider" v-slot="{ validate, errors }" name="Photo ID" rules="required|image" class="form__input--upload-group">
               <label class="form__label">Photo ID</label>
               <input type="hidden" v-model="idImage" @click="validate" />
-              <span class="button--normal button" @click="$refs.idfile.click()">Add Photo ID</span>
-              <input type="file" name="idfile" accept="image/*" ref="idfile" @change="filesChange" />
-              <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`idimage`" /></div>
+              <UiFilesUpload singleImage singleImageName="id-photo" :jobId="jobId" />
               <span class="form__input--error">{{ errors[0] }}</span>
-              <v-btn @click="submitFiles(idImage, $refs.photoid)" v-if="idImage.length > 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-              
-              <p aria-label="Upload message goes here" name="Photo ID" id="photoId" ref="photoid"></p>
             </ValidationProvider>
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
               <label for="cardZip" class="form__label">Zip code on card</label>
@@ -130,22 +125,10 @@
             
             <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" ref="jobimages" name="Photographs" v-slot="{ errors, validate }">
               <input type="hidden" v-model="uploadedFiles" @click="validate" />
-              <div class="file-listing-wrapper">
-                <div v-for="(file, key) in uploadedFiles" class="file-listing" :key="`jobfiles-${key}`">
-                  <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" v-if="file.type == 'image/png' || file.type == 'image/jpeg' || file.type == 'image/gif'" />
-                  <p v-else>{{file.name}}</p>
-                  <span class="file-listing__remove-file" @click="removeFile(key, file)" tag="i">
-                    <span class="file-listing__remove-file--leg1 file-listing__remove-file--leg"></span>
-                    <span class="file-listing__remove-file--leg2 file-listing__remove-file--leg"></span>
-                  </span>
-                </div>
-              </div>
-              <input type="file" name="files" ref="files" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf" @change="filesChange" multiple />
-              <v-btn @click="submitFiles(uploadedFiles, $refs.jobfiles)" v-if="uploadedFiles.length > 0 && errors.length <= 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
+              <UiFilesUpload :singleImage="false" subDir="job-files" :jobId="jobId" :errors="errors" />
               <span class="form__input--error">{{ errors[0] }}</span>
               <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
-            </ValidationProvider>
-            <span class="button__add-files button mt-4" @click="addFiles()">Add Files</span>           
+            </ValidationProvider>        
             <br />
             <span>{{ uploadSuccess }}</span>        
           </div>
@@ -1001,65 +984,6 @@
           x[1] :
           '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
       },
-      async filesChange(e) {
-        const fileList = e.target.files
-        const uploadarea = e.target.name
-        if (!fileList.length) return
-        const job = this.jobId
-             
-        switch (uploadarea) {
-          case "idfile":
-            var {valid} = await this.$refs.idprovider.validate(e);
-            
-            
-            if (valid) {
-              for (let i = 0; i < this.$refs.idfile.files.length; i++) {
-                var filetype = this.$refs.idfile.files[i].type
-                console.log("ref:", this.$refs.idfile.files)
-                var image = this.$refs.idfile.files[i]
-                var blob = image.slice(0, image.size, image.type)
-                console.log(blob)
-                var filetype = image.name.substring(image.name.lastIndexOf('.'), image.name.length)
-                var newFile = new File([blob], `id-photo-${job}${filetype}`, {
-                  type: image.type
-                })
-                this.idImage[0] = newFile
-              }
-              this.getSinglePreview(this.idImage, 'idimage')
-            }
-            break;
-          case "files":
-            var {valid} = await this.$refs.jobimages.validate(e)
-            if (valid) {
-              for (var i = 0; i < this.$refs.files.files.length; i++) {
-                var file = this.$refs.files.files[i]
-                this.uploadedFiles.push(file)
-              }
-              this.getImagePreviews(this.uploadedFiles, 'image');
-            }           
-        }       
-      },
-      getSinglePreview(files, usekey) {
-        if (/\.(jpe?g|png|gif)$/i.test(files[0].name)) {
-          const reader = new FileReader();
-          reader.onload = e => {
-            this.$refs[usekey].src = reader.result;
-          }
-          reader.readAsDataURL(files[0])
-        }
-      },
-      getImagePreviews(filesarr, usekey) {
-        for (let i = 0; i < filesarr.length; i++) {
-          if (/\.(jpe?g|png|gif)$/i.test(filesarr[i].name)) {
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-              console.log(usekey)
-              this.$refs[usekey + i][0].src = reader.result;
-            }, false);
-            reader.readAsDataURL(filesarr[i])
-          }
-        }
-      },
       goToStep(step) {
         if (step < 1) {
           return
@@ -1070,65 +994,6 @@
         }
         this.currentUploadStep = step
       },
-      submitFiles(uploadarr, element) {
-        const today = new Date()
-        const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
-        if (!this.jobId) {
-          this.errorMessage = "Job ID is required"
-          return;
-        }
-        uploadarr.forEach((file) => {
-          var storageRef = this.$fire.storage.ref()
-          var field = element.getAttribute('name')
-          switch (field) {
-            case "Job files":
-              var uploadRef = storageRef.child(`${this.jobId}/${date}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-              break;
-            default:
-              var uploadRef = storageRef.child(`${this.jobId}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-          }
-          uploadTask.on('state_changed',
-          (snapshot) => {
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              if (progress < 100) {
-                this.uploading = true
-              }
-              if(progress == 100) {
-                this.uploading = false
-                
-                var uploadMessage = `${field} uploaded successfully`
-                element.innerHTML = uploadMessage
-                uploadarr = []
-              }
-            },
-            (error) => {
-              console.log(error.message)
-            },
-            () => {
-              uploadRef.getDownloadURL().then((url) => {
-                var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
-                var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                const fileObj = {
-                  name: fileName,
-                  url: url,
-                  type: fileType
-                }
-                this.filesUploading.push(fileObj)
-              })
-            }
-          )
-        })
-      },
-      addFiles() {
-        this.$refs.files.click()
-      },
-      removeFile(key, removedFile) {
-        this.uploadedFiles.splice(key, 1);
-        this.getImagePreviews(this.uploadedFiles, 'image')
-        this.$refs.files.value = null
-      }
     },
     beforeDestroy() {
       this.$nuxt.$off('location-updated')

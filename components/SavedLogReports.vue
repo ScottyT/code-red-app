@@ -381,6 +381,7 @@ export default {
                                 return;                
                             }
                             this.updateMessage = res.message
+                            this.deleteRep(this.savedreport)
                         })
                     } else {
                         this.$axios.$post(`/api/logs-report/${this.reportType}/${this.savedreport.JobId}/update`, this.savedreport).then((res) => {
@@ -388,8 +389,7 @@ export default {
                                 this.errorMessage = res.errors
                                 return;                
                             }
-                            this.updateMessage = res.message
-                            this.deleteRep(this.savedreport)
+                            this.updateMessage = res.message                        
                         })
                     }
                     this.updateMessage = "Form was updated successfully"           

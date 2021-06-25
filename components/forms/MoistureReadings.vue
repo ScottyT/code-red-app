@@ -152,11 +152,11 @@
                             {{ uploading ? 'Uploading' : 'Upload'}}
                         </button>
                         <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
-                        <p v-show="uploadProgress !== ''">Upload is {{uploadProgress}}% done</p>
+                        <h3 v-show="uploadMessage !== ''">{{uploadMessage}}</h3>
                         <span class="button__add-files button" @click="addFiles()">Add Files</span>
                     </ValidationProvider>
                 </div>
-                <button type="submit" class="button button--normal" :disabled="disabled">{{ submitting ? 'Submitting' : 'Submit' }}</button>
+                <button type="submit" class="button button--normal" v-show="!disabled">{{ submitting ? 'Submitting' : 'Submit' }}</button>
             </form>
         </ValidationObserver>
     </div>
@@ -206,6 +206,7 @@ export default {
             }
         ],
         uploadProgress: "",
+        uploadMessage: "",
         filesUpload: [],
         notes: '',
         disabled: false
@@ -336,27 +337,39 @@ export default {
             })
         },
         uploadFiles(uploadarr, element) {
+            this.disabled = true
             const today = new Date()
             const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
             if (!this.selectedJobId) {
                 this.errorMessage = "Job ID is required"
                 return;
             }
-            
+            const promises = []
+            let len = this.uploadedFiles.length
             uploadarr.forEach((file) => {
                 var storageRef = this.$fire.storage.ref()
                 var field = element.getAttribute('name')
                 var uploadRef = storageRef.child(`${this.selectedJobId}/moisture-images/${file.name}`)
                 var uploadTask = uploadRef.put(file)
+                promises.push(uploadTask)
                 uploadTask.on('state_changed', (snapshot) => {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    this.disabled = true
                     this.uploadProgress = progress
+                    switch (snapshot.state) {
+                        case this.$fireModule.storage.TaskState.PAUSED:
+                            this.uploadMessage = "Upload paused :("
+                            break;
+                        case this.$fireModule.storage.TaskState.RUNNING:
+                            this.uploadMessage = "Images are still uploading..."                           
+                            break;
+                    }
                     if (progress == 100) {
                         uploadarr = []
+                        this.uploadedFiles.splice(len - 1, 1);
                     }
                 }, (error) => {
-                    console.log(error.message)
+                    this.errorDialog = true
+                    this.errorMessage = error
                 }, () => {
                     uploadRef.getDownloadURL().then((url) => {
                         var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
@@ -367,11 +380,17 @@ export default {
                             type: fileType,
                             date: date
                         }
+                        
                         this.filesUpload.push(fileObj)
                     })
-                    this.disabled = false
+                    --len
                 })
             })
+            Promise.all(promises).then(result => {
+                console.log(result)
+                this.disabled = false
+                this.uploadMessage = "Images have been successfully uploaded!"
+            })         
         },
         removeFile(key, removedFile) {
             this.uploadedFiles.splice(key, 1);
@@ -397,8 +416,7 @@ export default {
                 if (/\.(jpe?g|png|gif)$/i.test(filesarr[i].name)) {
                     const reader = new FileReader();
                     reader.addEventListener("load", () => {
-                    console.log(usekey)
-                    this.$refs[usekey + i][0].src = reader.result;
+                        this.$refs[usekey + i][0].src = reader.result;
                     }, false);
                     reader.readAsDataURL(filesarr[i])
                 }
