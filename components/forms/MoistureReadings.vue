@@ -133,28 +133,7 @@
                     </ValidationProvider>
                 </div>
                 <div class="form__form-group">
-                    <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" ref="jobimages" name="Job images" v-slot="{ errors, validate }" class="form__input--input-group">
-                        <label class="form_label">Job images:</label>
-                        <p>{{errorMessage}}</p>
-                        <input type="hidden" v-model="uploadedFiles" @click="validate" />
-                        <div class="file-listing-wrapper">
-                            <div v-for="(file, key) in uploadedFiles" class="file-listing" :key="`jobfiles-${key}`">
-                                <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" />
-                                <span class="file-listing__remove-file" @click="removeFile(key, file)" tag="i">
-                                    <span class="file-listing__remove-file--leg1 file-listing__remove-file--leg"></span>
-                                    <span class="file-listing__remove-file--leg2 file-listing__remove-file--leg"></span>
-                                </span>
-                            </div>
-                        </div>
-                        <span class="form__input--error">{{ errors[0] }}</span>
-                        <input type="file" name="images" ref="images" accept="image/*" @change="filesChange" multiple />
-                        <button type="button" class="button--normal" @click="uploadFiles(uploadedFiles, $refs.jobfiles)" v-if="uploadedFiles.length > 0 && errors.length <= 0 && $nuxt.isOnline">
-                            {{ uploading ? 'Uploading' : 'Upload'}}
-                        </button>
-                        <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
-                        <h3 v-show="uploadMessage !== ''">{{uploadMessage}}</h3>
-                        <span class="button__add-files button" @click="addFiles()">Add Files</span>
-                    </ValidationProvider>
+                    <UiFilesUpload :singleImage="false" subDir="moisture-images" :jobId="selectedJobId" @sendImages="uploadedFiles = $event" />
                 </div>
                 <button type="submit" class="button button--normal" v-show="!disabled">{{ submitting ? 'Submitting' : 'Submit' }}</button>
             </form>
@@ -335,95 +314,6 @@ export default {
                     })
                 }
             })
-        },
-        uploadFiles(uploadarr, element) {
-            this.disabled = true
-            const today = new Date()
-            const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
-            if (!this.selectedJobId) {
-                this.errorMessage = "Job ID is required"
-                return;
-            }
-            const promises = []
-            let len = this.uploadedFiles.length
-            uploadarr.forEach((file) => {
-                var storageRef = this.$fire.storage.ref()
-                var field = element.getAttribute('name')
-                var uploadRef = storageRef.child(`${this.selectedJobId}/moisture-images/${file.name}`)
-                var uploadTask = uploadRef.put(file)
-                promises.push(uploadTask)
-                uploadTask.on('state_changed', (snapshot) => {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    this.uploadProgress = progress
-                    switch (snapshot.state) {
-                        case this.$fireModule.storage.TaskState.PAUSED:
-                            this.uploadMessage = "Upload paused :("
-                            break;
-                        case this.$fireModule.storage.TaskState.RUNNING:
-                            this.uploadMessage = "Images are still uploading..."                           
-                            break;
-                    }
-                    if (progress == 100) {
-                        uploadarr = []
-                        this.uploadedFiles.splice(len - 1, 1);
-                    }
-                }, (error) => {
-                    this.errorDialog = true
-                    this.errorMessage = error
-                }, () => {
-                    uploadRef.getDownloadURL().then((url) => {
-                        var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
-                        var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                        const fileObj = {
-                            name: fileName,
-                            url: url,
-                            type: fileType,
-                            date: date
-                        }
-                        
-                        this.filesUpload.push(fileObj)
-                    })
-                    --len
-                })
-            })
-            Promise.all(promises).then(result => {
-                console.log(result)
-                this.disabled = false
-                this.uploadMessage = "Images have been successfully uploaded!"
-            })         
-        },
-        removeFile(key, removedFile) {
-            this.uploadedFiles.splice(key, 1);
-            this.getImagePreviews(this.uploadedFiles, 'image')
-            this.$refs.images.value = null
-        },
-        async filesChange(e) {
-            const fileList = e.target.files
-            const uploadarea = e.target.name
-            if (!fileList.length) return
-            const job = this.jobId
-            var {valid} = await this.$refs.jobimages.validate(e)
-            if (valid) {
-                for (var i = 0; i < this.$refs.images.files.length; i++) {
-                    var file = this.$refs.images.files[i]
-                    this.uploadedFiles.push(file)
-                }
-                this.getImagePreviews(this.uploadedFiles, 'image')
-            }
-        },
-        getImagePreviews(filesarr, usekey) {
-            for (let i = 0; i < filesarr.length; i++) {
-                if (/\.(jpe?g|png|gif)$/i.test(filesarr[i].name)) {
-                    const reader = new FileReader();
-                    reader.addEventListener("load", () => {
-                        this.$refs[usekey + i][0].src = reader.result;
-                    }, false);
-                    reader.readAsDataURL(filesarr[i])
-                }
-            }
-        },
-        addFiles() {
-            this.$refs.images.click()
         }
     },
     mounted() {

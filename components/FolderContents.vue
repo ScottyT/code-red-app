@@ -1,14 +1,11 @@
 <template>
   <div class="folder-contents">
     <div class="upload-area">
-      <v-btn @click="$refs.jobfiles.click()">Add Files</v-btn>
+      <!-- <v-btn @click="$refs.jobfiles.click()">Add Files</v-btn> -->
       <ValidationProvider ref="provider" rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" name="Upload"
         v-slot="{ validate, errors }">
-        <v-btn @click="uploadFiles(uploadFilesArr)" v-if="uploadFilesArr.length > 0 && errors.length <= 0">
-          {{uploading ? 'Uploading' : 'Upload'}}</v-btn>
+        <UiFilesUpload :singleImage="false" :subDir="subPath" :jobId="path" :inlinePreviews="false"  @filePreviews="filePreviews($event)" />
         <input type="hidden" v-model="uploadFilesArr" @click="validate" />
-        <input type="file" name="files" ref="jobfiles" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf"
-          @change="filesChange" multiple />
         <br />
         <span ref="uploadError" name="Upload" class="upload-area--error">{{ errors[0] }}</span>
       </ValidationProvider>
@@ -42,9 +39,7 @@
       <nuxt-link :to="`/storage/${subfolder.path}`">{{subfolder.name}}</nuxt-link>
     </div>
     <div class="file-listing folder-contents__file-listing" v-for="(file, key) in uploadFilesArr" :key="`image-${key}`">
-      <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)"
-        v-if="file.type == 'image/png' || file.type == 'image/jpeg' || file.type == 'image/gif'" />
-      <p v-else>{{file.name}}</p>
+      <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" />
       <v-icon class="file-listing__remove-file" @click="removeFile(key)" tag="i" large>mdi-close-circle</v-icon>
     </div>
   </div>
@@ -67,11 +62,11 @@ export default {
     deleteDialog:false,
     fileMeta:[]
   }),
-  props: ['path'],
+  props: ['path', 'subPath'],
   methods: {
     async getFolders() {
       var storageRef = this.$fire.storage.ref()
-      var listRef = storageRef.child(this.path)
+      var listRef = storageRef.child(`${this.path}/${this.subPath}`)
       listRef.listAll().then((res) => {
         res.prefixes.forEach((folderRef) => {
           var folderPath = folderRef.fullPath
@@ -85,7 +80,7 @@ export default {
         res.items.forEach((itemRef) => {
           var itemPath = itemRef.fullPath
           storageRef.child(itemPath).getMetadata().then((metadata) => {
-            this.metaFile.push(metadata)
+            this.fileMeta.push(metadata)
           }).catch(err => {
             this.errorMessage = err
           })
@@ -104,7 +99,7 @@ export default {
         })
       })
     },
-    async filesChange(e) {
+    /* async filesChange(e) {
       const fileList = e.target.files
       if (!fileList.length) return
 
@@ -121,7 +116,7 @@ export default {
           this.getImagePreviews(this.uploadFilesArr)
         }
       }
-    },
+    }, */
     async selectedFiles(e) {
       const fileList = e.target.value
     },
@@ -169,49 +164,19 @@ export default {
         })
       })
     },
-    getImagePreviews(filesarr) {
-      for (let i = 0; i < filesarr.length; i++) {
-        if (/\.(jpe?g|png|gif)$/i.test(filesarr[i].name)) {
+    filePreviews(images) {
+      console.log(images)
+      console.log("emitting")
+      this.uploadFilesArr = images
+      for (let i = 0; i < images.length; i++) {
+        if (/\.(jpe?g|png|gif)$/i.test(images[i].name)) {
           const reader = new FileReader()
-          console.log(reader)
           reader.addEventListener("load", () => {
             this.$refs['image' + parseInt(i)][0].src = reader.result;
           }, false);
-          reader.readAsDataURL(filesarr[i])
+          reader.readAsDataURL(images[i])
         }
       }
-    },
-    uploadFiles() {
-      this.uploadFilesArr.forEach((file) => {
-        var storageRef = this.$fire.storage.ref()
-        var uploadTask = storageRef.child(`${this.path}/${file.name}`).put(file)
-        uploadTask.on('state_changed', (snapshot) => {
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            if (progress < 100) {
-              this.uploading = true
-            }
-            if (progress == 100) {
-              this.uploading = false
-              this.uploadFilesArr = []
-            }
-          },
-          (error) => {
-            console.log(error.message)
-          },
-          () => {
-            uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-              var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
-              var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-              const fileObj = {
-                name: fileName,
-                url: url,
-                type: fileType
-              }
-              this.filesUploading.push(fileObj)
-              this.files.push(fileObj)
-            })
-          })
-      })
     },
     removeFile(key) {
       this.uploadFilesArr.splice(key, 1);

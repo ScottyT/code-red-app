@@ -74,7 +74,7 @@
             <ValidationProvider  ref="idprovider" v-slot="{ validate, errors }" name="Photo ID" rules="required|image" class="form__input--upload-group">
               <label class="form__label">Photo ID</label>
               <input type="hidden" v-model="idImage" @click="validate" />
-              <UiFilesUpload singleImage singleImageName="id-photo" :jobId="jobId" />
+              <UiFilesUpload singleImage singleImageName="id-photo" :jobId="jobId" @sendImages="idImage = $event" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
@@ -123,12 +123,7 @@
               </div>
             </ul>
             
-            <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" ref="jobimages" name="Photographs" v-slot="{ errors, validate }">
-              <input type="hidden" v-model="uploadedFiles" @click="validate" />
-              <UiFilesUpload :singleImage="false" subDir="job-files" :jobId="jobId" :errors="errors" />
-              <span class="form__input--error">{{ errors[0] }}</span>
-              <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
-            </ValidationProvider>        
+            <UiFilesUpload :singleImage="false" subDir="job-files" :jobId="jobId" @sendImages="uploadedFiles = $event" />
             <br />
             <span>{{ uploadSuccess }}</span>        
           </div>
