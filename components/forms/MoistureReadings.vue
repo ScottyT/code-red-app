@@ -133,7 +133,7 @@
                     </ValidationProvider>
                 </div>
                 <div class="form__form-group">
-                    <UiFilesUpload :singleImage="false" subDir="moisture-images" :jobId="selectedJobId" @sendImages="uploadedFiles = $event" />
+                    <UiFilesUpload :singleImage="false" :subDir="`moisture-images-${date}`" :jobId="selectedJobId" @sendImages="uploadedFiles = $event" />
                 </div>
                 <button type="submit" class="button button--normal" v-show="!disabled">{{ submitting ? 'Submitting' : 'Submit' }}</button>
             </form>
@@ -197,7 +197,11 @@ export default {
         }
     },
     computed: {
-        ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser'})
+        ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser'}),
+        date() {
+            const today = new Date()
+            return (today.getMonth() + 1)+'-'+today.getUTCDate()+'-'+today.getFullYear();
+        }
     },
     watch: {
         initalEvalDate(val) {

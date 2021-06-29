@@ -1,10 +1,9 @@
 <template>
   <div class="folder-contents">
     <div class="upload-area">
-      <!-- <v-btn @click="$refs.jobfiles.click()">Add Files</v-btn> -->
       <ValidationProvider ref="provider" rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" name="Upload"
         v-slot="{ validate, errors }">
-        <UiFilesUpload :singleImage="false" :subDir="subPath" :jobId="path" :inlinePreviews="false"  @filePreviews="filePreviews($event)" />
+        <UiFilesUpload :singleImage="false" :subDir="subPath" :jobId="path" :inlinePreviews="false" @sendDownloadUrl="files.push($event)" @sendImages="filePreviews($event)" />
         <input type="hidden" v-model="uploadFilesArr" @click="validate" />
         <br />
         <span ref="uploadError" name="Upload" class="upload-area--error">{{ errors[0] }}</span>
@@ -99,24 +98,6 @@ export default {
         })
       })
     },
-    /* async filesChange(e) {
-      const fileList = e.target.files
-      if (!fileList.length) return
-
-      const {
-        valid
-      } = await this.$refs.provider.validate(e);
-      if (valid) {
-        for (let i = 0; i < this.$refs.jobfiles.files.length; i++) {
-
-          this.$refs.uploadError.innerHTML = ""
-          var file = this.$refs.jobfiles.files[i]
-          this.uploadFilesArr.push(file)
-
-          this.getImagePreviews(this.uploadFilesArr)
-        }
-      }
-    }, */
     async selectedFiles(e) {
       const fileList = e.target.value
     },
@@ -125,9 +106,10 @@ export default {
       
       this.filesToDelete.forEach((file, i) => {
         this.deleteDialog = false
-        var fileRef = storageRef.child(`${this.path}/${file.name}`)
-        fileRef.delete().then(() => {
-          this.folders.splice(i, 1)
+        var fileRef = storageRef.child(`${this.path}/${this.subPath}/${file.name}`)
+        var fileIndex = this.files.findIndex(x => x.name === file.name)
+        this.files.splice(fileIndex, 1)
+        fileRef.delete().then(() => {         
           this.filesToDelete = []
         }).catch((error) => {
           this.errorMessage = error
@@ -165,8 +147,6 @@ export default {
       })
     },
     filePreviews(images) {
-      console.log(images)
-      console.log("emitting")
       this.uploadFilesArr = images
       for (let i = 0; i < images.length; i++) {
         if (/\.(jpe?g|png|gif)$/i.test(images[i].name)) {
@@ -203,8 +183,12 @@ export default {
   }
 
   &__content {
-    height: 162px;
     position: relative;
+
+    a {
+      height:200px;
+      display:block;
+    }
 
     p {
         word-break:break-word;

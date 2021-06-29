@@ -1,4 +1,5 @@
 <template>
+<!-- This is for firebase uploads only -->
     <div v-if="single">
         <span class="button--normal button" @click="$refs.images.click()">Add Image</span>
         <input type="file" name="single" accept="image/*" ref="images" @change="filesChange" />
@@ -11,7 +12,7 @@
         <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" name="Files" v-slot="{ errors, validate }" ref="multiple">
             <span class="button__add-files button mt-4" @click="$refs.images.click()">Add Files</span>           
             <input type="file" name="multiple" ref="images" accept="image/*" @change="filesChange" multiple />
-            <div class="file-listing-wrapper" v-if="inlinePreview">
+            <div class="file-listing-wrapper" v-show="inlinePreview">
                 <div v-for="(file, key) in uploadimages" class="file-listing" :key="`images-${key}`">
                     <input type="hidden" v-model="file[key]" @click="validate" />
                     <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" />
@@ -21,7 +22,7 @@
                     </span>
                 </div>
             </div>
-            <v-btn @click="uploadFiles(uploadimages, $refs.images)" v-if="showUpload && $nuxt.isOnline">
+            <v-btn @click="uploadFiles(uploadimages, $refs.images)" v-if="showUpload && $nuxt.isOnline && uploadimages.length > 0">
                 {{ uploading ? 'Uploading' : 'Upload'}}
             </v-btn>
             <span class="form__input--error">{{ errors[0] }}</span>
@@ -102,10 +103,9 @@ export default defineComponent({
                 getSinglePreview(uploadimages.value, 'singlefile')
             } else {
                 const { valid } = await refs.multiple.validate(e)
-                console.log(valid)
                 if (valid) {
+                    showUpload.value = true
                     uploadimages.value = refs.images.files
-                    emit('filePreviews', uploadimages.value)
                     getImagePreviews(uploadimages.value, 'image')
                 } else {
                     showUpload.value = false
@@ -113,11 +113,11 @@ export default defineComponent({
             }
             emit('sendImages', uploadimages.value)
         }
-        const removeFile = (key, i) => {
+        const removeFile = (key) => {
             const files = Array.from(uploadimages.value)
-            console.log(files)
             files.splice(key, 1)
             getImagePreviews(files, 'image')
+            uploadimages.value = files
             refs['image' + key][0].value = null
         }
         const uploadFiles = (uploadarr, element) => {
@@ -135,7 +135,7 @@ export default defineComponent({
                 var field = element.getAttribute('name')
                 switch (field) {
                     case "multiple":
-                        var uploadRef = storageRef.child(`${jobId.value}/${subDir.value}-${date}/${file.name}`)
+                        var uploadRef = storageRef.child(`${jobId.value}/${subDir.value}/${file.name}`)
                         var uploadTask = uploadRef.put(file)
                         break;
                     default:
@@ -172,9 +172,12 @@ export default defineComponent({
                             date: date
                         }
                         filesUploaded.value.push(fileObj)
+                        emit('sendDownloadUrl', fileObj)
                     })
                     uploadimages.value.splice(len - 1, 1)
                     len--
+
+                    emit('sendImages', uploadimages.value)
                 })
             })
             Promise.all(promises).then(result => {

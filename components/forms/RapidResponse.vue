@@ -123,9 +123,7 @@
               </div>
             </ul>
             
-            <UiFilesUpload :singleImage="false" subDir="job-files" :jobId="jobId" @sendImages="uploadedFiles = $event" />
-            <br />
-            <span>{{ uploadSuccess }}</span>        
+            <UiFilesUpload :singleImage="false" :subDir="`job-files-${date}`" :jobId="jobId" @sendImages="uploadedFiles = $event" />     
           </div>
           <div class="form__section">
             <h3>Source of Water Intrusion</h3>
@@ -174,11 +172,15 @@
               </div>
               <div class="form__input--input-group">
                 <div class="form__form-group">
-                  <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
+                  <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" initial />
+                  <div class="form__input--initial" v-if="initialData.data !== ''">
+                    <img :src="initialData.data" />
+                  </div>
+                  <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
                     <label class="form__label" for="initial1">Initial</label>
                     <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
                     <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  </ValidationProvider> -->
                 </div>
               </div>
             </div>
@@ -728,6 +730,7 @@
       },
       signDate: new Date().toLocaleString(),
       cusSignDate: "",
+      initialData: { data: '', isEmpty: true },
       initial1:"",
       initial2:"",
       initial3:"",
@@ -807,6 +810,10 @@
       ]),
       id() {
         return this.$store.state.users.user ? this.$store.state.users.user.id : null
+      },
+      date() {
+        const today = new Date()
+        return (today.getMonth() + 1)+'-'+today.getUTCDate()+'-'+today.getFullYear();
       }
     },
     methods: {

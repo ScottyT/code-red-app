@@ -20,9 +20,9 @@ var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname + '/uploads/'))
     },
-    filename: (req, file, cb) => {
+    /* filename: (req, file, cb) => {
         cb(null, file.fieldname)
-    }
+    } */
 });
 var upload = multer({ storage: storage })
 const duplicateJobIDCheck = (val, reportType) => {

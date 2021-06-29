@@ -1,6 +1,7 @@
 const admin = require('../firebase-service');
-const bucket = admin.storage().bucket('code-red-employees');
+const bucket = admin.storage().bucket('code-red-app-313517.appspot.com');
 const { v4: uuidv4 } = require("uuid");
+const fs = require('fs');
 
 const getEmployee = async (email) => {
     var user = {}
