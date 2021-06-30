@@ -155,8 +155,7 @@
                 <v-dialog ref="timeIntrusion" v-model="intrusionLogsDialog.timeIntrusion" persistent
                   :return-value.sync="timeIntrusion" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs"
-                      v-on="on" />
+                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs" v-on="on" />
                     <span class="button" @click="timeIntrusion = ''">clear</span>
                   </template>
                   <v-time-picker v-if="intrusionLogsDialog.timeIntrusion" v-model="timeIntrusion" format="ampm" full-width>
@@ -170,20 +169,9 @@
                 <label :for="intrusion.label" class="form__label">{{intrusion.label}}</label>
                 <input :type="intrusion.type" :id="intrusion.label" v-model="intrusion.value" class="form__input" />
               </div>
-              <div class="form__input--input-group">
-                <div class="form__form-group">
-                  <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" initial />
-                  <div class="form__input--initial" v-if="initialData.data !== ''">
-                    <img :src="initialData.data" />
-                  </div>
-                  <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
-                    <label class="form__label" for="initial1">Initial</label>
-                    <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
-                    <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider> -->
-                </div>
-              </div>
+              
             </div>
+            <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" :dialog="false" initial />
           </div>
           <div class="form__form-group--grid">
             <div class="form__section">
@@ -194,11 +182,18 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
+              <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial2" inputId="initial2" name="Initial" width="200px" height="70px" :dialog="false" initial />
+              <div class="form__form-group">
+                
+                <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+                  <img :src="initialData.data" />
+                </div> -->
+              </div>
+              <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
                 <label class="form__label" for="initial2">Initial</label>
                 <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
             </div>
             <div class="form__section">
               <h3>Inital Moisture Inspection</h3>
@@ -208,11 +203,15 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
+              <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial3" inputId="initial3" name="Initial" width="200px" height="70px" :dialog="false" initial />
+              <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+                <img :src="initialData.data" />
+              </div> -->
+              <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
                 <label class="form__label" for="initial3">Initial</label>
                 <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
             </div>
           </div>
           <div class="form__form-group form__form-group--info-box form__section">
@@ -235,11 +234,15 @@
                 <button type="button" class="button--normal" @click="undoMap">Undo</button>
               </div>
             </div>
-            <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
+            <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial4" inputId="initial4" name="Initial" width="200px" height="70px" initial :dialog="false" />
+            <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+              <img :src="initialData.data" />
+            </div> -->
+            <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
               <label class="form__label" for="initial4">Initial</label>
               <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationProvider> -->
           </div>
           <div class="form__form-group form__section">
             <h3>Pre-Restoration Evaluation</h3>
@@ -427,16 +430,18 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />
+              <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSignature" 
+              sigRef="cusSignaturePad" name="Customer signature" />
             </div>
           </div>
           <div class="form__form-group">            
             <ValidationProvider v-slot="{ errors }" name="Customer sign date" rules="required" class="form__input-group form__input-group--normal">
-              <label class="form__label">Date</label>
+              <label class="form__label">Customer Sign Date</label>
               <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
+            <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="employee" inputId="teamMemberSig" :sigData="teamMemberSig" 
+              sigRef="teamSignaturePad" name="Team member signature" />
           </div>
         </div>
         <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
@@ -731,10 +736,7 @@
       signDate: new Date().toLocaleString(),
       cusSignDate: "",
       initialData: { data: '', isEmpty: true },
-      initial1:"",
-      initial2:"",
-      initial3:"",
-      initial4:"",
+      
       moistureMap: {
         data: "",
         isEmpty: true
