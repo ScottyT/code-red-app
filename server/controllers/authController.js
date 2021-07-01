@@ -55,7 +55,7 @@ const uploadAvatar = async (filepath, teamMember, remotepath, type) => {
     await getEmployee(teamMember).then((user) => {
         uid = user.uid
     })
-    return admin.storage().bucket('code-red-employees').upload(filepath, {
+    return admin.storage().bucket('code-red-app-313517.appspot.com').upload(filepath, {
         destination: remotepath,
         uploadType: "media",
         metadata: {

@@ -20,9 +20,9 @@ var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname + '/uploads/'))
     },
-    /* filename: (req, file, cb) => {
+    filename: (req, file, cb) => {
         cb(null, file.fieldname)
-    } */
+    }
 });
 var upload = multer({ storage: storage })
 const duplicateJobIDCheck = (val, reportType) => {
@@ -205,7 +205,7 @@ router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
     /* var buff = Buffer.from(img.image).toString('base64')
     var imageUrl = "data:"+img.contentType+";base64,"+buff */
     var imagePath = path.join(__dirname + '/uploads/' + req.file.filename)
-    await uploadAvatar(imagePath, teamMember, teamMember+"/"+req.file.filename, contentType).then((downloadURL) => {
+    await uploadAvatar(imagePath, teamMember, "users/"+teamMember+"/"+req.file.filename, contentType).then((downloadURL) => {
         res.send(downloadURL)
     })
 })

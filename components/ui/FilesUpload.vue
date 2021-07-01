@@ -177,7 +177,7 @@ export default defineComponent({
                     uploadimages.value.splice(len - 1, 1)
                     len--
 
-                    emit('sendImages', uploadimages.value)
+                    emit('sendImages', filesUploaded.value)
                 })
             })
             Promise.all(promises).then(result => {
@@ -196,7 +196,8 @@ export default defineComponent({
             single: singleImage.value,
             filesChange,
             removeFile,
-            uploadFiles
+            uploadFiles,
+            filesUploaded
         }
     }
 })

@@ -373,11 +373,6 @@ button {
     //margin-bottom:10px;
     transition:all .2s ease-in;
 
-    &--initial {
-      width:200px;
-      height:70px;
-    }
-
     &--short {
       max-width:150px;
       width:100%;
@@ -604,6 +599,7 @@ button {
     display: flex;
     flex-wrap: wrap;
     align-items:center;
+    padding:10px 0;
     //font-size: 1.1em;
     
     &--info-box {

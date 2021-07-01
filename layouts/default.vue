@@ -43,10 +43,11 @@
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <span v-if="!user"><LazyFormsLogin /></span>
       <nuxt class="px-5 mx-auto" v-else />
+      <v-footer :fixed="fixed" app>
+        <span>&copy; {{ new Date().getFullYear() }}</span>
+      </v-footer>
     </v-main>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    
   </v-app>
 </template>
 

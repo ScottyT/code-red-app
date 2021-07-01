@@ -222,11 +222,11 @@
                                         </v-time-picker>
                                     </v-dialog>
                                 </div>
-                            </span>                        
+                            </span>
+                            <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="repSigPad" 
+                                :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
                             <span class="form__input-group--inline">
-                                <div class="form__input-group form__input-group--normal">
-                                    <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
-                                </div>
+                                
                                 <div class="form__input-group form__input-group--short">
                                     <label for="dateRepSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogRepSign" v-model="repSignModal" :return-value.sync="repSignDate" persistent width="400px">
@@ -242,10 +242,9 @@
                                     </v-dialog>
                                 </div>
                             </span>
-                            <span class="form__input-group--inline">
-                                <div class="form__input-group form__input-group--normal">
-                                    <LazyUiSignaturePadModal :sigData="teamMemberSig" sigRef="teamMemberSigPad" name="Team Member Signature" />
-                                </div>
+                            <LazyUiSignaturePadModal v-model="empSig" width="700px" height="219px" :initial="false" :sigData="teamMemberSig" inputId="teamMemberSig" sigType="employee" 
+                                sigRef="teamMemberSigPad" name="Team Member Signature" />
+                            <span class="form__input-group--inline">                            
                                 <div class="form__input-group form__input-group--short">
                                     <label for="dateTeamSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogTeamSign" v-model="teamSignModal" :return-value.sync="teamSignDate" persistent width="400px">
@@ -364,6 +363,7 @@ export default {
             data: '',
             isEmpty: true
         },
+        empSig: "",
         teamSignModal: false,
         teamSignDate: null,
         teamSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -585,7 +585,7 @@ export default {
               repSignTime: this.repPrintTimeFormatted,
               repSign: this.repSign.data,
               repSignDate: this.repSignDateFormatted,
-              teamSign: this.teamMemberSig.data,
+              teamSign: this.empSig,
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
               paymentOption: this.paymentOption,

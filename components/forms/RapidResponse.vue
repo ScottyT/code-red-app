@@ -71,9 +71,9 @@
         </div>
         <div class="form__form-group form__form-group--info-box" :class="{hidden: !jobId}">
           <div class="form__form-group form__form-group--images-upload-section form__section">
-            <ValidationProvider  ref="idprovider" v-slot="{ validate, errors }" name="Photo ID" rules="required|image" class="form__input--upload-group">
+            <ValidationProvider ref="idprovider" v-slot="{ errors }" name="Photo ID" rules="required" class="form__input--upload-group">
               <label class="form__label">Photo ID</label>
-              <input type="hidden" v-model="idImage" @click="validate" />
+              <input type="hidden" v-model="idImage" />
               <UiFilesUpload singleImage singleImageName="id-photo" :jobId="jobId" @sendImages="idImage = $event" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
@@ -171,7 +171,8 @@
               </div>
               
             </div>
-            <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" :dialog="false" initial />
+            <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1Pad" inputId="initial1" name="Initial" width="200px" height="70px" 
+              :dialog="false" initial />
           </div>
           <div class="form__form-group--grid">
             <div class="form__section">
@@ -182,7 +183,8 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial2" inputId="initial2" name="Initial" width="200px" height="70px" :dialog="false" initial />
+              <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2Pad" inputId="initial2" name="Initial" width="200px" height="70px"
+                :dialog="false" initial />
               <div class="form__form-group">
                 
                 <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
@@ -203,7 +205,8 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial3" inputId="initial3" name="Initial" width="200px" height="70px" :dialog="false" initial />
+              <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3Pad" inputId="initial3" name="Initial" width="200px" height="70px" 
+                :dialog="false" initial />
               <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
                 <img :src="initialData.data" />
               </div> -->
@@ -234,7 +237,8 @@
                 <button type="button" class="button--normal" @click="undoMap">Undo</button>
               </div>
             </div>
-            <LazyUiSignaturePadModal :sigData="initialData" sigRef="initial4" inputId="initial4" name="Initial" width="200px" height="70px" initial :dialog="false" />
+            <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4Pad" inputId="initial4" name="Initial" width="200px" height="70px" initial 
+              :dialog="false" />
             <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
               <img :src="initialData.data" />
             </div> -->
@@ -302,7 +306,7 @@
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
               <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" v-mask="'(###) ###-####'" />
             </span>
-            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input-group form__input-group--normal">
+            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input-group form__input-group--long">
               <label for="adjusterEmail" class="form__label">Adjuster Email</label>
               <input type="email" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
               <span class="form__input--error">{{ errors[0] }}</span>
@@ -431,7 +435,7 @@
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSignature" 
-              sigRef="cusSignaturePad" name="Customer signature" />
+                sigRef="cusSignaturePad" name="Customer signature" />
             </div>
           </div>
           <div class="form__form-group">            
@@ -440,7 +444,7 @@
               <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="employee" inputId="teamMemberSig" :sigData="teamMemberSig" 
+            <LazyUiSignaturePadModal v-model="empSig" width="700px" height="219px" dialog :initial="false" sigType="employee" inputId="teamMemberSig" :sigData="teamMemberSig" 
               sigRef="teamSignaturePad" name="Team member signature" />
           </div>
         </div>
@@ -729,14 +733,15 @@
       cardImages: [],
       currentUploadStep: 1,
       cardZip:"",
-      teamMemberSig: {
-        data: '',
-        isEmpty: true
-      },
+      teamMemberSig: { data: '', isEmpty: true },
       signDate: new Date().toLocaleString(),
       cusSignDate: "",
       initialData: { data: '', isEmpty: true },
-      
+      empInitial1: null,
+      empInitial2: null,
+      empInitial3: null,
+      empInitial4: null,
+      empSig: null,
       moistureMap: {
         data: "",
         isEmpty: true
@@ -882,10 +887,10 @@
               PictureTypes: this.selectedPictures,
               id: user.id,
               initials: {
-                initial1: this.initial1,
-                initial2: this.initial2,
-                initial3: this.initial3,
-                initial4: this.initial4
+                initial1: this.empInitial1,
+                initial2: this.empInitial2,
+                initial3: this.empInitial3,
+                initial4: this.empInitial4
               },
               moistureMap: this.moistureMap.data,
               signDate: this.signDate,
@@ -897,7 +902,7 @@
               selectedPreliminary: this.selectedPreliminary,
               selectedInspection: this.selectedInspection,
               preRestorationEval: this.preRestoreEval,
-              teamMemberSig: this.teamMemberSig.data
+              teamMemberSig: this.empSig
             };
             if (this.$nuxt.isOffline) {
               const tempPost = {...post}

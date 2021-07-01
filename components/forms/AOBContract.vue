@@ -46,11 +46,8 @@
             <li>
               <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
-                  <label for="initial1">Initial:</label>
-                  <input id="initial1" type="text" v-model="initial1" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
               <ol>
                 <li>
@@ -98,7 +95,8 @@
             </li>
             <div class="form__form-group form__form-group--row">
                 <div class="form__input-group form__input-group--normal">
-                    <LazyUiSignaturePadModal :sigData="cusSign" sigRef="customerSig" name="Signature" />
+                  <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSign"
+                    sigRef="customerSig" name="Signature" />
                 </div>
                 <div class="form__input-group form__input-group--normal">
                     <label for="cusSignDate" class="form__label">Date:</label>
@@ -132,11 +130,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
-                  <label class="form__label" for="initial2">Initial:</label>
-                  <input id="initial2" type="text" v-model="initial2" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2" inputId="initial2" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -154,11 +149,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
-                  <label class="form__label" for="initial3">Initial:</label>
-                  <input id="initial3" type="text" v-model="initial3" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3" inputId="initial3" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -212,11 +204,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
-                  <label class="form__label" for="initial4">Initial:</label>
-                  <input id="initial4" type="text" v-model="initial4" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4" inputId="initial4" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -336,11 +325,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial5" name="Initial">
-                  <label class="form__label" for="initial5">Initial:</label>
-                  <input id="initial5" type="text" v-model="initial5" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial5" :sigData="initialData" sigRef="initial5" inputId="initial5" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -506,11 +492,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial6" name="Initial">
-                  <label class="form__label" for="initial6">Initial:</label>
-                  <input id="initial6" type="text" v-model="initial6" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial6" :sigData="initialData" sigRef="initial6" inputId="initial6" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -528,11 +511,8 @@
                 to not have survived the execution of this Agreement. This Agreement may not be assigned
                 except with the written permission of {{abbreviation}}.</p>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial7" name="Initial7">
-                  <label class="form__label" for="initial7">Initial:</label>
-                  <input id="initial7" type="text" v-model="initial7" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial7" :sigData="initialData" sigRef="initial7" inputId="initial7" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
           </ol>
@@ -575,12 +555,9 @@
               to the balance of the Available Proceeds as defined above.
             </li>
             <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial8" name="Initial">
-                  <label class="form__label" for="initial8">Initial:</label>
-                  <input id="initial8" type="text" v-model="initial8" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
-              </div>
+               <LazyUiSignaturePadModal v-model="empInitial8" :sigData="initialData" sigRef="initial8" inputId="initial8" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
+            </div>
           </ol>
           <div class="form__form-group form__form-group--column">
             <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
@@ -775,7 +752,7 @@
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <span class="form__input-group form__input-group--normal">
-                  <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
+                  
               </span>
               <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
                 <label for="repOf" class="form__label">Property Representative of</label>
@@ -817,6 +794,8 @@
                   </v-dialog>
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
+              <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="repSignPad"  :sigData="repSign" 
+                sigRef="repSignPad" name="Representative signature" />
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
               <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}" class="form__input-group form__input-group--short">
@@ -952,14 +931,15 @@ import { licenseNumbers } from "@/data/driversLicense";
       cusSignDate: new Date().toISOString().substr(0, 10),
       cusSignDateModal: false,
       cusSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-      initial1: '',
-      initial2:'',
-      initial3:'',
-      initial4:'',
-      initial5:'',
-      initial6:'',
-      initial7:'',
-      initial8: '',
+      empInitial1: '',
+      empInitial2:'',
+      empInitial3:'',
+      empInitial4:'',
+      empInitial5:'',
+      empInitial6:'',
+      empInitial7:'',
+      empInitial8: '',
+      initialData: { data: '', isEmpty: true },
       insuredEndDateModal: false,
       insuredEndDate: new Date().toISOString().substr(0, 10),
       insuredEndDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -1155,14 +1135,14 @@ import { licenseNumbers } from "@/data/driversLicense";
             subjectProperty: this.subjectProperty,
             cusSign: this.cusSign.data,
             cusSignDate: this.cusSignDateFormatted,
-            initial1: this.initial1,
-            initial2: this.initial2,
-            initial3: this.initial3,
-            initial4: this.initial4,
-            initial5: this.initial5,
-            initial6: this.initial6,
-            initial7: this.initial7,
-            initial8: this.initial8,
+            initial1: this.empInitial1,
+            initial2: this.empInitial2,
+            initial3: this.empInitial3,
+            initial4: this.empInitial4,
+            initial5: this.empInitial5,
+            initial6: this.empInitial6,
+            initial7: this.empInitial7,
+            initial8: this.empInitial8,
             insuredTermEndDate: this.insuredEndDateFormatted,
             insuredPay1: this.insuredPay1,
             insuredPayDay1: this.insuredPayment.day1DateFormatted,
