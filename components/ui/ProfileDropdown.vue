@@ -2,7 +2,7 @@
     <div class="profile-menu" v-click-outside="onClickOutside">
         <div class="profile-menu__dropdown-trigger" @click="() => hidden = !hidden" >
             <span class="text text-right">{{user.name}}</span>
-            <span class="profile-menu__pfp" v-if="Object.keys(avatarurl).length === 0">
+            <span class="profile-menu__pfp" v-if="avatarurl === null">
                 <v-icon size="45">mdi-account-circle</v-icon>              
             </span>
             <span class="profile-menu__pfp" v-else>

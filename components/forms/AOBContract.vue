@@ -36,17 +36,20 @@
               and The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
               of the property more commonly known as and identified by the following address:
             </p>
-            <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
-              <input type="text" class="form__input" v-model="subjectProperty" /><br />
-              <p>(hereinafter referred to as “Subject Property”)</p>
-              <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            <div class="form__form-group">
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{ errors }" name="Subject property">
+                <input type="text" class="form__input" v-model="subjectProperty" />           
+                <p>(hereinafter referred to as “Subject Property”)</p>
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" />
+            </div>
           </div>
           <ol class="form__form-group--listing-num">
             <li>
               <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1" inputId="initial1" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1Pad" inputId="initial1" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
               <ol>
@@ -130,7 +133,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2" inputId="initial2" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2Pad" inputId="initial2" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -149,7 +152,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3" inputId="initial3" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3Pad" inputId="initial3" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -204,7 +207,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4" inputId="initial4" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4Pad" inputId="initial4" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -325,7 +328,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial5" :sigData="initialData" sigRef="initial5" inputId="initial5" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial5" :sigData="initialData" sigRef="initial5Pad" inputId="initial5" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -492,7 +495,7 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial6" :sigData="initialData" sigRef="initial6" inputId="initial6" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial6" :sigData="initialData" sigRef="initial6Pad" inputId="initial6" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -511,7 +514,7 @@
                 to not have survived the execution of this Agreement. This Agreement may not be assigned
                 except with the written permission of {{abbreviation}}.</p>
               <div class="form__form-group">
-                <LazyUiSignaturePadModal v-model="empInitial7" :sigData="initialData" sigRef="initial7" inputId="initial7" name="Initial" width="200px" height="70px" 
+                <LazyUiSignaturePadModal v-model="empInitial7" :sigData="initialData" sigRef="initial7Pad" inputId="initial7" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
               </div>
             </li>
@@ -555,7 +558,7 @@
               to the balance of the Available Proceeds as defined above.
             </li>
             <div class="form__form-group">
-               <LazyUiSignaturePadModal v-model="empInitial8" :sigData="initialData" sigRef="initial8" inputId="initial8" name="Initial" width="200px" height="70px" 
+               <LazyUiSignaturePadModal v-model="empInitial8" :sigData="initialData" sigRef="initial8Pad" inputId="initial8" name="Initial" width="200px" height="70px" 
                   :dialog="false" initial />
             </div>
           </ol>
@@ -689,26 +692,20 @@
           <div class="form__form-group">
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
                 <label for="address" class="form__label">Address</label>
-                <input id="address" type="text" class="form__input" v-model="location.address" />
+                <!-- <input id="address" type="text" class="form__input" v-model="location.address" /> -->
+                <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
+                  @change="$nuxt.$emit('location-updated')"></div>
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="City">
-                <label for="city" class="form__label">City</label>
-                <input id="city" type="text" v-model="location.city" class="form__input" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
-              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="State">
-                <label for="state" class="form__label">State</label>
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="State">
+                <!-- <label for="state" class="form__label">State</label>
                 <i class="form__select--icon icon--angle-down mdi"></i>
                 <select class="form__input" id="state" v-model="location.state">
                   <option disabled value="" selected>State</option>
                   <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
-                </select>
-                <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
-              <ValidationProvider rules="required|numeric|length:5" class="form__input-group form__input-group--short" v-slot="{errors}" name="Zip">
-                <label for="zip" class="form__label">Zip</label>
-                <input type="text" id="zip" class="form__input" v-model="location.zip" />
+                </select> -->
+                <label class="form__label">City, State, Zip</label>
+                <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <ValidationProvider rules="required|alpha" v-slot="{errors}" name="First name" class="form__input-group form__input-group--normal">
@@ -858,6 +855,7 @@ import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
 import { statesArr } from "@/data/states"
 import { licenseNumbers } from "@/data/driversLicense";
+import 'mapbox-gl/dist/mapbox-gl.css'
   export default {
     props: ['company', 'abbreviation'],
     computed: {
@@ -967,7 +965,8 @@ import { licenseNumbers } from "@/data/driversLicense";
             address: "",
             city: "",
             state: "",
-            zip: ""
+            zip: "",
+            cityStateZip: ''
         },
         firstName:'',
         lastName:'',
@@ -1195,10 +1194,52 @@ import { licenseNumbers } from "@/data/driversLicense";
               this.errorMessage.push(err)
             })
           }
+        },
+        createGeocoder() {
+          const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
+          const geocoder = new MapboxGeocoder({
+            accessToken: process.env.mapboxKey,
+            types: 'region,place,postcode,address',
+            placeholder: 'Search for address...',
+          })
+          geocoder.setTypes('address').addTo('.form__geocoder')
+          
         }
     },
     mounted() {
         this.checkStorage()
+        this.createGeocoder()
+    },
+    created() {
+      this.$nuxt.$on('location-updated', (event) => {
+        const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
+          const geocode = this.$refs.geocoder
+          const g = new MapboxGeocoder({
+            accessToken: process.env.mapboxKey,
+            types: 'region,place,postcode,address',
+          })
+          var geocodeEl = geocode.firstChild.childNodes[1];
+          const location = geocodeEl.value.split(',', 3)
+          
+          let city
+          let stateZip
+          if (geocodeEl.value !== '' && location.length > 1) {
+            const address = location[0].trim()
+            city = location[1].trim()
+            stateZip = location[2].trim()
+            this.location.cityStateZip = city + ', ' + stateZip
+            this.location.address = address
+          } else {
+            city = ''
+            stateZip = ''
+            geocodeEl.value = ''
+            this.location.cityStateZip = ''
+            this.location.address = ''
+          }
+      })
+    },
+    beforeDestroy() {
+      this.$nuxt.$off('location-updated')
     }
   }
 </script>

@@ -499,6 +499,9 @@ button {
 
   &__geocoder {
     padding:0;
+    .mapboxgl-ctrl-geocoder {
+      width:100%;
+    }
   }
 
   &__input-group {

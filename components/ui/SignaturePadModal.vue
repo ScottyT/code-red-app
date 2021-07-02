@@ -26,7 +26,7 @@
       <VueSignaturePad class="form__input" :width="width" :height="height" id="sigPad" :ref="sigRef" :options="{ onBegin }" />
       <div class="sig-pad__footer" >
         <button type="button" class="button" @click="clear">Clear</button>
-        <button type="button" @click="save" :class="`button`">{{ sigData.data !== '' ? 'Signed' : 'Sign' }}</button>
+        <button type="button" :disabled="sigData.isEmpty" @click="save" :class="`button ${sigData.isEmpty ? 'button--disabled' : ''}`">{{ sigData.data !== '' ? 'Signed' : 'Sign' }}</button>
       </div>
     </div>
     <div id="populate" v-else class="button--normal button" @click="populateField">{{!signed ? 'Click to sign' : 'Signed'}}</div>

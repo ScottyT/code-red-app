@@ -148,7 +148,7 @@ export default {
       author: 'Scott Tucker',
       viewport: 'width=device-width, initial-scale=1',
       name: 'Code Red Claims',
-      theme_color: '#2a73ae'
+      theme_color: '#EB1F28'
     },
     workbox: {
       importScripts: ['/firebase-auth-sw.js'],
