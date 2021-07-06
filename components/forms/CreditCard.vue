@@ -120,14 +120,19 @@
           <div class="form__form-group">
             <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input-group form__input-group--long">
               <label for="addressLine1" class="form__label">Address Line 1</label>
-              <input id="addressLine1" type="text" v-model="billingAddress.address1" class="form__input" />
+              <UiGeoCoder @sendAddress="settingBilling($event)" :mapView="false" geocoderid="subjectProperty" geocoderef="geocoderProperty" />
               <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationProvider>            
             <ValidationProvider name="Address Line 2" class="form__input-group form__input-group--long">
               <label for="addressLine2" class="form__label">Address Line 2</label>
               <input id="addressLine2" type="text" v-model="billingAddress.address2" class="form__input" />
             </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input-group form__input-group--normal">
+            <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Location">
+              <label class="form__label">City, State, Zip</label>
+              <input v-model="billingAddress.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
+              <span class="form__input--error">{{ errors[0] }}</span>
+            </ValidationProvider>
+            <!-- <ValidationProvider rules="required" v-slot="{errors}" name="City" class="form__input-group form__input-group--normal">
               <label for="city" class="form__label">City</label>
               <input id="city" type="text" v-model="billingAddress.city" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
@@ -140,12 +145,12 @@
                 <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
               </select>
               <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
-            <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--normal">
+            </ValidationProvider> -->
+            <!-- <ValidationProvider rules="required|numeric|length:5" v-slot="{errors}" name="Zip code" class="form__input-group form__input-group--normal">
               <label for="zip" class="form__label">Zip</label>
               <imask-input id="zip" v-model="billingAddress.zip" class="form__input" :mask="zipMask" />
               <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationProvider> -->
           </div>
         </div>
         <div class="form__form-group form__form-group--inline">
@@ -159,16 +164,15 @@
           Assignment of Claim Agreement and Mitigation Contract and Equipment Rental Agreement.</p>
           <span>
             <div class="form__input--input-group">
-              <label for="cusSig" class="form__label">Customer Signature:</label>
-              <LazyUiSignaturePadModal :sigData="cusSig" sigRef="cusSigPad" name="Customer signature" />
+              <LazyUiSignaturePadModal width="700px" height="219px" :initial="false" inputId="cusSigRef" sigType="customer" :sigData="cusSig" sigRef="cusSigPad" 
+                name="Customer signature" />
             </div>
             <div class="form__input--input-group">
               <label for="dateCusSign" class="form__label">Date</label>
               <v-dialog ref="dialogCusSign" v-model="cusSigModal" :return-value.sync="cusSigDate" persistent width="400px">
                 <template v-slot:activator="{ on, attrs }">
                   <input id="dateCusSign" v-model="cusSigDateFormatted" v-bind="attrs"
-                        class="form__input form__input--short" readonly v-on="on"
-                        @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
+                        class="form__input form__input--short" readonly v-on="on" @blur="cusSigDate = parseDate(cusSigDateFormatted)" />
                 </template>
                 <v-date-picker v-model="cusSigDate" scrollable>
                   <v-spacer></v-spacer>
@@ -195,7 +199,7 @@ import { statesArr } from "@/data/states"
   export default {
     name: "CreditCard",
     data: (vm) => ({
-        currentStep:1,
+        currentStep:2,
         message: '',
         errorMessage: null,
         cardholderInfo: {
@@ -210,7 +214,8 @@ import { statesArr } from "@/data/states"
             address2: "",
             city: "",
             state: "",
-            zip: ""
+            zip: "",
+            cityStateZip: ""
         },
         creditCards: [
             "Mastercard", "VISA", "Discover", "Amex", "Other"
@@ -494,6 +499,10 @@ import { statesArr } from "@/data/states"
         maskDate() {
             var x = this.expirationDate.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})/)
             this.expirationDate = !x[2] ? x[1] : x[1] + '/' + x[2]
+        },
+        settingBilling(params) {
+          this.billingAddress.address1 = params.address
+          this.billingAddress.cityStateZip = params.cityStateZip
         }
     },
     mounted() {

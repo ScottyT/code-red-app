@@ -808,7 +808,7 @@ export default {
                 this.getCardImages(card.cardNumber)
               })        
             })
-        })       
+        })
     }
   }
 }

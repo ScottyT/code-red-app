@@ -213,10 +213,8 @@
                 </div>
               </div>
               <div class="form__form-group">
-                <div class="form__input-wrapper">
-                  <label class="form__label">Sign for Verification</label>
-                  <LazyUiSignaturePadModal :sigData="verifySig" sigRef="verifySignaturePad" />
-                </div>
+                <LazyUiSignaturePadModal v-model="empSig" width="700px" sigType="employee" height="219px" inputId="verifySigRef" :initial="false" :sigData="verifySig" 
+                  sigRef="verifySignaturePad" name="Sign for Verification" />
               </div>
             </div>
             <div class="form__button-wrapper"><button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
@@ -562,6 +560,7 @@ export default {
             data: '',
             isEmpty: true
         },
+        empSig: "",
         workCompletedAfterHours: false,
         selectedJobId: "",
         errorDialog: false
@@ -656,7 +655,7 @@ export default {
             ReportType: 'case-file-technician',
             formType: 'case-report',
             teamMember: this.getUser,
-            verifySig: this.verifySig.data,
+            verifySig: this.empSig,
             afterHoursWork: this.workCompletedAfterHours ? 'Yes' : 'No',
             notes: this.notes
           };

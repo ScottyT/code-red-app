@@ -17,6 +17,10 @@
                 <v-icon>mdi-apps</v-icon>
                 <p>Saved reports</p>
             </nuxt-link>
+            <nuxt-link class="profile-menu__dropdown-menu--item" to="/forms/credit-card">
+                <v-icon>mdi-apps</v-icon>
+                <p>Credit card</p>
+            </nuxt-link>
             <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/user/${user.email}`">
                 <v-icon>mdi-contacts</v-icon>
                 <p>Profile</p>

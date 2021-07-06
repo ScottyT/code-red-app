@@ -30,6 +30,12 @@ body {
     }
   }
 }
+.txt {
+  display:block;
+  &--subtext {
+    font-size:.9em;
+  }
+}
 img {
   height: 100%;
   width: 100%;
@@ -601,7 +607,6 @@ button {
   &__form-group {
     display: flex;
     flex-wrap: wrap;
-    align-items:center;
     padding:10px 0;
     //font-size: 1.1em;
     
@@ -704,6 +709,7 @@ button {
     }
     &--listing-num {
       list-style-type:decimal;
+      padding-left:20px!important;
       li {
         padding-bottom:10px;
       }

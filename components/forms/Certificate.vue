@@ -36,11 +36,14 @@
                             The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
                             of the property more commonly known as and identified by the following address:
                         </p>
-                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
-                            <input type="text" class="form__input" v-model="subjectProperty" /><br />
-                            <p>(hereinafter referred to as “Subject Property”)</p>
-                            <span class="form__input--error">{{ errors[0] }}</span>
-                        </ValidationProvider>
+                        <div class="form__form-group">
+                            <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{ errors }" name="Subject property">
+                                <input type="text" class="form__input" v-model="subjectProperty" />
+                                <span class="txt--subtext mt-2">(hereinafter referred to as “Subject Property”)</span>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                            <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" mapView />
+                        </div>
                         <p><strong>{{company}} has completed the Assignment of Benefit Agreement and Mitigation Contract in full</strong></p>
                         <p>SHARE: Property Representative will send a copy of this Agreement, Contract, Certificate of Completion, Xactimate and
                             the {{abbreviation}} W9 to the insurance company, the insurance company’s representatives and mortgage institutions to allow {{abbreviation}}

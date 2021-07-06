@@ -53,6 +53,8 @@ export default {
             this.$axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                     this.contracts = res
             })
+        }).catch((err) => {
+            console.log(err)
         })
     },
     data() {

@@ -1,8 +1,8 @@
 <template>
   <div class="form-wrapper">
     <!-- <h1 class="text-center">{{company}}</h1> -->
-    <h2 class="text-center">ASSIGNMENT OF BENEFITS & MITIGATION CONTRACT</h2>
-    <h2 class="text-center">THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</h2>
+    <h2 class="text-center">Assignment of Benefits & Mitigation Contract</h2>
+    <h3 class="text-center">This is not an agreement to repair/rebuild/restore any property</h3>
     <ValidationObserver ref="form">
       <h2>{{message}}</h2>
      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
@@ -19,7 +19,7 @@
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
-          <div class="text-center">
+          <div class="text-left">
             <p>
               This is not a contract to Repair/Rebuild/Restore any Property
               {{company}} {{abbreviation !== '' ? '('+abbreviation+')' : ''}} is an independent janitorial contractor.
@@ -39,10 +39,10 @@
             <div class="form__form-group">
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{ errors }" name="Subject property">
                 <input type="text" class="form__input" v-model="subjectProperty" />           
-                <p>(hereinafter referred to as “Subject Property”)</p>
+                <span class="txt--subtext mt-2">(hereinafter referred to as “Subject Property”)</span>
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" />
+              <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" mapView />
             </div>
           </div>
           <ol class="form__form-group--listing-num">
@@ -522,7 +522,7 @@
           <h3 class="font-weight-bold">RETAINER AND RESERVE PAYMENT RELATED TO THE ABOVE AGREEMENT</h3>
           <ol class="form__form-group--listing">
             <li>
-              Insured Property<br />
+              <strong>Insured Property</strong><br />
               The Subject Property is insured properly. The Property Representative agrees to pay $500.00 or
               50% of the “Available Proceeds” deductible whichever is greater upon the authorization of this
               Agreement. The Property Representative agrees to pay the remaining sum of the “Available
@@ -533,7 +533,7 @@
               defined above.
             </li>
             <li>
-              Pending Insurance<br />
+              <strong>Pending Insurance</strong><br />
               If insurance coverage is in question on the Subject Property by the Property Representative, then
               the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
               timely. The Property Representative agrees to pay the sum of the Available Proceeds’ deductible
@@ -548,7 +548,7 @@
               the balance of the Available Proceeds as defined above.
             </li>
             <li>
-              Non-Insured<br />
+              <strong>Non-Insured</strong><br />
               If there is not any insurance coverage on the Subject Property, then Property Representative
               agrees to pay a minimum of $750.00 upon the authorization of this Agreement. The Property
               Representative agrees to pay a second sum of $750.00 for a total payment of $1,500.00 within
@@ -692,9 +692,7 @@
           <div class="form__form-group">
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
                 <label for="address" class="form__label">Address</label>
-                <!-- <input id="address" type="text" class="form__input" v-model="location.address" /> -->
-                <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
-                  @change="$nuxt.$emit('location-updated')"></div>
+                <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="State">
@@ -737,7 +735,7 @@
               </ValidationProvider>
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
-          <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
+          <p class="text-left">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
           <div class="form__form-group">
               <span class="form__input-group form__input-group--normal">
                   <label class="form__label">Driver's License #</label>
@@ -1195,7 +1193,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             })
           }
         },
-        createGeocoder() {
+        /* createGeocoder() {
           const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
           const geocoder = new MapboxGeocoder({
             accessToken: process.env.mapboxKey,
@@ -1204,14 +1202,17 @@ import 'mapbox-gl/dist/mapbox-gl.css'
           })
           geocoder.setTypes('address').addTo('.form__geocoder')
           
+        }, */
+        settingLocation(params) {
+          this.location.cityStateZip = params.cityStateZip
+          this.location.address = params.address
         }
     },
     mounted() {
         this.checkStorage()
-        this.createGeocoder()
     },
     created() {
-      this.$nuxt.$on('location-updated', (event) => {
+      /* this.$nuxt.$on('location-updated', (event) => {
         const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
           const geocode = this.$refs.geocoder
           const g = new MapboxGeocoder({
@@ -1236,10 +1237,10 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             this.location.cityStateZip = ''
             this.location.address = ''
           }
-      })
+      }) */
     },
     beforeDestroy() {
-      this.$nuxt.$off('location-updated')
+      //this.$nuxt.$off('location-updated')
     }
   }
 </script>

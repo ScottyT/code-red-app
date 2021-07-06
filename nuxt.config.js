@@ -49,9 +49,6 @@ export default {
   loading: {
     color: '#2a73ae',
   },
-  serverMiddleware: [
-    { path: "/api", handler: "~/server/index.js" }
-  ],
   env: {
     mapboxKey: process.env.MAPBOX_API_KEY,
     serverUrl: process.env.NODE_ENV !== 'production' ? 'http://localhost:8080' : process.env.SERVER_URL
@@ -104,7 +101,8 @@ export default {
   modules: [
     '@nuxtjs/pwa',
     '@nuxtjs/axios',
-    '@nuxtjs/firebase'
+    '@nuxtjs/firebase',
+    '~/modules/server'
   ],
   firebase: {
     config: {
