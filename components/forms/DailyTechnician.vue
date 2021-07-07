@@ -33,8 +33,7 @@
               </div>
               <div class="form__input-group form__input-group--long">
                 <label for="location" class="form__label">Address</label>
-                <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
-                     @change="$nuxt.$emit('location-updated')"></div>
+                <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
               </div>
             </div>
             <div class="form__form-group">
@@ -147,9 +146,17 @@
                 </li>
               </ol>
             </div>
-            <div class="form__form-group--full-width">
-              <label for="notes" class="form__label">Notes</label>
-              <textarea class="form__input--textbox form__input" v-model="notes"></textarea>
+            <div class="form__section">
+              <label for="notes" class="form__label">Notes (width, height, and length are in feet)</label>
+              <div class="form__form-group--block">
+                <span class="pr-2">Dehumidification Capacity Simple Calculation:</span>
+                <div class="form__form-group calculations">                 
+                  <input id="length" type="number" placeholder="length" class="form__input form__input--short" /> x 
+                  <input id="width" type="number" class="form__input form__input--short" placeholder="width" /> x 
+                  <input id="height" type="number" placeholder="height" class="form__input form__input--short" /> / 
+                  
+                </div>
+              </div>
             </div>
             <div class="form__form-group--block form__section">
               <h3>Evaluation Logs</h3>
@@ -163,8 +170,7 @@
                              v-bind="attrs" v-on="on" />
                       <span class="button" @click="dispatchToProperty = ''">clear</span>
                     </template>
-                    <v-time-picker v-if="evalLogsDialog.dispatchToProperty" v-model="dispatchToProperty" format="ampm"
-                                   full-width>
+                    <v-time-picker v-if="evalLogsDialog.dispatchToProperty" v-model="dispatchToProperty" format="ampm" full-width>
                       <v-spacer></v-spacer>
                       <v-btn text color="#fff" @click="evalLogsDialog.dispatchToProperty = false">Cancel</v-btn>
                       <v-btn text color="#fff" @click="$refs.dispatchDialog.save(dispatchToProperty)">OK</v-btn>
@@ -225,10 +231,8 @@
 <script>
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import goTo from 'vuetify/es5/services/goto'
-  import {
-    mapGetters, mapActions
-  } from 'vuex';
-  import moment from 'moment';
+import { mapGetters, mapActions } from 'vuex';
+import moment from 'moment';
 export default {
     props: ['slice', 'company', 'abbreviation'],
     data: (vm) => ({
@@ -613,15 +617,9 @@ export default {
         minutes = minutes < 10 ? '0' + minutes : minutes
         return `${hours}:${minutes} ${newFormat}`
       },
-      createGeocoder() {
-        const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const accessToken = process.env.mapboxKey
-        const geocoder = new MapboxGeocoder({
-          accessToken: accessToken,
-          types: 'region,place,postcode,address',
-          placeholder: 'Search for address...',
-        })
-        geocoder.setTypes('address').addTo('.form__geocoder')
+      settingLocation(params) {
+        this.location.address = params.address
+        this.location.cityStateZip = params.cityStateZip
       },
       submitForm() {
           this.message = ''
@@ -710,38 +708,8 @@ export default {
           
       }
     },
-    created() {
-      this.$nuxt.$on('location-updated', (event) => {
-        const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-        const geocode = this.$refs.geocoder
-        const accessToken = process.env.mapboxKey
-        const g = new MapboxGeocoder({
-          accessToken: accessToken,
-          types: 'region,place,postcode,address',
-        })
-        const location = geocode.firstChild.childNodes[1].value.split(',', 3)
-
-        const address = location[0].trim()
-        let city
-        let stateZip
-        if (location[1] !== undefined && location[2] !== undefined) {
-          city = location[1].trim()
-          stateZip = location[2].trim()
-          this.location.cityStateZip = city + ', ' + stateZip
-        } else {
-          city = ''
-          stateZip = ''
-        }
-        this.location.address = address
-        this.location.city = city
-      })
-    },
     mounted() {
-      this.createGeocoder();
       this.checkStorage();        
-    },
-    beforeDestroy() {
-      this.$nuxt.$off('location-updated')
     }
 }
 </script>

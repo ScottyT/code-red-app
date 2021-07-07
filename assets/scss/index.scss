@@ -602,6 +602,12 @@ button {
         border-right:2px solid;
       }
     }
+    &.row-heading {
+      .form__table--cols {
+        grid-column:1/4 span;
+        border:0;
+      }
+    }
   }
 
   &__form-group {
@@ -728,6 +734,14 @@ button {
         text-indent:-19px;
       }
     }
+  }
+}
+
+.calculations {
+  max-width:700px;
+  justify-content: space-between;
+  input[type=number] {
+    width:90px;
   }
 }
 

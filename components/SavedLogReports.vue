@@ -133,15 +133,6 @@
                             @input="updateField($event, i, j, 'checkData')"/>
                     </div>
                 </div>
-                <div class="pdf-item__table pdf-item__table--rows" v-for="(row, i) in savedreport.categoryData" :key="`category-${i}`">
-                    <div class="pdf-item__table--cols">
-                        <label>{{row.text}}</label>
-                    </div>
-                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
-                        <input type="text" class="pdf-item__table--data" :tabindex="j" :value="savedreport.categoryData[i].day[j].value"
-                            @input="updateField($event, i, j, 'categoryData')" />
-                    </div>
-                </div>
             </div>
             <div class="pdf-item__table logs-pdf" v-if="savedreport.ReportType === 'atmospheric-readings'">
                 <div class="pdf-item__table pdf-item__table--rows">
@@ -186,6 +177,20 @@
                     <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`loss-cols-${j}`">
                         <input type="number" class="pdf-item__table--data" :tabindex="j" :value="savedreport.lossClassification[i].day[j].value"
                             @input="updateField($event, i, j, 'lossClassification')" />
+                    </div>
+                </div>
+                <div class="form__table form__table--rows row-heading">
+                    <div class="form__table--cols">
+                        <h3>Water Category/Class</h3>
+                    </div>                       
+                </div>
+                <div class="form__table--rows form__table" v-for="(row, i) in savedreport.categoryData" :key="`catrow-${i}`">
+                    <div class="form__table--cols">
+                        <div class="form__label">{{row.text}}</div>
+                    </div>
+                    <div class="pdf-item__table--cols" v-for="(col, j) in row.day" :key="`category-col-${j}`">
+                        <input type="text" class="pdf-item__table--data" :tabindex="j" :value="savedreport.categoryData[i].day[j].value"
+                            @input="updateField($event, i, j, 'categoryData')" />
                     </div>
                 </div>
             </div>

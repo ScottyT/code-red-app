@@ -55,10 +55,34 @@
                         <span class="form__input--error" v-bind="ariaMsg">{{ errors[0] }}</span>
                     </ValidationProvider>
                 </div>
-                <div class="form__form-group">
-                    <div class="form__input-group form__input-group--normal">
+                <div class="form__form-group area-sub-group">
+                    <div class="form__input-group form__input-group--normal area-sub-group__section">
                         <label for="areaSub1" class="form__label">Area Sub-1</label>
-                        <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" />
+                        <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" @click="openTable('areasub1')" />
+                        <div class="area-sub-group__table" ref="areasub1">
+                            <div class="area-sub-group__table--row">
+                                <div class="form__table--cols">
+                                    <label class="form__label">Date:</label>
+                                </div>
+                                <div class="form__table--cols" v-for="n in areaCols.slice(0, 3)" :key="n">
+                                    <label class="form__label">Area {{n}} %</label>
+                                </div>
+                            </div>
+                            <div class="area-sub-group__table--row" v-for="(row, i) in areaSub1Row" :key="`row-${i}`">
+                                <div class="form__table--cols">
+                                    <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                </div>
+                                <div class="form__table--cols">
+                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
+                                </div>
+                                <div class="form__table--cols">
+                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
+                                </div>
+                                <div class="form__table--cols">
+                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form__input-group form__input-group--normal">
                         <label for="areaSub2" class="form__label">Area Sub-2</label>
@@ -87,40 +111,40 @@
                             <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>
                         </div>
                         <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>%
+                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>
                         </div>
                     </div>
                 </div>
@@ -167,6 +191,30 @@ export default {
         areaSub3: "",
         baseLineReadings: "",
         areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
+        areaSub1Row: [
+            {
+                date: '',
+                areaA: '',
+                areaB: '',
+                areaC: ''
+            }
+        ],
+        areaSub2Row: [
+            {
+                date: '',
+                areaD: '',
+                areaE: '',
+                areaF: ''
+            }
+        ],
+        areaSub3Row: [
+            {
+                date: '',
+                areaG: '',
+                areaH: '',
+                areaI: ''
+            }
+        ],
         areaRows: [
             {
                 date: '',
@@ -318,6 +366,14 @@ export default {
                     })
                 }
             })
+        },
+        openTable(refid) {
+            var subareaEl = this.$refs[refid]
+            if (subareaEl.classList.includes('open')) {
+                subareaEl.classList.remove("open")
+            } else {
+                subareaEl.classList.add('open')
+            }           
         }
     },
     mounted() {
@@ -379,6 +435,18 @@ export default {
             }
         }
         width:38px;
+    }
+}
+.area-sub-group {
+    flex-direction:column;
+    &__table {
+        width: 500px;
+        height:0;
+        opacity:0;
+        &--row {
+            display:grid;
+            grid-template-columns: 100px repeat(3, 1fr);
+        }
     }
 }
 </style>

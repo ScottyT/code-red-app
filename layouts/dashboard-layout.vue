@@ -107,14 +107,14 @@ export default {
         },
         {
           icon: 'mdi-form-select',
-          title: 'Unit Quantity and Equipment Inventory',
-          to: '/forms/inventory-log',
+          title: 'Psychrometric Chart',
+          to: '/forms/psychrometric-charting',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
-          title: 'Psychrometric Chart',
-          to: '/forms/psychrometric-charting',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/forms/inventory-log',
           access: 'user'
         },
         {

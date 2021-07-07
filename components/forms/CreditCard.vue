@@ -199,7 +199,7 @@ import { statesArr } from "@/data/states"
   export default {
     name: "CreditCard",
     data: (vm) => ({
-        currentStep:2,
+        currentStep:1,
         message: '',
         errorMessage: null,
         cardholderInfo: {

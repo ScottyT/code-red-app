@@ -96,6 +96,19 @@
                             <input type="number" :tabindex="j" v-model="item.value" class="form__input" />
                         </div>
                     </div>
+                    <div class="form__table form__table--rows row-heading">
+                        <div class="form__table--cols">
+                            <h3>Water Category/Class</h3>
+                        </div>                       
+                    </div>
+                    <div class="form__table--rows form__table" v-for="(row, i) in catArr" :key="`catrow-${i}`">
+                        <div class="form__table--cols">
+                            <div class="form__label">{{row.text}}</div>
+                        </div>
+                        <div class="form__table--cols" v-for="(item, j) in row.day" :key="`col-${j}`">
+                            <input type="number" :tabindex="j" v-model="item.value" class="form__input" />
+                        </div>
+                    </div>
                 </div>
                 <div class="form__form-group">
                     <ValidationProvider vid="notes" name="Notes" v-slot="{errors, ariaMsg}" class="form__input-text-area">
@@ -263,6 +276,44 @@ export default {
                 {text: "day7",value: ""}
             ]}
         ],
+        catArr: [
+            {text: "Class/Category Water 1", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category Water 2", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category Water 3", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]},
+            {text: "Class/Category Water 4", day: [
+                {text: "day1", value: ""},
+                {text: "day2",value: ""},
+                {text: "day3",value: ""},
+                {text: "day4",value: ""},
+                {text: "day5",value: ""},
+                {text: "day6",value: ""},
+                {text: "day7",value: ""}
+            ]}
+        ],
         errorDialog: false,
         submittedMessage: "",
         submitting: false,
@@ -332,6 +383,7 @@ export default {
                 formType: "logs-report",
                 readingsLog: this.readingsArr,
                 lossClassification: this.lossArr,
+                categoryData: this.catArr,
                 notes: this.notes,
                 teamMember: this.getUser
             };
