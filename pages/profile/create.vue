@@ -26,7 +26,10 @@
                         <span class="form__input--error">{{ errors.msg }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="password" name="Password" v-slot="{errors}" class="form__input--input-group-simple">
-                        <input v-model="password" type="password" placeholder="Password" class="form__input" />
+                        <div class="form__input form__input--password-input">
+                            <input v-model="password" :type="passwordVisibility ? 'text' : 'password'" placeholder="Password" class="form-input" />
+                            <i :class="`form__input--icon mdi ${passwordVisibility ? 'mdi-eye-off' : 'mdi-eye'}`" @click="passwordVisibility = !passwordVisibility"></i>
+                        </div>
                         <span class="form__input--error">{{ errors.msg }}</span>
                     </ValidationProvider>
                     <ValidationProvider vid="role" name="Role" v-slot="{errors}" class="form__input--input-group-simple">
@@ -40,61 +43,51 @@
     </div>
 </template>
 <script>
-import {mapGetters} from 'vuex';
-export default {
-    head() {
-        return {
-            title: "Create Employee"
-        }
-    },
-    data() {
-        return {
-            errorMessage: '',
-            fname: '',
-            lname: '',
-            email: '',
-            id: '',
-            role: '',
-            submittedMessage: [],
-            password: '',
-            successMessage: ''
-        }
-    },
-    computed: {
-        ...mapGetters(['getUser'])
-    },
-    methods: {
-        async signupUser() {
-            return await this.$axios.$post("/api/auth/signup", {
-                name: this.fname + " " + this.lname,
-                email: this.email,
-                password: this.password
+import { defineComponent, ref, useContext, useMeta } from '@nuxtjs/composition-api';
+import { folder } from 'jszip';
+export default defineComponent({
+    head: {},
+    setup(props, {refs}) {
+        useMeta({ title: 'Create Employee'})
+        const { $axios } = useContext()
+        const errorMessage = ref('')
+        const fname = ref('')
+        const lname = ref('')
+        const email = ref('')
+        const id = ref('')
+        const role = ref('')
+        const submittedMessage = ref([])
+        const password = ref('')
+        const passwordVisibility = ref(false)
+        const successMessage = ref('')
+
+        const signupUser = async () => {
+            return await $axios.$post("/api/auth/signup", {
+                name: fname.value + " " + lname.value,
+                email: email.value,
+                password: password.value
             }).then((res) => {
                 if (res.error) {
-                    this.errorMessage = res.error
+                    errorMessage.value = res.error
                     return false;
                 }
-                this.submittedMessage.push(`Successfully registered ${res.displayName}`)
+                submittedMessage.value.push(`Successfully registered ${res.displayName}`)
                 return true
             })
-        },
-        async onSubmit() {
-            const post = {
-                fname: this.fname,
-                lname: this.lname,
-                email: this.email,
-                id: this.id,
-                role: this.role,
-                avatar: {
-                    data: null,
-                    contentType: ""
-                }
+        }
+        const onSubmit = async () => {
+            var post = {
+                fname: fname.value,
+                lname: lname.value,
+                email: email.value,
+                id: id.value,
+                role: role.value
             }
-            var userSignedUp = await this.signupUser()
+            var userSignedUp = await signupUser()
             if (userSignedUp) {
-                this.$axios.$post("/api/employee/new", post).then((res) => {                
+                $axios.$post("/api/employee/new", post).then((res) => {
                     if (res.errors) {
-                        this.$refs.createUser.setErrors({
+                        refs.createUser.setErrors({
                             fname: res.errors.find(obj => obj.param === 'fname'),
                             lname: res.errors.find(obj => obj.param === 'lname'),
                             email: res.errors.find(obj => obj.param === 'email'),
@@ -102,10 +95,15 @@ export default {
                         })
                         return;
                     }
-                    this.submittedMessage.push("Successfully added new user to database")
+                    submittedMessage.value.push("Successfully added new user to database")
                 })
             }
         }
+
+        return {
+            fname, lname, email, password, errorMessage, submittedMessage, successMessage, role, id, passwordVisibility,
+            onSubmit
+        }
     }
-}
+})
 </script>

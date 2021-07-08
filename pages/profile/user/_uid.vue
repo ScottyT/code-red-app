@@ -6,12 +6,16 @@
             <form enctype="multipart/form-data" @submit.prevent="uploadFile">
                 <UiImageUpload v-model="avatar" :errorText="error" :email="user.email" :maxSize="1024" uploadFieldName="avatar" class="user-card__actions">
                 <template v-slot:activator>
-                    <v-avatar size="150px" v-ripple v-if="Object.keys(avatar).length === 0 && Object.keys(avatarurl).length === 0" class="grey lighten-3 mb-3">
+                    <v-avatar size="150px" v-ripple v-if="Object.keys(avatar).length === 0 && avatarurl === null" class="grey lighten-3 mb-3">
                         Click to add avatar
                     </v-avatar>
                     <v-avatar size="150px" v-ripple v-else-if="Object.keys(avatar).length > 0" class="mb-3">
                         <img :src="avatar.imageUrl" />
                     </v-avatar>
+                    <v-avatar size="150px" v-ripple v-else-if="Object.keys(avatarurl).length === 0" class="mb-3">
+                        <img :src="avatarfromauth" />
+                    </v-avatar>
+                    
                     <v-avatar size="150px" v-ripple v-else class="mb-3">
                         <!-- <img :src="`data:${avatar.contentType};base64,${avatar.img}`" />  -->
                         <img :src="avatarurl" />
@@ -52,25 +56,31 @@ export default defineComponent({
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
+        const avatarfromauth = ref("")
         const user = computed(() => store.getters['users/getUser'])
-        const avatarurl = computed(() => store.getters['users/getAvatar'])
+        const avatarurl = store.getters['users/getAvatar']
         const refreshReports = async () => {
             await fetchUserReports()
         }
         const fetchAvatar = () => {
-            store.dispatch('users/fetchAvatar')
+            if (Object.keys(avatarurl).length === 0) {
+                avatarfromauth.value = $fire.auth.currentUser.photoURL
+            }
         }
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
         }
         const uploadImage = (image) => {
-            fetchAvatar()
+            console.log(image)
+            store.commit('users/setAvatar', image)
             savedAvatar()
             avatar.value = {}
+            avatarfromauth.value = image
         }
         fetchUserReports()
         onMounted(fetchAvatar)
+        
         return {
             loading,
             reports: computed(() => reports.value),
@@ -78,6 +88,7 @@ export default defineComponent({
             savedAvatar,
             avatarurl,
             avatar,
+            avatarfromauth,
             saving,
             saved,
             user,

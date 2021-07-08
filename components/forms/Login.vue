@@ -29,43 +29,44 @@
     </div>
 </template>
 <script>
-import {mapGetters} from 'vuex';
-export default {
-    data() {
-        return {
-            submitted: false,
-            submitting: false,
-            message: '',
-            idNumber: '',
-            password: '',
-            email: '',
-            passwordVisibility: false,
-            errorMessage: ""
-        }
-    },
-    head() {
-      return {
-        title: "Login"
-      }
-    },
-    computed: {
-        ...mapGetters(["getUser"]),
-        matchUrl() {
-            return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
-        },
-    },
-    methods: {
-        async signIn() {
-            this.submitted = false
-            this.submitting = true
-            this.errorMessage = ""
-            await this.$fire.auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
-                this.$router.go()
-            }).catch(err => {
-                this.errorMessage = err.message
-                this.submitting = false
-            })
-        }
+import { computed, defineComponent, onMounted, ref, useContext, useMeta, useStore } from '@nuxtjs/composition-api';
+export default defineComponent({
+  head: {},
+  setup(props, context) {
+    const { route, $fire } = useContext()
+    const { title } = useMeta()
+    const router = context.root.$router
+    const submitted = ref(false)
+    const submitting = ref(false)
+    const message = ref("")
+    const idNumber = ref("")
+    const password = ref("")
+    const email = ref("")
+    const passwordVisibility = ref(false)
+    const errorMessage = ref("")
+    const store = useStore()
+    const getUser = computed(() => store.getters["users/getUser"])
+    const matchUrl = computed(() => {
+      return route.value.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
+    })
+
+    const signIn = async () => {
+      submitting.value = true
+      await $fire.auth.signInWithEmailAndPassword(email.value, password.value).then(() => {
+        router.go()
+      }).catch(err => {
+        errorMessage.value = err.message
+        submitting.value = false
+      })
     }
-}
+
+    title.value = 'Login'
+
+    return {
+      password, email, errorMessage, passwordVisibility, submitting,
+      matchUrl,
+      signIn
+    }
+  }
+})
 </script>

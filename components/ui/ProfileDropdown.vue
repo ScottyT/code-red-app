@@ -5,6 +5,9 @@
             <span class="profile-menu__pfp" v-if="avatarurl === null">
                 <v-icon size="45">mdi-account-circle</v-icon>              
             </span>
+            <span class="profile-menu__pfp" v-else-if="Object.keys(avatarurl).length === 0">
+                <img :src="avatarfromauth" />
+            </span>
             <span class="profile-menu__pfp" v-else>
                 <img :src="avatarurl" />
             </span>
@@ -47,23 +50,28 @@ export default defineComponent ({
         const auth = () => {
             store.dispatch('users/signout')
         }
-        const avatarurl = ref("");
+        const avatarfromauth = ref("")
+        //const avatarurl = ref("");
         //const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
-        //const avatarurl = computed(() => store.getters['users/getAvatar'])
+        const avatarurl = computed(() => store.getters['users/getAvatar'])
         const user = computed(() => store.getters['users/getUser'])
     
         const hidden = ref(true)
 
         const fetchAvatar = () => {
-            avatarurl.value = $fire.auth.currentUser.photoURL
+            if (Object.keys(avatarurl.value).length === 0) {
+                avatarfromauth.value = $fire.auth.currentUser.photoURL
+            }
+            
         }
         const onClickOutside = () => {
             hidden.value = true
         }
-        fetchAvatar()
+        onMounted(fetchAvatar)
         return {
             user,
             avatarurl,
+            avatarfromauth,
             hidden,
             auth,
             //fetchAvatar,

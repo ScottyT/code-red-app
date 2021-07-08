@@ -58,35 +58,65 @@
                 <div class="form__form-group area-sub-group">
                     <div class="form__input-group form__input-group--normal area-sub-group__section">
                         <label for="areaSub1" class="form__label">Area Sub-1</label>
-                        <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" @click="openTable('areasub1')" />
-                        <div class="area-sub-group__table" ref="areasub1">
-                            <div class="area-sub-group__table--row">
-                                <div class="form__table--cols">
-                                    <label class="form__label">Date:</label>
+                        <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" @click="openTable(1)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 1">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(0, 3)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
                                 </div>
-                                <div class="form__table--cols" v-for="n in areaCols.slice(0, 3)" :key="n">
-                                    <label class="form__label">Area {{n}} %</label>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub1Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
+                                    </div>
                                 </div>
+                                <button class="button--normal" type="button" @click="addRow('sub1')">Add row</button>
                             </div>
-                            <div class="area-sub-group__table--row" v-for="(row, i) in areaSub1Row" :key="`row-${i}`">
-                                <div class="form__table--cols">
-                                    <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
-                                </div>
-                                <div class="form__table--cols">
-                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
-                                </div>
-                                <div class="form__table--cols">
-                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
-                                </div>
-                                <div class="form__table--cols">
-                                    <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
-                                </div>
-                            </div>
-                        </div>
+                        </transition>
                     </div>
                     <div class="form__input-group form__input-group--normal">
                         <label for="areaSub2" class="form__label">Area Sub-2</label>
-                        <input id="areaSub2" type="text" class="form__input" v-model="areaSub2" />
+                        <input id="areaSub2" type="text" class="form__input" v-model="areaSub2" @click="openTable(2)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 2">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(3, 6)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub2Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('sub2')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
                     <div class="form__input-group form__input-group--normal">
                         <label for="areaSub3" class="form__label">Area Sub-3</label>
@@ -236,7 +266,9 @@ export default {
         uploadMessage: "",
         filesUpload: [],
         notes: '',
-        disabled: false
+        disabled: false,
+        tables:[false, false, false],
+        active: null
     }),
     props:['company', 'abbreviation'],
     head() {
@@ -261,8 +293,25 @@ export default {
             addReport: 'indexDb/addReport',
             checkStorage: 'indexDb/checkStorage',
         }),
-        addRow() {
-            this.areaRows.push({
+        addRow(area) {
+            switch (area) {
+                case 'sub1':
+                    this.areaSub1Row.push({
+                        date: '',
+                        areaA: '',
+                        areaB: '',
+                        areaC: ''
+                    })
+                    break;
+                case 'sub2':
+                    this.areaSub2Row.push({
+                        date: '',
+                        areaD: '',
+                        areaE: '',
+                        areaF: ''
+                    })
+            }
+            /* this.areaRows.push({
                 date: '',
                 areaA: '',
                 areaB: '',
@@ -276,7 +325,7 @@ export default {
                 areaSub1: '',
                 areaSub2: '',
                 areaSub3: ''
-            })
+            }) */
         },
         formatDate(dateReturned) {
             if (!dateReturned) return null
@@ -367,13 +416,8 @@ export default {
                 }
             })
         },
-        openTable(refid) {
-            var subareaEl = this.$refs[refid]
-            if (subareaEl.classList.includes('open')) {
-                subareaEl.classList.remove("open")
-            } else {
-                subareaEl.classList.add('open')
-            }           
+        openTable(index) {
+            this.active = index
         }
     },
     mounted() {
@@ -412,6 +456,16 @@ export default {
 }
 </script>
 <style lang="scss">
+.table-slide-enter-active {
+    transition: all .3s ease;
+}
+.table-slide-leave-active {
+    transition: all .8s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.table-slide-enter, .table-slide-leave-to {
+    opacity:0;
+    transform:translateY(10px);
+}
 .moisture-map {
     @include respond(tabletLargeMax) {
         font-size:.95em;
@@ -441,11 +495,18 @@ export default {
     flex-direction:column;
     &__table {
         width: 500px;
-        height:0;
-        opacity:0;
+        height:auto;
+        padding:10px 0;
+        &.open {
+            opacity:1;
+        }
         &--row {
             display:grid;
-            grid-template-columns: 100px repeat(3, 1fr);
+            grid-template-columns: 135px repeat(3, 1fr);
+            column-gap:15px;
+            &:not(:first-child) {
+                margin:7px 0;
+            }
         }
     }
 }
