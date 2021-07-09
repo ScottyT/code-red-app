@@ -43,22 +43,24 @@
     <v-main :class="matchUrl !== null ? 'reports-page' : ''">
       <span v-if="!user"><LazyFormsLogin /></span>
       <nuxt class="px-5 mx-auto" v-else />
+      <v-footer :fixed="fixed" app>
+        <span>&copy; {{ new Date().getFullYear() }}</span>
+      </v-footer>
     </v-main>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    
   </v-app>
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
-export default {
-  data() {
-    return {
-      clipped: true,
-      drawer: false,
-      fixed: false,
-      items: [
+import { computed, defineComponent, reactive, ref, useStore, watch, onMounted, useFetch, useContext } from '@nuxtjs/composition-api'
+import useReports from "@/composable/reports"
+export default defineComponent({
+  setup(props, context) {
+    const { $fire } = useContext()
+    let authUser = context.root.$fire.auth.currentUser
+    const store = useStore()
+    const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
+    const items = ref([
         {
           icon: 'mdi-apps',
           title: 'Dispatch Report',
@@ -69,6 +71,12 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Rapid Response Report',
           to: '/forms/rapid-response-form',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
+          title: 'AOB & Mitigation Contract',
+          to: '/forms/aob-contract-form',
           access: 'user'
         },
         {
@@ -103,20 +111,14 @@ export default {
         },
         {
           icon: 'mdi-form-select',
-          title: 'Unit Quantity and Equipment Inventory',
-          to: '/forms/inventory-log',
-          access: 'user'
-        },
-        {
-          icon: 'mdi-form-select',
           title: 'Psychrometric Chart',
           to: '/forms/psychrometric-charting',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
-          title: 'AOB & Mitigation Contract',
-          to: '/forms/aob-contract-form',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/forms/inventory-log',
           access: 'user'
         },
         {
@@ -137,83 +139,63 @@ export default {
           to: '/storage',
           access: 'admin'
         }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Code Red Claims',
-      user: false,
-      filteredNavItems: [],
-      isMobile: false
-    }
-  },
-  computed: {  
-    appTheme() {
-      return this.$vuetify.theme.dark = true
-    },
-    matchUrl() {
-      return this.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm)
-    },
-    ...mapGetters({
-        getUser: "users/getUser", 
-        isLoggedIn: "users/isLoggedIn"
-      }),
-    isOnline() {
-      return this.$nuxt.isOnline
-    }
-  },
-  watch: {
-    isOnline(val) {
-      if (val) {
-        this.fetchReports(this.$fire.auth.currentUser)
-      }
-    },
-    getUser(val) {
-      if (Object.keys(val).length !== 0) {
-        this.itemsArr()
-      }
-    }
-  },
-  methods: {
-    ...mapActions({
-      fetchReports: 'reports/fetchReports',
-      fetchLogs: 'reports/fetchLogs'
-    }),
-    itemsArr() {
-        const filtered = (role) => this.items.filter((v) => {
-          return v.access === role
-        })
-        switch (this.getUser.role) {
-          case "user":
-            this.filteredNavItems = filtered("user")
-            break;
-          case "admin":
-            this.filteredNavItems = this.items
-        }
-    },
-    async signOut() {
-      this.$store.dispatch("users/signout")
-    },
-    onResize() {
-      setTimeout(() => {
-        this.isMobile = window.innerWidth < 1200
-      }, 100)     
-    }
-  },
-  mounted() {
-    this.onResize()
-    window.addEventListener('resize', this.onResize, { passive: true })
-    this.$nextTick(() => {
-      this.itemsArr()
-      this.user = this.$fire.auth.currentUser ? true : false
-      this.fetchReports(this.$fire.auth.currentUser)      
+    ]);
+    const clipped = ref(true); 
+    const drawer = ref(false); 
+    const fixed = ref(false); 
+    const miniVariant = ref(false);
+    const right = ref(true); 
+    const rightDrawer = ref(false); 
+    const title = ref("Code Red Claims"); 
+    const user = ref(false);  
+    const isMobile = ref(false);
+    const filteredNavItems = ref([]);
+    const reports = ref([])
+    const appTheme = computed(() => context.root.$vuetify.theme.dark = true);
+    const matchUrl = computed(() => context.root.$route.path.match(/^(?:^|\W)reports(?:$|\W)(?:\/(?=$))?/gm))
+    const getUser = computed(() => store.getters['users/getUser'])
+    const isLoggedIn = computed(() => store.getters['users/isLoggedIn'])
+    const isOnline = computed(() => context.root.$nuxt.isOnline)
+
+    const filtered = (role) => items.value.filter((v) => {
+      return v.access === role
     })
-  },
-  beforeDestroy() {
-    if (typeof window === 'undefined') return
-    window.removeEventListener('resize', this.onResize, { passive: true })
+    const itemsArr = () => {
+      switch(getUser.value.role) {
+        case "user":
+          filteredNavItems.value = filtered("user")
+          break;
+        case "admin":
+          filteredNavItems.value = items.value
+      }
+    }
+    
+    const userLoggedIn = () => {
+      user.value = authUser ? true : false
+    }   
+    
+    onMounted(userLoggedIn)
+    onMounted(itemsArr)
+    fetchReports($fire.auth.currentUser)
+    watch(() => getUser.value, (val) => {
+      if (Object.keys(val).length !== 0) {
+        itemsArr()        
+      }
+    })
+
+    return { 
+      items, clipped, drawer, fixed, miniVariant, right, rightDrawer, title, user: computed(() => user.value),
+      filteredNavItems,
+      appTheme,
+      matchUrl,
+      isLoggedIn,
+      getUser,
+      reports,
+      isOnline,
+      fetchReports
+    }
   }
-}
+})
 </script>
 <style lang="scss">
 .reports-page {

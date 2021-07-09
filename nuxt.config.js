@@ -49,9 +49,6 @@ export default {
   loading: {
     color: '#2a73ae',
   },
-  serverMiddleware: [
-    { path: "/api", handler: "~/server/index.js" }
-  ],
   env: {
     mapboxKey: process.env.MAPBOX_API_KEY,
     serverUrl: process.env.NODE_ENV !== 'production' ? 'http://localhost:8080' : process.env.SERVER_URL
@@ -59,7 +56,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['@/assets/scss/index.scss'],
+  css: ['@/assets/scss/index.scss', '@/assets/scss/transitions.css'],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
@@ -75,8 +72,8 @@ export default {
     '~/plugins/signature.js',
     { src: '@/plugins/vue-html2pdf.js', mode: 'client' },
     '~/plugins/mask.js',
-    '~/plugins/composition-api.js',
-    '~/plugins/directives.js'
+    '~/plugins/directives.js',
+    '~/plugins/provide-composable.js'
   ],
   /*
    ** Auto import components
@@ -104,7 +101,8 @@ export default {
   modules: [
     '@nuxtjs/pwa',
     '@nuxtjs/axios',
-    '@nuxtjs/firebase'
+    '@nuxtjs/firebase',
+    '~/modules/server'
   ],
   firebase: {
     config: {
@@ -148,7 +146,7 @@ export default {
       author: 'Scott Tucker',
       viewport: 'width=device-width, initial-scale=1',
       name: 'Code Red Claims',
-      theme_color: '#2a73ae'
+      theme_color: '#EB1F28'
     },
     workbox: {
       importScripts: ['/firebase-auth-sw.js'],

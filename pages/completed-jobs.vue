@@ -51,6 +51,8 @@ export default {
             this.$axios.$get("/api/reports/coc", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 this.coc = res
             })
+        }).catch((err) => {
+            console.log(err)
         })
     },
     data() {
@@ -74,7 +76,6 @@ export default {
                 for (let i = 1; i <= totalPages; i++) {
                     pdf.setPage(i)
                     pdf.setFontSize(13)
-                    console.log(pdf.internal.pageSize.getHeight())
                     pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 10))
                 } 
             }).save()

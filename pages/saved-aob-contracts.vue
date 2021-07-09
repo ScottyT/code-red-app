@@ -53,19 +53,10 @@ export default {
             this.$axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                     this.contracts = res
             })
+        }).catch((err) => {
+            console.log(err)
         })
     },
-    /* async asyncData({ $axios, store, $fire }) {
-        try {
-            
-            let data = await $axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${store.state.users.user.token}`}});
-            return { 
-                contracts: data
-            }
-        } catch (e) {
-            console.error("SOMETHING WENT WRONG: " + e)
-        }
-    }, */
     data() {
         return {
             contracts: [],

@@ -63,12 +63,17 @@
         </div>
         <div class="form__form-group form__form-group--info-box">
           <div class="form__form-group--left-side">
-            <label for="CallerName" class="form__label">Caller Name</label>
-            <input id="CallerName" v-model="callerName" name="Caller" type="text"
-                   class="form__input form__input--long" />
-            <label for="ContactName" class="form__label">Arrival Contact Name</label>
-            <input id="ContactName" v-model="arrivalContactName" name="ContactName" type="text"
-                   class="form__input form__input--long" />
+            <label class="form__label">Caller Name</label>
+            <div class="form__input-group--name-group">
+              <input v-model="callerName.first" name="First name" placeholder="First" type="text" class="form__input" />
+              <input v-model="callerName.last" name="Last name" placeholder="Last" type="text" class="form__input" />
+            </div>
+            
+            <label class="form__label">Arrival Contact Name</label>
+            <div class="form__input-group--name-group">
+              <input v-model="arrivalContactName.first" placeholder="First" name="First name" type="text" class="form__input" />
+              <input v-model="arrivalContactName.last" placeholder="Last" name="Last name" type="text" class="form__input" />
+            </div>
             <label class="form__label">Address</label>
             <input v-model="location.address" name="Address" type="text" class="form__input form__input--long" />
             <label class="form__label">City, State, Zip</label>
@@ -218,7 +223,7 @@
           </div>
           <div class="form__form-group--full-width">
             <label for="notes" class="form__label">Notes</label>
-            <textarea class="form__input--textbox form__input" v-model="notes"></textarea>
+            <textarea id="notes" class="form__input--textbox form__input" v-model="notes"></textarea>
           </div>
           <div class="form__form-group">
             <div class="form__input-group form__input-group--normal">
@@ -285,8 +290,14 @@
         city: null,
         cityStateZip: null,
       },
-      callerName: '',
-      arrivalContactName: '',
+      callerName: {
+        first: '',
+        last: ''
+      },
+      arrivalContactName: {
+        first:'',
+        last: ''
+      },
       property: [{
           id: 1,
           text: 'The property owner is the caller',
@@ -358,7 +369,7 @@
       },
       intrusionSection: [
         { label: 'Source of Intrusion', value: '', type: 'text' },
-        { label: 'Age of Structure', value: '', type: 'number' },
+        { label: 'Age of Structure', value: '', type: 'text' },
         { label: 'Approximate sqft', value: null, type: 'number' },
         { label: 'Number of Rooms', value: null, type: 'number' },
         { label: 'Number of Floors', value: null, type: 'number' }

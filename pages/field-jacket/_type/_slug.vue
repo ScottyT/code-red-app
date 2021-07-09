@@ -137,10 +137,10 @@ export default defineComponent({
                 pdf.addPage()
             })
         }
-        //getReport(`${reportType}/${jobId}`).fetchReport()
-        getReport(`${reportType}/${jobId}`).fetchState
-        
+        getReport(`${reportType}/${jobId}`).fetchReport()
+        //getReport(`${reportType}/${jobId}`).fetchState
         return {
+            getReport,
             report,
             reportType,
             htmlToPdfOptions,

@@ -15,7 +15,6 @@
     },
     layout: 'dashboard-layout',
     data: () => ({
-      authUser: false,
       sortOptions: [{
           value: 'JobId',
           text: 'Report Id'
@@ -29,30 +28,14 @@
       list: [],
       storage: []
     }),
-    async asyncData({ $axios }) {
-      /* var data = await $axios.$get("/api/reports");
-        var dataFilters = data.filter((v) => {
-          return v.ReportType !== 'credit-card'
-        })
-        return { reports: dataFilters } */
-      /* try {
-        var data = await $axios.$get("/api/reports");
-        var dataFilters = data.filter((v) => {
-          return v.ReportType !== 'credit-card'
-        })
-        return { reports: dataFilters }
-      } catch (e) {
-        console.error("SOMETHING WENT WRONG: " + e)
-      } */
-    },
     computed: {
-      filteredRep() {
+      /* filteredRep() {
         return this.reports.filter((obj1) => {
           return !this.storage.some((obj2) => {
             return obj1.JobId === obj2
           })
         })
-      },
+      }, */
     },
     methods: {
       storageItems() {

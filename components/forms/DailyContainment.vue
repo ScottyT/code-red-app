@@ -173,10 +173,8 @@
             </div>
           </div>
           <div class="form__form-group">
-            <div class="form__input-wrapper">
-              <label class="form__label">Sign for Verification</label>
-              <LazyUiSignaturePadModal inputId="verifySig" :sigData="verifySig" sigRef="verifySignaturePad" />
-            </div>
+            <LazyUiSignaturePadModal v-model="empSig" width="700px" sigType="employee" height="219px" inputId="verifySigRef" :initial="false" :sigData="verifySig" 
+              sigRef="verifySignaturePad" name="Sign for Verification" />
           </div>
         </div>
         <div class="form__button-wrapper"><button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
@@ -353,6 +351,7 @@
         data: '',
         isEmpty: true
       },
+      empSig: "",
       submitting: false,
       submitted: false,
       selectedJobId: "",

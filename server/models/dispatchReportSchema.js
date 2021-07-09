@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const timestamps = require('mongoose-timestamp2');
 const dispatchReport = mongoose.Schema({
-    ArrivalContactName: String,
+    ArrivalContactName: Object,
     JobId: {
         type: String,
         required: [true, 'Job id is required']
@@ -12,7 +12,7 @@ const dispatchReport = mongoose.Schema({
     },
     appointmentDate: String,
     appointmentTime: String,
-    callerName: String,
+    callerName: Object,
     dateFormatted: String,
     emailAddress: String,
     callTimeUpdate: String,

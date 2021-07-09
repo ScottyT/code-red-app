@@ -6,15 +6,19 @@
             <form enctype="multipart/form-data" @submit.prevent="uploadFile">
                 <UiImageUpload v-model="avatar" :errorText="error" :email="user.email" :maxSize="1024" uploadFieldName="avatar" class="user-card__actions">
                 <template v-slot:activator>
-                    <v-avatar size="150px" v-ripple v-if="Object.keys(avatar).length === 0 && Object.keys(avatarurl).length === 0" class="grey lighten-3 mb-3">
+                    <v-avatar size="150px" v-ripple v-if="Object.keys(avatar).length === 0 && avatarurl === null" class="grey lighten-3 mb-3">
                         Click to add avatar
                     </v-avatar>
                     <v-avatar size="150px" v-ripple v-else-if="Object.keys(avatar).length > 0" class="mb-3">
                         <img :src="avatar.imageUrl" />
                     </v-avatar>
+                    <v-avatar size="150px" v-ripple v-else-if="Object.keys(avatarurl).length === 0" class="mb-3">
+                        <img :src="avatarfromauth" />
+                    </v-avatar>
+                    
                     <v-avatar size="150px" v-ripple v-else class="mb-3">
                         <!-- <img :src="`data:${avatar.contentType};base64,${avatar.img}`" />  -->
-                        <img :src="avatarurl.image" />
+                        <img :src="avatarurl" />
                     </v-avatar>
                 </template>
                 </UiImageUpload>
@@ -25,7 +29,8 @@
                 </v-slide-x-transition>  
             </form>
         </v-card>
-        <p v-if="$fetchState.pending">Fetching reports...</p>
+        <button @click="refreshReports" class="button--normal">Refresh</button>
+        <p v-if="loading">Fetching reports...</p>
         <div class="block-group" v-else>
             <LayoutReports :reports="reports" theme="dark" />
         </div>
@@ -33,42 +38,63 @@
 </template>
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted, defineComponent, useStore, useFetch } from '@nuxtjs/composition-api'
+import { ref, computed, onMounted, defineComponent, useStore, useFetch, watch, useContext } from '@nuxtjs/composition-api'
 import { userReports } from '@/composable/userReports'
 export default defineComponent({
+    async middleware({store, redirect}) {
+        if (Object.keys(store.state.users.user).length === 0) {
+            return redirect('/')
+        }
+    },
     setup(props, context) {
-        console.log(context)
-        const authUser = context.root.$fire.auth.currentUser
+        const { $axios, $fire } = useContext()
+        const { reports, loading, fetchUserReports } = userReports()
+        const authUser = $fire.auth.currentUser
+        const email = context.root.$route.params.uid
         const store = useStore()
         const saving = ref(false)
         const saved = ref(false)
         const avatar = ref({})
         const error = ref('')
+        const avatarfromauth = ref("")
         const user = computed(() => store.getters['users/getUser'])
-        const avatarurl = computed(() => store.getters['users/getAvatar'])
-        const { reports, fetchUserReports } = userReports(authUser.email)
-
-        fetchUserReports()
+        const avatarurl = store.getters['users/getAvatar']
+        const refreshReports = async () => {
+            await fetchUserReports()
+        }
+        const fetchAvatar = () => {
+            if (Object.keys(avatarurl).length === 0) {
+                avatarfromauth.value = $fire.auth.currentUser.photoURL
+            }
+        }
         const savedAvatar = () => {
             saving.value = false
             saved.value = true
         }
-        const uploadImage = (item) => {
-            root.$store.dispatch('users/fetchAvatar', item)
+        const uploadImage = (image) => {
+            console.log(image)
+            store.commit('users/setAvatar', image)
             savedAvatar()
             avatar.value = {}
+            avatarfromauth.value = image
         }
-
+        fetchUserReports()
+        onMounted(fetchAvatar)
+        
         return {
-            reports,
+            loading,
+            reports: computed(() => reports.value),
             uploadImage,
             savedAvatar,
             avatarurl,
             avatar,
+            avatarfromauth,
             saving,
             saved,
             user,
-            error
+            error,
+            fetchUserReports,
+            refreshReports
         }
     },
     methods: {
@@ -76,7 +102,7 @@ export default defineComponent({
             this.avatar.formData.append('teamMember', this.user.email)
             this.avatar.formData.append('name', 'avatar__'+this.avatar.imageName)
             this.saving = true
-            axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {}).then((res) => {
+            axios.post(`${process.env.serverUrl}/api/avatar/new`, this.avatar.formData, {headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                 this.uploadImage(res.data)
             }).catch((err) => {
                 this.error = err

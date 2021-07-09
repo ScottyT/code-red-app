@@ -16,7 +16,7 @@
     </div>
 </template>
 <script>
-import { ref, toRefs } from '@vue/composition-api'
+import { ref, toRefs } from '@nuxtjs/composition-api'
 export default {
     props: {
         value: Object,
@@ -34,7 +34,6 @@ export default {
         }
         const onFileChange = (fieldName, file) => {
             let imageFile = file[0]
-            console.log(imageFile)
             if (file.length > 0) {
                 let size = imageFile.size / maxSize.value / maxSize.value
                 if (!imageFile.type.match('image.*')) {

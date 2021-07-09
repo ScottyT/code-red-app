@@ -1,7 +1,7 @@
 <template>
   <div class="folder-contents-wrapper">
     <UiBreadcrumbs page="storage" />
-    <FolderContents :path="`${repId}/${subfolder}`" />
+    <FolderContents :path="`${repId}`" :subPath="subfolder" />
   </div>
 </template>
 <script>

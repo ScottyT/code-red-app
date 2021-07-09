@@ -1,3 +1,6 @@
+import { ref } from "@nuxtjs/composition-api"
+import { userReports } from "~/composable/userReports"
+
 const state = () => ({
     error: null,
     all: [],
@@ -9,6 +12,9 @@ const state = () => ({
 const getters = {
     getReports: (state) => {
         return state.all
+    },
+    getUserReports: (state) => {
+      return state.userreports
     },
     getCards: (state) => {
         return state.creditCards
@@ -63,17 +69,16 @@ const actions = {
         })
       }
     },
-    async fetchReport({ commit }, payload) {
-      if (payload.authUser) {
-        await payload.authUser.getIdToken(true).then((idToken) => {
-          this.$axios.$get(`/api/reports/${payload.ReportType}/${payload.formType}/${payload.JobId}`, 
-            {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
-              commit('setReport', res)
-          })
-        }).catch((err) => {
-          commit('setError', err)
+    async fetchReport({ commit }, report) {
+      console.log(report)
+      await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+        this.$axios.$get(`/api/reports/${report.value.ReportType}/${report.value.formType}/${report.value.JobId}`, 
+          {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+            commit('setReport', res)
         })
-      }
+      }).catch((err) => {
+        commit('setError', err)
+      })
     },
     sortReports({ commit, state }, sortDirection) {
       state.reports.sort((r1, r2) => {

@@ -71,6 +71,12 @@ export default {
         },
         {
           icon: 'mdi-form-select',
+          title: 'AOB & Mitigation Contract',
+          to: '/forms/aob-contract-form',
+          access: 'user'
+        },
+        {
+          icon: 'mdi-form-select',
           title: 'Daily Containment Case File Report',
           to: '/forms/daily-containment-report',
           access: 'user'
@@ -101,20 +107,14 @@ export default {
         },
         {
           icon: 'mdi-form-select',
-          title: 'Unit Quantity and Equipment Inventory',
-          to: '/forms/inventory-log',
-          access: 'user'
-        },
-        {
-          icon: 'mdi-form-select',
           title: 'Psychrometric Chart',
           to: '/forms/psychrometric-charting',
           access: 'user'
         },
         {
           icon: 'mdi-form-select',
-          title: 'AOB & Mitigation Contract',
-          to: '/forms/aob-contract-form',
+          title: 'Unit Quantity and Equipment Inventory',
+          to: '/forms/inventory-log',
           access: 'user'
         },
         {

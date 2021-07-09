@@ -705,8 +705,8 @@
                                     <div>{{card.cardNumber}}</div>
                                 </div>
                                 <div class="data-section__data--group-item">
-                                    <label>CVC Number:</label>
-                                    <div>{{card.cvcNum}}</div>
+                                    <label>CVV Number:</label>
+                                    <div>{{card.cvvNum}}</div>
                                 </div>
                                 <div class="data-section__data--group-item">
                                     <label>Expiration Date:</label>
@@ -808,7 +808,7 @@ export default {
                 this.getCardImages(card.cardNumber)
               })        
             })
-        })       
+        })
     }
   }
 }

@@ -63,7 +63,7 @@
             <input v-model="jobId" id="jobId" name="jobId" class="form__input" @keydown.space.prevent type="text" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <div class="form__input-group form__input-group--normal">
+          <div class="form__input-group form__input-group--long">
             <label for="location" class="form__label">Address</label>
             <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
               @change="$nuxt.$emit('location-updated')"></div>
@@ -71,16 +71,11 @@
         </div>
         <div class="form__form-group form__form-group--info-box" :class="{hidden: !jobId}">
           <div class="form__form-group form__form-group--images-upload-section form__section">
-            <ValidationProvider  ref="idprovider" v-slot="{ validate, errors }" name="Photo ID" rules="required|image" class="form__input--upload-group">
+            <ValidationProvider ref="idprovider" v-slot="{ errors }" name="Photo ID" rules="required" class="form__input--upload-group">
               <label class="form__label">Photo ID</label>
-              <input type="hidden" v-model="idImage" @click="validate" />
-              <span class="button--normal button" @click="$refs.idfile.click()">Add Photo ID</span>
-              <input type="file" name="idfile" accept="image/*" ref="idfile" @change="filesChange" />
-              <div class="file-listing"><img class="file-listing__preview" v-bind:ref="`idimage`" /></div>
+              <input type="hidden" v-model="idImage" />
+              <UiFilesUpload singleImage singleImageName="id-photo" :jobId="jobId" @sendImages="idImage = $event" />
               <span class="form__input--error">{{ errors[0] }}</span>
-              <v-btn @click="submitFiles(idImage, $refs.photoid)" v-if="idImage.length > 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-              
-              <p aria-label="Upload message goes here" name="Photo ID" id="photoId" ref="photoid"></p>
             </ValidationProvider>
             <ValidationProvider v-slot="{errors}" rules="numeric|required" name="Zip code" class="form__input--upload-group" v-if="cardImages.length === 2">
               <label for="cardZip" class="form__label">Zip code on card</label>
@@ -128,26 +123,7 @@
               </div>
             </ul>
             
-            <ValidationProvider rules="ext:doc,pdf,xlsx,docx,jpg,png,gif,jpeg" ref="jobimages" name="Photographs" v-slot="{ errors, validate }">
-              <input type="hidden" v-model="uploadedFiles" @click="validate" />
-              <div class="file-listing-wrapper">
-                <div v-for="(file, key) in uploadedFiles" class="file-listing" :key="`jobfiles-${key}`">
-                  <img class="file-listing__preview" v-bind:ref="'image'+parseInt(key)" v-if="file.type == 'image/png' || file.type == 'image/jpeg' || file.type == 'image/gif'" />
-                  <p v-else>{{file.name}}</p>
-                  <span class="file-listing__remove-file" @click="removeFile(key, file)" tag="i">
-                    <span class="file-listing__remove-file--leg1 file-listing__remove-file--leg"></span>
-                    <span class="file-listing__remove-file--leg2 file-listing__remove-file--leg"></span>
-                  </span>
-                </div>
-              </div>
-              <input type="file" name="files" ref="files" accept="image/*,.doc,.docx,.xls,.xlsx,.pdf" @change="filesChange" multiple />
-              <v-btn @click="submitFiles(uploadedFiles, $refs.jobfiles)" v-if="uploadedFiles.length > 0 && errors.length <= 0 && $nuxt.isOnline">{{ uploading ? 'Uploading' : 'Upload'}}</v-btn>
-              <span class="form__input--error">{{ errors[0] }}</span>
-              <p aria-label="Upload message goes here" name="Job files" ref="jobfiles"></p>
-            </ValidationProvider>
-            <span class="button__add-files button mt-4" @click="addFiles()">Add Files</span>           
-            <br />
-            <span>{{ uploadSuccess }}</span>        
+            <UiFilesUpload :singleImage="false" :subDir="`job-files-${date}`" :jobId="jobId" @sendImages="uploadedFiles = $event" />     
           </div>
           <div class="form__section">
             <h3>Source of Water Intrusion</h3>
@@ -179,8 +155,7 @@
                 <v-dialog ref="timeIntrusion" v-model="intrusionLogsDialog.timeIntrusion" persistent
                   :return-value.sync="timeIntrusion" transition="scale-transition" max-width="290px">
                   <template v-slot:activator="{ on, attrs }">
-                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs"
-                      v-on="on" />
+                    <input type="text" id="timeIntrusion" v-model="timeIntrusionFormatted" class="form__input" readonly v-bind="attrs" v-on="on" />
                     <span class="button" @click="timeIntrusion = ''">clear</span>
                   </template>
                   <v-time-picker v-if="intrusionLogsDialog.timeIntrusion" v-model="timeIntrusion" format="ampm" full-width>
@@ -194,16 +169,10 @@
                 <label :for="intrusion.label" class="form__label">{{intrusion.label}}</label>
                 <input :type="intrusion.type" :id="intrusion.label" v-model="intrusion.value" class="form__input" />
               </div>
-              <div class="form__input--input-group">
-                <div class="form__form-group">
-                  <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
-                    <label class="form__label" for="initial1">Initial</label>
-                    <input id="initial1" type="text" v-model="initial1" class="form__input form__input--short" v-uppercase />
-                    <span class="form__input--error">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                </div>
-              </div>
+              
             </div>
+            <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1Pad" inputId="initial1" name="Initial" width="200px" height="70px" 
+              :dialog="false" initial />
           </div>
           <div class="form__form-group--grid">
             <div class="form__section">
@@ -214,11 +183,19 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
+              <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2Pad" inputId="initial2" name="Initial" width="200px" height="70px"
+                :dialog="false" initial />
+              <div class="form__form-group">
+                
+                <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+                  <img :src="initialData.data" />
+                </div> -->
+              </div>
+              <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
                 <label class="form__label" for="initial2">Initial</label>
                 <input id="initial2" type="text" v-model="initial2" class="form__input form__input--short" v-uppercase />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
             </div>
             <div class="form__section">
               <h3>Inital Moisture Inspection</h3>
@@ -228,11 +205,16 @@
                   <label :for="item">{{item}}</label>
                 </div>
               </div>
-              <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
+              <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3Pad" inputId="initial3" name="Initial" width="200px" height="70px" 
+                :dialog="false" initial />
+              <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+                <img :src="initialData.data" />
+              </div> -->
+              <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
                 <label class="form__label" for="initial3">Initial</label>
                 <input id="initial3" type="text" v-model="initial3" class="form__input form__input--short" v-uppercase />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
             </div>
           </div>
           <div class="form__form-group form__form-group--info-box form__section">
@@ -255,11 +237,16 @@
                 <button type="button" class="button--normal" @click="undoMap">Undo</button>
               </div>
             </div>
-            <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
+            <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4Pad" inputId="initial4" name="Initial" width="200px" height="70px" initial 
+              :dialog="false" />
+            <!-- <div class="form__input--initial" v-if="initialData.data !== ''">
+              <img :src="initialData.data" />
+            </div> -->
+            <!-- <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
               <label class="form__label" for="initial4">Initial</label>
               <input id="initial4" type="text" v-model="initial4" class="form__input form__input--short" v-uppercase />
               <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationProvider> -->
           </div>
           <div class="form__form-group form__section">
             <h3>Pre-Restoration Evaluation</h3>
@@ -319,7 +306,7 @@
               <label for="adjusterPhone" class="form__label">Adjuster Phone</label>
               <input id="adjusterPhone" type="phone" class="form__input" v-model="adjusterPhone" v-mask="'(###) ###-####'" />
             </span>
-            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input-group form__input-group--normal">
+            <ValidationProvider v-slot="{errors}" name="Adjuster email" rules="email" class="form__input-group form__input-group--long">
               <label for="adjusterEmail" class="form__label">Adjuster Email</label>
               <input type="email" id="adjusterEmail" class="form__input" name="policyNumber" v-model="adjusterEmail" />
               <span class="form__input--error">{{ errors[0] }}</span>
@@ -447,16 +434,18 @@
                 <input id="lastname" placeholder="Last" type="text" class="form__input" v-model="customerName.last" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <LazyUiSignaturePadModal inputId="cusSignature" :sigData="cusSignature" sigRef="cusSignaturePad" name="Customer signature" />
+              <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSignature" 
+                sigRef="cusSignaturePad" name="Customer signature" />
             </div>
           </div>
           <div class="form__form-group">            
             <ValidationProvider v-slot="{ errors }" name="Customer sign date" rules="required" class="form__input-group form__input-group--normal">
-              <label class="form__label">Date</label>
+              <label class="form__label">Customer Sign Date</label>
               <input type="text" v-model="cusSignDate" v-mask="'##/##/####'" class="form__input" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" sigRef="teamSignaturePad" name="Team member signature" />
+            <LazyUiSignaturePadModal v-model="empSig" width="700px" height="219px" dialog :initial="false" sigType="employee" inputId="teamMemberSig" :sigData="teamMemberSig" 
+              sigRef="teamSignaturePad" name="Team member signature" />
           </div>
         </div>
         <div class="form__button-wrapper"><button type="submit" class="button form__button-wrapper--submit">{{ submitting ? 'Submitting' : 'Submit' }}</button></div>
@@ -614,14 +603,14 @@
         timeIntrusion: false
       },
       intrusionSection: [
-        { label: 'Control Status of Intrusion', value: '', type: 'text' },
-        { label: 'Structure Type', value: '', type: 'text' },
-        { label: 'Use', value: '', type: 'text' },
-        { label: 'History', value: '', type: 'text' },
-        { label: 'Age', value: null, type: 'text' },
-        { label: 'Approximate sqft', value: null, type: 'number' },
-        { label: 'Number of Rooms', value: null, type: 'number' },
-        { label: 'Number of Floors', value: null, type: 'number' }
+        { id:'statusOfIntrusion', label: 'Control Status of Intrusion', value: '', type: 'text' },
+        { id:'structureType', label: 'Structure Type', value: '', type: 'text' },
+        { id:'use', label: 'Use', value: '', type: 'text' },
+        { id:'history', label: 'History', value: '', type: 'text' },
+        { id:'age', label: 'Age', value: null, type: 'text' },
+        { id:'appxSqft', label: 'Approximate sqft', value: null, type: 'number' },
+        { id:'numberOfRooms', label: 'Number of Rooms', value: null, type: 'number' },
+        { id:'numberOfFloors', label: 'Number of Floors', value: null, type: 'number' }
       ],
       dateIntrusion: new Date().toISOString().substr(0, 10),
       dateIntrusionFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -744,16 +733,15 @@
       cardImages: [],
       currentUploadStep: 1,
       cardZip:"",
-      teamMemberSig: {
-        data: '',
-        isEmpty: true
-      },
+      teamMemberSig: { data: '', isEmpty: true },
       signDate: new Date().toLocaleString(),
       cusSignDate: "",
-      initial1:"",
-      initial2:"",
-      initial3:"",
-      initial4:"",
+      initialData: { data: '', isEmpty: true },
+      empInitial1: null,
+      empInitial2: null,
+      empInitial3: null,
+      empInitial4: null,
+      empSig: null,
       moistureMap: {
         data: "",
         isEmpty: true
@@ -829,6 +817,10 @@
       ]),
       id() {
         return this.$store.state.users.user ? this.$store.state.users.user.id : null
+      },
+      date() {
+        const today = new Date()
+        return (today.getMonth() + 1)+'-'+today.getUTCDate()+'-'+today.getFullYear();
       }
     },
     methods: {
@@ -895,10 +887,10 @@
               PictureTypes: this.selectedPictures,
               id: user.id,
               initials: {
-                initial1: this.initial1,
-                initial2: this.initial2,
-                initial3: this.initial3,
-                initial4: this.initial4
+                initial1: this.empInitial1,
+                initial2: this.empInitial2,
+                initial3: this.empInitial3,
+                initial4: this.empInitial4
               },
               moistureMap: this.moistureMap.data,
               signDate: this.signDate,
@@ -910,7 +902,7 @@
               selectedPreliminary: this.selectedPreliminary,
               selectedInspection: this.selectedInspection,
               preRestorationEval: this.preRestoreEval,
-              teamMemberSig: this.teamMemberSig.data
+              teamMemberSig: this.empSig
             };
             if (this.$nuxt.isOffline) {
               const tempPost = {...post}
@@ -1001,65 +993,6 @@
           x[1] :
           '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '')
       },
-      async filesChange(e) {
-        const fileList = e.target.files
-        const uploadarea = e.target.name
-        if (!fileList.length) return
-        const job = this.jobId
-             
-        switch (uploadarea) {
-          case "idfile":
-            var {valid} = await this.$refs.idprovider.validate(e);
-            
-            
-            if (valid) {
-              for (let i = 0; i < this.$refs.idfile.files.length; i++) {
-                var filetype = this.$refs.idfile.files[i].type
-                console.log("ref:", this.$refs.idfile.files)
-                var image = this.$refs.idfile.files[i]
-                var blob = image.slice(0, image.size, image.type)
-                console.log(blob)
-                var filetype = image.name.substring(image.name.lastIndexOf('.'), image.name.length)
-                var newFile = new File([blob], `id-photo-${job}${filetype}`, {
-                  type: image.type
-                })
-                this.idImage[0] = newFile
-              }
-              this.getSinglePreview(this.idImage, 'idimage')
-            }
-            break;
-          case "files":
-            var {valid} = await this.$refs.jobimages.validate(e)
-            if (valid) {
-              for (var i = 0; i < this.$refs.files.files.length; i++) {
-                var file = this.$refs.files.files[i]
-                this.uploadedFiles.push(file)
-              }
-              this.getImagePreviews(this.uploadedFiles, 'image');
-            }           
-        }       
-      },
-      getSinglePreview(files, usekey) {
-        if (/\.(jpe?g|png|gif)$/i.test(files[0].name)) {
-          const reader = new FileReader();
-          reader.onload = e => {
-            this.$refs[usekey].src = reader.result;
-          }
-          reader.readAsDataURL(files[0])
-        }
-      },
-      getImagePreviews(filesarr, usekey) {
-        for (let i = 0; i < filesarr.length; i++) {
-          if (/\.(jpe?g|png|gif)$/i.test(filesarr[i].name)) {
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-              console.log(usekey)
-              this.$refs[usekey + i][0].src = reader.result;
-            }, false);
-            reader.readAsDataURL(filesarr[i])
-          }
-        }
-      },
       goToStep(step) {
         if (step < 1) {
           return
@@ -1070,65 +1003,6 @@
         }
         this.currentUploadStep = step
       },
-      submitFiles(uploadarr, element) {
-        const today = new Date()
-        const date = (today.getMonth() + 1)+'-'+today.getDay()+'-'+today.getFullYear();
-        if (!this.jobId) {
-          this.errorMessage = "Job ID is required"
-          return;
-        }
-        uploadarr.forEach((file) => {
-          var storageRef = this.$fire.storage.ref()
-          var field = element.getAttribute('name')
-          switch (field) {
-            case "Job files":
-              var uploadRef = storageRef.child(`${this.jobId}/${date}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-              break;
-            default:
-              var uploadRef = storageRef.child(`${this.jobId}/${file.name}`)
-              var uploadTask = uploadRef.put(file)
-          }
-          uploadTask.on('state_changed',
-          (snapshot) => {
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              if (progress < 100) {
-                this.uploading = true
-              }
-              if(progress == 100) {
-                this.uploading = false
-                
-                var uploadMessage = `${field} uploaded successfully`
-                element.innerHTML = uploadMessage
-                uploadarr = []
-              }
-            },
-            (error) => {
-              console.log(error.message)
-            },
-            () => {
-              uploadRef.getDownloadURL().then((url) => {
-                var fileName = file.name.substring(0, file.name.lastIndexOf('.'))
-                var fileType = file.name.substring(file.name.lastIndexOf('.'), file.name.length)
-                const fileObj = {
-                  name: fileName,
-                  url: url,
-                  type: fileType
-                }
-                this.filesUploading.push(fileObj)
-              })
-            }
-          )
-        })
-      },
-      addFiles() {
-        this.$refs.files.click()
-      },
-      removeFile(key, removedFile) {
-        this.uploadedFiles.splice(key, 1);
-        this.getImagePreviews(this.uploadedFiles, 'image')
-        this.$refs.files.value = null
-      }
     },
     beforeDestroy() {
       this.$nuxt.$off('location-updated')

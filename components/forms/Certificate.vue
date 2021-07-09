@@ -36,11 +36,14 @@
                             The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
                             of the property more commonly known as and identified by the following address:
                         </p>
-                        <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
-                            <input type="text" class="form__input" v-model="subjectProperty" /><br />
-                            <p>(hereinafter referred to as “Subject Property”)</p>
-                            <span class="form__input--error">{{ errors[0] }}</span>
-                        </ValidationProvider>
+                        <div class="form__form-group">
+                            <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{ errors }" name="Subject property">
+                                <input type="text" class="form__input" v-model="subjectProperty" />
+                                <span class="txt--subtext mt-2">(hereinafter referred to as “Subject Property”)</span>
+                                <span class="form__input--error">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                            <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" mapView />
+                        </div>
                         <p><strong>{{company}} has completed the Assignment of Benefit Agreement and Mitigation Contract in full</strong></p>
                         <p>SHARE: Property Representative will send a copy of this Agreement, Contract, Certificate of Completion, Xactimate and
                             the {{abbreviation}} W9 to the insurance company, the insurance company’s representatives and mortgage institutions to allow {{abbreviation}}
@@ -222,11 +225,11 @@
                                         </v-time-picker>
                                     </v-dialog>
                                 </div>
-                            </span>                        
+                            </span>
+                            <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="repSigPad" 
+                                :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
                             <span class="form__input-group--inline">
-                                <div class="form__input-group form__input-group--normal">
-                                    <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSigPad" name="Representative Signature" />
-                                </div>
+                                
                                 <div class="form__input-group form__input-group--short">
                                     <label for="dateRepSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogRepSign" v-model="repSignModal" :return-value.sync="repSignDate" persistent width="400px">
@@ -242,10 +245,9 @@
                                     </v-dialog>
                                 </div>
                             </span>
-                            <span class="form__input-group--inline">
-                                <div class="form__input-group form__input-group--normal">
-                                    <LazyUiSignaturePadModal :sigData="teamMemberSig" sigRef="teamMemberSigPad" name="Team Member Signature" />
-                                </div>
+                            <LazyUiSignaturePadModal v-model="empSig" width="700px" height="219px" :initial="false" :sigData="teamMemberSig" inputId="teamMemberSig" sigType="employee" 
+                                sigRef="teamMemberSigPad" name="Team Member Signature" />
+                            <span class="form__input-group--inline">                            
                                 <div class="form__input-group form__input-group--short">
                                     <label for="dateTeamSign" class="form__label">Date</label>
                                     <v-dialog ref="dialogTeamSign" v-model="teamSignModal" :return-value.sync="teamSignDate" persistent width="400px">
@@ -364,6 +366,7 @@ export default {
             data: '',
             isEmpty: true
         },
+        empSig: "",
         teamSignModal: false,
         teamSignDate: null,
         teamSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -585,7 +588,7 @@ export default {
               repSignTime: this.repPrintTimeFormatted,
               repSign: this.repSign.data,
               repSignDate: this.repSignDateFormatted,
-              teamSign: this.teamMemberSig.data,
+              teamSign: this.empSig,
               teamSignDate: this.teamSignDateFormatted,
               testimonial: this.testimonial,
               paymentOption: this.paymentOption,

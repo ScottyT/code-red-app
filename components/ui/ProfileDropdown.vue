@@ -2,11 +2,14 @@
     <div class="profile-menu" v-click-outside="onClickOutside">
         <div class="profile-menu__dropdown-trigger" @click="() => hidden = !hidden" >
             <span class="text text-right">{{user.name}}</span>
-            <span class="profile-menu__pfp" v-if="Object.keys(avatarurl).length === 0">
+            <span class="profile-menu__pfp" v-if="avatarurl === null">
                 <v-icon size="45">mdi-account-circle</v-icon>              
             </span>
+            <span class="profile-menu__pfp" v-else-if="Object.keys(avatarurl).length === 0">
+                <img :src="avatarfromauth" />
+            </span>
             <span class="profile-menu__pfp" v-else>
-                <img :src="avatarurl.image" />
+                <img :src="avatarurl" />
             </span>
             <i :class="`mdi-triangle mdi profile-menu__arrow ${hidden ? '' : 'open'}`"></i>
             <span class="text text--subtitle text-right">{{user.email}}</span>
@@ -17,18 +20,15 @@
                 <v-icon>mdi-apps</v-icon>
                 <p>Saved reports</p>
             </nuxt-link>
-            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/${user.email}`">
+            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/profile/user/${user.email}`">
                 <v-icon>mdi-contacts</v-icon>
                 <p>Profile</p>
-            </nuxt-link>
-            <nuxt-link class="profile-menu__dropdown-menu--item" :to="`/forms/credit-card`">
-                <p>Credit Card Form</p>
             </nuxt-link>
             <a class="profile-menu__dropdown-menu--item" @click="auth">
                 <v-icon>{{user ? 'mdi-logout-variant' : 'mdi-login-variant'}}</v-icon>
                 <p>{{$fire.auth.currentUser !== null ? "Logout" : "Login"}}</p>
             </a>
-            <span class="text text--subtitle text-uppercase">Pdfs</span>
+            <span class="text text--subtitle text-uppercase">Printable Pdfs</span>
             <nuxt-link class="profile-menu__dropdown-menu--item" to="/saved-aob-contracts">
                 <v-icon>mdi-pdf-box</v-icon>
                 <p>AOB & Mitigation Contracts</p>
@@ -41,29 +41,40 @@
     </div>
 </template>
 <script>
-import { computed, ref, onMounted, watch, defineComponent, useStore } from '@nuxtjs/composition-api'
+import { computed, ref, onMounted, watch, defineComponent, useStore, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent ({
     setup() {
+        const { $fire } = useContext();
         const store = useStore()
         const auth = () => {
             store.dispatch('users/signout')
         }
-        const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
+        const avatarfromauth = ref("")
+        //const avatarurl = ref("");
+        //const fetchAvatar = () => { store.dispatch('users/fetchAvatar') }
         const avatarurl = computed(() => store.getters['users/getAvatar'])
         const user = computed(() => store.getters['users/getUser'])
     
         const hidden = ref(true)
+
+        const fetchAvatar = () => {
+            if (Object.keys(avatarurl.value).length === 0) {
+                avatarfromauth.value = $fire.auth.currentUser.photoURL
+            }
+            
+        }
         const onClickOutside = () => {
             hidden.value = true
         }
-        //fetchAvatar(user.email)
+        onMounted(fetchAvatar)
         return {
             user,
             avatarurl,
+            avatarfromauth,
             hidden,
             auth,
-            fetchAvatar,
+            //fetchAvatar,
             onClickOutside
         }
     },

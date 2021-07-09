@@ -25,3 +25,5 @@ db.once('open', () => {
         console.log(`Server listening at ${port}`);
     })
 })
+
+module.exports = { path: '/api', handler: app }

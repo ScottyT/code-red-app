@@ -147,7 +147,7 @@
     </div>
     </div>
     <div class="report-details report-details__response-report">
-      <div class="report-details__section">
+      <!-- <div class="report-details__section">
         <div class="report-details__data" v-if="report.preRestorationEval.hasOwnProperty('emergencyResAct')">
           <label class="form__label">Emergency Response Actions Identified:</label>
           <span>{{report.preRestorationEval.emergencyResAct}}</span>
@@ -168,7 +168,7 @@
           <label class="form__label">Substructure & Unfinished Spaces:</label>
           <span>{{report.preRestorationEval.substructure}}</span>
         </div>
-      </div>
+      </div> -->
     
     <div class="report-details__section">
       <div class="report-details__data">
@@ -368,7 +368,8 @@
     },
     created() {
       this.repData = this.report
-      this.pictures(this.repData.JobId)
+      
+      //this.pictures(this.repData.JobId)
     }
   }
 </script>

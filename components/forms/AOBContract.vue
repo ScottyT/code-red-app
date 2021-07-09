@@ -1,8 +1,8 @@
 <template>
   <div class="form-wrapper">
     <!-- <h1 class="text-center">{{company}}</h1> -->
-    <h2 class="text-center">ASSIGNMENT OF BENEFITS & MITIGATION CONTRACT</h2>
-    <h2 class="text-center">THIS IS NOT AN AGREEMENT TO REPAIR/REBUILD/RESTORE ANY PROPERTY</h2>
+    <h2 class="text-center">Assignment of Benefits & Mitigation Contract</h2>
+    <h3 class="text-center">This is not an agreement to repair/rebuild/restore any property</h3>
     <ValidationObserver ref="form">
       <h2>{{message}}</h2>
      <h3 class="alert alert--error" v-for="(error, i) in errorMessage" :key="`server-errors-${i}`">{{error}}</h3>
@@ -19,7 +19,7 @@
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
           </div>
-          <div class="text-center">
+          <div class="text-left">
             <p>
               This is not a contract to Repair/Rebuild/Restore any Property
               {{company}} {{abbreviation !== '' ? '('+abbreviation+')' : ''}} is an independent janitorial contractor.
@@ -36,21 +36,21 @@
               and The Owner/Persons of legal authority (hereinafter referred to as “Property Representative”)
               of the property more commonly known as and identified by the following address:
             </p>
-            <ValidationProvider rules="required" class="form__form-group" v-slot="{ errors }" name="Subject property">
-              <input type="text" class="form__input" v-model="subjectProperty" /><br />
-              <p>(hereinafter referred to as “Subject Property”)</p>
-              <span class="form__input--error">{{ errors[0] }}</span>
-            </ValidationProvider>
+            <div class="form__form-group">
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{ errors }" name="Subject property">
+                <input type="text" class="form__input" v-model="subjectProperty" />           
+                <span class="txt--subtext mt-2">(hereinafter referred to as “Subject Property”)</span>
+                <span class="form__input--error">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <UiGeoCoder @sendAddress="subjectProperty = $event" mapid="map" geocoderid="subjectProperty" geocoderef="geocoderProperty" mapView />
+            </div>
           </div>
           <ol class="form__form-group--listing-num">
             <li>
               <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial1" name="Initial">
-                  <label for="initial1">Initial:</label>
-                  <input id="initial1" type="text" v-model="initial1" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial1" :sigData="initialData" sigRef="initial1Pad" inputId="initial1" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
               <ol>
                 <li>
@@ -98,7 +98,8 @@
             </li>
             <div class="form__form-group form__form-group--row">
                 <div class="form__input-group form__input-group--normal">
-                    <LazyUiSignaturePadModal :sigData="cusSign" sigRef="customerSig" name="Signature" />
+                  <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSign"
+                    sigRef="customerSig" name="Signature" />
                 </div>
                 <div class="form__input-group form__input-group--normal">
                     <label for="cusSignDate" class="form__label">Date:</label>
@@ -132,11 +133,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial2" name="Initial">
-                  <label class="form__label" for="initial2">Initial:</label>
-                  <input id="initial2" type="text" v-model="initial2" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial2" :sigData="initialData" sigRef="initial2Pad" inputId="initial2" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -154,11 +152,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial3" name="Initial">
-                  <label class="form__label" for="initial3">Initial:</label>
-                  <input id="initial3" type="text" v-model="initial3" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial3" :sigData="initialData" sigRef="initial3Pad" inputId="initial3" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -212,11 +207,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial4" name="Initial">
-                  <label class="form__label" for="initial4">Initial:</label>
-                  <input id="initial4" type="text" v-model="initial4" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial4" :sigData="initialData" sigRef="initial4Pad" inputId="initial4" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -336,11 +328,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial5" name="Initial">
-                  <label class="form__label" for="initial5">Initial:</label>
-                  <input id="initial5" type="text" v-model="initial5" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial5" :sigData="initialData" sigRef="initial5Pad" inputId="initial5" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -506,11 +495,8 @@
                 </li>
               </ol>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial6" name="Initial">
-                  <label class="form__label" for="initial6">Initial:</label>
-                  <input id="initial6" type="text" v-model="initial6" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial6" :sigData="initialData" sigRef="initial6Pad" inputId="initial6" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
             <li>
@@ -528,18 +514,15 @@
                 to not have survived the execution of this Agreement. This Agreement may not be assigned
                 except with the written permission of {{abbreviation}}.</p>
               <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial7" name="Initial7">
-                  <label class="form__label" for="initial7">Initial:</label>
-                  <input id="initial7" type="text" v-model="initial7" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
+                <LazyUiSignaturePadModal v-model="empInitial7" :sigData="initialData" sigRef="initial7Pad" inputId="initial7" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
               </div>
             </li>
           </ol>
           <h3 class="font-weight-bold">RETAINER AND RESERVE PAYMENT RELATED TO THE ABOVE AGREEMENT</h3>
           <ol class="form__form-group--listing">
             <li>
-              Insured Property<br />
+              <strong>Insured Property</strong><br />
               The Subject Property is insured properly. The Property Representative agrees to pay $500.00 or
               50% of the “Available Proceeds” deductible whichever is greater upon the authorization of this
               Agreement. The Property Representative agrees to pay the remaining sum of the “Available
@@ -550,7 +533,7 @@
               defined above.
             </li>
             <li>
-              Pending Insurance<br />
+              <strong>Pending Insurance</strong><br />
               If insurance coverage is in question on the Subject Property by the Property Representative, then
               the Property Representative agrees to pay a minimum of $750.00 if insurance coverage is secured
               timely. The Property Representative agrees to pay the sum of the Available Proceeds’ deductible
@@ -565,7 +548,7 @@
               the balance of the Available Proceeds as defined above.
             </li>
             <li>
-              Non-Insured<br />
+              <strong>Non-Insured</strong><br />
               If there is not any insurance coverage on the Subject Property, then Property Representative
               agrees to pay a minimum of $750.00 upon the authorization of this Agreement. The Property
               Representative agrees to pay a second sum of $750.00 for a total payment of $1,500.00 within
@@ -575,12 +558,9 @@
               to the balance of the Available Proceeds as defined above.
             </li>
             <div class="form__form-group">
-                <ValidationProvider rules="required" v-slot="{errors}" vid="initial8" name="Initial">
-                  <label class="form__label" for="initial8">Initial:</label>
-                  <input id="initial8" type="text" v-model="initial8" class="form__input" v-uppercase />
-                  <span class="form__input--error">{{ errors[0] }}</span>
-                </ValidationProvider>
-              </div>
+               <LazyUiSignaturePadModal v-model="empInitial8" :sigData="initialData" sigRef="initial8Pad" inputId="initial8" name="Initial" width="200px" height="70px" 
+                  :dialog="false" initial />
+            </div>
           </ol>
           <div class="form__form-group form__form-group--column">
             <h3 class="font-weight-bold">INSURED RETAINER & RESERVE</h3>
@@ -712,26 +692,18 @@
           <div class="form__form-group">
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
                 <label for="address" class="form__label">Address</label>
-                <input id="address" type="text" class="form__input" v-model="location.address" />
+                <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
-              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="City">
-                <label for="city" class="form__label">City</label>
-                <input id="city" type="text" v-model="location.city" class="form__input" />
-                <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
-              <ValidationProvider rules="required" class="form__input-group form__input-group--normal" v-slot="{errors}" name="State">
-                <label for="state" class="form__label">State</label>
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="State">
+                <!-- <label for="state" class="form__label">State</label>
                 <i class="form__select--icon icon--angle-down mdi"></i>
                 <select class="form__input" id="state" v-model="location.state">
                   <option disabled value="" selected>State</option>
                   <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
-                </select>
-                <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
-              <ValidationProvider rules="required|numeric|length:5" class="form__input-group form__input-group--short" v-slot="{errors}" name="Zip">
-                <label for="zip" class="form__label">Zip</label>
-                <input type="text" id="zip" class="form__input" v-model="location.zip" />
+                </select> -->
+                <label class="form__label">City, State, Zip</label>
+                <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <ValidationProvider rules="required|alpha" v-slot="{errors}" name="First name" class="form__input-group form__input-group--normal">
@@ -763,7 +735,7 @@
               </ValidationProvider>
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
-          <p class="text-center">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
+          <p class="text-left">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
           <div class="form__form-group">
               <span class="form__input-group form__input-group--normal">
                   <label class="form__label">Driver's License #</label>
@@ -775,8 +747,7 @@
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <span class="form__input-group form__input-group--normal">
-                  <label class="form__label">Property Representative Signature</label>
-                  <LazyUiSignaturePadModal :sigData="repSign" sigRef="repSignPad" name="Representative signature" />
+                  
               </span>
               <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
                 <label for="repOf" class="form__label">Property Representative of</label>
@@ -818,6 +789,8 @@
                   </v-dialog>
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
+              <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="repSignPad"  :sigData="repSign" 
+                sigRef="repSignPad" name="Representative signature" />
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
               <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}" class="form__input-group form__input-group--short">
@@ -880,6 +853,7 @@ import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
 import { statesArr } from "@/data/states"
 import { licenseNumbers } from "@/data/driversLicense";
+import 'mapbox-gl/dist/mapbox-gl.css'
   export default {
     props: ['company', 'abbreviation'],
     computed: {
@@ -953,14 +927,15 @@ import { licenseNumbers } from "@/data/driversLicense";
       cusSignDate: new Date().toISOString().substr(0, 10),
       cusSignDateModal: false,
       cusSignDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
-      initial1: '',
-      initial2:'',
-      initial3:'',
-      initial4:'',
-      initial5:'',
-      initial6:'',
-      initial7:'',
-      initial8: '',
+      empInitial1: '',
+      empInitial2:'',
+      empInitial3:'',
+      empInitial4:'',
+      empInitial5:'',
+      empInitial6:'',
+      empInitial7:'',
+      empInitial8: '',
+      initialData: { data: '', isEmpty: true },
       insuredEndDateModal: false,
       insuredEndDate: new Date().toISOString().substr(0, 10),
       insuredEndDateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
@@ -988,7 +963,8 @@ import { licenseNumbers } from "@/data/driversLicense";
             address: "",
             city: "",
             state: "",
-            zip: ""
+            zip: "",
+            cityStateZip: ''
         },
         firstName:'',
         lastName:'',
@@ -1053,6 +1029,13 @@ import { licenseNumbers } from "@/data/driversLicense";
         },
         cusSignDate(val) {
             this.cusSignDateFormatted = this.formatDate(val)
+        },
+        selectedJobId(val) {
+          var report = this.getReports.find((v) => {
+            return val === this.selectedJobId && v.ReportType === 'rapid-response'
+          })
+          this.numberOfFloors = report.intrusion.find(e => e.label === 'Number of Floors').value
+          this.numberOfRooms = report.intrusion.find(e => e.label === 'Number of Rooms').value
         }
     },
     methods: {
@@ -1149,14 +1132,14 @@ import { licenseNumbers } from "@/data/driversLicense";
             subjectProperty: this.subjectProperty,
             cusSign: this.cusSign.data,
             cusSignDate: this.cusSignDateFormatted,
-            initial1: this.initial1,
-            initial2: this.initial2,
-            initial3: this.initial3,
-            initial4: this.initial4,
-            initial5: this.initial5,
-            initial6: this.initial6,
-            initial7: this.initial7,
-            initial8: this.initial8,
+            initial1: this.empInitial1,
+            initial2: this.empInitial2,
+            initial3: this.empInitial3,
+            initial4: this.empInitial4,
+            initial5: this.empInitial5,
+            initial6: this.empInitial6,
+            initial7: this.empInitial7,
+            initial8: this.empInitial8,
             insuredTermEndDate: this.insuredEndDateFormatted,
             insuredPay1: this.insuredPay1,
             insuredPayDay1: this.insuredPayment.day1DateFormatted,
@@ -1209,10 +1192,55 @@ import { licenseNumbers } from "@/data/driversLicense";
               this.errorMessage.push(err)
             })
           }
+        },
+        /* createGeocoder() {
+          const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
+          const geocoder = new MapboxGeocoder({
+            accessToken: process.env.mapboxKey,
+            types: 'region,place,postcode,address',
+            placeholder: 'Search for address...',
+          })
+          geocoder.setTypes('address').addTo('.form__geocoder')
+          
+        }, */
+        settingLocation(params) {
+          this.location.cityStateZip = params.cityStateZip
+          this.location.address = params.address
         }
     },
     mounted() {
         this.checkStorage()
+    },
+    created() {
+      /* this.$nuxt.$on('location-updated', (event) => {
+        const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
+          const geocode = this.$refs.geocoder
+          const g = new MapboxGeocoder({
+            accessToken: process.env.mapboxKey,
+            types: 'region,place,postcode,address',
+          })
+          var geocodeEl = geocode.firstChild.childNodes[1];
+          const location = geocodeEl.value.split(',', 3)
+          
+          let city
+          let stateZip
+          if (geocodeEl.value !== '' && location.length > 1) {
+            const address = location[0].trim()
+            city = location[1].trim()
+            stateZip = location[2].trim()
+            this.location.cityStateZip = city + ', ' + stateZip
+            this.location.address = address
+          } else {
+            city = ''
+            stateZip = ''
+            geocodeEl.value = ''
+            this.location.cityStateZip = ''
+            this.location.address = ''
+          }
+      }) */
+    },
+    beforeDestroy() {
+      //this.$nuxt.$off('location-updated')
     }
   }
 </script>

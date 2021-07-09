@@ -64,7 +64,8 @@
               <v-text-field v-model="search" clearable prepend-inner-icon="mdi-magnify"></v-text-field>
             </template>
             <template v-slot:default="props">
-              <li v-for="(item, i) in props.items" :key="`logreports-${i}`" class="reports-wrapper__data block-group__col" :class="!item.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
+              <li v-for="(item, i) in props.items" :key="`logreports-${i}`" class="reports-wrapper__data block-group__col" 
+                :class="item.hasOwnProperty('key') && $nuxt.isOffline ? 'hidden' : 'show'">
                 <nuxt-link :to="`/profile/${item.ReportType}/${item.JobId}`" :class="{ disabled: !item.hasOwnProperty('key') && $nuxt.isOffline }">
                   <p>{{item.JobId}}</p>
                   <p>{{item.ReportType}}</p>

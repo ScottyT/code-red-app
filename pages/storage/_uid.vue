@@ -1,7 +1,7 @@
 <template>
   <div class="folder-contents-wrapper">
     <UiBreadcrumbs page="storage" />
-    <FolderContents :path="this.$route.params.uid" />
+    <FolderContents :path="this.$route.params.uid" subPath="" />
   </div>
 </template>
 <script>

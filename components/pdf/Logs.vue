@@ -46,45 +46,46 @@
                         <label class="form__label">Area {{n}}</label>
                     </div>
                 </div>
-                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in report.readingsRow" :key="`row-${i}`">
+                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in groupReadings" :key="`row-${i}`">
                     <div class="moisture-data--cols">
-                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                        {{i}}
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>%
+                    
+                    <div class="moisture-data--cols" v-if="row[0] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[0].areaA" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[0] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[0].areaB" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[0] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[0].areaC" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[1] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[1].areaD" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[1] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[1].areaE" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[1] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[1].areaF" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[2] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[2].areaG" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[2] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[2].areaH" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[2] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[2].areaI" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[3] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[3].areaSub1" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[3] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[3].areaSub2" class="form__input" /></span>%
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>%
+                    <div class="moisture-data--cols" v-if="row[3] !== undefined">
+                        <span class="number-input"><input type="text" maxlength="3" v-model="row[3].areaSub3" class="form__input" /></span>%
                     </div>
                 </div>
             </div>
@@ -192,7 +193,18 @@ export default {
             areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
         }
     },
-    
+    computed: {
+        groupReadings() {
+            var readingslogs = this.report.readingsRow
+            return readingslogs.reduce((acc, value) => {
+                if (!acc[value.date]) {
+                    acc[value.date] = []
+                }
+                acc[value.date].push(value)
+                return acc
+            }, {})
+        }
+    },
     methods: {
         updateReport() {
             // use indexDb for offline support here
@@ -207,7 +219,8 @@ export default {
                     this.$router.push("/saved-reports")
                 }, 5000)
             })
-        }
+        },
+        
     }
 }
 </script>
@@ -304,6 +317,10 @@ export default {
             
             &--rows {
                 grid-template-columns:130px repeat(12, 1fr);
+            }
+            &--cols-wrapper {
+                display:flex;
+                flex-direction:row;
             }
         }
     }

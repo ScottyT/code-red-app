@@ -30,6 +30,12 @@ body {
     }
   }
 }
+.txt {
+  display:block;
+  &--subtext {
+    font-size:.9em;
+  }
+}
 img {
   height: 100%;
   width: 100%;
@@ -373,6 +379,15 @@ button {
     //margin-bottom:10px;
     transition:all .2s ease-in;
 
+    &--short {
+      max-width:150px;
+      width:100%;
+    }
+
+    &--normal {
+      max-width:250px;
+    }
+
     @include respond(tabletLargeMax) {
       padding: 6px 5px;
     }
@@ -473,11 +488,6 @@ button {
       width: 100%;
     }
 
-    &--short {
-      max-width:150px;
-      width:100%;
-    }
-
     &--error {
       color: red;
       display:block;
@@ -495,6 +505,9 @@ button {
 
   &__geocoder {
     padding:0;
+    .mapboxgl-ctrl-geocoder {
+      width:100%;
+    }
   }
 
   &__input-group {
@@ -514,7 +527,17 @@ button {
       &:not(:last-child) {
         margin-bottom:15px;
       }
-
+    }
+    &--name-group {
+      display:grid;
+      grid-template-areas: 'fname lname';
+      column-gap:15px;
+      &:nth-child(1) {
+        grid-area:fname;
+      }
+      &:nth-child(2) {
+        grid-area:lname;
+      }
     }
     &--section {
       display:flex;
@@ -529,6 +552,7 @@ button {
     &--short {
       width:195px;
     }
+    
   }
 
   &__label {
@@ -578,12 +602,18 @@ button {
         border-right:2px solid;
       }
     }
+    &.row-heading {
+      .form__table--cols {
+        grid-column:1/4 span;
+        border:0;
+      }
+    }
   }
 
   &__form-group {
     display: flex;
     flex-wrap: wrap;
-    align-items:center;
+    padding:10px 0;
     //font-size: 1.1em;
     
     &--info-box {
@@ -640,7 +670,7 @@ button {
     &--left-side,
     &--right-side {
       width: 50%;
-      padding: 0 10px;
+      padding: 0 10px 0 0;
       /* @include respond(tabletLargeMax) {
         width:100%;
       } */
@@ -648,6 +678,7 @@ button {
 
     &--right-side {
       padding-bottom: 20px;
+      padding-left:10px;
     }
 
     &--left-side input {
@@ -684,6 +715,7 @@ button {
     }
     &--listing-num {
       list-style-type:decimal;
+      padding-left:20px!important;
       li {
         padding-bottom:10px;
       }
@@ -702,6 +734,14 @@ button {
         text-indent:-19px;
       }
     }
+  }
+}
+
+.calculations {
+  max-width:700px;
+  justify-content: space-between;
+  input[type=number] {
+    width:90px;
   }
 }
 

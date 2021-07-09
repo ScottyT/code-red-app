@@ -3,27 +3,25 @@
     <div class="page-block__cta page-block__cta--large">
       <h1 class="text-center text-uppercase h1--extra-large">Welcome to the Code Red App!</h1>
     </div>
-    <UiFullScreenImage imgsrc="https://images.prismic.io/coderedanalytics/af1903ea-ff02-4ae2-853f-c444488391a8_CR+3D+Globes+w+lens+filter+2MB+JPEG.jpg?auto=compress,format" />
+    <UiFullScreenImage imgsrc="https://images.prismic.io/wateremergencyservices-pwa/b146a127-57a7-4147-bfa7-bbb2f67fff2b_cr+logo.png?auto=compress,format" />
   </div>
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
+import { defineComponent, ref, inject, computed, onMounted, watch } from '@nuxtjs/composition-api';
 
-export default {
-  name: 'Home',
-  data() {
-    return {
-      reports: []
-    }
-  },
+export default defineComponent({
+  setup(props, context) {
+    const authUser = context.root.$fire.auth.currentUser
+    let reportStoreMethods = context.root.$reportStore.methods
+    const data = ref([])
+    const reports = computed(() => context.root.$reportStore.state.all.value)
   
-  head() {
     return {
-      title: 'Home',
+      reports,
     }
   }
-}
+})
 </script>
 <style lang="scss">
 .page-block {
@@ -42,7 +40,9 @@ export default {
     background-color:rgba($color-black, .5);
     border-radius:15px;
     z-index:2;
-    position:relative;
+    position:absolute;
+    top:65%;
+    transform:translateY(-50%);
 
     &--large {
       max-width:630px;

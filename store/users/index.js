@@ -29,6 +29,7 @@ const actions = {
           claims = null
           return
         }
+        
         this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 commit('SET_USER', {
@@ -38,9 +39,9 @@ const actions = {
                     name: res.data.fname + ' ' + res.data.lname,
                     token: idToken
                 })
-                if ('avatar' in res.data) {
+                /* if ('avatar' in res.data) {
                     dispatch('settingAvatar', res.data.avatar)
-                }
+                } */
             })
         })
     },
@@ -57,26 +58,17 @@ const actions = {
             })
         })
     },
-    async fetchAvatar({ commit, dispatch }, user) {
-        await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+    fetchAvatar({ commit, dispatch }) {
+        /* await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             axios.get(`${process.env.serverUrl}/api/employee/${user.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 dispatch('settingAvatar', res.data.avatar)
             }).catch((err) => {
                 commit('setError', err)
             }) 
-        })         
-    },
-    settingAvatar({ commit }, response) {
-        if (response.image.data.length > 1) {
-            let buff = Buffer.from(response.image).toString('base64')
-            let imageUrl = "data:"+response.contentType+";base64,"+buff
-            commit('setAvatar', {
-                image: imageUrl
-            })
-        } else {
-            commit('setAvatar', {})
-        }
-    },
+        })          */
+        var photoUrl = this.$fire.auth.currentUser.photoURL
+        commit('setAvatar', photoUrl)
+    }
 }
 const getters = {
     getEmployees: (state) => {

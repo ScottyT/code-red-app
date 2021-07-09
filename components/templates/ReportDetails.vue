@@ -24,9 +24,9 @@
     </div>
     <div class="report-details__section--contact-group report-details__section">
       <h3 class="report-details__data-label">Caller Name:</h3>
-      <span class="report-details__data-field">{{report.callerName}}</span>
+      <span class="report-details__data-field">{{callerName}}</span>
       <h3 class="report-details__data-label">Arrival Contact Name:</h3>
-      <span class="report-details__data-field">{{report.ArrivalContactName}}</span>
+      <span class="report-details__data-field">{{contactName}}</span>
 
       <h3 class="report-details__data-label">Address:</h3>
       <input class="form__input" v-if="isEditing" v-model="updatedReport.location.address" />
@@ -147,10 +147,10 @@ import {mapGetters, mapActions} from 'vuex';
       textTimeModal: false,
       callTime: null,
       textEtaTime: null,
-      
-      
       isEditing: false,
-      repData: null
+      repData: null,
+      callerName: "",
+      contactName: ""
     }),
     watch: {
       fifteenCallUpdate(val) {
@@ -158,6 +158,10 @@ import {mapGetters, mapActions} from 'vuex';
       },
       ninetyCallUpdate(val) {
         this.updatedReport.ninetyUpdateFormatted = this.formatTime(this.ninetyCallUpdate)
+      },
+      report(val) {
+        this.callerName = val.callerName.first + ' ' + val.callerName.last
+        this.contactName = val.ArrivalContactName.first + ' ' + val.ArrivalContactName.last
       }
     },
     computed: {
@@ -184,7 +188,10 @@ import {mapGetters, mapActions} from 'vuex';
             hotfixes: ['px_scaling']
           }
         }
-      }
+      },
+      /* callerName() {
+        return this.report.callerName.first + ' ' + this.report.callerName.last
+      } */
     },
     mounted() {
       this.$nextTick(() => {

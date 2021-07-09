@@ -44,7 +44,6 @@ export default defineComponent({
     layout: 'dashboard-layout',
     setup(props, {root}) {
         const store = useStore()
-        //const reports = computed(() => store.getters['reports/getReports'])
         const isOnline = computed(() => root.$nuxt.isOnline)
         async function checkStorage() { store.dispatch('indexDb/checkStorage') }
        
@@ -55,7 +54,7 @@ export default defineComponent({
             if (root.$nuxt.isOnline) {
                 await authUser.getIdToken(true).then((idToken) => {
                     root.$axios.$get(`${process.env.serverUrl}/api/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
-                        defaultData.value = res.filter(v => v.ReportType === 'dispatch' || v.ReportType == 'rapid-response')
+                        defaultData.value = res.filter(v => v.ReportType === 'dispatch' || v.ReportType === 'rapid-response')
                         chartData.value = res.filter(v => v.formType === 'chart-report')
                         caseFileData.value = res.filter(v => v.formType === 'case-report')
                         logReports.value = res.filter(v => v.formType === 'logs-report')
@@ -63,7 +62,7 @@ export default defineComponent({
                     })
                 })
             } else {
-                defaultData.value = reports.filter(v => v.ReportType === 'dispatch' || v.ReportType == 'rapid-response')
+                defaultData.value = reports.filter(v => v.ReportType === 'dispatch' || v.ReportType === 'rapid-response')
                 chartData.value = reports.filter(v => v.formType === 'chart-report')
                 caseFileData.value = reports.filter(v => v.formType === 'case-report')
                 logReports.value = reports.filter(v => v.formType === 'logs-report')
