@@ -56,7 +56,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['@/assets/scss/index.scss'],
+  css: ['@/assets/scss/index.scss', '@/assets/scss/transitions.css'],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins

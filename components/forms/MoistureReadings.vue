@@ -41,8 +41,7 @@
                     </ValidationProvider>
                     <div class="form__input-group form__input-group--long">
                         <label for="location" class="form__label">Location</label>
-                        <div id="geocoder" ref="geocoder" class="form__geocoder form__input"
-                            @change="$nuxt.$emit('location-updated')"></div>
+                        <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
                     </div>
                     <ValidationProvider vid="address" name="Address" rules="required" v-slot="{errors, ariaMsg}" class="form__input-group form__input-group--long">
                         <label for="address" class="form__label">Address</label>
@@ -120,65 +119,67 @@
                     </div>
                     <div class="form__input-group form__input-group--normal">
                         <label for="areaSub3" class="form__label">Area Sub-3</label>
-                        <input id="areaSub3" type="text" class="form__input" v-model="areaSub3" />
+                        <input id="areaSub3" type="text" class="form__input" v-model="areaSub3" @click="openTable(3)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 3">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(6, 9)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub3Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('sub3')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
                     <div class="form__input-group form__input-group--long">
                         <label for="baseLine" class="form__label">Base Line Comparitive Readings (Non-Affected)</label>
-                        <input id="baseLine" type="text" class="form__input" v-model="baseLineReadings" />
+                        <input id="baseLine" type="text" class="form__input" v-model="baseLineReadings" @click="openTable(4)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 4">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(9, 12)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaBaselineRow" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('baseLine')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
                 </div>
-                <div class="form__table moisture-map">
-                    <div class="form__table form__table--rows">
-                        <div class="form__table--cols">
-                            <label class="form__label">Date:</label>
-                        </div>
-                        <div class="form__table--cols" v-for="n in areaCols" :key="n">
-                            <label class="form__label">Area {{n}}</label>
-                        </div>
-                    </div>
-                    <div class="form__table form__table--rows" v-for="(row, i) in areaRows" :key="`row-${i}`">
-                        <div class="form__table--cols">
-                            <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>
-                        </div>
-                        <div class="form__table--cols">
-                            <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>
-                        </div>
-                    </div>
-                </div>
-                <button class="button--normal" type="button" @click="addRow">Add row</button>
                 <div class="form__section">
                     <ValidationProvider vid="notes" name="Notes" rules="required" v-slot="{errors, ariaMsg}" class="form__input--input-group">
                         <label class="form__label" for="notes">Notes:</label>
@@ -245,18 +246,9 @@ export default {
                 areaI: ''
             }
         ],
-        areaRows: [
+        areaBaselineRow: [
             {
                 date: '',
-                areaA: '',
-                areaB: '',
-                areaC: '',
-                areaD: '',
-                areaE: '',
-                areaF: '',
-                areaG: '',
-                areaH: '',
-                areaI: '',
                 areaSub1: '',
                 areaSub2: '',
                 areaSub3: ''
@@ -310,22 +302,23 @@ export default {
                         areaE: '',
                         areaF: ''
                     })
+                    break;
+                case 'sub3':
+                    this.areaSub3Row.push({
+                        date: '',
+                        areaG: '',
+                        areaH: '',
+                        areaI: ''
+                    })
+                    break;
+                case 'baseLine':
+                    this.areaBaselineRow.push({
+                        date: '',
+                        areaSub1: '',
+                        areaSub2: '',
+                        areaSub3: ''
+                    })
             }
-            /* this.areaRows.push({
-                date: '',
-                areaA: '',
-                areaB: '',
-                areaC: '',
-                areaD: '',
-                areaE: '',
-                areaF: '',
-                areaG: '',
-                areaH: '',
-                areaI: '',
-                areaSub1: '',
-                areaSub2: '',
-                areaSub3: ''
-            }) */
         },
         formatDate(dateReturned) {
             if (!dateReturned) return null
@@ -337,16 +330,6 @@ export default {
             const [month, day, year] = date.split('/')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
-        createGeocoder() {
-            const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-            const accessToken = process.env.mapboxKey
-            const geocoder = new MapboxGeocoder({
-                accessToken: accessToken,
-                types: 'region,place,postcode,address',
-                placeholder: 'Search for address...',
-            })
-            geocoder.setTypes('address').addTo('.form__geocoder')
-        },
         submitForm() {
             this.submitting = true
             this.submittedMessage = ""
@@ -356,6 +339,7 @@ export default {
             const jobids = reports.map((v) => {
                 return v.JobId
             })
+            var readings = this.areaSub1Row.concat(this.areaSub2Row, this.areaSub3Row, this.areaBaselineRow)
             const post = {
                 JobId: this.selectedJobId,
                 ReportType: "moisture-map",
@@ -366,7 +350,7 @@ export default {
                 areaSub2: this.areaSub2,
                 areaSub3: this.areaSub3,
                 baseLineReadings: this.baseLineReadings,
-                readingsRow: this.areaRows,
+                readingsRow: readings,
                 notes: this.notes,
                 teamMember: this.getUser
             };
@@ -418,54 +402,18 @@ export default {
         },
         openTable(index) {
             this.active = index
+        },
+        settingLocation(params) {
+            this.location.cityStateZip = params.cityStateZip
+            this.location.address = params.address
         }
     },
     mounted() {
-        this.createGeocoder()
         this.checkStorage()
-    },
-    created() {
-        this.$nuxt.$on('location-updated', (event) => {
-            const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-            const geocode = this.$refs.geocoder
-            const accessToken = process.env.mapboxKey
-            const g = new MapboxGeocoder({
-                accessToken: accessToken,
-                types: 'region,place,postcode,address',
-            })
-            const location = geocode.firstChild.childNodes[1].value.split(',', 3)
-            
-            const address = location[0].trim()
-            let city
-            let stateZip
-            if (location[1] !== undefined && location[2] !== undefined) {
-                city = location[1].trim()
-                stateZip = location[2].trim()
-                this.location.cityStateZip = city + ', ' + stateZip
-            } else {
-                city = ''
-                stateZip = ''
-            }
-            this.location.address = address
-            this.location.city = city
-        })
-    },
-    beforeDestroy() {
-        this.$nuxt.$off('location-updated')
     }
 }
 </script>
 <style lang="scss">
-.table-slide-enter-active {
-    transition: all .3s ease;
-}
-.table-slide-leave-active {
-    transition: all .8s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-.table-slide-enter, .table-slide-leave-to {
-    opacity:0;
-    transform:translateY(10px);
-}
 .moisture-map {
     @include respond(tabletLargeMax) {
         font-size:.95em;
@@ -497,9 +445,6 @@ export default {
         width: 500px;
         height:auto;
         padding:10px 0;
-        &.open {
-            opacity:1;
-        }
         &--row {
             display:grid;
             grid-template-columns: 135px repeat(3, 1fr);
