@@ -1193,16 +1193,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             })
           }
         },
-        /* createGeocoder() {
-          const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-          const geocoder = new MapboxGeocoder({
-            accessToken: process.env.mapboxKey,
-            types: 'region,place,postcode,address',
-            placeholder: 'Search for address...',
-          })
-          geocoder.setTypes('address').addTo('.form__geocoder')
-          
-        }, */
         settingLocation(params) {
           this.location.cityStateZip = params.cityStateZip
           this.location.address = params.address
@@ -1210,37 +1200,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
     },
     mounted() {
         this.checkStorage()
-    },
-    created() {
-      /* this.$nuxt.$on('location-updated', (event) => {
-        const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
-          const geocode = this.$refs.geocoder
-          const g = new MapboxGeocoder({
-            accessToken: process.env.mapboxKey,
-            types: 'region,place,postcode,address',
-          })
-          var geocodeEl = geocode.firstChild.childNodes[1];
-          const location = geocodeEl.value.split(',', 3)
-          
-          let city
-          let stateZip
-          if (geocodeEl.value !== '' && location.length > 1) {
-            const address = location[0].trim()
-            city = location[1].trim()
-            stateZip = location[2].trim()
-            this.location.cityStateZip = city + ', ' + stateZip
-            this.location.address = address
-          } else {
-            city = ''
-            stateZip = ''
-            geocodeEl.value = ''
-            this.location.cityStateZip = ''
-            this.location.address = ''
-          }
-      }) */
-    },
-    beforeDestroy() {
-      //this.$nuxt.$off('location-updated')
     }
   }
 </script>

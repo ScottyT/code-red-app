@@ -59,7 +59,7 @@ export default defineComponent({
     const { $fire } = useContext()
     let authUser = context.root.$fire.auth.currentUser
     const store = useStore()
-    const fetchReports = (user) => { store.dispatch("reports/fetchReports", user) }
+    const fetchReports = (user) => { store.dispatch("reports/fetchUserReports", user) }
     const items = ref([
         {
           icon: 'mdi-apps',

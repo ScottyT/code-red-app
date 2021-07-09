@@ -7,6 +7,7 @@ const imageModel = require("../models/imageSchema");
 const Report = require("../models/reportsSchema");
 const multer = require('multer');
 const { createUser, updateUser, uploadAvatar } = require("../controllers/authController");
+const { sendMail } = require('../controllers/emailController')
 const { checkIfAuthenticated } = require("../middleware/authMiddleware");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
@@ -207,6 +208,18 @@ router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
     var imagePath = path.join(__dirname + '/uploads/' + req.file.filename)
     await uploadAvatar(imagePath, teamMember, "users/"+teamMember+"/"+req.file.filename, contentType).then((downloadURL) => {
         res.send(downloadURL)
+    })
+})
+router.post("/sendemail", upload.single('pdf'), async (req, res) => {
+    var file = req.file
+    const { customer } = req.body
+    var pdfAttachment = {
+        filename: file.originalname,
+        path: file.path,
+        contentType: 'application/pdf'
+    }
+    await sendMail(customer, pdfAttachment).then((msg) => {
+        res.send(msg)
     })
 })
 router.post("/moisture-map/new",

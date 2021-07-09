@@ -80,6 +80,20 @@ const actions = {
         commit('setError', err)
       })
     },
+    async fetchUserReports({ commit, dispatch }, authUser) {
+      if (authUser) {
+        await authUser.getIdToken(true).then((idToken) => {
+          this.$axios.$get(`/api/employee/${authUser.email}/reports`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
+            commit('setReports', res)
+            dispatch('mappingJobIds')
+          }).catch((err) => {
+            commit('setError', err)
+          })
+        }).catch((err) => {
+          commit('setError', err)
+        })
+      }
+    },
     sortReports({ commit, state }, sortDirection) {
       state.reports.sort((r1, r2) => {
         let modifier = 1

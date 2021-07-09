@@ -230,7 +230,8 @@
               <label class="form__label">Team Member</label>
               <p>{{getUser ? getUser.name : null}}</p>
             </div>
-            <LazyUiSignaturePadModal inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" sigRef="teamSignaturePad" />
+            <LazyUiSignaturePadModal width="700px" height="219px" inputId="teamMemberSig" :sigData="teamMemberSig" name="Team member signature" :dialog="false" :initial="false"
+              sigRef="teamSignaturePad" sigType="employee" />
           </div>
         </div>
         <button class="button form__button-wrapper--submit" type="submit">{{ submitting ? 'Submitting' : 'Submit' }}</button>
