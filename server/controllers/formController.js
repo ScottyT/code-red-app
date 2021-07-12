@@ -236,7 +236,7 @@ const createAOB = async (req, res) => {
         return res.json({ errors: result.array() })
     }
     await aobcontracts.save().then(() => {
-        res.json({message: "Report submitted"})
+        res.json({data: req.body, error: false, message: "Report submitted"})
     }).catch((err) => {
         res.json(err)
     })

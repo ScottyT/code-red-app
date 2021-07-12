@@ -9,7 +9,8 @@
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
-          <div class="nav-list-item__content">
+          <v-skeleton-loader type="list-item" height="50px" width="200" v-if="isLoading"></v-skeleton-loader>
+          <div class="nav-list-item__content" v-else>
             <p class="nav-list-item__title">{{item.title}}</p>
           </div>
         </nuxt-link>
@@ -32,11 +33,14 @@
           </span>
         </button>
 
-        <nuxt-link class="v-toolbar__title" to="/">{{title}}</nuxt-link>
+        <nuxt-link class="v-toolbar__title ml-4" to="/">{{title}}</nuxt-link>
       <!-- <ul class="menu-items" v-if="!isMobile">
         
       </ul> -->
       </div>
+      <span v-if="isLoading" class="d-flex flex-row">
+        <v-skeleton-loader type="list-item-avatar-two-line" width="300px"></v-skeleton-loader>
+      </span>
       <UiProfileDropdown v-if="user" />
     </v-app-bar>
     <v-main>
@@ -153,6 +157,9 @@ export default {
     ...mapGetters({getUser:"users/getUser", getEmployees:"users/getEmployees", isLoggedIn:"users/isLoggedIn"}),
     isOnline() {
       return this.$nuxt.isOnline
+    },
+    isLoading() {
+      return this.$store.state.users.loading
     }
   },
   watch: {

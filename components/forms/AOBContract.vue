@@ -97,10 +97,8 @@
               </ol>
             </li>
             <div class="form__form-group form__form-group--row">
-                <div class="form__input-group form__input-group--normal">
-                  <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSign"
+                <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="cusSignature" :sigData="cusSign"
                     sigRef="customerSig" name="Signature" />
-                </div>
                 <div class="form__input-group form__input-group--normal">
                     <label for="cusSignDate" class="form__label">Date:</label>
                     <v-dialog ref="dialogCusSign" v-model="cusSignDateModal" :return-value.sync="cusSignDate" persistent width="400px">
@@ -690,18 +688,12 @@
               </div>           
           </div>
           <div class="form__form-group">
-              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
+              <!-- <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
                 <label for="address" class="form__label">Address</label>
                 <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
                 <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="State">
-                <!-- <label for="state" class="form__label">State</label>
-                <i class="form__select--icon icon--angle-down mdi"></i>
-                <select class="form__input" id="state" v-model="location.state">
-                  <option disabled value="" selected>State</option>
-                  <option v-for="state in states" :key="state.abbreviation" :value="state.name">{{state.name}}</option>
-                </select> -->
                 <label class="form__label">City, State, Zip</label>
                 <input v-model="location.cityStateZip" name="cityStateZip" type="text" class="form__input form__input--long" />
                 <span class="form__input--error">{{ errors[0] }}</span>
@@ -715,7 +707,7 @@
                 <label for="lastname" class="form__label">Last Name</label>
                 <input type="text" id="lastname" class="form__input" v-model="lastName" />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
               <ValidationProvider name="License" :rules="`max:${licenseMask.length}|min:${licenseMask.min}|required`" v-slot="{errors}" 
                 class="form__input-group form__input-group--long">
                 <label for="driverslicense" class="form__label">Driver's License #</label>
@@ -728,11 +720,11 @@
               </div>
           </div>
           <div class="form__form-group form__form-group--inline">
-              <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
+              <!-- <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
                   <label class="form__label">Minimum believed Square Foot as defined above</label>
                   <input type="number" v-model="sqft" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
           <p class="text-left">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
@@ -741,19 +733,16 @@
                   <label class="form__label">Driver's License #</label>
                   <input type="text" readonly v-model="driversLicense" class="form__input" />
               </span>
-              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
+              <!-- <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="repPrint" class="form__label">Property Representative Print</label>
                   <input type="text" id="repPrint" class="form__input" v-model="repPrint" />
                   <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
-              <span class="form__input-group form__input-group--normal">
-                  
-              </span>
-              <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
+              </ValidationProvider> -->
+              <!-- <ValidationProvider class="form__input-group form__input-group--normal" name="Representative of" rules="required" v-slot="{errors}">
                 <label for="repOf" class="form__label">Property Representative of</label>
                 <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
               <div class="form__input-group form__input-group--normal">
                 <label for="repOfDate" class="form__label">Date</label>
                 <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
@@ -768,11 +757,11 @@
                   </v-date-picker>
                 </v-dialog>
               </div>
-              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
+              <!-- <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witness" class="form__label">Witness</label>
                   <input type="text" id="witness" class="form__input" v-model="witness" />
                   <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationProvider> -->
               <ValidationProvider rules="required" name="Witness date" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witnesslabel" class="form__label">Witness date</label>
                   <input type="hidden" v-model="witnessDate" />
@@ -846,6 +835,17 @@
         <v-btn type="submit" :class="cardSubmitted || (paymentOption !== 'Card' || existingCreditCard !== 'No') ? 'button' : 'button--disabled'">{{ submitting ? 'Submitting' : 'Submit' }}</v-btn>
       </form>
     </ValidationObserver>
+    <div>
+    <client-only>
+      <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions"
+                    @beforeDownload="beforeDownload($event)" :manual-pagination="true" :show-layout="false"
+                    :enable-download="false" :preview-modal="true" :paginate-elements-by-height="10500"
+                    ref="aobhtml2pdf">
+        <LazyPdfAobContract slot="pdf-content" :contracts="data" company="Water Emergency Services Incorporated" abbreviation="WESI" />
+      </vue-html2pdf>
+    </client-only>
+    <v-btn @click="generatePdf()">Download PDF</v-btn>
+    </div>
   </div>
 </template>
 <script>
@@ -853,9 +853,13 @@ import goTo from 'vuetify/es5/services/goto'
 import {mapGetters, mapActions} from 'vuex'
 import { statesArr } from "@/data/states"
 import { licenseNumbers } from "@/data/driversLicense";
+import VueHtml2pdf from 'vue-html2pdf'
 import 'mapbox-gl/dist/mapbox-gl.css'
   export default {
     props: ['company', 'abbreviation'],
+    components: {
+      VueHtml2pdf
+    },
     computed: {
       ...mapGetters({getReports:'reports/getReports', getUser:'users/getUser', getCards: 'reports/getCards'}),
       insuredPay1: {
@@ -911,6 +915,26 @@ import 'mapbox-gl/dist/mapbox-gl.css'
           mask = { mask: numbersArr.mask, length: numbersArr.length, min: numbersArr.min }
         }
         return mask
+      },
+      htmlToPdfOptions(e) {
+        return {
+          margin: [10, 10, 20, 10],
+          filename: `aob-${this.selectedJobId}`,
+          image: {
+            type: "jpeg",
+            quality: 0.98
+          },
+          html2canvas: {
+            scale: 2,
+            useCORS: true
+          },
+          jsPDF: {
+            unit: 'px',
+            format: 'letter',
+            orientation: 'portrait',
+            hotfixes: ['px_scaling']
+          }
+        }
       }
     },
     data: (vm) => ({
@@ -1000,6 +1024,8 @@ import 'mapbox-gl/dist/mapbox-gl.css'
         cardToUse: "",
         cardObj: {},
         states: statesArr,
+        data: {},
+        pdffile:""
         /* licenseMask: driversLicenseMask.mask */
     }),
     watch: {
@@ -1113,7 +1139,10 @@ import 'mapbox-gl/dist/mapbox-gl.css'
               }
               if (!contracts.includes(this.selectedJobId)) {
                 if ((this.currentStep === 1 && this.paymentOption !== 'Card' || this.existingCreditCard !== 'No') ||this.currentStep === 2) {
-                  this.onSubmit()
+                  Promise.all([this.onSubmit(), this.generatePdf(), this.downloadPdf()]).then(() => {
+                    this.submitted = true
+                    this.message = "AOB & Mitigation Contract submitted!"
+                  })
                   return;
                 }
                 this.currentStep++;
@@ -1166,6 +1195,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             cardNumber: this.cardToUse,
             paymentOption: this.paymentOption
           };
+          this.data = post
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {
               this.message = "AOB & Mitigation Contract was saved successfully to be submitted later."
@@ -1177,11 +1207,12 @@ import 'mapbox-gl/dist/mapbox-gl.css'
               this.errorMessage.push(err)
             })
           } else {
-            this.$axios.$post("/api/aob/new", post).then((res) => {
+            /* this.$axios.$post("/api/aob/new", post).then((res) => {
               if (res.errors) {
                 this.errorMessage = res.errors
                 return
               }
+              //this.data = res.data
               this.message = "AOB & Mitigation Contract submitted!"
               this.submitted = true
               setTimeout(() => {
@@ -1190,13 +1221,37 @@ import 'mapbox-gl/dist/mapbox-gl.css'
               }, 2000)
             }).catch((err) => {
               this.errorMessage.push(err)
-            })
+            }) */
           }
+        },
+        generatePdf() {
+          return Promise.resolve(this.$refs.aobhtml2pdf.generatePdf())
+        },
+        downloadPdf() {
+          var blob = this.$refs.aobhtml2pdf.pdfFile
+          var file = new File([blob], `aob-${this.selectedJobId}`)
+          console.log(file)
+          return Promise.resolve(file)
         },
         settingLocation(params) {
           this.location.cityStateZip = params.cityStateZip
           this.location.address = params.address
-        }
+        },
+        async beforeDownload({ html2pdf, options, pdfContent }) {
+          console.log(pdfContent)
+          await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
+              const totalPages = pdf.internal.getNumberOfPages()
+              for (let i = 1; i <= totalPages; i++) {
+                  pdf.setPage(i)
+                  pdf.setFontSize(14)
+                  pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
+              }
+          }).save()
+        },
+        async hasDownloaded(e) {
+          var file = new File([e], `aob-${this.selectedJobId}`)
+          console.log(file)
+        },
     },
     mounted() {
         this.checkStorage()

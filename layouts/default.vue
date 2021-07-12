@@ -5,10 +5,12 @@
         <v-icon :size="$vuetify.breakpoint.width < 991 ? 60 : 36">mdi-chevron-left</v-icon>
       </button>
       <v-list class="nav-list">
-        <nuxt-link class="nav-list-item" exact v-for="(item, i) in filteredNavItems" :key="i" :to="item.to">
+        <span v-if="isLoading"><v-skeleton-loader type="list-item" height="50px" width="200" v-for="(item, i) in items" :key="`item-${i}`"></v-skeleton-loader></span>
+        <nuxt-link class="nav-list-item" exact v-for="(item, i) in filteredNavItems" :key="i" :to="item.to" v-else>
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
+          
           <div class="nav-list-item__content">
             <p class="nav-list-item__title">{{item.title}}</p>
           </div>
@@ -34,8 +36,11 @@
 
         <nuxt-link class="v-toolbar__title ml-4" to="/">{{title}}</nuxt-link>
       </div>
-      
-      <UiProfileDropdown v-if="user" />
+      <span v-if="isLoading" class="d-flex flex-row">
+        <v-skeleton-loader type="list-item-avatar-two-line" width="300px"></v-skeleton-loader>
+      </span>
+
+      <UiProfileDropdown v-else />
       <!-- <ul class="menu-items" v-if="!isMobile">
         
       </ul> -->
@@ -156,6 +161,8 @@ export default defineComponent({
     const getUser = computed(() => store.getters['users/getUser'])
     const isLoggedIn = computed(() => store.getters['users/isLoggedIn'])
     const isOnline = computed(() => context.root.$nuxt.isOnline)
+    const isLoading = computed(() => store.state.users.loading)
+    //const isLoading = ref(true)
 
     const filtered = (role) => items.value.filter((v) => {
       return v.access === role
@@ -172,7 +179,7 @@ export default defineComponent({
     
     const userLoggedIn = () => {
       user.value = authUser ? true : false
-    }   
+    }
     
     onMounted(userLoggedIn)
     onMounted(itemsArr)
@@ -192,6 +199,7 @@ export default defineComponent({
       getUser,
       reports,
       isOnline,
+      isLoading,
       fetchReports
     }
   }

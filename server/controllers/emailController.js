@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendMail = async (toEmail, attachment) => {
+const sendMail = async (toEmail, subject, attachment) => {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -10,14 +10,15 @@ const sendMail = async (toEmail, attachment) => {
             clientId: process.env.OAUTH_CLIENT_ID,
             clientSecret: process.env.OAUTH_CLIENT_SECRET,
             refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+            accessToken: process.env.OAUTH_ACCESS_TOKEN,
             expires: 1484314697598
         }
     })
     let mailOptions = {
         from: process.env.MAIL_USERNAME,
         to: toEmail,
-        subject: 'Nodemailer Project',
-        text: 'Hi from nodemailer',
+        subject: subject,
+        text: 'Hello! This email contains the contract you signed for Code Red.',
         attachments: [attachment]
     };
     

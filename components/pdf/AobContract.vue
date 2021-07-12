@@ -33,7 +33,7 @@
                                 <span class="font-weight-bold">Assignment of Claim to {{company}}:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial1}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial1" />
                                 </div>
                                 <ol>
                                     <li>
@@ -95,7 +95,7 @@
                                 <span class="font-weight-bold">Direction of Payment to {{company}}:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial2}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial2" />
                                 </div>
                                     <ol>
                                         <li>
@@ -118,7 +118,7 @@
                                 <span class="font-weight-bold">Property Representative Cooperation Required:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial3}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial3" />
                                 </div>
                                 <ol>
                                     <li>
@@ -138,7 +138,7 @@
                                 from start to finish.</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial4}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial4" />
                                 </div>
                                 <ol class="form__form-group--listing">
                                     <li>
@@ -194,7 +194,7 @@
                                 services as set forth herein:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial5}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial5" />
                                 </div>
                                 <ol class="form__form-group--listing">
                                     <li>
@@ -319,7 +319,7 @@
                                 <span class="font-weight-bold">Terms and Conditions:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial6}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial6" />
                                 </div>
                                 <ol class="form__form-group--listing">
                                 <li>
@@ -492,7 +492,7 @@
                                 <span class="font-weight-bold">Entire Agreement and Jurisdiction:</span>
                                 <div class="report-details__data-field">
                                     <label>Initial:</label>
-                                    <span>{{contracts.initial7}}</span>
+                                    <img class="report-details__initial" :src="contracts.initial7" />
                                 </div>
                                 <p>Except as set forth in this Agreement entered into by the parties, this Agreement is the entire
                                 agreement between {{abbreviation}} and the Property Representative with respect to the subject matter
@@ -516,7 +516,7 @@
                             <h3 class="font-weight-bold">RETAINER AND RESERVE PAYMENT RELATED TO THE ABOVE AGREEMENT</h3>
                             <div class="report-details__data-field">
                                 <label>Initial:</label>
-                                <span>{{contracts.initial7}}</span>
+                                <img class="report-details__initial" :src="contracts.initial8" />
                             </div>
                             <li>
                                 Insured Property<br />
@@ -605,7 +605,7 @@
                     </div>
                     
                     <div class="report-details__section">
-                        <div class="report-details__data">
+                        <!-- <div class="report-details__data">
                             <label>Address:</label>
                             <div>{{contracts.location.address}}</div>
                         </div>
@@ -620,7 +620,7 @@
                         <div class="report-details__data">
                             <label>Zip:</label>
                             <div>{{contracts.location.zip}}</div>
-                        </div>
+                        </div> -->
                         <div class="report-details__data">
                             <label>First Name:</label>
                             <div>{{contracts.firstName}}</div>
@@ -816,6 +816,10 @@ export default {
 <style lang="scss" scoped>
 .report-details__listing {
     font-size:14px;
+}
+.report-details__initial {
+    width:70px;
+    height:20px;
 }
 .data-section {
     margin: 20px 0;

@@ -3,7 +3,8 @@ const state = () => ({
     user: null,
     employees: [],
     avatarurl:{},
-    error: null
+    error: null,
+    loading: true
 })
 const mutations = {
     setUser: (state, payload) => {
@@ -20,6 +21,9 @@ const mutations = {
     },
     setError: (state, error) => {
         state.error = error
+    },
+    setLoading: (state, payload) => {
+        state.loading = payload
     }
 }
 const actions = {
@@ -31,6 +35,7 @@ const actions = {
         }
         
         this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+            commit('setLoading', true)
             axios.get(`${process.env.serverUrl}/api/employee/${authUser.email}`, {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
                 commit('SET_USER', {
                     email: res.data.email,
@@ -39,9 +44,7 @@ const actions = {
                     name: res.data.fname + ' ' + res.data.lname,
                     token: idToken
                 })
-                /* if ('avatar' in res.data) {
-                    dispatch('settingAvatar', res.data.avatar)
-                } */
+                commit('setLoading', false)
             })
         })
     },

@@ -212,13 +212,13 @@ router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
 })
 router.post("/sendemail", upload.single('pdf'), async (req, res) => {
     var file = req.file
-    const { customer } = req.body
+    const { customer, reportname } = req.body
     var pdfAttachment = {
         filename: file.originalname,
         path: file.path,
         contentType: 'application/pdf'
     }
-    await sendMail(customer, pdfAttachment).then((msg) => {
+    await sendMail(customer, reportname, pdfAttachment).then((msg) => {
         res.send(msg)
     })
 })
