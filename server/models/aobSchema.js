@@ -28,6 +28,7 @@ const aobMitigationContract = mongoose.Schema({
     location: Map,
     firstName: String,
     lastName: String,
+    email: String,
     driversLicense: String,
     relation: String,
     minimumSqft: String,

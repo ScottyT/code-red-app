@@ -217,6 +217,7 @@ const createAOB = async (req, res) => {
         location: req.body.location,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        email: req.body.email,
         driversLicense: req.body.driversLicense,
         relation: req.body.relation,
         minimumSqft: req.body.minimumSqft,

@@ -643,10 +643,10 @@
   }
 </script>
 <style lang="scss">
-  #map {
+  /* #map {
     height: 200px;
     width: 200px;
-  }
+  } */
   
   .form {
     &__form-group {

@@ -605,7 +605,7 @@
                     </div>
                     
                     <div class="report-details__section">
-                        <!-- <div class="report-details__data">
+                        <div class="report-details__data">
                             <label>Address:</label>
                             <div>{{contracts.location.address}}</div>
                         </div>
@@ -620,7 +620,7 @@
                         <div class="report-details__data">
                             <label>Zip:</label>
                             <div>{{contracts.location.zip}}</div>
-                        </div> -->
+                        </div>
                         <div class="report-details__data">
                             <label>First Name:</label>
                             <div>{{contracts.firstName}}</div>
