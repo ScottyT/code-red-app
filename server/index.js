@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 const api = require('./routes/api');
 const dotenv = require("dotenv");
 const app = express();
-const fs = require('fs');
 const path = require('path')
-const { sendMail } = require('./controllers/emailController')
 dotenv.config();
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");

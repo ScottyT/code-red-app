@@ -607,19 +607,19 @@
                     <div class="report-details__section">
                         <div class="report-details__data">
                             <label>Address:</label>
-                            <div>{{contracts.location.address}}</div>
+                            <div>{{contracts && contracts.location ? contracts.location.address : null}}</div>
                         </div>
                         <div class="report-details__data">
                             <label>City:</label>
-                            <div>{{contracts.location.city}}</div>
+                            <div>{{contracts && contracts.location ? contracts.location.city : null}}</div>
                         </div>
                         <div class="report-details__data">
                             <label>State:</label>
-                            <div>{{contracts.location.state}}</div>
+                            <div>{{contracts && contracts.location ? contracts.location.state : null}}</div>
                         </div>
                         <div class="report-details__data">
                             <label>Zip:</label>
-                            <div>{{contracts.location.zip}}</div>
+                            <div>{{contracts && contracts.location ? contracts.location.zip : null}}</div>
                         </div>
                         <div class="report-details__data">
                             <label>First Name:</label>
@@ -748,7 +748,6 @@
                                     <img :src="image.url" />
                                 </div>
                             </div>
-                            <!-- <div class="html2pdf__page-break"/> -->
                         </div>
                     </div>
             </section>
@@ -758,13 +757,28 @@
 <script>
 export default {
   name: "AobContractContent",
-  props: ['contracts', 'company', 'abbreviation'],
+  props: ['contracts', 'cardsInfo', 'images', 'company', 'abbreviation'],
   data() {
     return {
       cards: [],
       errorMessage: "",
       cardImages: []
     }
+  },
+  watch: {
+      /* contracts(val) {
+          this.fetchCards(val.cardNumber).then(result => console.log(result))
+      }, */
+      cardsInfo(val) {
+          val.forEach((card) => {
+              this.cards.push(card)
+          })
+      },
+      images(val) {
+          val.forEach((card) => {
+              this.cardImages.push(card)
+          })
+      }
   },
   methods: {
     getCardImages(card) {
@@ -788,6 +802,20 @@ export default {
           })
         })
       })
+    },
+    fetchCards(cardnumber) {
+        var data = []
+        return new Promise((resolve, reject) => {
+            this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
+                this.$axios.$get(`/api/credit-card/${cardnumber}`, {headers: {authorization: `Bearer ${idToken}`}})
+                    .then((res) => {
+                        res.forEach((card) => {
+                            this.getCardImages(card.cardNumber)
+                        })
+                        resolve(res)
+                    })
+            })
+        })
     }
   },
   mounted() {
@@ -799,7 +827,6 @@ export default {
   },
   created() {
     if (this.contracts.paymentOption === 'Card') {
-        
         this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
           this.$axios.$get(`/api/credit-card/${this.contracts.cardNumber}`, {headers: {authorization: `Bearer ${idToken}`}})
             .then((res) => {

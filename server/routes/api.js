@@ -12,7 +12,6 @@ const { checkIfAuthenticated } = require("../middleware/authMiddleware");
 const { createEmployee, createMoistureMap, createSketch, createLogs, updateLogs, uploadChart, createDispatch, createRapidResponse, createAOB, createCOC, createCaseFile, createCreditCard } = require('../controllers/formController');
 const router = express.Router();
 const { body, check, validationResult } = require('express-validator');
-const fs = require('fs');
 const path = require('path');
 
 router.use(express.json({limit: "50MB"}))
@@ -26,6 +25,7 @@ var storage = multer.diskStorage({
     }
 });
 var upload = multer({ storage: storage })
+// GENERAL REUSABLE FUNCTIONS //
 const duplicateJobIDCheck = (val, reportType) => {
     return Report.findOne({JobId: val, ReportType: reportType}).then(report => {
         if (report) {
@@ -33,16 +33,7 @@ const duplicateJobIDCheck = (val, reportType) => {
         }
     });
 }
-/* router.get('/', (req, res) => {
-    imageModel.find({}, (err, items) => {
-        if (err) {
-            console.log(err)
-            res.status(500).send('An error occured', err);
-        } else {
-            res.json(items)
-        }
-    })
-}) */
+
 router.post("/auth/signup", createUser);
 router.post("/employee/new", 
     check('email', 'Email is required').isEmail().withMessage('Email must be valid')
@@ -212,13 +203,14 @@ router.post('/avatar/new', upload.single('avatar'), async (req, res) => {
 })
 router.post("/sendemail", upload.single('pdf'), async (req, res) => {
     var file = req.file
-    const { customer, reportname } = req.body
+    const { customer, subject } = req.body
+    
     var pdfAttachment = {
         filename: file.originalname,
         path: file.path,
         contentType: 'application/pdf'
     }
-    await sendMail(customer, reportname, pdfAttachment).then((msg) => {
+    await sendMail(customer, subject, pdfAttachment).then((msg) => {
         res.send(msg)
     })
 })
