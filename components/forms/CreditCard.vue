@@ -32,7 +32,7 @@
             <input id="cardholderemail" type="email" class="form__input" v-model="cardholderInfo.email" />
             <span class="form__input--error">{{ errors[0] }}</span>
           </ValidationProvider>
-          <span class="form__input-group form__input-group card-input">
+          <span class="form__input-group form__input-group--long card-input">
             <label for="cardNumber" class="form__label">Card Number</label>
             <input class="form__input" v-imask="cardMasks" @accept="onAcceptCardType" required @complete="onComplete" id="cardNumber" autocomplete="off" :value="cardNumber">
             <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
@@ -93,7 +93,7 @@
               <input type="text" id="cardholderName" class="form__input" v-model="cardName" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>
-            <span class="form__input-group form__input-group card-input">
+            <span class="form__input-group form__input-group--long card-input">
               <label for="cardNumber" class="form__label">Card Number</label>
               <input class="form__input" v-imask="cardMasks" required id="cardNumber" autocomplete="off" readonly :value="cardNumber">
               <img v-show="selectedCard !== ''" class="card-input__symbol" :src="selectedCard !== '' ? `/${cardCompany}.png` : ''" />
@@ -120,7 +120,8 @@
           <div class="form__form-group">
             <ValidationProvider rules="required" v-slot="{errors}" name="Address Line 1" class="form__input-group form__input-group--long">
               <label for="addressLine1" class="form__label">Address Line 1</label>
-              <UiGeoCoder @sendAddress="settingBilling($event)" :mapView="false" geocoderid="subjectProperty" geocoderef="geocoderProperty" />
+              <input type="hidden" v-model="billingAddress.address1" />
+              <UiGeoCoder @sendAddress="settingBilling($event)" :mapView="false" geocoderid="billingAddress" geocoderef="geocoderProperty" />
               <span class="form__input--error">{{ errors[0] }}</span>
             </ValidationProvider>            
             <ValidationProvider name="Address Line 2" class="form__input-group form__input-group--long">
@@ -562,7 +563,7 @@ import { statesArr } from "@/data/states"
     grid-area:zip;
   }
   &__symbol {
-    height:37px;
+    height:40px;
     width:70px;
     position:absolute;
     right:25px;

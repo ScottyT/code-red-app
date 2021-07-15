@@ -47,54 +47,131 @@
                 <label>Notes: </label>
                 <div class="pdf-item__textbox">{{savedreport.notes}}</div>
             </div>
-            <div class="pdf-item__table moisture-data" v-if="savedreport.ReportType === 'moisture-map'">
-                <div class="pdf-item__table moisture-data--rows">
-                    <div class="pdf-item__table moisture-data--cols">
-                        <div>DATE:</div>
-                    </div>                   
-                    <div class="pdf-item__table moisture-data--cols" v-for="n in areaCols" :key="n">
-                        <label class="form__label">Area {{n}}</label>
+            <div class="pdf-item__table moisture-data" v-if="savedreport.ReportType === 'moisture-map'">                
+                <div class="form__form-group area-sub-group">
+                    <div class="form__input-group form__input-group--normal area-sub-group__section">
+                        <label for="areaSub1" class="form__label">Area Sub-1</label>
+                        <input id="areaSub1" type="text" class="form__input" v-model="areaSub1" @click="openTable(1)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 1">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(0, 3)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub1Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('sub1')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
-                </div>
-                <div class="pdf-item__table moisture-data--rows" v-for="(row, i) in savedreport.readingsRow" :key="`row-${i}`">
-                    <div class="moisture-data--cols">
-                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                    <div class="form__input-group form__input-group--normal">
+                        <label for="areaSub2" class="form__label">Area Sub-2</label>
+                        <input id="areaSub2" type="text" class="form__input" v-model="areaSub2" @click="openTable(2)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 2">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(3, 6)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub2Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('sub2')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaA" class="form__input" /></span>%
+                    <div class="form__input-group form__input-group--normal">
+                        <label for="areaSub3" class="form__label">Area Sub-3</label>
+                        <input id="areaSub3" type="text" class="form__input" v-model="areaSub3" @click="openTable(3)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 3">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(6, 9)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaSub3Row" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('sub3')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaB" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaC" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaD" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaE" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaF" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaG" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaH" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaI" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>%
-                    </div>
-                    <div class="moisture-data--cols">
-                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>%
+                    <div class="form__input-group form__input-group--long">
+                        <label for="baseLine" class="form__label">Base Line Comparitive Readings (Non-Affected)</label>
+                        <input id="baseLine" type="text" class="form__input" v-model="baseLineReadings" @click="openTable(4)" />
+                        <transition name="table-slide">
+                            <div class="area-sub-group__table" v-if="active === 4">
+                                <div class="area-sub-group__table--row">
+                                    <div class="area-sub-group__table--cols">
+                                        <label class="form__label">Date:</label>
+                                    </div>
+                                    <div class="area-sub-group__table--cols" v-for="n in areaCols.slice(9, 12)" :key="n">
+                                        <label class="form__label">Area {{n}} %</label>
+                                    </div>
+                                </div>
+                                <div class="area-sub-group__table--row" v-for="(row, i) in areaBaselineRow" :key="`row-${i}`">
+                                    <div class="area-sub-group__table--cols">
+                                        <input type="text" v-mask="'##/##/####'" v-model="row.date" class="form__input" />
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub1" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub2" class="form__input" /></span>
+                                    </div>
+                                    <div class="area-sub-group__table--cols">
+                                        <span class="number-input"><input type="text" maxlength="3" v-model="row.areaSub3" class="form__input" /></span>
+                                    </div>
+                                </div>
+                                <button class="button--normal" type="button" @click="addRow('baseLine')">Add row</button>
+                            </div>
+                        </transition>
                     </div>
                 </div>
             </div>
@@ -238,7 +315,44 @@ export default {
             savedrep:{},
             alertDialog: false,
             newreport: false,
+            areaSub1: "",
+            areaSub2: "",
+            areaSub3: "",
+            baseLineReadings: "",
             areaCols: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "SUB-1", "SUB-2", "SUB-3"],
+            areaSub1Row: [
+                {
+                    date: '',
+                    areaA: '',
+                    areaB: '',
+                    areaC: ''
+                }
+            ],
+            areaSub2Row: [
+                {
+                    date: '',
+                    areaD: '',
+                    areaE: '',
+                    areaF: ''
+                }
+            ],
+            areaSub3Row: [
+                {
+                    date: '',
+                    areaG: '',
+                    areaH: '',
+                    areaI: ''
+                }
+            ],
+            areaBaselineRow: [
+                {
+                    date: '',
+                    areaSub1: '',
+                    areaSub2: '',
+                    areaSub3: ''
+                }
+            ],
+            active:null
         }
     },
     computed: {
@@ -344,22 +458,43 @@ export default {
                 )
             })
         },
-        addRow() {
-            this.report.readingsRow.push({
-                date: '',
-                areaA: '',
-                areaB: '',
-                areaC: '',
-                areaD: '',
-                areaE: '',
-                areaF: '',
-                areaG: '',
-                areaH: '',
-                areaI: '',
-                areaSub1: '',
-                areaSub2: '',
-                areaSub3: ''
-            })
+        addRow(area) {
+            switch (area) {
+                case 'sub1':
+                    this.areaSub1Row.push({
+                        date: '',
+                        areaA: '',
+                        areaB: '',
+                        areaC: ''
+                    })
+                    break;
+                case 'sub2':
+                    this.areaSub2Row.push({
+                        date: '',
+                        areaD: '',
+                        areaE: '',
+                        areaF: ''
+                    })
+                    break;
+                case 'sub3':
+                    this.areaSub3Row.push({
+                        date: '',
+                        areaG: '',
+                        areaH: '',
+                        areaI: ''
+                    })
+                    break;
+                case 'baseLine':
+                    this.areaBaselineRow.push({
+                        date: '',
+                        areaSub1: '',
+                        areaSub2: '',
+                        areaSub3: ''
+                    })
+            }
+        },
+        openTable(index) {
+            this.active = index
         },
         submitReport() {
             this.alertDialog = !this.alertDialog

@@ -371,9 +371,9 @@
       intrusionSection: [
         { label: 'Source of Intrusion', value: '', type: 'text' },
         { label: 'Age of Structure', value: '', type: 'text' },
-        { label: 'Approximate sqft', value: null, type: 'number' },
-        { label: 'Number of Rooms', value: null, type: 'number' },
-        { label: 'Number of Floors', value: null, type: 'number' }
+        { label: 'Approximate sqft', value: '', type: 'number' },
+        { label: 'Number of Rooms', value: '', type: 'number' },
+        { label: 'Number of Floors', value: '', type: 'number' }
       ],
       dateIntrusion: new Date().toISOString().substr(0, 10),
       dateIntrusionFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

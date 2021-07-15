@@ -9,7 +9,7 @@
                 <div class="card-front__info">
                     <div class="card-front__card-number">
                         <p>card number</p>
-                        <p class="value--cardnumber">{{cardnumber}}</p>
+                        <p class="value--cardnumber">{{cardNumber}}</p>
                     </div>
                     <div class="card-front__cardholder">
                         <p>cardholder name</p>
@@ -68,7 +68,7 @@ export default defineComponent({
         watch(expirationDate, (val) => setPlaceholders(val, expdate, "01/23"))
         watch(cvv, (val) => setPlaceholders(val, securityCode, "985"))
         return {
-            backgroundImage, showBack, flipCard, cardnumber, expdate, securityCode
+            backgroundImage, showBack, flipCard, cardnumber, expdate, securityCode, cardNumber
         }
     },
 })

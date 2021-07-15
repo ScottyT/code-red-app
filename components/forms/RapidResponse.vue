@@ -607,10 +607,10 @@
         { id:'structureType', label: 'Structure Type', value: '', type: 'text' },
         { id:'use', label: 'Use', value: '', type: 'text' },
         { id:'history', label: 'History', value: '', type: 'text' },
-        { id:'age', label: 'Age', value: null, type: 'text' },
-        { id:'appxSqft', label: 'Approximate sqft', value: null, type: 'number' },
-        { id:'numberOfRooms', label: 'Number of Rooms', value: null, type: 'number' },
-        { id:'numberOfFloors', label: 'Number of Floors', value: null, type: 'number' }
+        { id:'age', label: 'Age', value: '', type: 'text' },
+        { id:'appxSqft', label: 'Approximate sqft', value: '', type: 'number' },
+        { id:'numberOfRooms', label: 'Number of Rooms', value: '', type: 'number' },
+        { id:'numberOfFloors', label: 'Number of Floors', value: '', type: 'number' }
       ],
       dateIntrusion: new Date().toISOString().substr(0, 10),
       dateIntrusionFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

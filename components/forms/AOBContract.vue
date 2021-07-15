@@ -687,7 +687,7 @@
               </div>           
           </div>
           <div class="form__form-group">
-              <!-- <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
+              <ValidationProvider rules="required" class="form__input-group form__input-group--long" v-slot="{errors}" name="Address">
                 <input type="hidden" v-model="location.address" />
                 <label for="address" class="form__label">Address</label>
                 <UiGeoCoder @sendAddress="settingLocation($event)" :mapView="false" geocoderid="geocoder" geocoderef="geocoder" />
@@ -712,7 +712,7 @@
                 <label for="email" class="form__label">Email Address</label>
                 <input type="text" id="email" class="form__input" v-model="email" />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider> -->
+              </ValidationProvider>
               <ValidationProvider name="License" :rules="`max:${licenseMask.length}|min:${licenseMask.min}|required`" v-slot="{errors}" 
                 class="form__input-group form__input-group--long">
                 <label for="driverslicense" class="form__label">Driver's License #</label>
@@ -725,11 +725,11 @@
               </div>
           </div>
           <div class="form__form-group form__form-group--inline">
-              <!-- <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
+              <ValidationProvider rules="required|numeric" name="Square foot" v-slot="{errors}">
                   <label class="form__label">Minimum believed Square Foot as defined above</label>
                   <input type="number" v-model="sqft" class="form__input" />
                   <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider> -->
+              </ValidationProvider>
           </div>
           <p>{{abbreviation}} is solely and exclusively entitled to a minimum of $7.00 per square foot or $7,000.00</p>
           <p class="text-left">Property Representative understands {{company}} is not affiliated, associated, endorsed by, or in any way officially connected with any other company, agency or franchise.</p>
@@ -738,7 +738,7 @@
                   <label class="form__label">Driver's License #</label>
                   <input type="text" readonly v-model="driversLicense" class="form__input" />
               </span>
-              <!-- <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
+              <ValidationProvider rules="required|alpha_spaces" name="Name" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="repPrint" class="form__label">Property Representative Print</label>
                   <input type="text" id="repPrint" class="form__input" v-model="repPrint" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -747,7 +747,7 @@
                 <label for="repOf" class="form__label">Property Representative of</label>
                 <input type="text" id="repOf" class="form__input" v-model="representativeOf" />
                 <span class="form__input--error">{{ errors[0] }}</span>
-              </ValidationProvider> -->
+              </ValidationProvider>
               <div class="form__input-group form__input-group--normal">
                 <label for="repOfDate" class="form__label">Date</label>
                 <v-dialog ref="dialogRepDate" v-model="repDateModal" :return-value.sync="repDate" persistent width="500px">
@@ -762,7 +762,7 @@
                   </v-date-picker>
                 </v-dialog>
               </div>
-              <!-- <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
+              <ValidationProvider rules="required" name="Witness" v-slot="{errors}" class="form__input-group form__input-group--normal">
                   <label for="witness" class="form__label">Witness</label>
                   <input type="text" id="witness" class="form__input" v-model="witness" />
                   <span class="form__input--error">{{ errors[0] }}</span>
@@ -784,7 +784,7 @@
                   <span class="form__input--error">{{ errors[0] }}</span>
               </ValidationProvider>
               <LazyUiSignaturePadModal width="700px" height="219px" dialog :initial="false" sigType="customer" inputId="repSignPad"  :sigData="repSign" 
-                sigRef="repSignPad" name="Representative signature" /> -->
+                sigRef="repSignPad" name="Representative signature" />
           </div>
           <div class="form__form-group form__form-group--inline form__form-group--column">
               <ValidationProvider rules="numeric" name="Number of rooms" v-slot="{errors}" class="form__input-group form__input-group--short">
@@ -852,7 +852,7 @@
         <LazyPdfAobContract slot="pdf-content" :cardsInfo="cards" :images="cardImages" :contracts="data" company="Water Emergency Services Incorporated" abbreviation="WESI" />
       </vue-html2pdf>
     </client-only>
-    <button class="button--normal" ref="downloadBtn" v-show="true" @click="generatePdf()">Download PDF</button>
+    <button class="button--normal" ref="downloadBtn" v-show="false" @click="generatePdf()">Download PDF</button>
     </div>
   </div>
 </template>
@@ -1070,10 +1070,13 @@ import 'mapbox-gl/dist/mapbox-gl.css'
         },
         selectedJobId(val) {
           var report = this.getReports.find((v) => {
-            return val === this.selectedJobId && v.ReportType === 'rapid-response'
+            return val === this.selectedJobId && (v.ReportType === 'rapid-response' || v.ReportType === 'dispatch')
           })
           this.numberOfFloors = report.intrusion.find(e => e.label === 'Number of Floors').value
           this.numberOfRooms = report.intrusion.find(e => e.label === 'Number of Rooms').value
+        },
+        cardToUse(val) {         
+          this.getCardImages(val)
         }
     },
     methods: {
@@ -1092,6 +1095,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             const {isSubmit, cardNumber} = params[0]
             this.cardObj = params
             this.cardToUse = cardNumber
+            this.cardSubmitted = isSubmit
         },
         onBegin() {
           const {
@@ -1143,7 +1147,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
               return v.JobId
             })
             
-            this.submitting = true
+            
             await this.$refs.form.validate().then(success => {
               if (!success) {
                 this.submitting = false
@@ -1154,11 +1158,12 @@ import 'mapbox-gl/dist/mapbox-gl.css'
                 if ((this.currentStep === 1 && this.paymentOption !== 'Card' || this.existingCreditCard !== 'No') ||this.currentStep === 2) {
                   Promise.all([this.onSubmit(), this.fetchCards(this.data.cardNumber)]).then((result) => {
                     console.log(result)
+                    console.log("fetch cards finished")
                     this.submitted = true
                     this.message = result[0]
                     this.$refs.downloadBtn.click()
                     
-                  })
+                  }).catch(error => console.log(`Error in promises ${error}`))
                   return;
                 }
                 this.currentStep++;
@@ -1213,7 +1218,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             cardNumber: this.cardToUse,
             paymentOption: this.paymentOption
           };
-          console.log("submtting report")
+          this.submitting = true
           this.data = post
           if (this.$nuxt.isOffline) {
             this.addReport(post).then(() => {
@@ -1238,33 +1243,31 @@ import 'mapbox-gl/dist/mapbox-gl.css'
           return Promise.resolve("AOB & Mitigation Contract submitted!")
         },
         fetchCards(cardnumber) {
-          return new Promise((resolve, reject) => {
-            console.log("getting ready to fetch cards")
+          return new Promise((resolve) => {
             this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
-              console.log("got idtoken")
-              this.$axios.$get(`/api/credit-card/${cardnumber}`, {
-                  headers: {
-                    authorization: `Bearer ${idToken}`
-                  }
-                })
-                .then((res) => {
-                  res.forEach(card => {
-                    this.getCardImages(card.cardNumber)
+                console.log("got idtoken")
+                this.$axios.$get(`/api/credit-card/${cardnumber}`, {
+                    headers: {
+                      authorization: `Bearer ${idToken}`
+                    }
                   })
-                  this.cards = res
-                  console.log("got the card")
-                  resolve(res)
-                })
-            })
+                  .then((res) => {
+                    console.log("got the card")
+                    this.cards = res
+                    resolve(res)
+                    
+                  })
+              })
           })
         },
         async getCardImages(card) {
+          var promiseArr = []
           var storageRef = this.$fire.storage.ref()
           var listRef = storageRef.child(card)
-          listRef.listAll().then((res) => {
-            res.items.forEach((itemRef) => {
-              var itemPath = itemRef.fullPath;
-              storageRef.child(itemPath).getDownloadURL().then((url) => {
+          const sendListItems = (item) => {
+            var promise = new Promise((resolve) => {
+              var itemPath = item.fullPath;
+                storageRef.child(itemPath).getDownloadURL().then((url) => {
                 var fileName = itemPath.substring(itemPath.lastIndexOf('/') + 1, itemPath.length)
                 var fileType = itemPath.substring(itemPath.lastIndexOf('.'), itemPath.length)
                 const fileObj = {
@@ -1272,13 +1275,21 @@ import 'mapbox-gl/dist/mapbox-gl.css'
                   name: fileName,
                   url: url,
                   type: fileType
-                }
-                this.cardImages.push(fileObj)
-              }).catch((err) => {
-                this.errorMessage = err
-              })
+                }                
+                resolve(fileObj)
+              });
+            });
+            return promise.then((cardimage) => {
+              promiseArr.push(cardimage)
             })
-          })
+          }
+          await listRef.listAll().then((res) => {
+            Promise.all(res.items.map(itemRef => sendListItems(itemRef))).then(() => {
+              console.log("got images")
+              this.cardImages = promiseArr
+              
+            }).catch(error => console.log(`Error in promises ${error}`))
+          })         
         },
         generatePdf() {
           this.$refs.aobhtml2pdf.generatePdf()
@@ -1299,14 +1310,13 @@ import 'mapbox-gl/dist/mapbox-gl.css'
           return new File([u8arr], filename, {type:mime});
         },
         async beforeDownload({ html2pdf, options, pdfContent }) {
-          console.log("starting generation")
           const pdfDownload = async () => {
             return html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
               const totalPages = pdf.internal.getNumberOfPages()
               for (let i = 1; i <= totalPages; i++) {
                   pdf.setPage(i)
                   pdf.setFontSize(14)
-                  pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
+                  pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 10))
               }             
             }).outputPdf().then((result) => {
               var file = this.dataURLtoFile(`data:application/pdf;base64,${btoa(result)}`, `aob-${this.selectedJobId}`);
@@ -1314,7 +1324,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
             })
           }
           pdfDownload().then((result) => {
-            console.log("generation end")
             this.sendMail(result).then((message) => {
               this.emailSuccess = message
               this.submitting = false

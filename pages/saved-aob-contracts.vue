@@ -6,7 +6,8 @@
         <div class="contracts-list-item" v-for="(item, i) in contracts" :key="`contract-${i}`">
             <p>AOB & Mitigation Contract Job ID: {{item.JobId}}</p>
             <client-only>
-                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" @beforeDownload="beforeDownload($event)" :manual-pagination="true"
+                <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions"
+                    @beforeDownload="beforeDownload($event)" :manual-pagination="true"
                     :show-layout="false" :enable-download="false" :preview-modal="true" :paginate-elements-by-height="10500" :ref="`aobhtml2pdf-${i}`">
                     <LazyPdfAobContract slot="pdf-content" :contracts="item" company="Water Emergency Services Incorporated" abbreviation="WESI" />
                 </vue-html2pdf>
@@ -16,7 +17,6 @@
     </div>
 </template>
 <script>
-import VueHtml2pdf from 'vue-html2pdf'
 export default {
     head() {
         return {
@@ -45,9 +45,6 @@ export default {
             }
         }
     },
-    components: {
-        VueHtml2pdf
-    },
     async fetch() {
         await this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
             this.$axios.$get("/api/reports/aob", {headers: {authorization: `Bearer ${idToken}`}}).then((res) => {
@@ -61,10 +58,10 @@ export default {
         return {
             contracts: [],
             contentRendered: false,
-            errorMessage: '',
-            cards:[]
+            errorMessage: ''
         }
     },
+    
     methods: {
         domRendered() {
             this.contentRendered = true
@@ -74,13 +71,12 @@ export default {
             this.$refs["aobhtml2pdf-"+key][0].generatePdf()
         },
         async beforeDownload({ html2pdf, options, pdfContent }) {
-            console.log(pdfContent)
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
                 const totalPages = pdf.internal.getNumberOfPages()
                 for (let i = 1; i <= totalPages; i++) {
                     pdf.setPage(i)
                     pdf.setFontSize(14)
-                    pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
+                    pdf.text('Page ' + i + ' of ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 10))
                 }
             }).save()
         }

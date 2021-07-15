@@ -6,7 +6,7 @@
             <client-only>
                 <vue-html2pdf :pdf-quality="2" pdf-content-width="100%" :html-to-pdf-options="htmlToPdfOptions" :paginate-elements-by-height="1250" :manual-pagination="false"
                             :show-layout="false" :enable-download="false" @beforeDownload="beforeDownload($event)" :preview-modal="true" :ref="`html2Pdf-${i}`">
-                    <PdfCertificateContent :certificate="item" company="Water Emergency Services Incorporated" abbreviation="WESI" @domRendered="domRendered()" slot="pdf-content" />
+                    <PdfCertificateContent :certificate="item" company="Water Emergency Services Incorporated" abbreviation="WESI"  slot="pdf-content" />
                 </vue-html2pdf>
             </client-only>
             <v-btn @click="generateReport(i)">Download PDF</v-btn>
@@ -14,15 +14,11 @@
     </div>
 </template>
 <script>
-import VueHtml2pdf from 'vue-html2pdf'
 export default {
     head() {
         return {
             title: "Completed Jobs"
         }
-    },
-    components: {
-        VueHtml2pdf
     },
     computed: {
         htmlToPdfOptions(e) {

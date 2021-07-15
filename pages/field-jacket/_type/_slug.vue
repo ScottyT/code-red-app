@@ -102,6 +102,9 @@ export default defineComponent({
                 case "quantity-inventory-logs":
                     formName.value = "Unit Quantity and Equipment Inventory"
                     break;
+                case "moisture-map":
+                    formName.value = "Moisture Readings"
+                    break;
                 default:
                     formName.value = "Sketch Form"
             }

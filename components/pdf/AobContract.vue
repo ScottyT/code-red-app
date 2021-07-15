@@ -766,18 +766,13 @@ export default {
     }
   },
   watch: {
-      /* contracts(val) {
-          this.fetchCards(val.cardNumber).then(result => console.log(result))
-      }, */
       cardsInfo(val) {
           val.forEach((card) => {
               this.cards.push(card)
           })
       },
       images(val) {
-          val.forEach((card) => {
-              this.cardImages.push(card)
-          })
+          this.cardImages = val
       }
   },
   methods: {
@@ -803,20 +798,6 @@ export default {
         })
       })
     },
-    fetchCards(cardnumber) {
-        var data = []
-        return new Promise((resolve, reject) => {
-            this.$fire.auth.currentUser.getIdToken(true).then((idToken) => {
-                this.$axios.$get(`/api/credit-card/${cardnumber}`, {headers: {authorization: `Bearer ${idToken}`}})
-                    .then((res) => {
-                        res.forEach((card) => {
-                            this.getCardImages(card.cardNumber)
-                        })
-                        resolve(res)
-                    })
-            })
-        })
-    }
   },
   mounted() {
     this.$nextTick(() => {
