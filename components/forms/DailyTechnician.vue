@@ -150,12 +150,11 @@
               <label for="notes" class="form__label">Notes (width, height, and length are in feet)</label>
               <div class="form__form-group--block">
                 <span class="pr-2">Dehumidification Capacity Simple Calculation:</span>
-                <div class="form__form-group calculations">                 
-                  <input id="length" type="number" placeholder="length" class="form__input form__input--short" /> x 
-                  <input id="width" type="number" class="form__input form__input--short" placeholder="width" /> x 
-                  <input id="height" type="number" placeholder="height" class="form__input form__input--short" /> / 
-                  
-                </div>
+                <LazyUiCalculations useCubicft useClassFactor />
+              </div>
+              <div class="form__form-group--block">
+                <span class="pr-2">Gallons/Weight of Water Calculation</span>
+                <LazyUiCalculations useSqft />
               </div>
             </div>
             <div class="form__form-group--block form__section">
